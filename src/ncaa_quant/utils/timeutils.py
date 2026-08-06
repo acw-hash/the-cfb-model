@@ -5,15 +5,43 @@ timezone-naive ``datetime`` values. Callers must attach an explicit ``tzinfo``
 (preferably UTC) at the system boundary via :func:`to_utc` or
 :func:`assert_tz_aware`. Point-in-time joins use :func:`as_of_bound` so
 ``event_time < as_of`` comparisons are always UTC-aware.
+
+**Decision points (AUDIT-6 / Task 5B contract):** named production decision
+points are defined as wall-clock times in ``America/New_York`` and resolved to
+an aware UTC instant per local calendar date via :mod:`zoneinfo`. Use
+:func:`resolve_decision_point`. Kickoff-relative points such as ``slot_close``
+(slot minus 5 minutes) are *not* wall-clock-on-a-date and are resolved by the
+odds ingester, not here.
 """
 
 from __future__ import annotations
 
-from datetime import UTC, datetime, timedelta
+from collections.abc import Mapping
+from datetime import UTC, date, datetime, time, timedelta
+from typing import Final
+from zoneinfo import ZoneInfo
+
+# Contract shared with Task 5B historical backfill and DESIGN §9.8.
+DECISION_POINT_TZ: Final[ZoneInfo] = ZoneInfo("America/New_York")
+
+# Wall-clock (hour, minute) in America/New_York for named decision points.
+# ``slot_close`` is intentionally absent — it requires a kickoff instant.
+WALL_CLOCK_DECISION_POINTS: Final[Mapping[str, tuple[int, int]]] = {
+    "tuesday_0600_et": (6, 0),
+    "thursday_0600_et": (6, 0),
+    "saturday_0600_et": (6, 0),
+    "sunday_0600_et": (6, 0),
+    "monday_0600_et": (6, 0),
+    "saturday_2330_et": (23, 30),
+}
 
 
 class NaiveDatetimeError(ValueError):
     """Raised when a timezone-naive datetime reaches a timeutils boundary."""
+
+
+class UnknownDecisionPointError(ValueError):
+    """Raised when ``decision_point_name`` is not a registered wall-clock point."""
 
 
 def assert_tz_aware(ts: datetime) -> datetime:
@@ -41,6 +69,43 @@ def as_of_bound(ts: datetime) -> datetime:
     rows with ``event_time < as_of_bound(ts)``.
     """
     return to_utc(ts)
+
+
+def resolve_decision_point(decision_point_name: str, local_date: date) -> datetime:
+    """Resolve ``(decision_point_name, local_date)`` → aware UTC instant.
+
+    ``local_date`` is interpreted in ``America/New_York``. The named point's
+    wall-clock time on that date is constructed with :class:`zoneinfo.ZoneInfo`
+    so DST transitions (EST↔EDT) are handled by the tz database — never by a
+    fixed UTC offset.
+
+    Parameters
+    ----------
+    decision_point_name:
+        Key in :data:`WALL_CLOCK_DECISION_POINTS` (e.g. ``tuesday_0600_et``).
+        Caller must pass the calendar date that already falls on the intended
+        weekday (e.g. a Tuesday for ``tuesday_0600_et``).
+    local_date:
+        Civil date in America/New_York (not UTC).
+
+    Returns
+    -------
+    datetime
+        Timezone-aware UTC instant for that decision point.
+    """
+    try:
+        hour, minute = WALL_CLOCK_DECISION_POINTS[decision_point_name]
+    except KeyError as exc:
+        known = ", ".join(sorted(WALL_CLOCK_DECISION_POINTS))
+        msg = f"Unknown decision point {decision_point_name!r}; known wall-clock: {known}"
+        raise UnknownDecisionPointError(msg) from exc
+
+    local_dt = datetime.combine(
+        local_date,
+        time(hour=hour, minute=minute),
+        tzinfo=DECISION_POINT_TZ,
+    )
+    return to_utc(local_dt)
 
 
 def season_of(ts: datetime) -> int:

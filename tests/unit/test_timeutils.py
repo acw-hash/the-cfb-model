@@ -2,15 +2,17 @@
 
 from __future__ import annotations
 
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from zoneinfo import ZoneInfo
 
 import pytest
 
 from ncaa_quant.utils.timeutils import (
     NaiveDatetimeError,
+    UnknownDecisionPointError,
     as_of_bound,
     assert_tz_aware,
+    resolve_decision_point,
     season_of,
     to_utc,
     week_of,
@@ -77,3 +79,29 @@ def test_dst_fall_back_conversion() -> None:
     eastern = datetime(2024, 11, 3, 12, 0, tzinfo=EASTERN)
     utc = to_utc(eastern)
     assert utc == datetime(2024, 11, 3, 17, 0, tzinfo=UTC)
+
+
+def test_decision_point_tuesday_0600_et_edt() -> None:
+    """Before November fall-back: Tuesday 06:00 ET is EDT (UTC-4)."""
+    # 2024-11-03 02:00 local falls back; the prior Tuesday is still EDT.
+    utc = resolve_decision_point("tuesday_0600_et", date(2024, 10, 29))
+    assert utc == datetime(2024, 10, 29, 10, 0, tzinfo=UTC)
+
+
+def test_decision_point_tuesday_0600_et_est_after_november_fallback() -> None:
+    """AUDIT-6 / Task 2: early-November DST — after fall-back, EST (UTC-5)."""
+    # First Sunday Nov 2024 = Nov 3; following Tuesday is EST.
+    utc = resolve_decision_point("tuesday_0600_et", date(2024, 11, 5))
+    assert utc == datetime(2024, 11, 5, 11, 0, tzinfo=UTC)
+
+
+def test_decision_point_dst_transition_week_offsets_differ() -> None:
+    """Same wall clock across the Nov EST↔EDT boundary yields different UTC."""
+    before = resolve_decision_point("tuesday_0600_et", date(2024, 10, 29))
+    after = resolve_decision_point("tuesday_0600_et", date(2024, 11, 5))
+    assert (after - before).total_seconds() == 7 * 24 * 3600 + 3600
+
+
+def test_unknown_decision_point_raises() -> None:
+    with pytest.raises(UnknownDecisionPointError, match="slot_close"):
+        resolve_decision_point("slot_close", date(2024, 11, 5))
