@@ -1,0 +1,67 @@
+# Canonical evaluation set (D2/D3). Every headline number in this project must
+# cite the artifact produced from this config (path + content hash).
+#
+# Seasons: 2019, 2021–2025 (§7.2 item 1). 2020 is continuity-only and is
+# excluded from headline metrics (§7.2 item 5).
+#
+# 2019 weeks 1–4: excluded by definition (legacy unfitted zero-μ cold start).
+# This is not an expected failure — those weeks are outside the scored universe
+# (canonical_v2; see docs/notes/D3.md).
+#
+# FCS opponents: INCLUDED in the full canonical set (same rule for every
+# model). FCS-vs-FBS games inflate MAE for all predictors equally; the
+# FBS-vs-FBS subset is reported separately for sensitivity, never mixed into
+# an unlabelled headline.
+#
+# As-of convention: Tuesday 06:00 America/New_York before each game week
+# (WalkForwardConfig defaults). Cardinal rule: event_time < as_of.
+#
+# Market-overlap subset: scored rows with a finite closing spread
+# (spread_close). Market comparisons (de-vigged close, CLV) use ONLY this
+# subset. Snapshot-backed seasons (2021+) and CFBD-only (2019) are never
+# pooled for bet-time price metrics (§7.2 item 8).
+
+name: canonical_v2
+run_id: canonical_v2
+ablation_id: fundamental
+stack: fundamental
+run_kind: backtest
+experiment_name: ncaa-quant-canonical
+tracking_uri: file:./mlruns
+
+inclusion:
+  test_seasons: [2019, 2021, 2022, 2023, 2024, 2025]
+  continuity_seasons: [2020]
+  warmup_seasons: [2014, 2015, 2016, 2017, 2018]
+  exclude_2020_from_headline: true
+  exclude_season_weeks:
+    - {season: 2019, weeks: [1, 2, 3, 4]}
+  fcs_opponent_games: include  # full set; report FBS-vs-FBS separately
+  bowls_playoffs: include_flagged  # scored, distinct regime (§7.2 item 4)
+  as_of:
+    weekday: Tuesday
+    hour: 6
+    minute: 0
+    tz: America/New_York
+  market_overlap: finite_spread_close
+
+walkforward:
+  test_seasons: [2019, 2021, 2022, 2023, 2024, 2025]
+  continuity_seasons: [2020]
+  warmup_seasons: [2014, 2015, 2016, 2017, 2018]
+  retrain_weeks: [5, 10]
+  market_features_available: false
+  preseason_priors: fitted
+  rating_updates: continual
+  mapping_layer: ensemble
+  garbage_time_filter: true
+  market_feature_source: snapshots
+  seed: 42
+  model_version: production-v0
+  run_id: canonical_v2
+  ablation_id: fundamental
+  run_kind: backtest
+  min_train_games: 50
+  max_zero_mu_rate: 0.001
+  nnls_equal_weight_fallback: false
+  enforce_prediction_quality_gate: true

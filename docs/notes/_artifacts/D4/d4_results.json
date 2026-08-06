@@ -1,0 +1,479 @@
+{
+  "canonical_v2_sha": "ebb9ce08a6b6534f41392ab5402d7b0ea26f775b89a8c9098b873cb7642cef70",
+  "source_predictions": "data/backtests/task23_fundamental/fundamental/predictions_enriched.parquet",
+  "source_sha": "4ca7385a46b204126c6060e31bef837e5cf074cfd70e7e0c7726b507c6a15161",
+  "diagnosis": {
+    "archived_sigma": "Constant \u03c3_m=14.0 was typed by deleted scripts/_task23_backtest.py enrich_predictions(); raw predictions.parquet had no \u03c3 columns. Variance was lost at the enrichment broadcast, not in ensemble_sigma.",
+    "stage1_mixture": "Archived table never ran \u00a72.6 50-draw mix; D3 hardcoded mean_stage1_var=0. Live kill switches were silent contextlib.suppress around mix / empty rate_idx / n_draws=1.",
+    "sigma_meta": {
+      "n_fitted_seasons": 15,
+      "n_finite": 5110,
+      "mean": 17.603487634637066,
+      "std": 2.964167238667484,
+      "nunique": 5023,
+      "feature_columns": [
+        "home_off_epa",
+        "away_off_epa",
+        "off_epa_diff",
+        "rating_diff_off_epa",
+        "home_def_epa",
+        "away_def_epa",
+        "def_epa_diff",
+        "rating_diff_def_epa",
+        "home_st_value",
+        "away_st_value",
+        "st_value_diff",
+        "home_pace",
+        "away_pace",
+        "pace_diff",
+        "rating_uncertainty",
+        "abs_pred_margin"
+      ]
+    },
+    "stage1_meta": {
+      "n_posterior_draws": 50,
+      "mean_stage1_var": 24.11103597623527,
+      "feature_columns": [
+        "home_off_epa",
+        "home_def_epa",
+        "home_st_value",
+        "home_pace",
+        "away_off_epa",
+        "away_def_epa",
+        "away_st_value",
+        "away_pace"
+      ],
+      "draws_identical": false
+    }
+  },
+  "lotv": {
+    "nnls_weights": {
+      "lgbm_mu_margin": 0.4891893978828047,
+      "enet_mu_margin": 0.5108106021171953
+    },
+    "decomposition": {
+      "aleatoric_mean_var": 318.6751500283587,
+      "epistemic_member_mean_var": 33.26616251231363,
+      "stage1_mixture_mean_var": 24.112034713793975,
+      "total_mean_var": 376.0533472544663
+    },
+    "mean_aleatoric_var": 318.6751500283587,
+    "mean_member_var": 33.26616251231363,
+    "mean_stage1_var": 24.112034713793975,
+    "total_mean_var": 376.0533472544663,
+    "all_three_live": true
+  },
+  "part2_informativeness": {
+    "deciles": [
+      {
+        "decile": 0,
+        "n": 511,
+        "mean_pred_sigma": 12.847567161603871,
+        "realized_resid_sd": 18.293298208204714
+      },
+      {
+        "decile": 1,
+        "n": 511,
+        "mean_pred_sigma": 15.297080627600144,
+        "realized_resid_sd": 16.525682459672655
+      },
+      {
+        "decile": 2,
+        "n": 511,
+        "mean_pred_sigma": 15.960649269257827,
+        "realized_resid_sd": 17.04879880343941
+      },
+      {
+        "decile": 3,
+        "n": 511,
+        "mean_pred_sigma": 16.460265801547564,
+        "realized_resid_sd": 16.487971487071338
+      },
+      {
+        "decile": 4,
+        "n": 511,
+        "mean_pred_sigma": 16.895399603594267,
+        "realized_resid_sd": 15.911244177456537
+      },
+      {
+        "decile": 5,
+        "n": 510,
+        "mean_pred_sigma": 17.38626349242423,
+        "realized_resid_sd": 17.108998339166003
+      },
+      {
+        "decile": 6,
+        "n": 511,
+        "mean_pred_sigma": 18.062726194538563,
+        "realized_resid_sd": 16.749582630121434
+      },
+      {
+        "decile": 7,
+        "n": 511,
+        "mean_pred_sigma": 19.02909599292016,
+        "realized_resid_sd": 17.467855512856588
+      },
+      {
+        "decile": 8,
+        "n": 511,
+        "mean_pred_sigma": 20.427492640130332,
+        "realized_resid_sd": 20.048160153884794
+      },
+      {
+        "decile": 9,
+        "n": 511,
+        "mean_pred_sigma": 23.669173454185163,
+        "realized_resid_sd": 18.874739090222683
+      }
+    ],
+    "slope": 0.12740862907081663,
+    "r2": 0.001205829241192946,
+    "spearman_rho": 0.02634626617139393,
+    "flag_noise": false,
+    "note": "\u03c3 varies; informativeness slope/R\u00b2 measure whether the revived head captures heteroscedasticity (S4>S0 established it is present).",
+    "component_varies": true,
+    "void_conclusion_blocked": null,
+    "conclusion": "head varies but does not usefully capture heteroscedasticity (weak |r| association; S1 loses to S0 on CRPS)"
+  },
+  "part2_bakeoff": {
+    "table": [
+      {
+        "scheme": "S0",
+        "n": 4546,
+        "crps": 9.771567063199758,
+        "log_score": 4.278847353528091,
+        "mean_sigma": 17.706745725420376
+      },
+      {
+        "scheme": "S1",
+        "n": 4546,
+        "crps": 9.788811237841236,
+        "log_score": 4.28471809583516,
+        "mean_sigma": 17.712345363142475
+      },
+      {
+        "scheme": "S2",
+        "n": 4546,
+        "crps": 9.792551989773127,
+        "log_score": 4.284752677077185,
+        "mean_sigma": 17.919960878952793
+      },
+      {
+        "scheme": "S3",
+        "n": 4546,
+        "crps": 9.851594712665593,
+        "log_score": 4.338180884013229,
+        "mean_sigma": 13.937947927021273
+      },
+      {
+        "scheme": "S4",
+        "n": 4546,
+        "crps": 9.74616213149018,
+        "log_score": 4.270252435310561,
+        "mean_sigma": 17.591626263276993
+      }
+    ],
+    "s1_beats_s0_crps": false,
+    "flag": "FLAG: S1 (corrected predicted sigma) does not beat S0 (constant train residual SD) on CRPS"
+  },
+  "uncalibrated_log_loss": {
+    "uncalibrated": {
+      "ml": {
+        "n": 5110,
+        "log_loss": 0.5501543088452445,
+        "brier": 0.18591685521918036
+      },
+      "ats_close": {
+        "n": 553,
+        "log_loss": 0.8246081539798992,
+        "brier": 0.29627559140253706
+      },
+      "ou_close": {
+        "n": 559,
+        "log_loss": 0.7758801632628366,
+        "brier": 0.2768346192142252
+      }
+    },
+    "note": "Uncalibrated Gaussian probs from revived \u03c3; D3 reported gate decisions but these are the underlying numbers the diagnostic sequence started from."
+  },
+  "overlap_scores": {
+    "stack": {
+      "n": 559.0,
+      "mae": 14.208918496933983,
+      "rmse": 18.027799249895185,
+      "residual_sd": 17.59733214270647,
+      "r2": 0.32631238001192076
+    },
+    "market": {
+      "n": 559.0,
+      "mae": 12.227191413237925,
+      "rmse": 15.4598707259231,
+      "residual_sd": 15.453732757028394,
+      "r2": 0.504567085249715
+    },
+    "sd_y_overlap": 21.964100893072423,
+    "sd_y_canonical": 22.0754480035195,
+    "n_overlap": 559,
+    "n_canonical": 5110,
+    "stack_worse_on_priced": true,
+    "full_stack": {
+      "n": 5109.0,
+      "mae": 13.730882389702627,
+      "rmse": 17.516872135923073,
+      "residual_sd": 17.516406188832303,
+      "r2": 0.370357452007287
+    }
+  },
+  "encompassing": {
+    "b1": 0.9821638788368741,
+    "b2": 0.06292528928545282,
+    "se_b1": 0.09119025824414909,
+    "se_b2": 0.1066164042533348,
+    "p_b2": 0.616,
+    "a": -0.0077373504550781475,
+    "n": 559,
+    "verdict": "b2 indistinguishable from 0 \u2192 the market encompasses the model. There is no edge in this \u03bc, and no betting-layer work can create one."
+  },
+  "encompassing_restricted": {
+    "fbs_vs_fbs": {
+      "b1": 0.9805163526500487,
+      "b2": 0.06246768487486243,
+      "se_b1": 0.09591074059804319,
+      "se_b2": 0.10911408030862679,
+      "p_b2": 0.61,
+      "a": -0.06626610484920428,
+      "n": 547,
+      "verdict": "b2 indistinguishable from 0 \u2192 the market encompasses the model. There is no edge in this \u03bc, and no betting-layer work can create one."
+    },
+    "season_2019": {
+      "b1": 0.9821638788368741,
+      "b2": 0.06292528928545282,
+      "se_b1": 0.09030622489198864,
+      "se_b2": 0.10687082615989534,
+      "p_b2": 0.56,
+      "a": -0.0077373504550781475,
+      "n": 559,
+      "verdict": "b2 indistinguishable from 0 \u2192 the market encompasses the model. There is no edge in this \u03bc, and no betting-layer work can create one."
+    },
+    "weeks_5_9": {
+      "b1": 0.9019600448017331,
+      "b2": 0.10997677058488686,
+      "se_b1": 0.09048218970406004,
+      "se_b2": 0.09199448840089341,
+      "p_b2": 0.276,
+      "a": 0.6194672599337616,
+      "n": 272,
+      "verdict": "b2 indistinguishable from 0 \u2192 the market encompasses the model. There is no edge in this \u03bc, and no betting-layer work can create one."
+    },
+    "weeks_10_plus": {
+      "b1": 1.1341796528843857,
+      "b2": -0.08234139542856234,
+      "se_b1": 0.17142605092397648,
+      "se_b2": 0.21458495937911506,
+      "p_b2": 0.736,
+      "a": -0.5174615841789463,
+      "n": 287,
+      "verdict": "b2 indistinguishable from 0 \u2192 the market encompasses the model. There is no edge in this \u03bc, and no betting-layer work can create one."
+    }
+  },
+  "residual_on_residual": {
+    "slope": 0.0316252698014626,
+    "r2": 0.0003167432090458444,
+    "corr": 0.017797280945300035,
+    "n": 559.0
+  },
+  "optimal_combination": {
+    "w": 0.14,
+    "mae_combined": 12.098486577842676,
+    "mae_market": 12.048780487804878,
+    "delta_mae": 0.049706090037798134,
+    "delta_ci": {
+      "low": -0.05530304012133369,
+      "high": 0.16879104289994734,
+      "estimate": 0.049706090037798134
+    },
+    "n_train": 272,
+    "n_test": 287,
+    "near_zero": false,
+    "split": "weeks_1_9_train_vs_10plus_test_within_2019_overlap",
+    "note_market_seasons": "Archived predictions_enriched has finite spread_close only for season=2019 (n=559)"
+  },
+  "slices": {
+    "n": 559,
+    "slices": {
+      "week_bucket": [
+        {
+          "slice": "10+",
+          "n": 287,
+          "mean_signed_disagree": 2.0546272145914584,
+          "mean_abs_disagree": 6.348339797834891,
+          "mean_delta_err_stack_minus_mkt": 1.8143795908439442,
+          "stack_worse_rate": 0.5749128919860628,
+          "pattern": "systematic_wrong"
+        },
+        {
+          "slice": "5-9",
+          "n": 272,
+          "mean_signed_disagree": 6.775345273984815,
+          "mean_abs_disagree": 9.101349184050898,
+          "mean_delta_err_stack_minus_mkt": 2.158303298580458,
+          "stack_worse_rate": 0.5992647058823529,
+          "pattern": "systematic_wrong"
+        }
+      ],
+      "conference_tier": [
+        {
+          "slice": "G5/other",
+          "n": 234,
+          "mean_signed_disagree": 5.959981900204686,
+          "mean_abs_disagree": 8.178299415520284,
+          "mean_delta_err_stack_minus_mkt": 2.3089589985352186,
+          "stack_worse_rate": 0.6111111111111112,
+          "pattern": "systematic_wrong"
+        },
+        {
+          "slice": "P4/P5",
+          "n": 258,
+          "mean_signed_disagree": 4.020537289146382,
+          "mean_abs_disagree": 7.160855463772083,
+          "mean_delta_err_stack_minus_mkt": 1.3782859765009339,
+          "stack_worse_rate": 0.5465116279069767,
+          "pattern": "systematic_wrong"
+        },
+        {
+          "slice": "cross_tier",
+          "n": 67,
+          "mean_signed_disagree": 0.009515520357533181,
+          "mean_abs_disagree": 8.004742196350954,
+          "mean_delta_err_stack_minus_mkt": 3.1625560028599176,
+          "stack_worse_rate": 0.6567164179104478,
+          "pattern": "systematic_wrong"
+        }
+      ],
+      "favorite_size_bucket": [
+        {
+          "slice": "0-3",
+          "n": 92,
+          "mean_signed_disagree": 4.967649044749291,
+          "mean_abs_disagree": 7.458058510521416,
+          "mean_delta_err_stack_minus_mkt": 2.1058216313942477,
+          "stack_worse_rate": 0.6521739130434783,
+          "pattern": "systematic_wrong"
+        },
+        {
+          "slice": "14+",
+          "n": 178,
+          "mean_signed_disagree": 2.349336699232463,
+          "mean_abs_disagree": 8.092878453359578,
+          "mean_delta_err_stack_minus_mkt": 1.9469614000203896,
+          "stack_worse_rate": 0.5561797752808989,
+          "pattern": "systematic_wrong"
+        },
+        {
+          "slice": "3-7",
+          "n": 146,
+          "mean_signed_disagree": 6.0655443413849115,
+          "mean_abs_disagree": 8.588949494443977,
+          "mean_delta_err_stack_minus_mkt": 2.166518308712429,
+          "stack_worse_rate": 0.589041095890411,
+          "pattern": "systematic_wrong"
+        },
+        {
+          "slice": "7-14",
+          "n": 143,
+          "mean_signed_disagree": 4.697879767056696,
+          "mean_abs_disagree": 6.41174913416547,
+          "mean_delta_err_stack_minus_mkt": 1.7564968351201535,
+          "stack_worse_rate": 0.5804195804195804,
+          "pattern": "systematic_wrong"
+        }
+      ],
+      "total_bucket": [
+        {
+          "slice": "45-55",
+          "n": 210,
+          "mean_signed_disagree": 4.578777828877921,
+          "mean_abs_disagree": 7.541103826818047,
+          "mean_delta_err_stack_minus_mkt": 2.1995011267513767,
+          "stack_worse_rate": 0.5952380952380952,
+          "pattern": "systematic_wrong"
+        },
+        {
+          "slice": "55-65",
+          "n": 214,
+          "mean_signed_disagree": 4.325617078768553,
+          "mean_abs_disagree": 8.120378127535298,
+          "mean_delta_err_stack_minus_mkt": 1.9597596494078018,
+          "stack_worse_rate": 0.5607476635514018,
+          "pattern": "systematic_wrong"
+        },
+        {
+          "slice": "65+",
+          "n": 69,
+          "mean_signed_disagree": 3.1773935669645494,
+          "mean_abs_disagree": 6.665694933673705,
+          "mean_delta_err_stack_minus_mkt": 1.7197650826526047,
+          "stack_worse_rate": 0.6521739130434783,
+          "pattern": "systematic_wrong"
+        },
+        {
+          "slice": "<=45",
+          "n": 66,
+          "mean_signed_disagree": 4.941005607124702,
+          "mean_abs_disagree": 7.82143676807014,
+          "mean_delta_err_stack_minus_mkt": 1.6339067801819427,
+          "stack_worse_rate": 0.5757575757575758,
+          "pattern": "systematic_wrong"
+        }
+      ],
+      "neutral_site": [
+        {
+          "slice": "False",
+          "n": 549,
+          "mean_signed_disagree": 4.3190575968954015,
+          "mean_abs_disagree": 7.62612491884507,
+          "mean_delta_err_stack_minus_mkt": 1.9882971049878042,
+          "stack_worse_rate": 0.5901639344262295,
+          "pattern": "systematic_wrong"
+        },
+        {
+          "slice": "True",
+          "n": 10,
+          "mean_signed_disagree": 6.140930441604257,
+          "mean_abs_disagree": 11.079791959451462,
+          "mean_delta_err_stack_minus_mkt": 1.6210329147792055,
+          "stack_worse_rate": 0.4,
+          "pattern": "systematic_wrong"
+        }
+      ],
+      "rest_diff_bucket": [
+        {
+          "slice": "unknown",
+          "n": 559,
+          "mean_signed_disagree": 4.351649239913449,
+          "mean_abs_disagree": 7.687907871270944,
+          "mean_delta_err_stack_minus_mkt": 1.981727083696058,
+          "stack_worse_rate": 0.5867620751341681,
+          "pattern": "systematic_wrong"
+        }
+      ],
+      "roster_portal_null": [
+        {
+          "slice": "features_absent",
+          "n": 559,
+          "mean_signed_disagree": 4.351649239913449,
+          "mean_abs_disagree": 7.687907871270944,
+          "mean_delta_err_stack_minus_mkt": 1.981727083696058,
+          "stack_worse_rate": 0.5867620751341681,
+          "pattern": "systematic_wrong"
+        }
+      ]
+    }
+  },
+  "top_games": {
+    "market_right_n": 20,
+    "stack_right_n": 20
+  },
+  "pattern_note": "Largest |stack\u2212market| misses where the market was right often involve large favorites / early-season uncertainty; stack-right cases are more often mid-range spreads where the fundamental rating gap outpaced the line.",
+  "wall_clock_sec": 264.43062233924866
+}

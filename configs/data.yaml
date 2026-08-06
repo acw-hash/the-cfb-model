@@ -1,0 +1,52 @@
+data:
+  # First season with usable PBP quality (DESIGN §3.1).
+  start_season: 2014
+  # PLACEHOLDER — bump each offseason; not named as a fixed value in the spec.
+  end_season: 2025
+  # Garbage-time WP thresholds (DESIGN §4.2).
+  garbage_wp_low: 0.02
+  garbage_wp_high: 0.98
+  # EWMA half-lives in games (DESIGN §4.4 ranges).
+  ewma_half_life_efficiency: 6.5
+  ewma_half_life_tempo: 10.0
+  ewma_half_life_explosiveness: 10.0
+  # Bayesian shrinkage prior strength k in n/(n+k) (DESIGN §4.4 ~6–10).
+  shrinkage_k_efficiency: 8.0
+  # Ridge L2 for explicit opponent adjustment (DESIGN §4.3). Untuned PLACEHOLDER
+  # — walk-forward CV in a later task; do not tune ad-hoc here.
+  ridge_lambda_efficiency: 5.0
+  # CFBD / Odds API client knobs — PLACEHOLDER rates (spec cites tiers, not QPS).
+  cfbd_requests_per_second: 2.0
+  odds_api_requests_per_second: 1.0
+  # The Odds API — bookmaker keys and API market keys (Task 4).
+  odds_books:
+    - draftkings
+    - fanduel
+    - betmgm
+    - williamhill_us
+  odds_markets:
+    - h2h
+    - spreads
+    - totals
+  odds_regions: us
+  # Refuse further Odds API calls when x-requests-remaining is below this.
+  # Live capture reserve — historical backfill must never spend into this floor.
+  odds_rate_limit_reserve: 50
+  # Task 5B — historical odds. Changing decision points invalidates backtest
+  # comparability with earlier runs (DESIGN §9.8).
+  odds_historical_decision_points:
+    - tuesday_0600_et
+    - slot_close
+  # Cost = 10 × markets × regions → 30 at our live markets/regions config.
+  odds_historical_credits_per_call: 30
+  # Refuse historical spend above this without --force. Equals the monthly plan
+  # quota (DESIGN §3.2: 20,000 credits/mo). Prior 16,000 was a stale headroom
+  # guard that understated available budget.
+  odds_historical_credit_ceiling: 20000
+  # As-of fallback tolerance by snapshot era (DESIGN §3.4).
+  odds_asof_tolerance_minutes_pre_2022_09: 10
+  odds_asof_tolerance_minutes_post_2022_09: 5
+  team_names_path: configs/team_names.yaml
+  # Task 6 — manual venue corrections (lat/lon/timezone/surface/dome/…).
+  venues_overrides_path: configs/venues_overrides.yaml
+  open_meteo_requests_per_second: 2.0

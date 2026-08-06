@@ -1,0 +1,320 @@
+{
+  "canonical_v2_sha": "ebb9ce08a6b6534f41392ab5402d7b0ea26f775b89a8c9098b873cb7642cef70",
+  "uncalibrated": {
+    "ml": {
+      "n": 5110,
+      "log_loss": 0.5522190219569952,
+      "brier": 0.18598088842638813
+    },
+    "ats_close": {
+      "n": 553,
+      "log_loss": 0.832927199087853,
+      "brier": 0.30049922885000224
+    },
+    "ou_close": {
+      "n": 559,
+      "log_loss": 0.7798219078943817,
+      "brier": 0.2804012485571753
+    }
+  },
+  "calibration_gates": {
+    "ml": {
+      "kind": "beta",
+      "applied": false,
+      "delta_logloss": -0.00040227567041128953,
+      "ci_low": -0.00646991279636534,
+      "ci_high": 0.006855721432159155,
+      "vs_none_log_loss": 0.5227856623013916,
+      "cal_log_loss": 0.5231879379718029
+    },
+    "ats_close": {
+      "kind": "isotonic",
+      "applied": true,
+      "delta_logloss": 0.14773841665233878,
+      "ci_low": 0.09386333727093366,
+      "ci_high": 0.19371919219998046,
+      "vs_none_log_loss": 0.8475975254515244,
+      "cal_log_loss": 0.6998591087991857
+    },
+    "ou_close": {
+      "kind": "isotonic",
+      "applied": true,
+      "delta_logloss": 0.07733998493130045,
+      "ci_low": 0.05261610976385811,
+      "ci_high": 0.11769522512220565,
+      "vs_none_log_loss": 0.7595125239389426,
+      "cal_log_loss": 0.6821725390076422
+    }
+  },
+  "hypotheses": {
+    "canonical_v2_sha": "ebb9ce08a6b6534f41392ab5402d7b0ea26f775b89a8c9098b873cb7642cef70",
+    "ats": {
+      "n": 553,
+      "log_loss": 0.832927199087853,
+      "log_loss_inverted_p": 0.8564078153792257,
+      "hypotheses": [
+        {
+          "name": "H1_spread_sign_inverted",
+          "holds": false,
+          "evidence": {
+            "ll_ats": 0.832927199087853,
+            "ll_ats_inverted_p": 0.8564078153792257,
+            "ll_ats_mu_minus_spread": 1.8651340947610668,
+            "threshold_near_058": 0.58
+          },
+          "note": "REJECTED \u2014 1\u2212p is not near 0.58 and does not beat the forward path"
+        },
+        {
+          "name": "H2_snapshot_mismatch",
+          "holds": false,
+          "evidence": {
+            "asof_equals_close_rate": 1.0,
+            "ll_p_asof_grade_close": 0.832927199087853,
+            "ll_p_close_grade_close": 0.832927199087853
+          },
+          "note": "REJECTED \u2014 asof matches close on this archive (or LL unchanged)"
+        },
+        {
+          "name": "H3_push_mass_misallocated",
+          "holds": false,
+          "evidence": {
+            "gaussian_two_way_sums_to_one": true
+          },
+          "note": "REJECTED on continuous Gaussian eval path (p_push=0). Production MC path now emits two_way_side_prob so discrete push mass cannot leak into Bernoulli scores."
+        },
+        {
+          "name": "H4_key_number_kernel_orientation",
+          "holds": false,
+          "evidence": {
+            "gaussian_eval_path_uses_kernel": false
+          },
+          "note": "REJECTED for the uncalibrated Gaussian path under test (no kernel). Kernel orientation is irrelevant to the reported 0.82/0.77 LLs."
+        },
+        {
+          "name": "H5_neutral_site_home_away_swap",
+          "holds": false,
+          "evidence": {
+            "neutral_col": null
+          },
+          "note": "REJECTED \u2014 ATS LL > chance is not confined to neutral-site games"
+        }
+      ]
+    },
+    "ou": {
+      "n": 551,
+      "log_loss": 0.7800089994775291,
+      "log_loss_inverted_p": 0.8229832269893929,
+      "log_loss_inverted_formula": 0.8229832269893927,
+      "hypotheses": {
+        "H1_sign": "N/A (OU has no home/away orientation)",
+        "H2_snapshot": "REJECTED \u2014 asof matches close on this archive (or LL unchanged)",
+        "H3_push": "REJECTED on continuous Gaussian eval path (p_push=0). Production MC path now emits two_way_side_prob so discrete push mass cannot leak into Bernoulli scores.",
+        "H4_kernel": "REJECTED for the uncalibrated Gaussian path under test (no kernel). Kernel orientation is irrelevant to the reported 0.82/0.77 LLs.",
+        "H5_neutral": "N/A"
+      },
+      "shared_root_with_ats": true
+    },
+    "root_cause": "Overconfident model\u2013market disagreement: cover-edge (\u03bc+S) has near-zero correlation with outcomes (ATS hard acc \u2248 chance) while |\u03bc+S|/\u03c3 produces extreme probabilities. Same pattern on OU (weak edge signal, overconfident \u03c3). Not a sign/snapshot/kernel bug on this archive.",
+    "chance_log_loss": 0.6931471805599453
+  },
+  "priced_unpriced_2019": {
+    "season": 2019,
+    "priced": {
+      "n": 559,
+      "mae": 14.208918496933983
+    },
+    "unpriced": {
+      "n": 4,
+      "mae": 12.727692573039803
+    }
+  },
+  "market_coverage": {
+    "by_line_type": {
+      "close": {
+        "2014": {
+          "n_rows": 2303,
+          "n_spread": 2294,
+          "n_total": 1493,
+          "n_games": 865
+        },
+        "2015": {
+          "n_rows": 2320,
+          "n_spread": 2302,
+          "n_total": 1525,
+          "n_games": 832
+        },
+        "2016": {
+          "n_rows": 2347,
+          "n_spread": 2345,
+          "n_total": 1505,
+          "n_games": 866
+        },
+        "2017": {
+          "n_rows": 2400,
+          "n_spread": 2390,
+          "n_total": 2310,
+          "n_games": 874
+        },
+        "2018": {
+          "n_rows": 3034,
+          "n_spread": 3016,
+          "n_total": 2999,
+          "n_games": 869
+        },
+        "2019": {
+          "n_rows": 3506,
+          "n_spread": 3502,
+          "n_total": 3506,
+          "n_games": 881
+        },
+        "2020": {
+          "n_rows": 2752,
+          "n_spread": 2751,
+          "n_total": 2708,
+          "n_games": 567
+        },
+        "2021": {
+          "n_rows": 3541,
+          "n_spread": 3540,
+          "n_total": 3541,
+          "n_games": 887
+        },
+        "2022": {
+          "n_rows": 4310,
+          "n_spread": 4310,
+          "n_total": 4308,
+          "n_games": 1459
+        },
+        "2023": {
+          "n_rows": 3047,
+          "n_spread": 3044,
+          "n_total": 2934,
+          "n_games": 1393
+        },
+        "2024": {
+          "n_rows": 3172,
+          "n_spread": 3163,
+          "n_total": 3161,
+          "n_games": 1557
+        },
+        "2025": {
+          "n_rows": 3345,
+          "n_spread": 3335,
+          "n_total": 3337,
+          "n_games": 1597
+        }
+      },
+      "open": {
+        "2021": {
+          "n_rows": 879,
+          "n_spread": 870,
+          "n_total": 879,
+          "n_games": 879
+        },
+        "2022": {
+          "n_rows": 859,
+          "n_spread": 839,
+          "n_total": 855,
+          "n_games": 859
+        },
+        "2023": {
+          "n_rows": 1604,
+          "n_spread": 1586,
+          "n_total": 1326,
+          "n_games": 870
+        },
+        "2024": {
+          "n_rows": 2348,
+          "n_spread": 2320,
+          "n_total": 1773,
+          "n_games": 865
+        },
+        "2025": {
+          "n_rows": 2527,
+          "n_spread": 2489,
+          "n_total": 1879,
+          "n_games": 938
+        }
+      },
+      "tuesday": {}
+    },
+    "tuesday_source": "odds_snapshots.decision_point"
+  },
+  "power": {
+    "b2_0.10": {
+      "observed_n": 559,
+      "observed_se_b2": 0.1066,
+      "b2_target": 0.1,
+      "power": 0.8,
+      "alpha": 0.05,
+      "n_required": 4986,
+      "z_critical": 2.8015852181129683
+    },
+    "b2_0.15": {
+      "observed_n": 559,
+      "observed_se_b2": 0.1066,
+      "b2_target": 0.15,
+      "power": 0.8,
+      "alpha": 0.05,
+      "n_required": 2216,
+      "z_critical": 2.8015852181129683
+    },
+    "ci95_b2": {
+      "low": -0.1460321607519698,
+      "high": 0.27183216075196975,
+      "estimate": 0.0629,
+      "alpha": 0.05
+    }
+  },
+  "encompassing": {
+    "joint_verdict": "UNDERPOWERED (n=559): b2=0.0629 (SE 0.1075, p=0.6200); 95% CI [-0.148, 0.274] still contains |b2|\u22650.1 \u2014 cannot claim the market encompasses the model, nor claim an edge.",
+    "b2": 0.06292528928545282,
+    "ci95": {
+      "low": -0.1478417127163292,
+      "high": 0.2736922912872348,
+      "estimate": 0.06292528928545282,
+      "alpha": 0.05
+    },
+    "n": 559,
+    "power": {
+      "b2_0.10": {
+        "observed_n": 559,
+        "observed_se_b2": 0.10753616069697466,
+        "b2_target": 0.1,
+        "power": 0.8,
+        "alpha": 0.05,
+        "n_required": 5074,
+        "z_critical": 2.8015852181129683
+      },
+      "b2_0.15": {
+        "observed_n": 559,
+        "observed_se_b2": 0.10753616069697466,
+        "b2_target": 0.15,
+        "power": 0.8,
+        "alpha": 0.05,
+        "n_required": 2255,
+        "z_critical": 2.8015852181129683
+      }
+    }
+  },
+  "consistency_mc": {
+    "max_abs_diff": 0.0,
+    "within_tolerance": true,
+    "atol": 0.02,
+    "n": 40,
+    "kernel": false,
+    "path": "mc",
+    "mean_p_win": 0.763528125,
+    "mean_p_cover0": 0.763528125,
+    "max_abs_diff_two_way": 0.0,
+    "n_draws": 8000,
+    "nonzero_spread": {
+      "max_abs_diff_vs_gaussian": 0.008955823657339934,
+      "max_abs_diff_vs_inverted_sign": 0.8671122137724007,
+      "within_tolerance": true,
+      "inverted_sign_closer": false,
+      "atol": 0.02,
+      "n": 40
+    }
+  }
+}

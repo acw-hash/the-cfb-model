@@ -1,0 +1,38 @@
+# Config-driven encompassing evaluation (D5 Part 3).
+# Runs unchanged when 2021–2025 closing lines are ingested — only seasons /
+# min_games_per_season need updating.
+
+name: encompassing_powered
+canonical_sha: ebb9ce08a6b6534f41392ab5402d7b0ea26f775b89a8c9098b873cb7642cef70
+
+encompassing:
+  # D6: CFBD closes joined for evaluation on all canonical seasons (2020 still
+  # continuity-only / excluded from headline). Stop-rule thresholds unchanged
+  # from D5 pre-registration (2026-08-06).
+  seasons: [2019, 2021, 2022, 2023, 2024, 2025]
+  line_column: spread_close
+  market_implied_sign: -1.0
+  n_boot: 1000
+  seed: 0
+  min_games_per_season: 400
+  # Leave null until ≥2 priced seasons exist; within-season week split is a
+  # fallback in the runner, not a substitute for multi-season OOS.
+  train_seasons: null
+  test_seasons: null
+  substantial_b2: 0.10
+  stability_min_seasons_positive: 3
+
+odds_purchase_spec:
+  # Drives the Odds API historical purchase (Task 5b / D5 §15).
+  seasons: [2021, 2022, 2023, 2024, 2025]
+  line_types_required: [tuesday_0600_et, close]
+  tuesday_alone_sufficient: false
+  closes_also_required: true
+  min_games_per_season: 400
+  markets: [spreads, totals]
+  notes: >
+    Tuesday snapshots alone are NOT sufficient for the powered encompassing
+    test or for CLV. Closes are required for ATS/OU@close grading and for the
+    market side of the encompassing regression. Tuesday is required for the
+    bet-time information set (§7.2 / §9.8). Target ≥400 FBS games with finite
+    consensus spread+total per season.

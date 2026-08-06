@@ -1,0 +1,40 @@
+# Project: ncaa-quant — NCAA football prediction system
+
+## Authority
+docs/DESIGN.md is the specification. Follow it. If a request conflicts with it,
+say so and stop rather than guessing. If the spec is genuinely silent on a
+detail, make the smallest reasonable choice and record it in docs/adr/.
+
+## Working agreement — applies to every task
+- Implement ONLY the module(s) named in the current task. Never edit unrelated
+  files. If a task seems to require touching something outside its scope, stop
+  and explain instead of doing it.
+- Every task ends with: `make test` passing, new code covered by tests,
+  docs updated, and an entry appended to docs/notes/<task-number>.md describing
+  what was built, decisions made, and anything the spec left ambiguous.
+- Do not write speculative code for future tasks. No TODO stubs for later
+  subsystems unless the task asks for a stub.
+
+## Non-negotiable engineering rules
+- Python 3.11+. ruff + mypy (strict on src/). pandera schemas at every
+  DataFrame boundary. All timestamps UTC.
+- POINT-IN-TIME CORRECTNESS is the cardinal rule: no function may read data
+  whose event_time is later than the as_of timestamp it was called with.
+  Never join on game_id without a time bound.
+- No random K-fold cross-validation anywhere, ever. Time-ordered splits only.
+- All randomness seeded through utils/seeding.py and logged.
+- Secrets via pydantic-settings + .env. Never commit .env or hardcode keys.
+
+## Style
+- Prefer boring, explicit, testable code over cleverness.
+- Type-annotate everything public. Docstrings state units and time semantics.
+- Ask before adding a dependency not already in pyproject.toml.
+
+## Environment
+- Phase 1 (tasks 1-24) runs NATIVELY with uv. Do not run, start, build, or invoke
+  docker or docker-compose.
+- MLflow and Prefect run as local processes (`mlflow server`, `prefect server start`).
+- Dockerfile and docker-compose.yml exist in the repo as deferred artifacts for a
+  possible later containerization phase. Keep them in sync with pyproject.toml when
+  dependencies change, but never execute them.
+- If containerization becomes in-scope, it will be assigned as its own explicit task.

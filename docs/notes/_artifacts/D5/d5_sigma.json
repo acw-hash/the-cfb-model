@@ -1,0 +1,224 @@
+{
+  "canonical_v2_sha": "ebb9ce08a6b6534f41392ab5402d7b0ea26f775b89a8c9098b873cb7642cef70",
+  "sigma_feature_audit": {
+    "specified": [
+      "stage1_posterior_var_home",
+      "stage1_posterior_var_away",
+      "week",
+      "rating_diff_magnitude",
+      "expected_possessions",
+      "roster_portal_null"
+    ],
+    "present": [
+      "stage1_posterior_var_home",
+      "stage1_posterior_var_away",
+      "week",
+      "rating_diff_magnitude",
+      "expected_possessions",
+      "roster_portal_null"
+    ],
+    "absent": [],
+    "observed_columns": [
+      "abs_pred_margin",
+      "away_def_epa",
+      "away_off_epa",
+      "away_pace",
+      "away_st_value",
+      "def_epa_diff",
+      "expected_possessions",
+      "expected_possessions_null",
+      "game_id",
+      "home_def_epa",
+      "home_off_epa",
+      "home_pace",
+      "home_st_value",
+      "off_epa_diff",
+      "pace_diff",
+      "rating_diff_def_epa",
+      "rating_diff_magnitude",
+      "rating_diff_off_epa",
+      "rating_uncertainty",
+      "roster_portal_null",
+      "season",
+      "st_value_diff",
+      "stage1_posterior_var_away",
+      "stage1_posterior_var_home",
+      "week"
+    ],
+    "null_rates": {
+      "home_off_epa": 0.0019569471624266144,
+      "away_off_epa": 0.0019569471624266144,
+      "off_epa_diff": 0.0019569471624266144,
+      "rating_diff_off_epa": 0.0019569471624266144,
+      "home_def_epa": 0.0019569471624266144,
+      "away_def_epa": 0.0019569471624266144,
+      "def_epa_diff": 0.0019569471624266144,
+      "rating_diff_def_epa": 0.0019569471624266144,
+      "home_st_value": 0.0019569471624266144,
+      "away_st_value": 0.0019569471624266144,
+      "st_value_diff": 0.0019569471624266144,
+      "home_pace": 0.0019569471624266144,
+      "away_pace": 0.0019569471624266144,
+      "pace_diff": 0.0019569471624266144,
+      "stage1_posterior_var_home": 0.0019569471624266144,
+      "stage1_posterior_var_away": 0.0019569471624266144,
+      "rating_uncertainty": 0.0019569471624266144,
+      "week": 0.0019569471624266144,
+      "season": 0.0019569471624266144,
+      "abs_pred_margin": 0.0019569471624266144,
+      "rating_diff_magnitude": 0.0019569471624266144,
+      "expected_possessions": 1.0,
+      "expected_possessions_null": 0.0019569471624266144,
+      "roster_portal_null": 0.0019569471624266144
+    },
+    "effectively_absent": [
+      "expected_possessions"
+    ]
+  },
+  "sigma_meta": {
+    "n_fitted_seasons": 15,
+    "n_finite": 5110,
+    "mean": 17.60222307484456,
+    "std": 3.08947475949998,
+    "nunique": 5062,
+    "feature_columns": [
+      "home_off_epa",
+      "away_off_epa",
+      "off_epa_diff",
+      "rating_diff_off_epa",
+      "home_def_epa",
+      "away_def_epa",
+      "def_epa_diff",
+      "rating_diff_def_epa",
+      "home_st_value",
+      "away_st_value",
+      "st_value_diff",
+      "home_pace",
+      "away_pace",
+      "pace_diff",
+      "stage1_posterior_var_home",
+      "stage1_posterior_var_away",
+      "rating_uncertainty",
+      "abs_pred_margin",
+      "rating_diff_magnitude",
+      "expected_possessions",
+      "expected_possessions_null",
+      "roster_portal_null"
+    ]
+  },
+  "informativeness": {
+    "deciles": [
+      {
+        "decile": 0,
+        "n": 511,
+        "mean_pred_sigma": 12.43565772847696,
+        "realized_resid_sd": 17.112168887069352
+      },
+      {
+        "decile": 1,
+        "n": 513,
+        "mean_pred_sigma": 15.122001395976527,
+        "realized_resid_sd": 16.605259973236578
+      },
+      {
+        "decile": 2,
+        "n": 509,
+        "mean_pred_sigma": 15.973321882720173,
+        "realized_resid_sd": 16.389864042534708
+      },
+      {
+        "decile": 3,
+        "n": 511,
+        "mean_pred_sigma": 16.485198277094653,
+        "realized_resid_sd": 16.554996023369636
+      },
+      {
+        "decile": 4,
+        "n": 511,
+        "mean_pred_sigma": 16.934004329917773,
+        "realized_resid_sd": 16.69334281632183
+      },
+      {
+        "decile": 5,
+        "n": 510,
+        "mean_pred_sigma": 17.44769810820375,
+        "realized_resid_sd": 17.116946507066455
+      },
+      {
+        "decile": 6,
+        "n": 511,
+        "mean_pred_sigma": 18.131811111067158,
+        "realized_resid_sd": 17.203684606514233
+      },
+      {
+        "decile": 7,
+        "n": 511,
+        "mean_pred_sigma": 19.098264118434436,
+        "realized_resid_sd": 18.515764679850673
+      },
+      {
+        "decile": 8,
+        "n": 511,
+        "mean_pred_sigma": 20.57693737682296,
+        "realized_resid_sd": 19.235030689119437
+      },
+      {
+        "decile": 9,
+        "n": 511,
+        "mean_pred_sigma": 23.822796057213253,
+        "realized_resid_sd": 19.019343858542445
+      }
+    ],
+    "slope": 0.18932188652709905,
+    "r2": 0.002892304189630157,
+    "spearman_rho": 0.05381986277270766,
+    "flag_noise": false,
+    "note": "\u03c3 varies; informativeness slope/R\u00b2 measure whether the revived head captures heteroscedasticity (S4>S0 established it is present).",
+    "component_varies": true,
+    "void_conclusion_blocked": null,
+    "conclusion": "head varies but does not usefully capture heteroscedasticity (weak |r| association; check S1 vs S0 CRPS)"
+  },
+  "bakeoff": {
+    "table": [
+      {
+        "scheme": "S0",
+        "n": 4546,
+        "crps": 9.771567063199758,
+        "log_score": 4.278847353528091,
+        "mean_sigma": 17.706745725420376
+      },
+      {
+        "scheme": "S1",
+        "n": 4546,
+        "crps": 9.778816303839884,
+        "log_score": 4.280703391974786,
+        "mean_sigma": 17.72571920283051
+      },
+      {
+        "scheme": "S2",
+        "n": 4546,
+        "crps": 9.783529764929224,
+        "log_score": 4.280817318973699,
+        "mean_sigma": 17.985910043705168
+      },
+      {
+        "scheme": "S3",
+        "n": 4546,
+        "crps": 9.851147175453965,
+        "log_score": 4.337856413860864,
+        "mean_sigma": 13.920567906762484
+      },
+      {
+        "scheme": "S4",
+        "n": 4546,
+        "crps": 9.74616213149018,
+        "log_score": 4.270252435310561,
+        "mean_sigma": 17.591626263276993
+      }
+    ],
+    "s1_beats_s0_crps": false,
+    "flag": "FLAG: S1 (corrected predicted sigma) does not beat S0 (constant train residual SD) on CRPS"
+  },
+  "recommend_week_bucket_sigma": true,
+  "wall_clock_s": 250.22363018989563
+}

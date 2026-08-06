@@ -1,0 +1,10 @@
+{
+  "holdout_season": 2025,
+  "early_weeks": [
+    1,
+    4
+  ],
+  "confirm_rule": "On season 2025 weeks 1\u20134 only: confirm if b2 > 0 and bootstrap p_b2 < 0.10; refute otherwise. Discovery seasons are excluded from this test.",
+  "discovery_excludes": 2025,
+  "fitted_before_registration": false
+}

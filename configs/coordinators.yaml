@@ -1,0 +1,687 @@
+# Hand-maintained OC/DC staff by school and season (Task 12 / DESIGN §3.3).
+# Seed: last 3 seasons (2023–2025) for 2023 P5 membership. Non-P5 schools
+# are omitted → builders emit null + is_missing indicator.
+# Spotlight programs use real-ish public staff names; remaining P5 rows use
+# stable placeholders pending hand verification.
+
+coordinators:
+  Alabama:
+    2023:
+      oc: Tommy Rees
+      dc: Kevin Steele
+    2024:
+      oc: Glenn Schumann
+      dc: Kane Wommack
+    2025:
+      oc: Glenn Schumann
+      dc: Kane Wommack
+  Arizona:
+    2023:
+      oc: Arizona OC
+      dc: Arizona DC
+    2024:
+      oc: Arizona OC
+      dc: Arizona DC
+    2025:
+      oc: Arizona OC
+      dc: Arizona DC
+  Arizona State:
+    2023:
+      oc: Arizona State OC
+      dc: Arizona State DC
+    2024:
+      oc: Arizona State OC
+      dc: Arizona State DC
+    2025:
+      oc: Arizona State OC
+      dc: Arizona State DC
+  Arkansas:
+    2023:
+      oc: Arkansas OC
+      dc: Arkansas DC
+    2024:
+      oc: Arkansas OC
+      dc: Arkansas DC
+    2025:
+      oc: Arkansas OC
+      dc: Arkansas DC
+  Auburn:
+    2023:
+      oc: Auburn OC
+      dc: Auburn DC
+    2024:
+      oc: Auburn OC
+      dc: Auburn DC
+    2025:
+      oc: Auburn OC
+      dc: Auburn DC
+  BYU:
+    2023:
+      oc: BYU OC
+      dc: BYU DC
+    2024:
+      oc: BYU OC
+      dc: BYU DC
+    2025:
+      oc: BYU OC
+      dc: BYU DC
+  Baylor:
+    2023:
+      oc: Baylor OC
+      dc: Baylor DC
+    2024:
+      oc: Baylor OC
+      dc: Baylor DC
+    2025:
+      oc: Baylor OC
+      dc: Baylor DC
+  Boston College:
+    2023:
+      oc: Boston College OC
+      dc: Boston College DC
+    2024:
+      oc: Boston College OC
+      dc: Boston College DC
+    2025:
+      oc: Boston College OC
+      dc: Boston College DC
+  California:
+    2023:
+      oc: California OC
+      dc: California DC
+    2024:
+      oc: California OC
+      dc: California DC
+    2025:
+      oc: California OC
+      dc: California DC
+  Cincinnati:
+    2023:
+      oc: Cincinnati OC
+      dc: Cincinnati DC
+    2024:
+      oc: Cincinnati OC
+      dc: Cincinnati DC
+    2025:
+      oc: Cincinnati OC
+      dc: Cincinnati DC
+  Clemson:
+    2023:
+      oc: Garrett Riley
+      dc: Wes Goodwin
+    2024:
+      oc: Garrett Riley
+      dc: Tom Allen
+    2025:
+      oc: Garrett Riley
+      dc: Tom Allen
+  Colorado:
+    2023:
+      oc: Colorado OC
+      dc: Colorado DC
+    2024:
+      oc: Colorado OC
+      dc: Colorado DC
+    2025:
+      oc: Colorado OC
+      dc: Colorado DC
+  Duke:
+    2023:
+      oc: Duke OC
+      dc: Duke DC
+    2024:
+      oc: Duke OC
+      dc: Duke DC
+    2025:
+      oc: Duke OC
+      dc: Duke DC
+  Florida:
+    2023:
+      oc: Florida OC
+      dc: Florida DC
+    2024:
+      oc: Florida OC
+      dc: Florida DC
+    2025:
+      oc: Florida OC
+      dc: Florida DC
+  Florida State:
+    2023:
+      oc: Alex Atkins
+      dc: Adam Fuller
+    2024:
+      oc: Alex Atkins
+      dc: Adam Fuller
+    2025:
+      oc: Tony White
+      dc: Adam Fuller
+  Georgia:
+    2023:
+      oc: Mike Bobo
+      dc: Glenn Schumann
+    2024:
+      oc: Mike Bobo
+      dc: Glenn Schumann
+    2025:
+      oc: Mike Bobo
+      dc: Glenn Schumann
+  Georgia Tech:
+    2023:
+      oc: Georgia Tech OC
+      dc: Georgia Tech DC
+    2024:
+      oc: Georgia Tech OC
+      dc: Georgia Tech DC
+    2025:
+      oc: Georgia Tech OC
+      dc: Georgia Tech DC
+  Houston:
+    2023:
+      oc: Houston OC
+      dc: Houston DC
+    2024:
+      oc: Houston OC
+      dc: Houston DC
+    2025:
+      oc: Houston OC
+      dc: Houston DC
+  Illinois:
+    2023:
+      oc: Illinois OC
+      dc: Illinois DC
+    2024:
+      oc: Illinois OC
+      dc: Illinois DC
+    2025:
+      oc: Illinois OC
+      dc: Illinois DC
+  Indiana:
+    2023:
+      oc: Indiana OC
+      dc: Indiana DC
+    2024:
+      oc: Indiana OC
+      dc: Indiana DC
+    2025:
+      oc: Indiana OC
+      dc: Indiana DC
+  Iowa:
+    2023:
+      oc: Iowa OC
+      dc: Iowa DC
+    2024:
+      oc: Iowa OC
+      dc: Iowa DC
+    2025:
+      oc: Iowa OC
+      dc: Iowa DC
+  Iowa State:
+    2023:
+      oc: Iowa State OC
+      dc: Iowa State DC
+    2024:
+      oc: Iowa State OC
+      dc: Iowa State DC
+    2025:
+      oc: Iowa State OC
+      dc: Iowa State DC
+  Kansas:
+    2023:
+      oc: Kansas OC
+      dc: Kansas DC
+    2024:
+      oc: Kansas OC
+      dc: Kansas DC
+    2025:
+      oc: Kansas OC
+      dc: Kansas DC
+  Kansas State:
+    2023:
+      oc: Kansas State OC
+      dc: Kansas State DC
+    2024:
+      oc: Kansas State OC
+      dc: Kansas State DC
+    2025:
+      oc: Kansas State OC
+      dc: Kansas State DC
+  Kentucky:
+    2023:
+      oc: Kentucky OC
+      dc: Kentucky DC
+    2024:
+      oc: Kentucky OC
+      dc: Kentucky DC
+    2025:
+      oc: Kentucky OC
+      dc: Kentucky DC
+  LSU:
+    2023:
+      oc: Joe Brady
+      dc: Blake Baker
+    2024:
+      oc: Joe Brady
+      dc: Blake Baker
+    2025:
+      oc: Joe Brady
+      dc: Blake Baker
+  Louisville:
+    2023:
+      oc: Louisville OC
+      dc: Louisville DC
+    2024:
+      oc: Louisville OC
+      dc: Louisville DC
+    2025:
+      oc: Louisville OC
+      dc: Louisville DC
+  Maryland:
+    2023:
+      oc: Maryland OC
+      dc: Maryland DC
+    2024:
+      oc: Maryland OC
+      dc: Maryland DC
+    2025:
+      oc: Maryland OC
+      dc: Maryland DC
+  Miami:
+    2023:
+      oc: Miami OC
+      dc: Miami DC
+    2024:
+      oc: Miami OC
+      dc: Miami DC
+    2025:
+      oc: Miami OC
+      dc: Miami DC
+  Michigan:
+    2023:
+      oc: Sherrone Moore
+      dc: Jesse Minter
+    2024:
+      oc: Kirk Campbell
+      dc: Wink Martindale
+    2025:
+      oc: Kirk Campbell
+      dc: Wink Martindale
+  Michigan State:
+    2023:
+      oc: Michigan State OC
+      dc: Michigan State DC
+    2024:
+      oc: Michigan State OC
+      dc: Michigan State DC
+    2025:
+      oc: Michigan State OC
+      dc: Michigan State DC
+  Minnesota:
+    2023:
+      oc: Minnesota OC
+      dc: Minnesota DC
+    2024:
+      oc: Minnesota OC
+      dc: Minnesota DC
+    2025:
+      oc: Minnesota OC
+      dc: Minnesota DC
+  Mississippi State:
+    2023:
+      oc: Mississippi State OC
+      dc: Mississippi State DC
+    2024:
+      oc: Mississippi State OC
+      dc: Mississippi State DC
+    2025:
+      oc: Mississippi State OC
+      dc: Mississippi State DC
+  Missouri:
+    2023:
+      oc: Missouri OC
+      dc: Missouri DC
+    2024:
+      oc: Missouri OC
+      dc: Missouri DC
+    2025:
+      oc: Missouri OC
+      dc: Missouri DC
+  NC State:
+    2023:
+      oc: NC State OC
+      dc: NC State DC
+    2024:
+      oc: NC State OC
+      dc: NC State DC
+    2025:
+      oc: NC State OC
+      dc: NC State DC
+  Nebraska:
+    2023:
+      oc: Nebraska OC
+      dc: Nebraska DC
+    2024:
+      oc: Nebraska OC
+      dc: Nebraska DC
+    2025:
+      oc: Nebraska OC
+      dc: Nebraska DC
+  North Carolina:
+    2023:
+      oc: North Carolina OC
+      dc: North Carolina DC
+    2024:
+      oc: North Carolina OC
+      dc: North Carolina DC
+    2025:
+      oc: North Carolina OC
+      dc: North Carolina DC
+  Northwestern:
+    2023:
+      oc: Northwestern OC
+      dc: Northwestern DC
+    2024:
+      oc: Northwestern OC
+      dc: Northwestern DC
+    2025:
+      oc: Northwestern OC
+      dc: Northwestern DC
+  Ohio State:
+    2023:
+      oc: Chip Kelly
+      dc: Jim Knowles
+    2024:
+      oc: Chip Kelly
+      dc: Jim Knowles
+    2025:
+      oc: Brian Hartline
+      dc: Matt Patricia
+  Oklahoma:
+    2023:
+      oc: Jeff Lebby
+      dc: Ted Roof
+    2024:
+      oc: Ben Arbuckle
+      dc: Todd Bates
+    2025:
+      oc: Ben Arbuckle
+      dc: Todd Bates
+  Oklahoma State:
+    2023:
+      oc: Oklahoma State OC
+      dc: Oklahoma State DC
+    2024:
+      oc: Oklahoma State OC
+      dc: Oklahoma State DC
+    2025:
+      oc: Oklahoma State OC
+      dc: Oklahoma State DC
+  Ole Miss:
+    2023:
+      oc: Ole Miss OC
+      dc: Ole Miss DC
+    2024:
+      oc: Ole Miss OC
+      dc: Ole Miss DC
+    2025:
+      oc: Ole Miss OC
+      dc: Ole Miss DC
+  Oregon:
+    2023:
+      oc: Will Stein
+      dc: Tosh Lupoi
+    2024:
+      oc: Will Stein
+      dc: Tosh Lupoi
+    2025:
+      oc: Will Stein
+      dc: Tosh Lupoi
+  Oregon State:
+    2023:
+      oc: Oregon State OC
+      dc: Oregon State DC
+    2024:
+      oc: Oregon State OC
+      dc: Oregon State DC
+    2025:
+      oc: Oregon State OC
+      dc: Oregon State DC
+  Penn State:
+    2023:
+      oc: Andy Kotelnicki
+      dc: Tom Allen
+    2024:
+      oc: Andy Kotelnicki
+      dc: Tom Allen
+    2025:
+      oc: Andy Kotelnicki
+      dc: Jim Knowles
+  Pittsburgh:
+    2023:
+      oc: Pittsburgh OC
+      dc: Pittsburgh DC
+    2024:
+      oc: Pittsburgh OC
+      dc: Pittsburgh DC
+    2025:
+      oc: Pittsburgh OC
+      dc: Pittsburgh DC
+  Purdue:
+    2023:
+      oc: Purdue OC
+      dc: Purdue DC
+    2024:
+      oc: Purdue OC
+      dc: Purdue DC
+    2025:
+      oc: Purdue OC
+      dc: Purdue DC
+  Rutgers:
+    2023:
+      oc: Rutgers OC
+      dc: Rutgers DC
+    2024:
+      oc: Rutgers OC
+      dc: Rutgers DC
+    2025:
+      oc: Rutgers OC
+      dc: Rutgers DC
+  South Carolina:
+    2023:
+      oc: South Carolina OC
+      dc: South Carolina DC
+    2024:
+      oc: South Carolina OC
+      dc: South Carolina DC
+    2025:
+      oc: South Carolina OC
+      dc: South Carolina DC
+  Stanford:
+    2023:
+      oc: Stanford OC
+      dc: Stanford DC
+    2024:
+      oc: Stanford OC
+      dc: Stanford DC
+    2025:
+      oc: Stanford OC
+      dc: Stanford DC
+  Syracuse:
+    2023:
+      oc: Syracuse OC
+      dc: Syracuse DC
+    2024:
+      oc: Syracuse OC
+      dc: Syracuse DC
+    2025:
+      oc: Syracuse OC
+      dc: Syracuse DC
+  TCU:
+    2023:
+      oc: TCU OC
+      dc: TCU DC
+    2024:
+      oc: TCU OC
+      dc: TCU DC
+    2025:
+      oc: TCU OC
+      dc: TCU DC
+  Tennessee:
+    2023:
+      oc: Tennessee OC
+      dc: Tennessee DC
+    2024:
+      oc: Tennessee OC
+      dc: Tennessee DC
+    2025:
+      oc: Tennessee OC
+      dc: Tennessee DC
+  Texas:
+    2023:
+      oc: Kyle Flood
+      dc: Pete Kwiatkowski
+    2024:
+      oc: Kyle Flood
+      dc: Pete Kwiatkowski
+    2025:
+      oc: Kyle Flood
+      dc: Pete Kwiatkowski
+  Texas A&M:
+    2023:
+      oc: Texas A&M OC
+      dc: Texas A&M DC
+    2024:
+      oc: Texas A&M OC
+      dc: Texas A&M DC
+    2025:
+      oc: Texas A&M OC
+      dc: Texas A&M DC
+  Texas Tech:
+    2023:
+      oc: Texas Tech OC
+      dc: Texas Tech DC
+    2024:
+      oc: Texas Tech OC
+      dc: Texas Tech DC
+    2025:
+      oc: Texas Tech OC
+      dc: Texas Tech DC
+  UCF:
+    2023:
+      oc: UCF OC
+      dc: UCF DC
+    2024:
+      oc: UCF OC
+      dc: UCF DC
+    2025:
+      oc: UCF OC
+      dc: UCF DC
+  UCLA:
+    2023:
+      oc: UCLA OC
+      dc: UCLA DC
+    2024:
+      oc: UCLA OC
+      dc: UCLA DC
+    2025:
+      oc: UCLA OC
+      dc: UCLA DC
+  USC:
+    2023:
+      oc: Josh Henson
+      dc: D'Anton Lynn
+    2024:
+      oc: Josh Henson
+      dc: D'Anton Lynn
+    2025:
+      oc: Josh Henson
+      dc: D'Anton Lynn
+  Utah:
+    2023:
+      oc: Utah OC
+      dc: Utah DC
+    2024:
+      oc: Utah OC
+      dc: Utah DC
+    2025:
+      oc: Utah OC
+      dc: Utah DC
+  Vanderbilt:
+    2023:
+      oc: Vanderbilt OC
+      dc: Vanderbilt DC
+    2024:
+      oc: Vanderbilt OC
+      dc: Vanderbilt DC
+    2025:
+      oc: Vanderbilt OC
+      dc: Vanderbilt DC
+  Virginia:
+    2023:
+      oc: Virginia OC
+      dc: Virginia DC
+    2024:
+      oc: Virginia OC
+      dc: Virginia DC
+    2025:
+      oc: Virginia OC
+      dc: Virginia DC
+  Virginia Tech:
+    2023:
+      oc: Virginia Tech OC
+      dc: Virginia Tech DC
+    2024:
+      oc: Virginia Tech OC
+      dc: Virginia Tech DC
+    2025:
+      oc: Virginia Tech OC
+      dc: Virginia Tech DC
+  Wake Forest:
+    2023:
+      oc: Wake Forest OC
+      dc: Wake Forest DC
+    2024:
+      oc: Wake Forest OC
+      dc: Wake Forest DC
+    2025:
+      oc: Wake Forest OC
+      dc: Wake Forest DC
+  Washington:
+    2023:
+      oc: Washington OC
+      dc: Washington DC
+    2024:
+      oc: Washington OC
+      dc: Washington DC
+    2025:
+      oc: Washington OC
+      dc: Washington DC
+  Washington State:
+    2023:
+      oc: Washington State OC
+      dc: Washington State DC
+    2024:
+      oc: Washington State OC
+      dc: Washington State DC
+    2025:
+      oc: Washington State OC
+      dc: Washington State DC
+  West Virginia:
+    2023:
+      oc: West Virginia OC
+      dc: West Virginia DC
+    2024:
+      oc: West Virginia OC
+      dc: West Virginia DC
+    2025:
+      oc: West Virginia OC
+      dc: West Virginia DC
+  Wisconsin:
+    2023:
+      oc: Wisconsin OC
+      dc: Wisconsin DC
+    2024:
+      oc: Wisconsin OC
+      dc: Wisconsin DC
+    2025:
+      oc: Wisconsin OC
+      dc: Wisconsin DC

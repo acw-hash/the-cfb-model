@@ -1,0 +1,16 @@
+run_id: abl_a6_cfbd
+ablation_id: A6_cfbd_open_close
+walkforward:
+  test_seasons: [2023]
+  continuity_seasons: []
+  retrain_weeks: [5, 10]
+  preseason_priors: fitted
+  rating_updates: continual
+  mapping_layer: ensemble
+  garbage_time_filter: true
+  market_features_available: true
+  market_feature_source: cfbd_open_close
+  seed: 42
+  model_version: production-v0
+  run_id: abl_a6_cfbd
+  ablation_id: A6_cfbd_open_close

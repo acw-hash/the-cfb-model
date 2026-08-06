@@ -1,0 +1,28 @@
+# Task 23 full run set (plan target). Actual seasons depend on staged data.
+run_id: task23_full
+ablation_id: full
+stack: fundamental
+run_kind: backtest
+experiment_name: ncaa-quant-backtest
+tracking_uri: file:./mlruns
+
+walkforward:
+  test_seasons: [2019, 2021, 2022, 2023, 2024, 2025]
+  continuity_seasons: [2020]
+  warmup_seasons: [2014, 2015, 2016, 2017, 2018]
+  retrain_weeks: [5, 10]
+  market_features_available: true
+  preseason_priors: fitted
+  rating_updates: continual
+  mapping_layer: ensemble
+  garbage_time_filter: true
+  market_feature_source: snapshots
+  seed: 42
+  model_version: production-v0
+  run_id: task23_full
+  ablation_id: full
+  run_kind: backtest
+  min_train_games: 50
+  max_zero_mu_rate: 0.001
+  nnls_equal_weight_fallback: false
+  enforce_prediction_quality_gate: true

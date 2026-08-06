@@ -1,0 +1,16 @@
+run_id: abl_a1_league_mean
+ablation_id: A1_league_mean
+walkforward:
+  test_seasons: [2023]
+  continuity_seasons: []
+  retrain_weeks: [5, 10]
+  preseason_priors: league_mean
+  rating_updates: continual
+  mapping_layer: ensemble
+  garbage_time_filter: true
+  market_features_available: false
+  market_feature_source: snapshots
+  seed: 42
+  model_version: production-v0
+  run_id: abl_a1_league_mean
+  ablation_id: A1_league_mean

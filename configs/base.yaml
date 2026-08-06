@@ -1,0 +1,10 @@
+# Global defaults. Domain YAMLs and env/CLI overrides layer on top.
+seed: 42
+log_level: INFO
+paths:
+  data_dir: data
+  raw_dir: data/raw
+  staged_dir: data/staged
+  features_dir: data/features
+  predictions_dir: data/predictions
+  mlruns_dir: mlruns

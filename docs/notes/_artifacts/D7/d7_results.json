@@ -1,0 +1,284 @@
+{
+  "canonical_v2_sha": "ebb9ce08a6b6534f41392ab5402d7b0ea26f775b89a8c9098b873cb7642cef70",
+  "n": 5083,
+  "stop_rule_stands": {
+    "rule_verbatim": "if after the powered sample the joint b2 CI lies entirely below +0.05 (no material positive weight on stack \u03bc) or fewer than 3 seasons show reliable positive b2, stop pursuing a fundamental-model betting edge and treat the market-aware / residual stack as the betting workhorse.",
+    "rule_amended": false,
+    "triggered": true,
+    "status": "missed",
+    "n_reliable_positive_seasons": 2,
+    "operational_conclusion": "no betting layer on this \u03bc; market-aware / residual stack is the betting workhorse",
+    "stands": true,
+    "note": "D6 stop rule fired (fewer than 3 seasons with reliable positive b2). D7 does not amend the rule. Post-hoc power / RE meta-analysis below are diagnostic of the criterion, not a re-litigation of the gate."
+  },
+  "posthoc_season_power": {
+    "label": "POST-HOC DIAGNOSTIC (not a re-litigation of the stop rule)",
+    "true_b2_assumed": 0.211,
+    "clear_definition": "b2 > 0 and two-sided bootstrap p < 0.10 (\u2248 z > 1.645)",
+    "n_required_clear": 3,
+    "n_seasons": 6,
+    "per_season": {
+      "2019": {
+        "b2": 0.06292528928545282,
+        "se_b2": 0.10687082615989534,
+        "n": 559,
+        "detectable_b2_80pct": 0.2994077268170835,
+        "p_clear_given_true_b2": 0.6291082629930476,
+        "mde_above_true_b2": true
+      },
+      "2021": {
+        "b2": 0.2327061280379697,
+        "se_b2": 0.13765491160716503,
+        "n": 887,
+        "detectable_b2_80pct": 0.38565196555928083,
+        "p_clear_given_true_b2": 0.4553977913387177,
+        "mde_above_true_b2": true
+      },
+      "2022": {
+        "b2": 0.18973050107303746,
+        "se_b2": 0.1854092278812532,
+        "n": 892,
+        "detectable_b2_80pct": 0.5194397521338577,
+        "p_clear_given_true_b2": 0.30613689724598103,
+        "mde_above_true_b2": true
+      },
+      "2023": {
+        "b2": 0.22208777469710805,
+        "se_b2": 0.13769215359540002,
+        "n": 907,
+        "detectable_b2_80pct": 0.3857563021630131,
+        "p_clear_given_true_b2": 0.455233434123372,
+        "mde_above_true_b2": true
+      },
+      "2024": {
+        "b2": 0.21289176408335392,
+        "se_b2": 0.16243447282377363,
+        "n": 904,
+        "detectable_b2_80pct": 0.45507401797505687,
+        "p_clear_given_true_b2": 0.364720853917208,
+        "mde_above_true_b2": true
+      },
+      "2025": {
+        "b2": 0.2806508220538402,
+        "se_b2": 0.1342087365215438,
+        "n": 934,
+        "detectable_b2_80pct": 0.3759972123803752,
+        "p_clear_given_true_b2": 0.47103205397147974,
+        "mde_above_true_b2": true
+      }
+    },
+    "mean_p_clear": 0.446938215598301,
+    "p_ge_k_clear": 0.5539632535357624,
+    "pmf_n_clear": [
+      0.025656933629486775,
+      0.13531074742682558,
+      0.28506906540792526,
+      0.3090433180580069,
+      0.1824084751022431,
+      0.05565220148893711,
+      0.006859258886575195
+    ],
+    "criterion_capable_of_passing": true,
+    "plain_statement": "Under stable true b2=0.211, P(\u22653 of 6 seasons clear) \u2248 0.554. The season-counting criterion was capable of passing at material probability."
+  },
+  "random_effects_meta": {
+    "k": 6,
+    "labels": [
+      "2019",
+      "2021",
+      "2022",
+      "2023",
+      "2024",
+      "2025"
+    ],
+    "estimates": [
+      0.06292528928545282,
+      0.2327061280379697,
+      0.18973050107303746,
+      0.22208777469710805,
+      0.21289176408335392,
+      0.2806508220538402
+    ],
+    "standard_errors": [
+      0.10687082615989534,
+      0.13765491160716503,
+      0.1854092278812532,
+      0.13769215359540002,
+      0.16243447282377363,
+      0.1342087365215438
+    ],
+    "fixed_effect_b2": 0.18592104661810563,
+    "cochrans_q": 2.0352362146381027,
+    "df": 5,
+    "p_heterogeneity": 0.8442482700318904,
+    "i2": 0.0,
+    "tau2": 0.0,
+    "tau": 0.0,
+    "random_effect_b2": 0.18592104661810563,
+    "se_re": 0.05629161079069534,
+    "ci95": {
+      "low": 0.07559151683659648,
+      "high": 0.2962505763996148,
+      "estimate": 0.18592104661810563,
+      "alpha": 0.05
+    },
+    "between_season_variance_distinguishable_from_zero": false,
+    "plain_statement": "Q=2.035 (df=5, p=0.844), I\u00b2=0.0%, \u03c4\u00b2=0.00000. Pooled RE b2=0.186 95% CI [0.076, 0.296]. Between-season variance is NOT distinguishable from zero (homogeneous b2 across seasons under the Q test)."
+  },
+  "week_bucket_interaction": {
+    "model": "y = a + b1*market + sum_k b2_k * stack * 1{bucket=k}",
+    "coefficients": {
+      "a": -0.5154383066773972,
+      "b1": 0.8689717963293474,
+      "b2_1-4": 0.27350618919988934,
+      "b2_5-9": 0.13399127391666363,
+      "b2_10+": 0.16364812216969882
+    },
+    "ci": {
+      "a": {
+        "estimate": -0.5154383066773972,
+        "se": 0.33188101717441243,
+        "ci_low": -1.2064401529147732,
+        "ci_high": 0.1125751870925299
+      },
+      "b1": {
+        "estimate": 0.8689717963293474,
+        "se": 0.038102031965542675,
+        "ci_low": 0.8023078113750831,
+        "ci_high": 0.9535023265227017
+      },
+      "b2_1-4": {
+        "estimate": 0.27350618919988934,
+        "se": 0.07121204327148385,
+        "ci_low": 0.11191172154310704,
+        "ci_high": 0.3917185254466367
+      },
+      "b2_5-9": {
+        "estimate": 0.13399127391666363,
+        "se": 0.04840087596151743,
+        "ci_low": 0.034163832374999,
+        "ci_high": 0.22243591843282462
+      },
+      "b2_10+": {
+        "estimate": 0.16364812216969882,
+        "se": 0.051431403661609844,
+        "ci_low": 0.05905996799970549,
+        "ci_high": 0.25515633818174316
+      }
+    },
+    "n": 5083,
+    "n_by_bucket": {
+      "1-4": 1757,
+      "5-9": 1634,
+      "10+": 1692
+    },
+    "wald_equality_b2": 9.824897484872896,
+    "p_b2_equal_across_buckets": 0.007354457092269118,
+    "t_obs_max_pairwise": 0.1395149152832257,
+    "early_reliably_positive": true,
+    "late_ci_covers_zero": false,
+    "structural_early_vs_late": false,
+    "plain_statement": "Interaction Wald \u03c7\u00b2(2)=9.825, p=0.0074. b2(1\u20134)=0.274 [0.112, 0.392]; b2(5\u20139)=0.134 [0.034, 0.222]; b2(10+)=0.164 [0.059, 0.255]. b2 differs across week buckets (interaction p<0.05), but the early-positive / late-zero pattern is incomplete."
+  },
+  "holdout_preregistration": {
+    "holdout_season": 2025,
+    "early_weeks": [
+      1,
+      4
+    ],
+    "confirm_rule": "On season 2025 weeks 1\u20134 only: confirm if b2 > 0 and bootstrap p_b2 < 0.10; refute otherwise. Discovery seasons are excluded from this test.",
+    "discovery_excludes": 2025,
+    "fitted_before_registration": false
+  },
+  "holdout_early_week": {
+    "holdout_season": 2025,
+    "early_weeks": [
+      1,
+      4
+    ],
+    "confirm_rule": "On season 2025 weeks 1\u20134 only: confirm if b2 > 0 and bootstrap p_b2 < 0.10; refute otherwise. Discovery seasons are excluded from this test.",
+    "discovery_excludes": 2025,
+    "fitted_before_registration": false,
+    "n": 357,
+    "b2": 0.4436735046302904,
+    "se_b2": 0.14485059388200483,
+    "p_b2": 0.0,
+    "ci95": {
+      "low": 0.15977155748232308,
+      "high": 0.7275754517782578,
+      "estimate": 0.4436735046302904,
+      "alpha": 0.05
+    },
+    "verdict": "b2 reliably > 0 \u2192 the model carries information the closing line does not. That is the entire basis for a bet.",
+    "confirmed": true,
+    "status": "confirmed",
+    "plain_statement": "Holdout 2025 weeks 1\u20134: b2=0.444 95% CI [0.160, 0.728], p=0.000 (n=357) \u2192 CONFIRMED."
+  },
+  "optimal_w_weeks_1_5": {
+    "week_range": [
+      1,
+      5
+    ],
+    "w": 0.23,
+    "mae_combined": 11.989358676556947,
+    "mae_market": 12.16163177925785,
+    "delta_mae": -0.17227310270090257,
+    "delta_ci": {
+      "low": -0.4302170837497227,
+      "high": 0.09311857193290672,
+      "estimate": -0.17227310270090257
+    },
+    "n": 2102,
+    "ci_covers_zero": true,
+    "note": "w fit on weeks 1\u20135 only; delta CI is paired week-block bootstrap (in-sample w)"
+  },
+  "early_week_edge_roi": {
+    "week_range": [
+      1,
+      5
+    ],
+    "b2_pinned": 0.211,
+    "a": -1.0501512530348562,
+    "b1": 0.9009785673492382,
+    "sigma_resid": 14.946199340850818,
+    "n_early_games": 2102,
+    "games_per_season": {
+      "2019": 55,
+      "2021": 410,
+      "2022": 416,
+      "2023": 420,
+      "2024": 391,
+      "2025": 410
+    },
+    "mean_bettable_games_per_season": 350.3333333333333,
+    "mean_abs_edge_points": 1.6952753349512064,
+    "mean_p_cover": 0.5449180276108261,
+    "breakeven_p_at_american": 0.5238095238095238,
+    "american": -110.0,
+    "expected_roi_per_bet": 0.04029805271157709,
+    "roi_ci95": {
+      "estimate": 0.04029805271157709,
+      "low": 0.03306920092472198,
+      "high": 0.050302926009898594
+    },
+    "p_cover_boot_mean": 0.5455831011363429,
+    "clears_vig": true,
+    "plain_statement": "Weeks 1\u20135: ~350 priced games/season; b2=0.211 implies mean |\u03bc\u0302\u2212market|\u22481.70 pts (\u03c3\u224814.9) \u2192 mean P(cover)\u22480.545 vs breakeven 0.524 at -110. Expected ROI/bet\u22484.030% 95% CI [3.307%, 5.030%]. CI clears vig."
+  },
+  "diagnostic_phase_closed": true,
+  "close_statement": "Diagnostic phase CLOSED. The pre-registered D5/D6 stop rule stands: no betting layer on this \u03bc. D7's RE meta-analysis and week-interaction tests are post-hoc diagnostics that refine *why* the season gate failed and whether an early-week pattern is structural; they do not re-open a fundamental-\u03bc betting path.",
+  "opening_summary": {
+    "i2": 0.0,
+    "tau2": 0.0,
+    "re_b2": 0.18592104661810563,
+    "re_ci95": {
+      "low": 0.07559151683659648,
+      "high": 0.2962505763996148,
+      "estimate": 0.18592104661810563,
+      "alpha": 0.05
+    },
+    "interaction_p": 0.007354457092269118,
+    "interaction_wald": 9.824897484872896
+  },
+  "wall_clock_s": 7.360547065734863
+}

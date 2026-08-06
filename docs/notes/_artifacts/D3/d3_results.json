@@ -1,0 +1,617 @@
+{
+  "canonical_v1_sha_verified": "c39f00cbc1111e5a8076ee9e26414ce3d791bdf39bc751b95a472e82cde04c55",
+  "change": "2019 weeks 1\u20134 excluded by definition (legacy unfitted zero-\u03bc cold start). Not an expected failure \u2014 those weeks are outside the scored universe.",
+  "composition": {
+    "fcs_rule": "include",
+    "n_by_season": {
+      "2019": 563,
+      "2021": 887,
+      "2022": 896,
+      "2023": 910,
+      "2024": 920,
+      "2025": 934
+    },
+    "n_fbs_vs_fbs": 4506,
+    "n_total": 5110,
+    "n_with_market_line": 559,
+    "sd_y_full": 22.0754480035195,
+    "sd_y_market_overlap": 21.964100893072423,
+    "seasons": [
+      2019,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+    ]
+  },
+  "elapsed_sec": 455.42958521842957,
+  "name": "canonical_v2",
+  "part1": {
+    "after": {
+      "coverage": {
+        "0.5": {
+          "coverage": 0.5139949109414759,
+          "mean_width": 23.66973110306418,
+          "n": 5109.0,
+          "nominal": 0.5
+        },
+        "0.8": {
+          "coverage": 0.8075944411822275,
+          "mean_width": 44.97322745428405,
+          "n": 5109.0,
+          "nominal": 0.8
+        },
+        "0.95": {
+          "coverage": 0.9461734194558622,
+          "mean_width": 68.7806159726915,
+          "n": 5109.0,
+          "nominal": 0.95
+        }
+      },
+      "mean_predicted_sigma": 17.546397922417,
+      "n": 5109,
+      "pit_histogram": [
+        529,
+        477,
+        472,
+        519,
+        515,
+        578,
+        545,
+        512,
+        508,
+        454
+      ],
+      "pit_ks": {
+        "pvalue": 0.15688347239690736,
+        "statistic": 0.015749019415136734
+      },
+      "pit_mean": 0.49941481929343956,
+      "realized_residual_sd": 17.516406188832303,
+      "resid_over_pred_ratio": 0.9982907184872184,
+      "sigma_ratio": 1.001712208158533
+    },
+    "before": {
+      "coverage": {
+        "0.5": {
+          "coverage": 0.4321785085143864,
+          "mean_width": 18.885713005490285,
+          "n": 5109.0,
+          "nominal": 0.5
+        },
+        "0.8": {
+          "coverage": 0.7110980622431005,
+          "mean_width": 35.88344383524882,
+          "n": 5109.0,
+          "nominal": 0.8
+        },
+        "0.95": {
+          "coverage": 0.8841260520649834,
+          "mean_width": 54.878991567121496,
+          "n": 5109.0,
+          "nominal": 0.95
+        }
+      },
+      "mean_predicted_sigma": 14.0,
+      "n": 5109,
+      "pit_histogram": [
+        761,
+        503,
+        399,
+        421,
+        428,
+        467,
+        452,
+        447,
+        516,
+        715
+      ],
+      "pit_ks": {
+        "pvalue": 8.32278194927057e-13,
+        "statistic": 0.05277218831792635
+      },
+      "pit_mean": 0.5000684778169165,
+      "realized_residual_sd": 17.516406188832303,
+      "resid_over_pred_ratio": 1.2511718706308788,
+      "sigma_ratio": 0.7992507052574397
+    },
+    "half_normal_scale": 1.2533141373155001,
+    "hypothesis": "Head trained on E|residual|=\u03c3\u221a(2/\u03c0); output consumed as \u03c3 (understates by \u221a(\u03c0/2)\u22481.2533). No \u221a(2/\u03c0) correction existed in the predict path before D3.",
+    "hypothesis_confirmed": true,
+    "note": "Archived canonical sigma_m is constant 14.0 \u2248 residual MAD; same half-normal bug as a fitted |r|-head consumed as \u03c3."
+  },
+  "part1_ensemble": {
+    "decomposition": {
+      "aleatoric_mean_var": 307.87608005179965,
+      "epistemic_member_mean_var": 33.26616251231363,
+      "stage1_mixture_mean_var": 0.0,
+      "total_mean_var": 341.1422425641133
+    },
+    "epistemic_near_zero": false,
+    "mean_aleatoric_var": 307.87608005179965,
+    "mean_member_var": 33.26616251231363,
+    "mean_stage1_var": 0.0,
+    "nnls_weights": {
+      "enet_mu_margin": 0.5108106021171953,
+      "lgbm_mu_margin": 0.4891893978828047
+    },
+    "note": "Stage-1 50-draw mixture Var(\u03bc) not present on the archived constant-\u03c3 table; reported as 0. Member disagreement recomputed with fitted NNLS weights on {published LGBM, Elo}."
+  },
+  "part2_bakeoff": {
+    "flag": null,
+    "s1_beats_s0_crps": true,
+    "table": [
+      {
+        "crps": 9.771567063199758,
+        "log_score": 4.278847353528091,
+        "mean_sigma": 17.706745725420376,
+        "n": 4546,
+        "scheme": "S0"
+      },
+      {
+        "crps": 9.769949763540065,
+        "log_score": 4.2786263787521035,
+        "mean_sigma": 17.546397922417,
+        "n": 4546,
+        "scheme": "S1"
+      },
+      {
+        "crps": 9.771567063199756,
+        "log_score": 4.278847353528091,
+        "mean_sigma": 17.70674572542038,
+        "n": 4546,
+        "scheme": "S2"
+      },
+      {
+        "crps": 9.846756555720228,
+        "log_score": 4.334857607404883,
+        "mean_sigma": 14.0034092877366,
+        "n": 4546,
+        "scheme": "S3"
+      },
+      {
+        "crps": 9.74616213149018,
+        "log_score": 4.270252435310561,
+        "mean_sigma": 17.591626263276993,
+        "n": 4546,
+        "scheme": "S4"
+      }
+    ]
+  },
+  "part2_informativeness": {
+    "deciles": [
+      {
+        "decile": 0,
+        "mean_pred_sigma": 17.546397922417,
+        "n": 5109,
+        "realized_resid_sd": 17.516406188832303
+      }
+    ],
+    "flag_noise": true,
+    "note": "Archived \u03c3 is constant \u2192 slope\u22480 expected; heteroscedastic head does not earn its place on this artifact.",
+    "r2": 0.0,
+    "slope": 0.0,
+    "spearman_rho": NaN
+  },
+  "part3": {
+    "adopt_note": "Student-t does not beat Gaussian on held-out CRPS \u2014 keep Gaussian",
+    "adopt_student_t": false,
+    "conformal_coverage": {
+      "0.5": 0.5186184565569347,
+      "0.8": 0.8143550998381004,
+      "0.95": 0.949271451699946,
+      "n_calib_resid": 3256,
+      "n_test": 1853
+    },
+    "continuous_consistency": {
+      "atol": 1e-06,
+      "kernel": false,
+      "max_abs_diff": 0.0,
+      "n": 1853,
+      "within_tolerance": true
+    },
+    "key_number_consistency": {
+      "atol": 0.02,
+      "kernel": true,
+      "max_abs_diff": 0.09978904754426238,
+      "mean_p_cover0": 0.6478131416380659,
+      "mean_p_win": 0.6304191482086507,
+      "n": 1853,
+      "within_tolerance": false
+    },
+    "shape_bakeoff": {
+      "empirical": {
+        "coverage": {},
+        "crps": 9.65642314638864,
+        "log_score": NaN,
+        "pit_ks": {
+          "pvalue": 0.0001259409553124254,
+          "statistic": 0.05098704803022125
+        }
+      },
+      "gaussian": {
+        "coverage": {
+          "0.5": 0.5240151106314085,
+          "0.8": 0.8148947652455477,
+          "0.95": 0.9471127900701565
+        },
+        "crps": 9.62940771827201,
+        "log_score": 4.265810538503334,
+        "pit_ks": {
+          "pvalue": 0.010034202872099168,
+          "statistic": 0.037705089367769395
+        }
+      },
+      "student_t": {
+        "coverage": {
+          "0.5": 0.5256341068537507,
+          "0.8": 0.8197517539125742,
+          "0.95": 0.9552077711818673
+        },
+        "crps": 9.649305903264642,
+        "log_score": 4.265186025384155,
+        "nu": 48.247452737882426,
+        "pit_ks": {
+          "pvalue": 0.008060427371076017,
+          "statistic": 0.03847863965811371
+        }
+      }
+    },
+    "standardized_residuals": {
+      "excess_kurtosis": 0.36187731828944614,
+      "jarque_bera_pvalue": 5.57799495929275e-07,
+      "jarque_bera_stat": 28.798532530859767,
+      "n": 5109,
+      "sd": 0.9982907184872183,
+      "skew": -0.03686290335244649
+    },
+    "student_t_fit": {
+      "loglik": -7236.512872052981,
+      "n": 5109,
+      "nu": 48.247452737882426,
+      "se": 17.107215086932655
+    }
+  },
+  "part4": {
+    "bakeoff": {
+      "ats_close": [
+        {
+          "bin_occupancy_max": null,
+          "bin_occupancy_median": null,
+          "bin_occupancy_min": null,
+          "brier": 0.2965106765419347,
+          "intercept": NaN,
+          "kind": "none",
+          "log_loss": 0.8006702110813975,
+          "n_bins": 0,
+          "n_oof": 442,
+          "n_test": 111,
+          "n_test_in_end_bins": null,
+          "slope": NaN
+        },
+        {
+          "bin_occupancy_max": null,
+          "bin_occupancy_median": null,
+          "bin_occupancy_min": null,
+          "brier": 0.2533907433631335,
+          "intercept": -0.03862153791129566,
+          "kind": "platt",
+          "log_loss": 0.6999374690686201,
+          "n_bins": null,
+          "n_oof": 442,
+          "n_test": 111,
+          "n_test_in_end_bins": null,
+          "slope": -5.803332382871343
+        },
+        {
+          "bin_occupancy_max": null,
+          "bin_occupancy_median": null,
+          "bin_occupancy_min": null,
+          "brier": 0.2548150106851713,
+          "intercept": -0.02238862311496784,
+          "kind": "beta",
+          "log_loss": 0.7027990097793189,
+          "n_bins": null,
+          "n_oof": 442,
+          "n_test": 111,
+          "n_test_in_end_bins": null,
+          "slope": -4.102952816317913
+        },
+        {
+          "bin_occupancy_max": 112,
+          "bin_occupancy_median": 54.0,
+          "bin_occupancy_min": 3,
+          "brier": 0.2534040454933794,
+          "intercept": 0.05673810789736919,
+          "kind": "isotonic",
+          "log_loss": 0.6998590747136333,
+          "n_bins": 8,
+          "n_oof": 442,
+          "n_test": 111,
+          "n_test_in_end_bins": 1,
+          "slope": -0.9191994723829483
+        }
+      ],
+      "ml": [
+        {
+          "bin_occupancy_max": null,
+          "bin_occupancy_median": null,
+          "bin_occupancy_min": null,
+          "brier": 0.1758886344878565,
+          "intercept": NaN,
+          "kind": "none",
+          "log_loss": 0.5218348741055544,
+          "n_bins": 0,
+          "n_oof": 4176,
+          "n_test": 934,
+          "n_test_in_end_bins": null,
+          "slope": NaN
+        },
+        {
+          "bin_occupancy_max": null,
+          "bin_occupancy_median": null,
+          "bin_occupancy_min": null,
+          "brier": 0.17650167400980157,
+          "intercept": 0.013535422650248194,
+          "kind": "platt",
+          "log_loss": 0.5275331403799591,
+          "n_bins": null,
+          "n_oof": 4176,
+          "n_test": 934,
+          "n_test_in_end_bins": null,
+          "slope": 1.1752890652515164
+        },
+        {
+          "bin_occupancy_max": null,
+          "bin_occupancy_median": null,
+          "bin_occupancy_min": null,
+          "brier": 0.1762571585145917,
+          "intercept": 0.029293645964248972,
+          "kind": "beta",
+          "log_loss": 0.5231626457969653,
+          "n_bins": null,
+          "n_oof": 4176,
+          "n_test": 934,
+          "n_test_in_end_bins": null,
+          "slope": 1.166199645397142
+        },
+        {
+          "bin_occupancy_max": 345,
+          "bin_occupancy_median": 240.5,
+          "bin_occupancy_min": 12,
+          "brier": 0.17725367842021433,
+          "intercept": 0.03704085010218341,
+          "kind": "isotonic",
+          "log_loss": 0.5254592853513146,
+          "n_bins": 20,
+          "n_oof": 4176,
+          "n_test": 934,
+          "n_test_in_end_bins": 64,
+          "slope": 1.1148023191208267
+        }
+      ],
+      "ou_close": [
+        {
+          "bin_occupancy_max": null,
+          "bin_occupancy_median": null,
+          "bin_occupancy_min": null,
+          "brier": 0.26463995930618467,
+          "intercept": NaN,
+          "kind": "none",
+          "log_loss": 0.7300208293288618,
+          "n_bins": 0,
+          "n_oof": 447,
+          "n_test": 112,
+          "n_test_in_end_bins": null,
+          "slope": NaN
+        },
+        {
+          "bin_occupancy_max": null,
+          "bin_occupancy_median": null,
+          "bin_occupancy_min": null,
+          "brier": 0.2475916743302897,
+          "intercept": 0.048057806983273284,
+          "kind": "platt",
+          "log_loss": 0.6883311383615184,
+          "n_bins": null,
+          "n_oof": 447,
+          "n_test": 112,
+          "n_test_in_end_bins": null,
+          "slope": 1.867861334242153
+        },
+        {
+          "bin_occupancy_max": null,
+          "bin_occupancy_median": null,
+          "bin_occupancy_min": null,
+          "brier": 0.2475405429170124,
+          "intercept": 0.023947598892187394,
+          "kind": "beta",
+          "log_loss": 0.6882348076383532,
+          "n_bins": null,
+          "n_oof": 447,
+          "n_test": 112,
+          "n_test_in_end_bins": null,
+          "slope": 1.5469512267613061
+        },
+        {
+          "bin_occupancy_max": 122,
+          "bin_occupancy_median": 46.5,
+          "bin_occupancy_min": 1,
+          "brier": 0.24450952882359386,
+          "intercept": 0.028922617316676277,
+          "kind": "isotonic",
+          "log_loss": 0.6821725246310335,
+          "n_bins": 8,
+          "n_oof": 447,
+          "n_test": 112,
+          "n_test_in_end_bins": 0,
+          "slope": 1.1725054878312353
+        }
+      ]
+    },
+    "default": "OFF",
+    "gates": {
+      "ats_close": {
+        "applied": true,
+        "cal_log_loss": 0.6998590747136333,
+        "ci_high": 0.1359118051076612,
+        "ci_low": 0.055752051382639944,
+        "delta_logloss": 0.10081113636776418,
+        "kind": "isotonic",
+        "vs_none_log_loss": 0.8006702110813975
+      },
+      "ml": {
+        "applied": false,
+        "cal_log_loss": 0.5231626457969653,
+        "ci_high": -9.285944208627946e-05,
+        "ci_low": -0.0022715659233801975,
+        "delta_logloss": -0.0013277716914108506,
+        "kind": "beta",
+        "vs_none_log_loss": 0.5218348741055544
+      },
+      "ou_close": {
+        "applied": true,
+        "cal_log_loss": 0.6821725246310335,
+        "ci_high": 0.07391484723762676,
+        "ci_low": 0.031860615097742184,
+        "delta_logloss": 0.0478483046978283,
+        "kind": "isotonic",
+        "vs_none_log_loss": 0.7300208293288618
+      }
+    },
+    "markets_passing": [
+      "ats_close",
+      "ou_close"
+    ],
+    "uncalibrated": {
+      "ats_close": {
+        "brier": 0.28560113640162854,
+        "log_loss": 0.7816197261855451,
+        "n": 553
+      },
+      "ml": {
+        "brier": 0.18430303925586872,
+        "log_loss": 0.5439716364452446,
+        "n": 5110
+      },
+      "ou_close": {
+        "brier": 0.27015678988708464,
+        "log_loss": 0.7452331839243272,
+        "n": 559
+      }
+    }
+  },
+  "part5": {
+    "devigged_market": {
+      "brier": 0.16313269839283967,
+      "crps": 8.692891209225916,
+      "log_loss": 0.4908988798004101,
+      "mae": 12.227191413237925,
+      "n": 559,
+      "r2": 0.504567085249715,
+      "residual_sd": 15.453732757028394,
+      "rmse": 15.4598707259231
+    },
+    "l1_source": "walkforward_ols_rating_diff_off_epa",
+    "mapping_layer_mae_gap": 1.5870393409896355,
+    "mapping_layer_verdict": "Stack MAE minus L1 MAE = 1.59 (stack better; D2 prior was +0.5 to +1.2 for the stack).",
+    "paired_bootstrap_deltas": {
+      "stack_vs_Elo": {
+        "ci_high": -1.1147822929884996,
+        "ci_low": -2.663274782784825,
+        "delta_mae": -1.8415821921558688,
+        "n": 5109
+      },
+      "stack_vs_L1": {
+        "ci_high": -1.193935084552793,
+        "ci_low": -2.0890556600971566,
+        "delta_mae": -1.5940886254676752,
+        "n": 5099
+      },
+      "stack_vs_market": {
+        "ci_high": 2.5302860218588337,
+        "ci_low": 1.43636672268257,
+        "delta_mae": 1.9817270836960574,
+        "n": 559
+      }
+    },
+    "point_table": [
+      {
+        "mae": 13.730882389702627,
+        "n": 5109,
+        "predictor": "stack_published",
+        "r2": 0.370357452007287,
+        "residual_sd": 17.516406188832303,
+        "rmse": 17.516872135923073
+      },
+      {
+        "mae": 15.317921730692262,
+        "n": 5099,
+        "predictor": "L1_ols_stage1",
+        "r2": 0.2287722724277279,
+        "residual_sd": 19.370292669483913,
+        "rmse": 19.3752995440164
+      },
+      {
+        "mae": 15.572464581858496,
+        "n": 5109,
+        "predictor": "elo",
+        "r2": 0.17586947058844704,
+        "residual_sd": 19.524356418309672,
+        "rmse": 20.040452680828153
+      }
+    ]
+  },
+  "sigma_diagnostics_corrected": {
+    "coverage": {
+      "0.5": {
+        "coverage": 0.5139949109414759,
+        "mean_width": 23.66973110306418,
+        "n": 5109.0,
+        "nominal": 0.5
+      },
+      "0.8": {
+        "coverage": 0.8075944411822275,
+        "mean_width": 44.97322745428405,
+        "n": 5109.0,
+        "nominal": 0.8
+      },
+      "0.95": {
+        "coverage": 0.9461734194558622,
+        "mean_width": 68.7806159726915,
+        "n": 5109.0,
+        "nominal": 0.95
+      }
+    },
+    "mean_predicted_sigma": 17.546397922417,
+    "n": 5109,
+    "pit_histogram": [
+      529,
+      477,
+      472,
+      519,
+      515,
+      578,
+      545,
+      512,
+      508,
+      454
+    ],
+    "pit_ks": {
+      "pvalue": 0.15688347239690736,
+      "statistic": 0.015749019415136734
+    },
+    "pit_mean": 0.49941481929343956,
+    "realized_residual_sd": 17.516406188832303,
+    "resid_over_pred_ratio": 0.9982907184872184,
+    "sigma_ratio": 1.001712208158533
+  },
+  "source_predictions": "data/backtests/task23_fundamental/fundamental/predictions_enriched.parquet",
+  "source_predictions_sha256": "4ca7385a46b204126c6060e31bef837e5cf074cfd70e7e0c7726b507c6a15161",
+  "supersedes": {
+    "name": "canonical_v1",
+    "path": "docs/notes/_artifacts/D2/canonical_v1.json",
+    "sha256": "c39f00cbc1111e5a8076ee9e26414ce3d791bdf39bc751b95a472e82cde04c55"
+  }
+}

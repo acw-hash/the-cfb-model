@@ -1,0 +1,21 @@
+pipeline:
+  # Odds snapshot cadence (DESIGN §10: 6×/day).
+  odds_snapshots_per_day: 6
+  # UTC cron for Prefect ingest_odds deployment (6 slots).
+  odds_ingest_cron: "0 0,4,8,12,16,20 * * *"
+  # Mapping-layer retrain gates by week-of-season (DESIGN §9.7: ~5 and ~10).
+  retrain_gate_weeks:
+    - 5
+    - 10
+  # Ensemble weight damping: new = damp*old + (1-damp)*fit — §9.7 uses 0.7/0.3.
+  ensemble_weight_dampen: 0.7
+  # Monitoring PSI thresholds (DESIGN §14).
+  feature_drift_psi_warn: 0.2
+  feature_drift_psi_alarm: 0.3
+  # Calibration slope alarm band (DESIGN §14).
+  calibration_slope_low: 0.85
+  calibration_slope_high: 1.15
+  # PLACEHOLDER — Prefect / flow retry count (§10 says 3×).
+  task_retries: 3
+  # PLACEHOLDER — wall-clock guard hours for a weekly pipeline run (§1.4: <2h).
+  weekly_pipeline_timeout_hours: 2.0

@@ -1,0 +1,13 @@
+# Manual venue corrections applied on top of CFBD /venues (Task 6).
+# Keys are CFBD venue_id. Only listed fields are overwritten.
+#
+# Required when CFBD is missing lat/lon for an FBS host, or when timezone
+# cannot be inferred from US state (international / edge cases).
+
+venues:
+  # Ireland — Notre Dame / Navy / etc. Dublin neutral-site games.
+  3504:
+    name: Aviva Stadium
+    timezone: Europe/Dublin
+    surface: grass
+    is_dome: false

@@ -1,0 +1,1158 @@
+# Production feature registry (DESIGN §4.1 / §4.7).
+#
+# Each entry MUST include a non-empty `hypothesis`. Empty hypothesis is a
+# registry validation error (primary defense against p-hacking).
+#
+# Fields:
+#   name            — stable feature id (snake_case)
+#   version         — string; bump when definition changes
+#   dtype           — pandas/numpy dtype name of the value column (e.g. float64)
+#   builder         — "module.path:ClassName" import path
+#   dependencies    — other feature names and/or "raw:<table>" staged tables
+#   as_of_semantics — how as_of is interpreted (free text; enforced by builder)
+#   null_policy     — forbid | allow | indicator
+#   lookback_window — lookback description (e.g. "season_to_date", "8_games")
+#   hypothesis      — REQUIRED non-empty: why this feature should predict
+#
+# Task 10: efficiency features (DESIGN §4.3–§4.5). Naming:
+#   adj_{off|def}_{metric}_{std|ewma|l3d}
+# Task 11: tempo + situational (DESIGN §4.5).
+# Task 12: roster / prior (DESIGN §4.5).
+
+_builder: &eff_builder ncaa_quant.features.builders.efficiency:EfficiencyFeatureBuilder
+_asof: &eff_asof "strict event_time < as_of; season-to-date ridge on eligible games"
+_deps: &eff_deps
+  - raw:plays
+  - raw:games
+  - raw:teams
+  - raw:drives
+
+_tempo_builder: &tempo_builder ncaa_quant.features.builders.tempo:TempoFeatureBuilder
+_tempo_asof: &tempo_asof "strict event_time < as_of; season-to-date tempo on eligible games"
+_tempo_deps: &tempo_deps
+  - raw:plays
+  - raw:games
+  - raw:teams
+
+_sit_builder: &sit_builder ncaa_quant.features.builders.situational:SituationalFeatureBuilder
+_sit_asof: &sit_asof "strict event_time < as_of; schedule features knowable after prior kickoffs"
+_sit_deps: &sit_deps
+  - raw:games
+  - raw:venues
+  - raw:teams
+
+_roster_builder: &roster_builder ncaa_quant.features.builders.roster:RosterFeatureBuilder
+_roster_asof: &roster_asof "strict event_time < as_of; preseason Aug-1 priors and manual QB status"
+_roster_deps: &roster_deps
+  - raw:teams
+  - raw:returning_production
+  - raw:talent
+  - raw:recruiting
+  - raw:portal
+  - raw:coaches
+  - raw:qb_status
+
+features:
+  # --- EPA / play (overall + rush/pass) ---
+  - name: adj_off_epa_std
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: season_to_date
+    hypothesis: >-
+      Opponent-adjusted offensive EPA/play (season-to-date, shrunk) measures
+      true scoring efficiency independent of schedule strength and predicts
+      future margins better than raw EPA.
+
+  - name: adj_off_epa_ewma
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: ewma_efficiency_half_life
+    hypothesis: >-
+      EWMA of game-level adjusted off EPA tracks within-season form shifts
+      (coordinator changes, injuries) that a flat season mean smooths away.
+
+  - name: adj_off_epa_l3d
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: last_3_games_delta
+    hypothesis: >-
+      Last-3 minus season adjusted off EPA is a small recent-form residual the
+      trees can use when short-term momentum differs from season level.
+
+  - name: adj_def_epa_std
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: season_to_date
+    hypothesis: >-
+      Opponent-adjusted defensive EPA suppression (season-to-date, shrunk)
+      measures schedule-neutral run/pass defense quality that predicts future
+      points allowed.
+
+  - name: adj_def_epa_ewma
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: ewma_efficiency_half_life
+    hypothesis: >-
+      EWMA of adjusted defensive EPA captures mid-season defensive improvement
+      or collapse faster than the season mean.
+
+  - name: adj_def_epa_l3d
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: last_3_games_delta
+    hypothesis: >-
+      Last-3 minus season adjusted def EPA flags short defensive streaks that
+      may mean-revert or persist depending on injury/context features.
+
+  - name: adj_off_rush_epa_std
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: season_to_date
+    hypothesis: >-
+      Adjusted rush EPA isolates ground-game efficiency for matchup crosses
+      against opponent rush defense.
+
+  - name: adj_def_rush_epa_std
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: season_to_date
+    hypothesis: >-
+      Adjusted rush defense EPA predicts points allowed when the opponent is
+      rush-leaning.
+
+  - name: adj_off_pass_epa_std
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: season_to_date
+    hypothesis: >-
+      Adjusted pass EPA measures downfield/passing efficiency after opponent
+      adjustment and predicts shootout potential.
+
+  - name: adj_def_pass_epa_std
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: season_to_date
+    hypothesis: >-
+      Adjusted pass defense EPA predicts yards/points allowed through the air
+      against pass-heavy offenses.
+
+  # --- Success rate ---
+  - name: adj_off_success_rate_std
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: season_to_date
+    hypothesis: >-
+      Opponent-adjusted offensive success rate is more stable than EPA and
+      predicts consistent drive sustainability.
+
+  - name: adj_off_success_rate_ewma
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: ewma_efficiency_half_life
+    hypothesis: >-
+      EWMA adjusted success rate tracks recent blocking/QB form that shifts
+      faster than season SR.
+
+  - name: adj_off_success_rate_l3d
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: last_3_games_delta
+    hypothesis: >-
+      Last-3 success-rate delta vs season flags short-term offensive
+      consistency changes useful as a small tree feature.
+
+  - name: adj_def_success_rate_std
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: season_to_date
+    hypothesis: >-
+      Adjusted defensive success-rate allowed measures down-to-down stopping
+      power independent of opponent offense quality.
+
+  - name: adj_def_success_rate_ewma
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: ewma_efficiency_half_life
+    hypothesis: >-
+      EWMA of adjusted defensive SR allowed reacts to mid-season schematic or
+      personnel changes on defense.
+
+  - name: adj_def_success_rate_l3d
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: last_3_games_delta
+    hypothesis: >-
+      Last-3 defensive SR delta captures recent stopping-power streaks beyond
+      the season baseline.
+
+  - name: adj_off_rush_success_rate_std
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: season_to_date
+    hypothesis: >-
+      Adjusted rush success rate predicts early-down efficiency and sets up
+      play-action value in matchup models.
+
+  - name: adj_def_rush_success_rate_std
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: season_to_date
+    hypothesis: >-
+      Adjusted rush-defense success rate predicts ability to stay ahead of the
+      chains against ground attacks.
+
+  - name: adj_off_pass_success_rate_std
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: season_to_date
+    hypothesis: >-
+      Adjusted pass success rate measures completion-chain efficiency after
+      opponent pass-defense adjustment.
+
+  - name: adj_def_pass_success_rate_std
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: season_to_date
+    hypothesis: >-
+      Adjusted pass-defense success rate predicts disruption of opponent
+      passing chains.
+
+  # --- Explosiveness ---
+  - name: adj_off_explosiveness_std
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: season_to_date
+    hypothesis: >-
+      Adjusted IsoPPP-style explosiveness (EPA on successful plays) predicts
+      big-play offense and variance of scoring outcomes.
+
+  - name: adj_off_explosiveness_ewma
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: ewma_explosiveness_half_life
+    hypothesis: >-
+      Longer-half-life EWMA of adjusted explosiveness tracks stable big-play
+      identity while damping single-game noise.
+
+  - name: adj_off_explosiveness_l3d
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: last_3_games_delta
+    hypothesis: >-
+      Last-3 explosiveness delta may signal temporary big-play luck or a real
+      schematic shift; trees can down-weight it.
+
+  - name: adj_def_explosiveness_std
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: season_to_date
+    hypothesis: >-
+      Adjusted explosiveness allowed measures vulnerability to chunk plays and
+      predicts opponent ceiling outcomes.
+
+  - name: adj_def_explosiveness_ewma
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: ewma_explosiveness_half_life
+    hypothesis: >-
+      EWMA of adjusted explosiveness allowed tracks recent big-play defense
+      with a longer half-life suited to noisy events.
+
+  - name: adj_def_explosiveness_l3d
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: last_3_games_delta
+    hypothesis: >-
+      Last-3 explosiveness-allowed delta flags short defensive chunk-play
+      vulnerability relative to season.
+
+  - name: adj_off_rush_explosiveness_std
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: season_to_date
+    hypothesis: >-
+      Adjusted rush explosiveness predicts chunk-run threat for matchup crosses
+      vs light boxes.
+
+  - name: adj_def_rush_explosiveness_std
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: season_to_date
+    hypothesis: >-
+      Adjusted rush explosiveness allowed predicts missed-tackle / gap
+      integrity failures.
+
+  - name: adj_off_pass_explosiveness_std
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: season_to_date
+    hypothesis: >-
+      Adjusted pass explosiveness predicts deep-ball / YAC chunk creation after
+      opponent adjustment.
+
+  - name: adj_def_pass_explosiveness_std
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: season_to_date
+    hypothesis: >-
+      Adjusted pass explosiveness allowed predicts coverage bust and deep-ball
+      vulnerability.
+
+  # --- Havoc (for = def creates; against = off allows) ---
+  - name: adj_off_havoc_std
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: season_to_date
+    hypothesis: >-
+      Adjusted havoc rate against an offense (TFL/INT/FF proxy) predicts
+      negative-play rate and drives turnover-driven margin variance.
+
+  - name: adj_off_havoc_ewma
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: ewma_efficiency_half_life
+    hypothesis: >-
+      EWMA of adjusted havoc-against tracks recent OL/QB protection form.
+
+  - name: adj_off_havoc_l3d
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: last_3_games_delta
+    hypothesis: >-
+      Last-3 havoc-against delta flags short-term protection or ball-security
+      issues.
+
+  - name: adj_def_havoc_std
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: season_to_date
+    hypothesis: >-
+      Adjusted defensive havoc creation predicts ability to generate negative
+      plays and force turnovers against quality offenses.
+
+  - name: adj_def_havoc_ewma
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: ewma_efficiency_half_life
+    hypothesis: >-
+      EWMA of adjusted havoc-for tracks recent pass-rush / takeaway form.
+
+  - name: adj_def_havoc_l3d
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: last_3_games_delta
+    hypothesis: >-
+      Last-3 havoc-for delta captures short defensive disruption streaks.
+
+  # --- Finishing drives ---
+  - name: adj_off_finishing_drives_std
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: season_to_date
+    hypothesis: >-
+      Adjusted points per trip inside the 40 measures red-zone/scoring-area
+      finishing that converts efficiency into points.
+
+  - name: adj_off_finishing_drives_ewma
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: ewma_efficiency_half_life
+    hypothesis: >-
+      EWMA finishing tracks recent red-zone execution (QB/kicker/personnel)
+      better than a flat season mean.
+
+  - name: adj_off_finishing_drives_l3d
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: last_3_games_delta
+    hypothesis: >-
+      Last-3 finishing delta flags short-term red-zone hot/cold streaks.
+
+  - name: adj_def_finishing_drives_std
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: season_to_date
+    hypothesis: >-
+      Adjusted finishing allowed (points per opponent trip inside 40) predicts
+      goal-line and red-zone defense quality.
+
+  - name: adj_def_finishing_drives_ewma
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: ewma_efficiency_half_life
+    hypothesis: >-
+      EWMA of finishing allowed tracks recent red-zone defensive form.
+
+  - name: adj_def_finishing_drives_l3d
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: last_3_games_delta
+    hypothesis: >-
+      Last-3 finishing-allowed delta flags short red-zone defensive swings.
+
+  # --- Field position ---
+  - name: adj_off_field_position_std
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: season_to_date
+    hypothesis: >-
+      Adjusted starting field position (yards from own goal) captures
+      special-teams and drive-start advantages that shift expected points.
+
+  - name: adj_off_field_position_ewma
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: ewma_efficiency_half_life
+    hypothesis: >-
+      EWMA of adjusted field position tracks recent ST / starting-FP form.
+
+  - name: adj_off_field_position_l3d
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: last_3_games_delta
+    hypothesis: >-
+      Last-3 field-position delta flags short-term starting-FP swings.
+
+  - name: adj_def_field_position_std
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: season_to_date
+    hypothesis: >-
+      Adjusted field position allowed (opponent starting FP) predicts how well
+      a defense/ST unit pins opponents.
+
+  - name: adj_def_field_position_ewma
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: ewma_efficiency_half_life
+    hypothesis: >-
+      EWMA of field-position allowed tracks recent pinning / ST coverage form.
+
+  - name: adj_def_field_position_l3d
+    version: "1"
+    dtype: float64
+    builder: *eff_builder
+    dependencies: *eff_deps
+    as_of_semantics: *eff_asof
+    null_policy: allow
+    lookback_window: last_3_games_delta
+    hypothesis: >-
+      Last-3 field-position-allowed delta flags short pinning/ST swings.
+
+  # --- Task 11 tempo / possession ---
+  - name: adj_plays_per_game_std
+    version: "1"
+    dtype: float64
+    builder: *tempo_builder
+    dependencies: *tempo_deps
+    as_of_semantics: *tempo_asof
+    null_policy: allow
+    lookback_window: season_to_date
+    hypothesis: >-
+      Opponent-adjusted offensive plays/game (shrunk) measures true pace and
+      drives expected possessions / totals independently of schedule tempo.
+
+  - name: adj_plays_per_game_ewma
+    version: "1"
+    dtype: float64
+    builder: *tempo_builder
+    dependencies: *tempo_deps
+    as_of_semantics: *tempo_asof
+    null_policy: allow
+    lookback_window: ewma_tempo_half_life
+    hypothesis: >-
+      EWMA of adjusted plays/game tracks mid-season pace shifts (coordinator
+      or personnel changes) faster than the season mean.
+
+  - name: adj_plays_per_game_l3d
+    version: "1"
+    dtype: float64
+    builder: *tempo_builder
+    dependencies: *tempo_deps
+    as_of_semantics: *tempo_asof
+    null_policy: allow
+    lookback_window: last_3_games_delta
+    hypothesis: >-
+      Last-3 minus season adjusted pace is a small recent-tempo residual the
+      trees can use when short-term hurry-up usage differs from season level.
+
+  - name: adj_sec_per_play_std
+    version: "1"
+    dtype: float64
+    builder: *tempo_builder
+    dependencies: *tempo_deps
+    as_of_semantics: *tempo_asof
+    null_policy: allow
+    lookback_window: season_to_date
+    hypothesis: >-
+      Situation-neutral seconds/play (ex-garbage, end-of-half, kneel/spike,
+      hurry-up) isolates snap tempo that predicts possession count.
+
+  - name: adj_sec_per_play_ewma
+    version: "1"
+    dtype: float64
+    builder: *tempo_builder
+    dependencies: *tempo_deps
+    as_of_semantics: *tempo_asof
+    null_policy: allow
+    lookback_window: ewma_tempo_half_life
+    hypothesis: >-
+      EWMA of situation-neutral seconds/play captures within-season tempo
+      changes without end-of-half and kneel contamination.
+
+  - name: adj_sec_per_play_l3d
+    version: "1"
+    dtype: float64
+    builder: *tempo_builder
+    dependencies: *tempo_deps
+    as_of_semantics: *tempo_asof
+    null_policy: allow
+    lookback_window: last_3_games_delta
+    hypothesis: >-
+      Recent seconds/play delta vs season flags short-term tempo spikes.
+
+  - name: adj_pass_rate_oe_std
+    version: "1"
+    dtype: float64
+    builder: *tempo_builder
+    dependencies: *tempo_deps
+    as_of_semantics: *tempo_asof
+    null_policy: allow
+    lookback_window: season_to_date
+    hypothesis: >-
+      Pass rate over expectation given down-distance-score-clock isolates
+      scripted pass lean that interacts with opponent pass defense and weather.
+
+  - name: adj_pass_rate_oe_ewma
+    version: "1"
+    dtype: float64
+    builder: *tempo_builder
+    dependencies: *tempo_deps
+    as_of_semantics: *tempo_asof
+    null_policy: allow
+    lookback_window: ewma_tempo_half_life
+    hypothesis: >-
+      EWMA of pass-rate OE tracks mid-season play-calling shifts.
+
+  - name: adj_pass_rate_oe_l3d
+    version: "1"
+    dtype: float64
+    builder: *tempo_builder
+    dependencies: *tempo_deps
+    as_of_semantics: *tempo_asof
+    null_policy: allow
+    lookback_window: last_3_games_delta
+    hypothesis: >-
+      Last-3 pass-rate OE delta flags short-term pass-lean changes.
+
+  - name: adj_rush_rate_oe_std
+    version: "1"
+    dtype: float64
+    builder: *tempo_builder
+    dependencies: *tempo_deps
+    as_of_semantics: *tempo_asof
+    null_policy: allow
+    lookback_window: season_to_date
+    hypothesis: >-
+      Rush rate over expectation (negative of pass OE) measures run lean for
+      rush-defense matchup crosses.
+
+  - name: adj_rush_rate_oe_ewma
+    version: "1"
+    dtype: float64
+    builder: *tempo_builder
+    dependencies: *tempo_deps
+    as_of_semantics: *tempo_asof
+    null_policy: allow
+    lookback_window: ewma_tempo_half_life
+    hypothesis: >-
+      EWMA of rush-rate OE tracks mid-season run-lean shifts.
+
+  - name: adj_rush_rate_oe_l3d
+    version: "1"
+    dtype: float64
+    builder: *tempo_builder
+    dependencies: *tempo_deps
+    as_of_semantics: *tempo_asof
+    null_policy: allow
+    lookback_window: last_3_games_delta
+    hypothesis: >-
+      Last-3 rush-rate OE delta flags short-term run-script changes.
+
+  - name: expected_possessions
+    version: "1"
+    dtype: float64
+    builder: ncaa_quant.features.builders.tempo:ExpectedPossessionsFeatureBuilder
+    dependencies:
+      - raw:plays
+      - raw:games
+      - raw:drives
+      - raw:teams
+    as_of_semantics: >-
+      strict event_time < as_of; applies fitted pace/pass regression artifact
+      to PIT season-to-date team rates
+    null_policy: allow
+    lookback_window: season_to_date_pregame
+    hypothesis: >-
+      Expected total possessions from both teams' pace and pass rates is the
+      key totals feature (totals ≈ possessions × points/possession).
+
+  # --- Task 11 situational (entity_id = game_id) ---
+  - name: rest_days_diff
+    version: "1"
+    dtype: float64
+    builder: *sit_builder
+    dependencies: *sit_deps
+    as_of_semantics: *sit_asof
+    null_policy: allow
+    lookback_window: prior_kickoff
+    hypothesis: >-
+      Home-minus-away rest days captures fatigue asymmetry that predicts
+      margin and totals (short-week road teams especially).
+
+  - name: rest_days_home
+    version: "1"
+    dtype: float64
+    builder: *sit_builder
+    dependencies: *sit_deps
+    as_of_semantics: *sit_asof
+    null_policy: allow
+    lookback_window: prior_kickoff
+    hypothesis: >-
+      Absolute home rest days identify short weeks and byes for the home side.
+
+  - name: rest_days_away
+    version: "1"
+    dtype: float64
+    builder: *sit_builder
+    dependencies: *sit_deps
+    as_of_semantics: *sit_asof
+    null_policy: allow
+    lookback_window: prior_kickoff
+    hypothesis: >-
+      Absolute away rest days identify short weeks and byes for the visitor.
+
+  - name: short_week_flag
+    version: "1"
+    dtype: float64
+    builder: *sit_builder
+    dependencies: *sit_deps
+    as_of_semantics: *sit_asof
+    null_policy: allow
+    lookback_window: prior_kickoff
+    hypothesis: >-
+      Either team on a short week (<6 days rest) depresses efficiency and
+      alters totals via preparation constraints.
+
+  - name: bye_flag
+    version: "1"
+    dtype: float64
+    builder: *sit_builder
+    dependencies: *sit_deps
+    as_of_semantics: *sit_asof
+    null_policy: allow
+    lookback_window: prior_kickoff
+    hypothesis: >-
+      Bye-week rest (≥13 days) improves preparation and can raise scoring
+      efficiency coming out of the open date.
+
+  - name: travel_km
+    version: "1"
+    dtype: float64
+    builder: *sit_builder
+    dependencies: *sit_deps
+    as_of_semantics: *sit_asof
+    null_policy: allow
+    lookback_window: venue_coords
+    hypothesis: >-
+      Haversine travel distance (away home venue → game venue) predicts
+      visitor fatigue and totals suppression on long trips.
+
+  - name: tz_crossed
+    version: "1"
+    dtype: float64
+    builder: *sit_builder
+    dependencies: *sit_deps
+    as_of_semantics: *sit_asof
+    null_policy: allow
+    lookback_window: venue_timezone
+    hypothesis: >-
+      Signed timezone hours crossed (positive = eastward) capture circadian
+      disruption beyond raw distance.
+
+  - name: altitude_delta_m
+    version: "1"
+    dtype: float64
+    builder: *sit_builder
+    dependencies: *sit_deps
+    as_of_semantics: *sit_asof
+    null_policy: allow
+    lookback_window: venue_elevation
+    hypothesis: >-
+      Game elevation minus visitor home elevation predicts kicking/special-teams
+      and early-drive variance at altitude.
+
+  - name: surface_turf
+    version: "1"
+    dtype: float64
+    builder: *sit_builder
+    dependencies: *sit_deps
+    as_of_semantics: *sit_asof
+    null_policy: allow
+    lookback_window: venue_surface
+    hypothesis: >-
+      Turf vs grass affects injury risk and explosive-play rates used by totals
+      and sides models.
+
+  - name: surface_change_flag
+    version: "1"
+    dtype: float64
+    builder: *sit_builder
+    dependencies: *sit_deps
+    as_of_semantics: *sit_asof
+    null_policy: allow
+    lookback_window: venue_surface
+    hypothesis: >-
+      Visitor home surface differing from game surface is a small matchup
+      friction feature for footing-sensitive offenses.
+
+  - name: neutral_site
+    version: "1"
+    dtype: float64
+    builder: *sit_builder
+    dependencies: *sit_deps
+    as_of_semantics: *sit_asof
+    null_policy: allow
+    lookback_window: schedule
+    hypothesis: >-
+      Neutral-site games remove home-field advantage and change travel for both
+      sides, shifting margin distributions.
+
+  - name: week_number
+    version: "1"
+    dtype: float64
+    builder: *sit_builder
+    dependencies: *sit_deps
+    as_of_semantics: *sit_asof
+    null_policy: allow
+    lookback_window: schedule
+    hypothesis: >-
+      Week of season encodes early-season variance and late-season motivation
+      regimes the trees can split on.
+
+  - name: month
+    version: "1"
+    dtype: float64
+    builder: *sit_builder
+    dependencies: *sit_deps
+    as_of_semantics: *sit_asof
+    null_policy: allow
+    lookback_window: schedule
+    hypothesis: >-
+      Calendar month proxies weather seasonality and bowl/regular-season regime
+      without leaking future outcomes.
+
+  - name: conference_game
+    version: "1"
+    dtype: float64
+    builder: *sit_builder
+    dependencies: *sit_deps
+    as_of_semantics: *sit_asof
+    null_policy: allow
+    lookback_window: schedule
+    hypothesis: >-
+      Conference games have different competitiveness and totals profiles than
+      out-of-conference tune-ups.
+
+  - name: rivalry_flag
+    version: "1"
+    dtype: float64
+    builder: *sit_builder
+    dependencies: *sit_deps
+    as_of_semantics: *sit_asof
+    null_policy: allow
+    lookback_window: rivalry_config
+    hypothesis: >-
+      Curated rivalry matchups elevate intensity and variance beyond rating
+      differentials alone.
+
+  - name: post_rivalry_flag
+    version: "1"
+    dtype: float64
+    builder: *sit_builder
+    dependencies: *sit_deps
+    as_of_semantics: *sit_asof
+    null_policy: allow
+    lookback_window: prior_kickoff
+    hypothesis: >-
+      Coming off a rivalry game predicts emotional hangover / letdown in the
+      subsequent contest.
+
+  - name: rivalry_lookahead_flag
+    version: "1"
+    dtype: float64
+    builder: *sit_builder
+    dependencies: *sit_deps
+    as_of_semantics: *sit_asof
+    null_policy: allow
+    lookback_window: next_scheduled
+    hypothesis: >-
+      Looking ahead to a rivalry next week can suppress effort / alter totals
+      in the current game (lookahead letdown).
+
+  # --- Roster / prior (Task 12) ---
+  - name: returning_offense_pct
+    version: "1"
+    dtype: float64
+    builder: *roster_builder
+    dependencies: *roster_deps
+    as_of_semantics: *roster_asof
+    null_policy: indicator
+    lookback_window: preseason
+    hypothesis: >-
+      Preseason returning offensive production is the strongest documented
+      roster-turnover prior for early-season scoring rates and margins.
+
+  - name: returning_defense_pct
+    version: "1"
+    dtype: float64
+    builder: *roster_builder
+    dependencies: *roster_deps
+    as_of_semantics: *roster_asof
+    null_policy: indicator
+    lookback_window: preseason
+    hypothesis: >-
+      Returning defensive production predicts early-season points allowed
+      before game-level defensive ratings stabilize.
+
+  - name: talent_composite
+    version: "1"
+    dtype: float64
+    builder: *roster_builder
+    dependencies: *roster_deps
+    as_of_semantics: *roster_asof
+    null_policy: indicator
+    lookback_window: preseason
+    hypothesis: >-
+      247 talent composite captures roster talent stock that anchors preseason
+      priors and remains informative early when ratings variance is high.
+
+  - name: blue_chip_ratio
+    version: "1"
+    dtype: float64
+    builder: *roster_builder
+    dependencies: *roster_deps
+    as_of_semantics: *roster_asof
+    null_policy: indicator
+    lookback_window: preseason
+    hypothesis: >-
+      Blue-chip ratio measures elite-prospect density that predicts ceiling and
+      variance beyond average recruiting points.
+
+  - name: recruiting_4yr_weighted
+    version: "1"
+    dtype: float64
+    builder: *roster_builder
+    dependencies: *roster_deps
+    as_of_semantics: *roster_asof
+    null_policy: indicator
+    lookback_window: 4_recruiting_classes
+    hypothesis: >-
+      Four-year weighted recruiting composite reflects the active roster's
+      recruiting stock better than a single class year.
+
+  - name: portal_net_rating
+    version: "1"
+    dtype: float64
+    builder: *roster_builder
+    dependencies: *roster_deps
+    as_of_semantics: *roster_asof
+    null_policy: indicator
+    lookback_window: portal_season
+    hypothesis: >-
+      Portal net rating (inbound − outbound) adjusts preseason strength for
+      transfer gains/losses in the portal era, with wide uncertainty.
+
+  - name: portal_era
+    version: "1"
+    dtype: float64
+    builder: *roster_builder
+    dependencies: *roster_deps
+    as_of_semantics: *roster_asof
+    null_policy: forbid
+    lookback_window: season_year
+    hypothesis: >-
+      Explicit portal-era flag (2021+) lets trees treat portal features as a
+      distinct regime rather than pooling with pre-portal seasons.
+
+  - name: hc_tenure_years
+    version: "1"
+    dtype: float64
+    builder: *roster_builder
+    dependencies: *roster_deps
+    as_of_semantics: *roster_asof
+    null_policy: indicator
+    lookback_window: coach_history
+    hypothesis: >-
+      Head-coach tenure years capture continuity versus first-year discontinuity
+      that partially resets team identity toward talent-implied levels.
+
+  - name: new_hc_flag
+    version: "1"
+    dtype: float64
+    builder: *roster_builder
+    dependencies: *roster_deps
+    as_of_semantics: *roster_asof
+    null_policy: indicator
+    lookback_window: coach_history
+    hypothesis: >-
+      New head-coach seasons have systematically different early-season
+      performance and rating volatility than returning-coach seasons.
+
+  - name: oc_tenure_years
+    version: "1"
+    dtype: float64
+    builder: *roster_builder
+    dependencies: *roster_deps
+    as_of_semantics: *roster_asof
+    null_policy: indicator
+    lookback_window: coordinators_config
+    hypothesis: >-
+      Offensive-coordinator tenure predicts scheme continuity and early-season
+      offensive efficiency stability.
+
+  - name: dc_tenure_years
+    version: "1"
+    dtype: float64
+    builder: *roster_builder
+    dependencies: *roster_deps
+    as_of_semantics: *roster_asof
+    null_policy: indicator
+    lookback_window: coordinators_config
+    hypothesis: >-
+      Defensive-coordinator tenure predicts scheme continuity and early-season
+      defensive efficiency stability.
+
+  - name: oc_change_flag
+    version: "1"
+    dtype: float64
+    builder: *roster_builder
+    dependencies: *roster_deps
+    as_of_semantics: *roster_asof
+    null_policy: indicator
+    lookback_window: coordinators_config
+    hypothesis: >-
+      Year-over-year OC changes are discontinuities that widen prior variance
+      and shift early offensive distributions.
+
+  - name: dc_change_flag
+    version: "1"
+    dtype: float64
+    builder: *roster_builder
+    dependencies: *roster_deps
+    as_of_semantics: *roster_asof
+    null_policy: indicator
+    lookback_window: coordinators_config
+    hypothesis: >-
+      Year-over-year DC changes are discontinuities that widen prior variance
+      and shift early defensive distributions.
+
+  - name: qb_status
+    version: "1"
+    dtype: float64
+    builder: *roster_builder
+    dependencies: *roster_deps
+    as_of_semantics: *roster_asof
+    null_policy: indicator
+    lookback_window: manual_qb_status
+    hypothesis: >-
+      QB starter versus backup status is the highest-value perishable roster
+      signal for single-game margins and totals (DESIGN §3.3).

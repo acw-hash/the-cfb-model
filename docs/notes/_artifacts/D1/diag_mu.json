@@ -1,0 +1,1352 @@
+{
+  "block_a": {
+    "history_reconcile": {
+      "mae_13_65_source": {
+        "artifact": "docs/notes/_artifacts/task23/task23_memo.json + fundamental_full.html",
+        "config_hash": "daa047b023fff209dd298a55fb3e0a5d99a1df3dc2ac91fd17b949c9b8a6f342",
+        "full_set_mae_same_run": 14.196002600108708,
+        "game_set": "walk-forward 2019\u20132025 headline rows, week==10 only (n=335 in memo)",
+        "git_sha": "b81cb536f894a5bcfce5472dfb98615907f18265",
+        "note": "13.65 is weekly curve Week-10 MAE from the original Task 23 memo, not a full-sample stack MAE.",
+        "run": "task23_fundamental / ablation fundamental",
+        "value": 13.654241501161867,
+        "what": "Week-10 MAE only (not full-set MAE)"
+      },
+      "mae_16_60_source": {
+        "artifact": "data/backtests/task23_fix_smoke/wiring_proof_2023/full/predictions.parquet",
+        "config_hash": "7a58a8b7b9e190e193ca4ffe57224e44daebcdbdc5c0db3e70b6094ef77ff123",
+        "game_set": "2023 only, n=910 (wiring_proof_2023; continuity_seasons=[])",
+        "git_sha": "b81cb536f894a5bcfce5472dfb98615907f18265",
+        "note": "Weeks 1\u20134 emit pred_margin=0 (unfitted cold-start prior) because the smoke config has no prior-season seed labels. Nonzero weeks (5+) MAE\u224813.51.",
+        "run": "wiring_proof_2023 / full",
+        "value": 16.604688787660955,
+        "wall_clock_sec": "7.411",
+        "what": "full-sample MAE on wiring_proof_2023 smoke"
+      },
+      "which_eval_set_is_correct": "For headline walk-forward claims use 2019\u20132025 excluding 2020 (task23_fundamental, n_headline\u22485434, MAE\u224814.20). The 16.60 / Elo 0.557 / 1.153 comparison in FIX-DIAG was on the 2023 smoke (n=910 / Elo-overlap n=792), not the full multi-season set. Mixing those bases produced the '2019\u20132025 stack MAE 16.60' misstatement."
+    },
+    "mae_y_minus_train_mean": 17.10331836932783,
+    "n": 910,
+    "scores": {
+      "constant_0": {
+        "mae": 18.00769230769231,
+        "mean_signed_bias": 7.15934065934066,
+        "n": 910,
+        "n_finite": 910,
+        "name": "constant_0",
+        "r2": -0.1078274036514415,
+        "residual_sd": 21.814597700441748,
+        "rmse": 22.947982266637084
+      },
+      "constant_train_mean": {
+        "mae": 17.10331836932783,
+        "mean_signed_bias": 0.3292933407286712,
+        "n": 910,
+        "n_finite": 910,
+        "name": "constant_train_mean",
+        "r2": -0.00022811244990394997,
+        "residual_sd": 21.814597700441748,
+        "rmse": 21.805094944476853
+      },
+      "elo_implied_margin": {
+        "mae": 15.050731055967,
+        "mean_signed_bias": 4.26822995051647,
+        "n": 910,
+        "n_finite": 910,
+        "name": "elo_implied_margin",
+        "r2": 0.2155276212809608,
+        "residual_sd": 18.843414686124955,
+        "rmse": 19.310667322247877
+      },
+      "negated_market_spread": {
+        "mae": null,
+        "mean_signed_bias": null,
+        "n": 910,
+        "n_finite": 0,
+        "name": "negated_market_spread",
+        "r2": null,
+        "residual_sd": null,
+        "rmse": null
+      },
+      "stack_published_mu": {
+        "mae": 16.604688787660955,
+        "mean_signed_bias": 6.109703827337612,
+        "n": 910,
+        "n_finite": 910,
+        "name": "stack_published_mu",
+        "r2": 0.04955199359695972,
+        "residual_sd": 20.369744443505613,
+        "rmse": 21.25556412747314
+      }
+    },
+    "sd_y": 21.814597700441748,
+    "slopes": {
+      "constant_0": {
+        "a": 7.15934065934066,
+        "b": 0.0,
+        "n": 910,
+        "name": "constant_0",
+        "pearson_r": 0.0,
+        "r2": 0.0,
+        "sd_yhat": 0.0
+      },
+      "constant_train_mean": {
+        "a": 7.15934065934066,
+        "b": 0.0,
+        "n": 910,
+        "name": "constant_train_mean",
+        "pearson_r": 0.0,
+        "r2": 0.0,
+        "sd_yhat": 1.7773336647913165e-15
+      },
+      "elo_implied_margin": {
+        "a": 2.067427843615836,
+        "b": 1.761230657886393,
+        "n": 910,
+        "name": "elo_implied_margin",
+        "pearson_r": 0.5587204208427947,
+        "r2": 0.3121685086667496,
+        "sd_yhat": 6.920309474020793
+      },
+      "negated_market_spread": {
+        "a": null,
+        "b": null,
+        "n": 0,
+        "name": "negated_market_spread",
+        "pearson_r": null,
+        "r2": null,
+        "sd_yhat": null
+      },
+      "stack_published_mu": {
+        "a": 6.22450943498155,
+        "b": 0.8906234955333492,
+        "n": 910,
+        "name": "stack_published_mu",
+        "pearson_r": 0.3606120809123704,
+        "r2": 0.13004107289994982,
+        "sd_yhat": 8.832696993145909
+      }
+    },
+    "stack_r2": 0.04955199359695972,
+    "stack_r2_le_zero": 0,
+    "train_mean": 6.830047318611987,
+    "train_mean_note": "ok",
+    "zero_mu_by_week": {
+      "1": 1.0,
+      "10": 0.0,
+      "11": 0.0,
+      "12": 0.0,
+      "13": 0.0,
+      "14": 0.0,
+      "15": 0.0,
+      "2": 1.0,
+      "3": 1.0,
+      "4": 1.0,
+      "5": 0.0,
+      "6": 0.0,
+      "7": 0.0,
+      "8": 0.0,
+      "9": 0.0
+    },
+    "zero_mu_rate": 0.3989010989010989
+  },
+  "block_b1": {
+    "n_sampled": 25,
+    "orientation_note": "mu and y are both home_points - away_points (home-margin orientation, points)",
+    "raw_join_note": "joined on game_id to staged games",
+    "raw_points_match": 1,
+    "rows": [
+      {
+        "away_points": 38.0,
+        "game_id": 401531898,
+        "home_points": 48.0,
+        "pred_margin": 7.66243495759036,
+        "raw_recomputed_y": 10.0,
+        "raw_status": "ok",
+        "realized_margin": 10.0,
+        "recomputed_y": 10.0,
+        "season": 2023,
+        "week": 9
+      },
+      {
+        "away_points": 38.0,
+        "game_id": 401525844,
+        "home_points": 6.0,
+        "pred_margin": 0.0,
+        "raw_recomputed_y": -32.0,
+        "raw_status": "ok",
+        "realized_margin": -32.0,
+        "recomputed_y": -32.0,
+        "season": 2023,
+        "week": 4
+      },
+      {
+        "away_points": 0.0,
+        "game_id": 401525469,
+        "home_points": 56.0,
+        "pred_margin": 0.0,
+        "raw_recomputed_y": 56.0,
+        "raw_status": "ok",
+        "realized_margin": 56.0,
+        "recomputed_y": 56.0,
+        "season": 2023,
+        "week": 2
+      },
+      {
+        "away_points": 6.0,
+        "game_id": 401520390,
+        "home_points": 40.0,
+        "pred_margin": 7.25617115477912,
+        "raw_recomputed_y": 34.0,
+        "raw_status": "ok",
+        "realized_margin": 34.0,
+        "recomputed_y": 34.0,
+        "season": 2023,
+        "week": 11
+      },
+      {
+        "away_points": 21.0,
+        "game_id": 401520212,
+        "home_points": 47.0,
+        "pred_margin": 0.0,
+        "raw_recomputed_y": 26.0,
+        "raw_status": "ok",
+        "realized_margin": 26.0,
+        "recomputed_y": 26.0,
+        "season": 2023,
+        "week": 2
+      },
+      {
+        "away_points": 42.0,
+        "game_id": 401520387,
+        "home_points": 27.0,
+        "pred_margin": 0.7121415356364583,
+        "raw_recomputed_y": -15.0,
+        "raw_status": "ok",
+        "realized_margin": -15.0,
+        "recomputed_y": -15.0,
+        "season": 2023,
+        "week": 11
+      },
+      {
+        "away_points": 21.0,
+        "game_id": 401532602,
+        "home_points": 42.0,
+        "pred_margin": 0.15511257469742268,
+        "raw_recomputed_y": 21.0,
+        "raw_status": "ok",
+        "realized_margin": 21.0,
+        "recomputed_y": 21.0,
+        "season": 2023,
+        "week": 8
+      },
+      {
+        "away_points": 14.0,
+        "game_id": 401532618,
+        "home_points": 34.0,
+        "pred_margin": 11.008548595861944,
+        "raw_recomputed_y": 20.0,
+        "raw_status": "ok",
+        "realized_margin": 20.0,
+        "recomputed_y": 20.0,
+        "season": 2023,
+        "week": 11
+      },
+      {
+        "away_points": 36.0,
+        "game_id": 401531440,
+        "home_points": 31.0,
+        "pred_margin": -12.158627090672022,
+        "raw_recomputed_y": -5.0,
+        "raw_status": "ok",
+        "realized_margin": -5.0,
+        "recomputed_y": -5.0,
+        "season": 2023,
+        "week": 10
+      },
+      {
+        "away_points": 49.0,
+        "game_id": 401551757,
+        "home_points": 36.0,
+        "pred_margin": 0.0,
+        "raw_recomputed_y": -13.0,
+        "raw_status": "ok",
+        "realized_margin": -13.0,
+        "recomputed_y": -13.0,
+        "season": 2023,
+        "week": 1
+      },
+      {
+        "away_points": 20.0,
+        "game_id": 401531418,
+        "home_points": 42.0,
+        "pred_margin": 0.0,
+        "raw_recomputed_y": 22.0,
+        "raw_status": "ok",
+        "realized_margin": 22.0,
+        "recomputed_y": 22.0,
+        "season": 2023,
+        "week": 1
+      },
+      {
+        "away_points": 38.0,
+        "game_id": 401525515,
+        "home_points": 27.0,
+        "pred_margin": 15.945796037738132,
+        "raw_recomputed_y": -11.0,
+        "raw_status": "ok",
+        "realized_margin": -11.0,
+        "recomputed_y": -11.0,
+        "season": 2023,
+        "week": 5
+      },
+      {
+        "away_points": 19.0,
+        "game_id": 401532591,
+        "home_points": 24.0,
+        "pred_margin": -13.787629940121514,
+        "raw_recomputed_y": 5.0,
+        "raw_status": "ok",
+        "realized_margin": 5.0,
+        "recomputed_y": 5.0,
+        "season": 2023,
+        "week": 6
+      },
+      {
+        "away_points": 3.0,
+        "game_id": 401524049,
+        "home_points": 55.0,
+        "pred_margin": -1.801142369229921,
+        "raw_recomputed_y": 52.0,
+        "raw_status": "ok",
+        "realized_margin": 52.0,
+        "recomputed_y": 52.0,
+        "season": 2023,
+        "week": 10
+      },
+      {
+        "away_points": 24.0,
+        "game_id": 401531835,
+        "home_points": 45.0,
+        "pred_margin": 0.0,
+        "raw_recomputed_y": 21.0,
+        "raw_status": "ok",
+        "realized_margin": 21.0,
+        "recomputed_y": 21.0,
+        "season": 2023,
+        "week": 1
+      },
+      {
+        "away_points": 27.0,
+        "game_id": 401520370,
+        "home_points": 26.0,
+        "pred_margin": -0.8668359037692289,
+        "raw_recomputed_y": -1.0,
+        "raw_status": "ok",
+        "realized_margin": -1.0,
+        "recomputed_y": -1.0,
+        "season": 2023,
+        "week": 10
+      },
+      {
+        "away_points": 28.0,
+        "game_id": 401531879,
+        "home_points": 7.0,
+        "pred_margin": 19.9935090611655,
+        "raw_recomputed_y": -21.0,
+        "raw_status": "ok",
+        "realized_margin": -21.0,
+        "recomputed_y": -21.0,
+        "season": 2023,
+        "week": 5
+      },
+      {
+        "away_points": 9.0,
+        "game_id": 401531905,
+        "home_points": 31.0,
+        "pred_margin": 8.233768812652945,
+        "raw_recomputed_y": 22.0,
+        "raw_status": "ok",
+        "realized_margin": 22.0,
+        "recomputed_y": 22.0,
+        "season": 2023,
+        "week": 10
+      },
+      {
+        "away_points": 42.0,
+        "game_id": 401524024,
+        "home_points": 6.0,
+        "pred_margin": -22.494144404151825,
+        "raw_recomputed_y": -36.0,
+        "raw_status": "ok",
+        "realized_margin": -36.0,
+        "recomputed_y": -36.0,
+        "season": 2023,
+        "week": 5
+      },
+      {
+        "away_points": 14.0,
+        "game_id": 401525859,
+        "home_points": 27.0,
+        "pred_margin": -12.915853561381768,
+        "raw_recomputed_y": 13.0,
+        "raw_status": "ok",
+        "realized_margin": 13.0,
+        "recomputed_y": 13.0,
+        "season": 2023,
+        "week": 6
+      },
+      {
+        "away_points": 38.0,
+        "game_id": 401520432,
+        "home_points": 31.0,
+        "pred_margin": 10.50189977243617,
+        "raw_recomputed_y": -7.0,
+        "raw_status": "ok",
+        "realized_margin": -7.0,
+        "recomputed_y": -7.0,
+        "season": 2023,
+        "week": 13
+      },
+      {
+        "away_points": 42.0,
+        "game_id": 401531386,
+        "home_points": 45.0,
+        "pred_margin": 8.285076329560667,
+        "raw_recomputed_y": 3.0,
+        "raw_status": "ok",
+        "realized_margin": 3.0,
+        "recomputed_y": 3.0,
+        "season": 2023,
+        "week": 13
+      },
+      {
+        "away_points": 49.0,
+        "game_id": 401532442,
+        "home_points": 19.0,
+        "pred_margin": -11.685620948184573,
+        "raw_recomputed_y": -30.0,
+        "raw_status": "ok",
+        "realized_margin": -30.0,
+        "recomputed_y": -30.0,
+        "season": 2023,
+        "week": 11
+      },
+      {
+        "away_points": 14.0,
+        "game_id": 401531840,
+        "home_points": 40.0,
+        "pred_margin": 0.0,
+        "raw_recomputed_y": 26.0,
+        "raw_status": "ok",
+        "realized_margin": 26.0,
+        "recomputed_y": 26.0,
+        "season": 2023,
+        "week": 1
+      },
+      {
+        "away_points": 55.0,
+        "game_id": 401531885,
+        "home_points": 7.0,
+        "pred_margin": -15.101148667554723,
+        "raw_recomputed_y": -48.0,
+        "raw_status": "ok",
+        "realized_margin": -48.0,
+        "recomputed_y": -48.0,
+        "season": 2023,
+        "week": 6
+      }
+    ],
+    "stored_y_matches_points": 1
+  },
+  "block_b2": {
+    "home_away_logic": "Harness uses staged home_team_id / away_team_id as designated sides. Neutral games keep that designation; ProductionFeatureProvider does not add an explicit HFA feature column \u2014 HFA lives in Stage-1 / Elo only.",
+    "neutral": {
+      "a": 1.5285414680681115,
+      "b": 0.7167963237754585,
+      "n": 63,
+      "name": "neutral",
+      "pearson_r": 0.19660346557750727,
+      "r2": 0.03865292267708609,
+      "sd_yhat": 5.624074060806798
+    },
+    "non_neutral": {
+      "a": 6.5736250745033695,
+      "b": 0.8906996177421042,
+      "n": 847,
+      "name": "non_neutral",
+      "pearson_r": 0.36761911323625285,
+      "r2": 0.135143812416609,
+      "sd_yhat": 9.02324587274762
+    }
+  },
+  "block_b3": {
+    "inner_n": 910,
+    "join_key": "game_key",
+    "one_to_one": 1,
+    "outcome_orphans": 0,
+    "outcomes_dup_keys": 0,
+    "outcomes_n": 910,
+    "pred_orphans": 0,
+    "predictions_dup_keys": 0,
+    "predictions_n": 910
+  },
+  "block_b4": {
+    "elementwise_equal_after_unshuffle": 1,
+    "game_key_index_note": "WalkForwardHarness banks features from the same DataFrame passed to predict(), keyed by game_id; prediction rows are built by iterating week_games in game_id sort order and looking up pred_map[game_id] \u2014 not a separately sorted parallel vector.",
+    "max_abs_diff": 0.0,
+    "status": "ok"
+  },
+  "block_b5": {
+    "error_msg": "feature signature mismatch on 'conference_game': dtype 'int64' != expected 'bool'",
+    "error_type": "FeatureSignatureError",
+    "note": "If raised is False, the feature-signature contract is not enforced on this predict path.",
+    "permuted_columns": [
+      "conference_game",
+      "venue_id"
+    ],
+    "raised": 1,
+    "status": "ok"
+  },
+  "block_b6": {
+    "band": [
+      5.713759060906245,
+      12.629990939093755
+    ],
+    "beats_chance": 0,
+    "chance_mae": 9.171875,
+    "model_mae": 8.9609375,
+    "n": 8,
+    "se": 1.7290579695468775,
+    "status": "ok",
+    "verdict": "PASS_at_chance",
+    "within_chance_band": 1,
+    "z_se": 2.0
+  },
+  "block_c": {
+    "elo_mae": 15.050731055967,
+    "failing_step": "L5_nnls_ensemble -> L6_after_mixture (delta_MAE=3.1021)",
+    "jumps": [
+      {
+        "delta_mae": -1.026974680156716,
+        "from": "L0_elo",
+        "to": "L1_ols_rating_diff"
+      },
+      {
+        "delta_mae": -0.36635088910010793,
+        "from": "L1_ols_rating_diff",
+        "to": "L2_elasticnet_top30"
+      },
+      {
+        "delta_mae": -0.1512002088466904,
+        "from": "L2_elasticnet_top30",
+        "to": "L3_lgbm_mu"
+      },
+      {
+        "delta_mae": 0.022164275081747675,
+        "from": "L3_lgbm_mu",
+        "to": "L4_xgboost"
+      },
+      {
+        "delta_mae": 0.023933070940532986,
+        "from": "L4_xgboost",
+        "to": "L4_catboost"
+      },
+      {
+        "delta_mae": 0.015304401775996013,
+        "from": "L4_catboost",
+        "to": "L4_ngboost"
+      },
+      {
+        "delta_mae": -0.06504063066766186,
+        "from": "L4_ngboost",
+        "to": "L5_nnls_ensemble"
+      },
+      {
+        "delta_mae": 3.1021223926668533,
+        "from": "L5_nnls_ensemble",
+        "to": "L6_after_mixture"
+      },
+      {
+        "delta_mae": 0.0,
+        "from": "L6_after_mixture",
+        "to": "L7_published_mu"
+      }
+    ],
+    "l6_note": "No separate post-mixture \u03bc artifact; production overwrites pred_margin in place during epistemic mix. L6 reported identical to L7 published \u03bc.",
+    "member_oof_frames_n": 1,
+    "nnls_weights_by_season": {
+      "2023": {
+        "L2_elasticnet_top30": 0.2078063806549672,
+        "L3_lgbm_mu": 0.2968491374605929,
+        "L4_catboost": 0.49534448188443997,
+        "L4_xgboost": 0.0
+      }
+    },
+    "rows": [
+      {
+        "layer": "L0_elo",
+        "mae": 15.050731055967,
+        "n": 910,
+        "r": 0.5587204208427947,
+        "residual_sd": 18.843414686124955,
+        "rmse": 19.310667322247877,
+        "slope_b": 1.761230657886393
+      },
+      {
+        "layer": "L1_ols_rating_diff",
+        "mae": 14.023756375810285,
+        "n": 910,
+        "r": 0.5751088123693059,
+        "residual_sd": 17.848780046192992,
+        "rmse": 17.839030770141534,
+        "slope_b": 0.9755876727485778
+      },
+      {
+        "layer": "L2_elasticnet_top30",
+        "mae": 13.657405486710177,
+        "n": 910,
+        "r": 0.5971607083838671,
+        "residual_sd": 17.50502032007089,
+        "rmse": 17.496550953285404,
+        "slope_b": 0.9632421537154429
+      },
+      {
+        "layer": "L3_lgbm_mu",
+        "mae": 13.506205277863486,
+        "n": 910,
+        "r": 0.615982653140261,
+        "residual_sd": 17.184894736823694,
+        "rmse": 17.177457932980474,
+        "slope_b": 0.9933783014647154
+      },
+      {
+        "layer": "L4_xgboost",
+        "mae": 13.528369552945234,
+        "n": 910,
+        "r": 0.6116932166988248,
+        "residual_sd": 17.261686992120183,
+        "rmse": 17.25647232906245,
+        "slope_b": 0.9720448664950186
+      },
+      {
+        "layer": "L4_catboost",
+        "mae": 13.552302623885767,
+        "n": 910,
+        "r": 0.6080518470854539,
+        "residual_sd": 17.32095376442563,
+        "rmse": 17.31171256546601,
+        "slope_b": 1.0222351579604194
+      },
+      {
+        "layer": "L4_ngboost",
+        "mae": 13.567607025661763,
+        "n": 910,
+        "r": 0.6082511343704875,
+        "residual_sd": 17.32912625247292,
+        "rmse": 17.320445679859926,
+        "slope_b": 1.0551981187725858
+      },
+      {
+        "layer": "L5_nnls_ensemble",
+        "mae": 13.502566394994101,
+        "n": 910,
+        "r": 0.6128058382653739,
+        "residual_sd": 17.239973629964023,
+        "rmse": 17.23132055266743,
+        "slope_b": 1.0163878618742885
+      },
+      {
+        "layer": "L6_after_mixture",
+        "mae": 16.604688787660955,
+        "n": 910,
+        "r": 0.3606120809123704,
+        "residual_sd": 20.369744443505613,
+        "rmse": 21.25556412747314,
+        "slope_b": 0.8906234955333492
+      },
+      {
+        "layer": "L7_published_mu",
+        "mae": 16.604688787660955,
+        "n": 910,
+        "r": 0.3606120809123704,
+        "residual_sd": 20.369744443505613,
+        "rmse": 21.25556412747314,
+        "slope_b": 0.8906234955333492
+      }
+    ],
+    "signal_ceiling": {
+      "in_sample_lgbm_mae": 10.875840848322644,
+      "label": "DIAGNOSTIC_NOT_A_PERFORMANCE_NUMBER",
+      "n": 910,
+      "reading": "If in-sample MAE\u224816 features carry no signal (data). If in-sample\u224810 while walk-forward\u224816.6, failure is train/predict plumbing."
+    }
+  },
+  "block_d": {
+    "assert_oof_only_executes": 1,
+    "assert_oof_only_note": "assert_oof_only raises on in-fold rows when invoked; production _set_weights never calls fit_nnls_stack, so the assertion is skipped on the live stacking path.",
+    "nnls_weights": {
+      "2023": {
+        "L2_elasticnet_top30": 0.2078063806549672,
+        "L3_lgbm_mu": 0.2968491374605929,
+        "L4_catboost": 0.49534448188443997,
+        "L4_xgboost": 0.0
+      }
+    },
+    "oof_audit": {
+      "reason": "no OOF member matrix artifact from production run",
+      "status": "NOT_COMPUTED"
+    },
+    "production_note": "ProductionEnsemblePredictor._set_weights hardcodes 0.5/0.5 for lgbm_mu_margin and enet_mu_margin \u2014 it does NOT call fit_nnls_stack. XGBoost/CatBoost/NGBoost are not wired into the production predict path (see backtest_runner module docstring)."
+  },
+  "block_e": {
+    "e3_rating_diff": {
+      "elo_corr_with_margin": 0.5587204208427947,
+      "elo_null_rate": 0.0,
+      "elo_sd": 6.920309474020793,
+      "elo_zero_rate": 0.0,
+      "stage1_corr_with_margin": 0.4999146313203696,
+      "stage1_diff_col": "rating_diff_off_epa",
+      "stage1_null_rate": 0.0,
+      "stage1_sd": 0.1474382591569746,
+      "stage1_zero_rate": 0.0
+    },
+    "e4_top15": {
+      "2023": {
+        "elo_rank_corr": "computed below if Elo finals available",
+        "sp_plus_rank_corr": "NOT_COMPUTED \u2014 SP+ table not in staged artifacts",
+        "top15_def": [
+          {
+            "def_epa": -0.43442323969262586,
+            "team_id": 2635
+          },
+          {
+            "def_epa": -0.42343193310191346,
+            "team_id": 2169
+          },
+          {
+            "def_epa": -0.3690469908897177,
+            "team_id": 2296
+          },
+          {
+            "def_epa": -0.3603587129094351,
+            "team_id": 2197
+          },
+          {
+            "def_epa": -0.35707217323510637,
+            "team_id": 2504
+          },
+          {
+            "def_epa": -0.3388111940051077,
+            "team_id": 2097
+          },
+          {
+            "def_epa": -0.3306402902874934,
+            "team_id": 2710
+          },
+          {
+            "def_epa": -0.3230131233507096,
+            "team_id": 2458
+          },
+          {
+            "def_epa": -0.31771397401212553,
+            "team_id": 231
+          },
+          {
+            "def_epa": -0.31242954295234654,
+            "team_id": 2640
+          },
+          {
+            "def_epa": -0.30567643010701867,
+            "team_id": 160
+          },
+          {
+            "def_epa": -0.28593752828862495,
+            "team_id": 2115
+          },
+          {
+            "def_epa": -0.27650650505707935,
+            "team_id": 2382
+          },
+          {
+            "def_epa": -0.2718096715548596,
+            "team_id": 2184
+          },
+          {
+            "def_epa": -0.26993508012765344,
+            "team_id": 2502
+          }
+        ],
+        "top15_off": [
+          {
+            "def_epa": -0.13174354687390075,
+            "off_epa": 0.4391346781664802,
+            "team_id": 99
+          },
+          {
+            "def_epa": 0.02298649423817687,
+            "off_epa": 0.39552206917833377,
+            "team_id": 12
+          },
+          {
+            "def_epa": 0.06911525565405033,
+            "off_epa": 0.3846466695069018,
+            "team_id": 2483
+          },
+          {
+            "def_epa": -0.027585969804070187,
+            "off_epa": 0.35087293143683373,
+            "team_id": 2305
+          },
+          {
+            "def_epa": 0.08417459610167204,
+            "off_epa": 0.34329072942344324,
+            "team_id": 333
+          },
+          {
+            "def_epa": 0.1145740775467847,
+            "off_epa": 0.33594000060743373,
+            "team_id": 61
+          },
+          {
+            "def_epa": 0.030383352422782256,
+            "off_epa": 0.32529169092171034,
+            "team_id": 264
+          },
+          {
+            "def_epa": -0.07605022281558832,
+            "off_epa": 0.31717339537904055,
+            "team_id": 2335
+          },
+          {
+            "def_epa": -0.008011534635120596,
+            "off_epa": 0.31363788010954724,
+            "team_id": 259
+          },
+          {
+            "def_epa": 0.08994669659742686,
+            "off_epa": 0.28958131354665495,
+            "team_id": 194
+          },
+          {
+            "def_epa": -0.025195388872520964,
+            "off_epa": 0.28822955919977566,
+            "team_id": 59
+          },
+          {
+            "def_epa": -0.1104520406919529,
+            "off_epa": 0.2769712756143531,
+            "team_id": 153
+          },
+          {
+            "def_epa": 0.18816164742143254,
+            "off_epa": 0.2700677079240752,
+            "team_id": 87
+          },
+          {
+            "def_epa": 0.05047069556862696,
+            "off_epa": 0.26192955356451064,
+            "team_id": 66
+          },
+          {
+            "def_epa": -0.15834139715440582,
+            "off_epa": 0.25750657956923184,
+            "team_id": 277
+          }
+        ]
+      },
+      "2024": {
+        "reason": "no history rows",
+        "status": "NOT_COMPUTED"
+      }
+    },
+    "e5_posterior_sd": {
+      "end_sd": 0.08072487817600386,
+      "plot": "docs\\notes\\_artifacts\\D1\\e5_posterior_sd.png",
+      "sd_col": "sd_off_epa",
+      "season": 2023,
+      "shrinks": 1,
+      "start_sd": 0.13307206730958762,
+      "team_id": 130
+    },
+    "filter_wall_clock_sec": 2.4501195999910124,
+    "innovation_stats_per_season": {
+      "2014": {
+        "mean_z": 0.03433799183097194,
+        "n": 3396,
+        "var_z": 0.6163787158996372
+      },
+      "2015": {
+        "mean_z": 0.006312246034870445,
+        "n": 3452,
+        "var_z": 0.6200252335902319
+      },
+      "2016": {
+        "mean_z": 0.007413415247173818,
+        "n": 3428,
+        "var_z": 0.6160176684464358
+      },
+      "2017": {
+        "mean_z": 0.0013581912407168697,
+        "n": 3476,
+        "var_z": 0.5699161109846461
+      },
+      "2018": {
+        "mean_z": 0.004006898099739193,
+        "n": 3524,
+        "var_z": 0.5699538521368068
+      },
+      "2019": {
+        "mean_z": 0.004849956399425304,
+        "n": 3548,
+        "var_z": 0.5394651320608261
+      },
+      "2020": {
+        "mean_z": -0.0009826978948762085,
+        "n": 2272,
+        "var_z": 0.5277675521782949
+      },
+      "2021": {
+        "mean_z": -0.0034069352631787737,
+        "n": 3548,
+        "var_z": 0.6382913310496593
+      },
+      "2022": {
+        "mean_z": -0.003890927914308787,
+        "n": 3584,
+        "var_z": 0.6223925854914613
+      },
+      "2023": {
+        "mean_z": -0.00605760027705537,
+        "n": 3640,
+        "var_z": 0.5689998515690514
+      }
+    },
+    "n_innovations": 33868,
+    "n_observations": 8467,
+    "update_ratio": 4.0
+  },
+  "block_f": {
+    "constant_test_columns": [
+      "completed",
+      "home_st_value",
+      "away_st_value",
+      "st_value_diff"
+    ],
+    "flagged_train_populated_test_null": [],
+    "near_constant_test_columns": [],
+    "null_rate_delta_sorted": [
+      {
+        "delta": 0.0,
+        "feature": "away_points",
+        "test_null": 0.0,
+        "train_null": 0.0
+      },
+      {
+        "delta": 0.0,
+        "feature": "away_team_id",
+        "test_null": 0.0,
+        "train_null": 0.0
+      },
+      {
+        "delta": 0.0,
+        "feature": "completed",
+        "test_null": 0.0,
+        "train_null": 0.0
+      },
+      {
+        "delta": 0.0,
+        "feature": "conference_game",
+        "test_null": 0.0,
+        "train_null": 0.0
+      },
+      {
+        "delta": 0.0,
+        "feature": "home_points",
+        "test_null": 0.0,
+        "train_null": 0.0
+      },
+      {
+        "delta": 0.0,
+        "feature": "home_team_id",
+        "test_null": 0.0,
+        "train_null": 0.0
+      },
+      {
+        "delta": 0.0,
+        "feature": "neutral_site",
+        "test_null": 0.0,
+        "train_null": 0.0
+      },
+      {
+        "delta": 0.0,
+        "feature": "venue_id",
+        "test_null": 0.0,
+        "train_null": 0.0
+      },
+      {
+        "delta": 0.0,
+        "feature": "home_off_epa",
+        "test_null": 0.0,
+        "train_null": 0.0
+      },
+      {
+        "delta": 0.0,
+        "feature": "away_off_epa",
+        "test_null": 0.0,
+        "train_null": 0.0
+      },
+      {
+        "delta": 0.0,
+        "feature": "off_epa_diff",
+        "test_null": 0.0,
+        "train_null": 0.0
+      },
+      {
+        "delta": 0.0,
+        "feature": "rating_diff_off_epa",
+        "test_null": 0.0,
+        "train_null": 0.0
+      },
+      {
+        "delta": 0.0,
+        "feature": "home_def_epa",
+        "test_null": 0.0,
+        "train_null": 0.0
+      },
+      {
+        "delta": 0.0,
+        "feature": "away_def_epa",
+        "test_null": 0.0,
+        "train_null": 0.0
+      },
+      {
+        "delta": 0.0,
+        "feature": "def_epa_diff",
+        "test_null": 0.0,
+        "train_null": 0.0
+      },
+      {
+        "delta": 0.0,
+        "feature": "rating_diff_def_epa",
+        "test_null": 0.0,
+        "train_null": 0.0
+      },
+      {
+        "delta": 0.0,
+        "feature": "home_st_value",
+        "test_null": 0.0,
+        "train_null": 0.0
+      },
+      {
+        "delta": 0.0,
+        "feature": "away_st_value",
+        "test_null": 0.0,
+        "train_null": 0.0
+      },
+      {
+        "delta": 0.0,
+        "feature": "st_value_diff",
+        "test_null": 0.0,
+        "train_null": 0.0
+      },
+      {
+        "delta": 0.0,
+        "feature": "home_pace",
+        "test_null": 0.0,
+        "train_null": 0.0
+      },
+      {
+        "delta": 0.0,
+        "feature": "away_pace",
+        "test_null": 0.0,
+        "train_null": 0.0
+      },
+      {
+        "delta": 0.0,
+        "feature": "pace_diff",
+        "test_null": 0.0,
+        "train_null": 0.0
+      },
+      {
+        "delta": 0.0,
+        "feature": "rating_uncertainty",
+        "test_null": 0.0,
+        "train_null": 0.0
+      }
+    ],
+    "psi_above_0_3": [
+      {
+        "feature": "home_pace",
+        "psi": 0.31262191043054366
+      },
+      {
+        "feature": "away_pace",
+        "psi": 0.30444472662642985
+      }
+    ]
+  },
+  "block_g": {
+    "isotonic_bins": {
+      "end_bin_counts": {
+        "left": 177,
+        "right": 91
+      },
+      "max_count": 179,
+      "median_count": 92.0,
+      "min_count": 43,
+      "n_bins": 9,
+      "note": "Fitted isotonic binning object not archived on prediction rows; counts above are equal-quantile bins of emitted p_ml_home.",
+      "oof_fit_n": "NOT_COMPUTED \u2014 calibrator OOF size not on prediction artifact"
+    },
+    "logloss_calibrated": 1.0880389773979942,
+    "logloss_uncalibrated_nofloor": 0.6438702389315798,
+    "worst10": [
+      {
+        "game_id": 401539475,
+        "logloss": 13.815510557964274,
+        "outcome": 1.0,
+        "p_cal": 1e-06,
+        "p_raw": 0.0825
+      },
+      {
+        "game_id": 401531924,
+        "logloss": 13.815510557964274,
+        "outcome": 1.0,
+        "p_cal": 1e-06,
+        "p_raw": 0.13
+      },
+      {
+        "game_id": 401524031,
+        "logloss": 13.815510557964274,
+        "outcome": 1.0,
+        "p_cal": 1e-06,
+        "p_raw": 0.25875
+      },
+      {
+        "game_id": 401525864,
+        "logloss": 13.815510557964274,
+        "outcome": 1.0,
+        "p_cal": 1e-06,
+        "p_raw": 0.275
+      },
+      {
+        "game_id": 401524034,
+        "logloss": 13.815510557964274,
+        "outcome": 1.0,
+        "p_cal": 1e-06,
+        "p_raw": 0.17
+      },
+      {
+        "game_id": 401525525,
+        "logloss": 13.815510557964274,
+        "outcome": 1.0,
+        "p_cal": 1e-06,
+        "p_raw": 0.0875
+      },
+      {
+        "game_id": 401531928,
+        "logloss": 13.815510557964274,
+        "outcome": 1.0,
+        "p_cal": 1e-06,
+        "p_raw": 0.0525
+      },
+      {
+        "game_id": 401532415,
+        "logloss": 13.815510557964274,
+        "outcome": 1.0,
+        "p_cal": 1e-06,
+        "p_raw": 0.19375
+      },
+      {
+        "game_id": 401525439,
+        "logloss": 13.815510557964274,
+        "outcome": 1.0,
+        "p_cal": 1e-06,
+        "p_raw": 0.22125
+      },
+      {
+        "game_id": 401525857,
+        "logloss": 13.815510557964274,
+        "outcome": 1.0,
+        "p_cal": 1e-06,
+        "p_raw": 0.095
+      }
+    ]
+  },
+  "block_h": {
+    "by_elo_disagreement_decile": {
+      "0.0": {
+        "mae": 14.54006208257269,
+        "mean_signed_bias": 1.7805428573214348,
+        "n": 91
+      },
+      "1.0": {
+        "mae": 13.49335691529944,
+        "mean_signed_bias": 5.44145425508223,
+        "n": 91
+      },
+      "2.0": {
+        "mae": 14.970144735510344,
+        "mean_signed_bias": 2.2593776517704955,
+        "n": 91
+      },
+      "3.0": {
+        "mae": 15.090185669490436,
+        "mean_signed_bias": -0.07258426690297824,
+        "n": 91
+      },
+      "4.0": {
+        "mae": 14.11715299914037,
+        "mean_signed_bias": 3.968056480961398,
+        "n": 91
+      },
+      "5.0": {
+        "mae": 17.27218886387757,
+        "mean_signed_bias": 6.861724926918838,
+        "n": 91
+      },
+      "6.0": {
+        "mae": 17.097879060778585,
+        "mean_signed_bias": 9.071971319750146,
+        "n": 91
+      },
+      "7.0": {
+        "mae": 18.95821479971893,
+        "mean_signed_bias": 10.602690764822734,
+        "n": 91
+      },
+      "8.0": {
+        "mae": 21.58718446216144,
+        "mean_signed_bias": 13.645690857973404,
+        "n": 91
+      },
+      "9.0": {
+        "mae": 18.92051828805975,
+        "mean_signed_bias": 7.53811342567841,
+        "n": 91
+      }
+    },
+    "by_neutral": {
+      "False": {
+        "mae": 16.686606820513017,
+        "mean_signed_bias": 6.450312381589003,
+        "n": 847
+      },
+      "True": {
+        "mae": 15.503346345983221,
+        "mean_signed_bias": 1.5304110424022304,
+        "n": 63
+      }
+    },
+    "by_season": {
+      "2023": {
+        "mae": 16.604688787660955,
+        "mean_signed_bias": 6.109703827337612,
+        "n": 910
+      }
+    },
+    "by_week": {
+      "1": {
+        "mae": 22.11764705882353,
+        "mean_signed_bias": 14.455882352941176,
+        "n": 136
+      },
+      "10": {
+        "mae": 12.892387501356673,
+        "mean_signed_bias": 3.5188676308083795,
+        "n": 65
+      },
+      "11": {
+        "mae": 14.841797344163833,
+        "mean_signed_bias": 3.376670025857849,
+        "n": 65
+      },
+      "12": {
+        "mae": 12.918846529191072,
+        "mean_signed_bias": 4.0341191222283515,
+        "n": 68
+      },
+      "13": {
+        "mae": 12.11225443845341,
+        "mean_signed_bias": -2.3294893675110844,
+        "n": 65
+      },
+      "14": {
+        "mae": 12.957899409936967,
+        "mean_signed_bias": 2.329005619238418,
+        "n": 10
+      },
+      "15": {
+        "mae": 1.5499243134366916,
+        "mean_signed_bias": -1.5499243134366916,
+        "n": 1
+      },
+      "2": {
+        "mae": 22.58823529411765,
+        "mean_signed_bias": 16.894117647058824,
+        "n": 85
+      },
+      "3": {
+        "mae": 22.866666666666667,
+        "mean_signed_bias": 12.573333333333334,
+        "n": 75
+      },
+      "4": {
+        "mae": 16.044776119402986,
+        "mean_signed_bias": 3.4776119402985075,
+        "n": 67
+      },
+      "5": {
+        "mae": 12.245210084314193,
+        "mean_signed_bias": 1.5481028743784173,
+        "n": 59
+      },
+      "6": {
+        "mae": 14.041948060576559,
+        "mean_signed_bias": 4.0066445211228725,
+        "n": 51
+      },
+      "7": {
+        "mae": 15.575515746699432,
+        "mean_signed_bias": 1.5495376515696992,
+        "n": 55
+      },
+      "8": {
+        "mae": 14.593538749757862,
+        "mean_signed_bias": -3.3612614704622477,
+        "n": 54
+      },
+      "9": {
+        "mae": 13.135676968444995,
+        "mean_signed_bias": 3.5108096350870626,
+        "n": 54
+      }
+    },
+    "favorite_size": {
+      "reason": "spread_close largely null on this eval set",
+      "status": "NOT_COMPUTED"
+    },
+    "p5_g5_fcs": {
+      "reason": "classification slice columns not on prediction artifact",
+      "status": "NOT_COMPUTED"
+    },
+    "roster_features_null": {
+      "reason": "roster feature null flag not on prediction artifact",
+      "status": "NOT_COMPUTED"
+    }
+  },
+  "created_at": "2026-08-05T19:49:03.758981+00:00",
+  "n_headline": 910,
+  "n_predictions": 910,
+  "predictions_path": "data/backtests/task23_fix_smoke/wiring_proof_2023/full/predictions.parquet",
+  "stopped_early": 0,
+  "structural_stop": {
+    "evidence": {},
+    "kind": "none",
+    "message": "no STOP-rule structural bug in A/B1"
+  },
+  "test_seasons": [
+    2023
+  ]
+}

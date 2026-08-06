@@ -1,0 +1,272 @@
+{
+  "comparison": [
+    {
+      "brier": 0.23384152765922045,
+      "crps": 12.443521143838801,
+      "log_loss": 0.6604730909803846,
+      "mae": 17.390243025014176,
+      "market_only": false,
+      "mean_predicted_sigma": 22.075448003519504,
+      "n": 5109.0,
+      "predictor": "constant_train_mean",
+      "r2": 0.0,
+      "realized_residual_sd": 22.0754480035195,
+      "residual_sd": 22.0754480035195,
+      "rmse": 22.0754480035195,
+      "sigma_ratio": 1.0000000000000002
+    },
+    {
+      "brier": 0.2022347237087145,
+      "crps": 11.224848682340314,
+      "log_loss": 0.5926375381976087,
+      "mae": 15.572464581858496,
+      "market_only": false,
+      "mean_predicted_sigma": 19.52435641830968,
+      "n": 5109.0,
+      "predictor": "elo",
+      "r2": 0.17586947058844704,
+      "realized_residual_sd": 19.524356418309672,
+      "residual_sd": 19.524356418309672,
+      "rmse": 20.040452680828153,
+      "sigma_ratio": 1.0000000000000004
+    },
+    {
+      "brier": 0.18783229029121679,
+      "crps": 10.59621496552466,
+      "log_loss": 0.5553282029597866,
+      "mae": 14.90299977557129,
+      "market_only": false,
+      "mean_predicted_sigma": 18.854691485412612,
+      "n": 5109.0,
+      "predictor": "L1_ols_rating_diff",
+      "r2": 0.2705092168672867,
+      "realized_residual_sd": 18.85469148541261,
+      "residual_sd": 18.85469148541261,
+      "rmse": 18.85469148541261,
+      "sigma_ratio": 1.0000000000000002
+    },
+    {
+      "brier": 0.1843255468357963,
+      "crps": 9.808759371460182,
+      "log_loss": 0.544023630409608,
+      "mae": 13.730882389702627,
+      "market_only": false,
+      "mean_predicted_sigma": 17.5164061888323,
+      "n": 5109.0,
+      "predictor": "lgbm_mu_alone",
+      "r2": 0.370357452007287,
+      "realized_residual_sd": 17.516406188832303,
+      "residual_sd": 17.516406188832303,
+      "rmse": 17.516872135923073,
+      "sigma_ratio": 0.9999999999999998
+    },
+    {
+      "brier": 0.18165546720784248,
+      "crps": 10.08357889064683,
+      "log_loss": 0.5421711192679773,
+      "mae": 14.170204201194013,
+      "market_only": false,
+      "mean_predicted_sigma": 17.802960842142628,
+      "n": 5109.0,
+      "nnls_weights": {
+        "enet_mu_margin": 0.5108106021171953,
+        "lgbm_mu_margin": 0.4891893978828047
+      },
+      "predictor": "nnls_ensemble_mu",
+      "r2": 0.339273659112038,
+      "realized_residual_sd": 17.802960842142628,
+      "residual_sd": 17.802960842142628,
+      "rmse": 17.944044454194078,
+      "sigma_ratio": 1.0
+    },
+    {
+      "brier": 0.1860066601017918,
+      "crps": 9.892143904551439,
+      "log_loss": 0.5522751742933478,
+      "mae": 13.730882389702627,
+      "market_only": false,
+      "mean_predicted_sigma": 14.0,
+      "n": 5109.0,
+      "predictor": "published_mu_uncalibrated",
+      "r2": 0.370357452007287,
+      "realized_residual_sd": 17.516406188832303,
+      "residual_sd": 17.516406188832303,
+      "rmse": 17.516872135923073,
+      "sigma_ratio": 0.7992507052574397
+    },
+    {
+      "brier": 0.1860066601017918,
+      "crps": 9.892143904551439,
+      "log_loss": 0.5522751742933478,
+      "mae": 13.730882389702627,
+      "market_only": false,
+      "mean_predicted_sigma": 14.0,
+      "n": 5109.0,
+      "note": "point \u03bc unchanged; probability calibration is D3 \u2014 not refit here",
+      "predictor": "published_mu_calibrated",
+      "r2": 0.370357452007287,
+      "realized_residual_sd": 17.516406188832303,
+      "residual_sd": 17.516406188832303,
+      "rmse": 17.516872135923073,
+      "sigma_ratio": 0.7992507052574397
+    },
+    {
+      "brier": 0.16313269839283967,
+      "crps": 8.692891209225916,
+      "log_loss": 0.4908988798004101,
+      "mae": 12.227191413237925,
+      "market_only": true,
+      "mean_predicted_sigma": 15.45373275702839,
+      "n": 559.0,
+      "predictor": "devigged_market",
+      "r2": 0.504567085249715,
+      "realized_residual_sd": 15.453732757028394,
+      "residual_sd": 15.453732757028394,
+      "rmse": 15.4598707259231,
+      "sigma_ratio": 0.9999999999999998
+    }
+  ],
+  "composition": {
+    "fcs_rule": "include",
+    "n_by_season": {
+      "2019": 563,
+      "2021": 887,
+      "2022": 896,
+      "2023": 910,
+      "2024": 920,
+      "2025": 934
+    },
+    "n_fbs_vs_fbs": 4506,
+    "n_total": 5110,
+    "n_with_market_line": 559,
+    "sd_y_full": 22.0754480035195,
+    "sd_y_market_overlap": 21.964100893072423,
+    "seasons": [
+      2019,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+    ]
+  },
+  "config": "configs\\eval\\canonical.yaml",
+  "l1_vs_ensemble_finding": {
+    "d1_expected_range": [
+      0.2,
+      0.5
+    ],
+    "ensemble_mae": 13.730882389702627,
+    "ensemble_predictor": "lgbm_mu_alone",
+    "holds": false,
+    "l1_mae": 14.90299977557129,
+    "mae_gap_l1_minus_ensemble": 1.1721173858686633,
+    "statement": "Feature stack + GBDT ensemble MAE improvement over L1 OLS is 1.172 points (L1=14.903, lgbm_mu_alone=13.731).",
+    "status": "ok"
+  },
+  "name": "canonical_v1",
+  "nnls_fold_reports": [
+    {
+      "condition_number": 3.33352379877405,
+      "fold": "diagnostic_clean_canonical",
+      "lgbm_weight": 0.4891893978828047,
+      "n_oof_rows": 5109,
+      "note": "LightGBM weight=0.489; design \u00a75.2 expects LGBM-dominant Level-0 stack",
+      "weights": {
+        "enet_mu_margin": 0.5108106021171953,
+        "lgbm_mu_margin": 0.4891893978828047
+      }
+    }
+  ],
+  "quality_gate": {
+    "artifact": "data\\backtests\\task23_fundamental\\fundamental\\predictions.parquet",
+    "clean_excluding_2019_w1_4": {
+      "failures": [],
+      "max_zero_mu_rate": 0.001,
+      "min_n_train_games": 500,
+      "min_train_games_required": 50,
+      "n_null_mu": 0,
+      "n_scored": 5110,
+      "n_zero_sd_blocks": 0,
+      "passed": true,
+      "zero_mu_rate": 0.0,
+      "zero_sd_blocks": []
+    },
+    "full_table": {
+      "failures": [
+        "zero_mu_rate=0.059798 > max_zero_mu_rate=0.001",
+        "SD(mu)=0 in 4 (season, week) block(s): [(2019, 1), (2019, 2), (2019, 3), (2019, 4)]"
+      ],
+      "max_zero_mu_rate": 0.001,
+      "min_n_train_games": 500,
+      "min_train_games_required": 50,
+      "n_null_mu": 0,
+      "n_scored": 5435,
+      "n_zero_sd_blocks": 4,
+      "passed": false,
+      "zero_mu_rate": 0.05979760809567617,
+      "zero_sd_blocks": [
+        [
+          2019,
+          1
+        ],
+        [
+          2019,
+          2
+        ],
+        [
+          2019,
+          3
+        ],
+        [
+          2019,
+          4
+        ]
+      ]
+    },
+    "note": "Archived task23_fundamental fails the gate on the full table because 2019 weeks 1\u20134 emit pred_margin=0 (legacy BasePredictor._unfitted_predictions). Excluding that poisoned cold-start block, the gate passes."
+  },
+  "sd_y": 22.0754480035195,
+  "sd_y_market_overlap": 21.964100893072423,
+  "sigma_diagnostics": {
+    "coverage": {
+      "0.5": {
+        "coverage": 0.4321785085143864,
+        "mean_width": 18.885713005490285,
+        "n": 5109.0,
+        "nominal": 0.5
+      },
+      "0.8": {
+        "coverage": 0.7110980622431005,
+        "mean_width": 35.88344383524882,
+        "n": 5109.0,
+        "nominal": 0.8
+      },
+      "0.95": {
+        "coverage": 0.8841260520649834,
+        "mean_width": 54.878991567121496,
+        "n": 5109.0,
+        "nominal": 0.95
+      }
+    },
+    "mean_predicted_sigma": 14.0,
+    "n": 5109,
+    "pit_histogram": [
+      761,
+      503,
+      399,
+      421,
+      428,
+      467,
+      452,
+      447,
+      516,
+      715
+    ],
+    "pit_mean": 0.5000684778169165,
+    "realized_residual_sd": 17.516406188832303,
+    "sigma_ratio": 0.7992507052574397
+  },
+  "source_predictions": "data\\backtests\\task23_fundamental\\fundamental\\predictions_enriched.parquet",
+  "source_predictions_sha256": "4ca7385a46b204126c6060e31bef837e5cf074cfd70e7e0c7726b507c6a15161"
+}

@@ -1,0 +1,57 @@
+{
+  "alpha": 0.1,
+  "calibration_passed": true,
+  "calibration_slope": 1.0,
+  "calibration_slope_high": 1.15,
+  "calibration_slope_low": 0.85,
+  "candidate_version": 2,
+  "champion_version": 1,
+  "created_at": "2026-08-05T12:17:59Z",
+  "force_override": false,
+  "leakage_passed": true,
+  "metric_results": [
+    {
+      "alpha": 0.1,
+      "beats_incumbent": false,
+      "candidate_mean": 9.503973562582267,
+      "champion_mean": 8.003973562582265,
+      "direction": "lower",
+      "n": 60,
+      "n_boot": 499,
+      "name": "crps",
+      "p_value": 1.0,
+      "paired_diff_mean": -1.5
+    },
+    {
+      "alpha": 0.1,
+      "beats_incumbent": false,
+      "candidate_mean": 0.7298599560776532,
+      "champion_mean": 0.6498599560776531,
+      "direction": "lower",
+      "n": 60,
+      "n_boot": 499,
+      "name": "log_loss",
+      "p_value": 1.0,
+      "paired_diff_mean": -0.07999999999999997
+    },
+    {
+      "alpha": 0.1,
+      "beats_incumbent": false,
+      "candidate_mean": -0.04017720389284059,
+      "champion_mean": -0.00017720389284058596,
+      "direction": "higher",
+      "n": 60,
+      "n_boot": 499,
+      "name": "clv",
+      "p_value": 1.0,
+      "paired_diff_mean": -0.04000000000000001
+    }
+  ],
+  "override_record": null,
+  "passed": false,
+  "reason": "metrics failed significance gate: ['crps', 'log_loss', 'clv']",
+  "seasons": [
+    2022,
+    2023
+  ]
+}

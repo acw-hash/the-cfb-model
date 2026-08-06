@@ -1,0 +1,127 @@
+{
+  "composition": {
+    "fcs_rule": "include",
+    "n_by_season": {
+      "2019": 563,
+      "2021": 887,
+      "2022": 896,
+      "2023": 910,
+      "2024": 920,
+      "2025": 934
+    },
+    "n_fbs_vs_fbs": 4506,
+    "n_total": 5110,
+    "n_with_market_line": 559,
+    "sd_y_full": 22.0754480035195,
+    "sd_y_market_overlap": 21.964100893072423,
+    "seasons": [
+      2019,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+    ]
+  },
+  "d3_results_sha256": "2ced5c4c3bc725b73562e5b35a94431431ef18687cd5d88aff126792efd19a70",
+  "exclusion": {
+    "2019_weeks_1_4": "excluded_by_definition",
+    "reason": "2019 weeks 1\u20134 excluded by definition (legacy unfitted zero-\u03bc cold start). Not an expected failure \u2014 those weeks are outside the scored universe."
+  },
+  "name": "canonical_v2",
+  "quality_gate": {
+    "artifact": "C:\\Users\\alecw\\Projects\\the-cfb-model\\data\\backtests\\task23_fundamental\\fundamental\\predictions.parquet",
+    "clean_excluding_2019_w1_4": {
+      "failures": [],
+      "max_zero_mu_rate": 0.001,
+      "min_n_train_games": 500,
+      "min_train_games_required": 50,
+      "n_null_mu": 0,
+      "n_scored": 5110,
+      "n_zero_sd_blocks": 0,
+      "passed": true,
+      "zero_mu_rate": 0.0,
+      "zero_sd_blocks": []
+    },
+    "full_table": {
+      "failures": [
+        "zero_mu_rate=0.059798 > max_zero_mu_rate=0.001",
+        "SD(mu)=0 in 4 (season, week) block(s): [(2019, 1), (2019, 2), (2019, 3), (2019, 4)]"
+      ],
+      "max_zero_mu_rate": 0.001,
+      "min_n_train_games": 500,
+      "min_train_games_required": 50,
+      "n_null_mu": 0,
+      "n_scored": 5435,
+      "n_zero_sd_blocks": 4,
+      "passed": false,
+      "zero_mu_rate": 0.05979760809567617,
+      "zero_sd_blocks": [
+        [
+          2019,
+          1
+        ],
+        [
+          2019,
+          2
+        ],
+        [
+          2019,
+          3
+        ],
+        [
+          2019,
+          4
+        ]
+      ]
+    },
+    "note": "Archived task23_fundamental fails the gate on the full table because 2019 weeks 1\u20134 emit pred_margin=0 (legacy BasePredictor._unfitted_predictions). Excluding that poisoned cold-start block, the gate passes."
+  },
+  "sha256_of_prior": "c39f00cbc1111e5a8076ee9e26414ce3d791bdf39bc751b95a472e82cde04c55",
+  "sigma_diagnostics_corrected": {
+    "coverage": {
+      "0.5": {
+        "coverage": 0.5139949109414759,
+        "mean_width": 23.66973110306418,
+        "n": 5109.0,
+        "nominal": 0.5
+      },
+      "0.8": {
+        "coverage": 0.8075944411822275,
+        "mean_width": 44.97322745428405,
+        "n": 5109.0,
+        "nominal": 0.8
+      },
+      "0.95": {
+        "coverage": 0.9461734194558622,
+        "mean_width": 68.7806159726915,
+        "n": 5109.0,
+        "nominal": 0.95
+      }
+    },
+    "mean_predicted_sigma": 17.546397922417,
+    "n": 5109,
+    "pit_histogram": [
+      529,
+      477,
+      472,
+      519,
+      515,
+      578,
+      545,
+      512,
+      508,
+      454
+    ],
+    "pit_ks": {
+      "pvalue": 0.15688347239690736,
+      "statistic": 0.015749019415136734
+    },
+    "pit_mean": 0.49941481929343956,
+    "realized_residual_sd": 17.516406188832303,
+    "resid_over_pred_ratio": 0.9982907184872184,
+    "sigma_ratio": 1.001712208158533
+  },
+  "source_predictions": "data/backtests/task23_fundamental/fundamental/predictions_enriched.parquet",
+  "source_predictions_sha256": "4ca7385a46b204126c6060e31bef837e5cf074cfd70e7e0c7726b507c6a15161"
+}

@@ -1,0 +1,771 @@
+{
+  "canonical_v2_sha": "ebb9ce08a6b6534f41392ab5402d7b0ea26f775b89a8c9098b873cb7642cef70",
+  "stop_rule_verbatim": "if after the powered sample the joint b2 CI lies entirely below +0.05 (no material positive weight on stack \u03bc) or fewer than 3 seasons show reliable positive b2, stop pursuing a fundamental-model betting edge and treat the market-aware / residual stack as the betting workhorse.",
+  "join": {
+    "n_rows": 5110,
+    "n_filled": 4524,
+    "n_kept_existing": 559,
+    "n_still_missing": 27,
+    "n_cfbd_close_games": 12647,
+    "gap_root_cause": "walkforward resolve_lines_for_games gated seasons>=2021 to Odds snapshots only; task23 backtest passed snapshots=None \u2192 null spread_close/total_close on 2021\u20132025 despite CFBD closes in lines_historical 2014\u20132025. Not a schema change; partition was materialized but never joined for snapshot-backed seasons.",
+    "source_tag": "cfbd_close_eval",
+    "eval_only": true
+  },
+  "coverage": {
+    "by_season": {
+      "2019": {
+        "n_canonical": 563,
+        "n_spread_close": 559,
+        "n_total_close": 559,
+        "n_both": 559,
+        "frac_spread_close": 0.9928952042628775,
+        "frac_total_close": 0.9928952042628775
+      },
+      "2021": {
+        "n_canonical": 887,
+        "n_spread_close": 887,
+        "n_total_close": 887,
+        "n_both": 887,
+        "frac_spread_close": 1.0,
+        "frac_total_close": 1.0
+      },
+      "2022": {
+        "n_canonical": 896,
+        "n_spread_close": 892,
+        "n_total_close": 892,
+        "n_both": 892,
+        "frac_spread_close": 0.9955357142857143,
+        "frac_total_close": 0.9955357142857143
+      },
+      "2023": {
+        "n_canonical": 910,
+        "n_spread_close": 907,
+        "n_total_close": 907,
+        "n_both": 907,
+        "frac_spread_close": 0.9967032967032967,
+        "frac_total_close": 0.9967032967032967
+      },
+      "2024": {
+        "n_canonical": 920,
+        "n_spread_close": 904,
+        "n_total_close": 903,
+        "n_both": 903,
+        "frac_spread_close": 0.9826086956521739,
+        "frac_total_close": 0.9815217391304348
+      },
+      "2025": {
+        "n_canonical": 934,
+        "n_spread_close": 934,
+        "n_total_close": 934,
+        "n_both": 934,
+        "frac_spread_close": 1.0,
+        "frac_total_close": 1.0
+      }
+    },
+    "total_n_canonical": 5110,
+    "total_n_with_spread_close": 5083,
+    "frac_spread_close": 0.9947162426614481
+  },
+  "validation": {
+    "spread_abs_lt_70": true,
+    "totals_in_20_100": true,
+    "n_finite_spread": 5083,
+    "n_finite_total": 5082,
+    "n_spread_out_of_range": 0,
+    "n_total_out_of_range": 0,
+    "spread_by_season": {
+      "2019": {
+        "n": 559,
+        "mean": -3.759391771019678,
+        "std": 15.149723141297484,
+        "p10": -23.5,
+        "p50": -3.5,
+        "p90": 14.0
+      },
+      "2021": {
+        "n": 887,
+        "mean": -7.057215332581737,
+        "std": 16.334813661057048,
+        "p10": -30.0,
+        "p50": -4.5,
+        "p90": 12.5
+      },
+      "2022": {
+        "n": 892,
+        "mean": -7.6499439461883405,
+        "std": 15.881321611186337,
+        "p10": -30.949999999999996,
+        "p50": -6.0,
+        "p90": 10.949999999999989
+      },
+      "2023": {
+        "n": 907,
+        "mean": -7.169239250275634,
+        "std": 15.649773301318811,
+        "p10": -28.5,
+        "p50": -4.5,
+        "p90": 10.099999999999994
+      },
+      "2024": {
+        "n": 904,
+        "mean": -7.027378318584071,
+        "std": 15.306018716353728,
+        "p10": -28.5,
+        "p50": -4.5,
+        "p90": 10.5
+      },
+      "2025": {
+        "n": 934,
+        "mean": -7.837259100642398,
+        "std": 15.812544094217793,
+        "p10": -30.5,
+        "p50": -5.5,
+        "p90": 10.0
+      }
+    },
+    "passed": true,
+    "spot_check": {
+      "n": 25,
+      "n_match": 25,
+      "match_rate": 1.0,
+      "rows": [
+        {
+          "game_id": 401643845,
+          "joined_spread": -0.5,
+          "raw_cfbd_spread": -0.5,
+          "joined_total": 53.0,
+          "raw_cfbd_total": 53.0,
+          "spread_match": true
+        },
+        {
+          "game_id": 401754559,
+          "joined_spread": -10.5,
+          "raw_cfbd_spread": -10.5,
+          "joined_total": 57.0,
+          "raw_cfbd_total": 57.0,
+          "spread_match": true
+        },
+        {
+          "game_id": 401112225,
+          "joined_spread": -27.5,
+          "raw_cfbd_spread": -27.5,
+          "joined_total": 48.5,
+          "raw_cfbd_total": 48.5,
+          "spread_match": true
+        },
+        {
+          "game_id": 401520246,
+          "joined_spread": -7.0,
+          "raw_cfbd_spread": -7.0,
+          "joined_total": 43.5,
+          "raw_cfbd_total": 43.5,
+          "spread_match": true
+        },
+        {
+          "game_id": 401532575,
+          "joined_spread": -10.5,
+          "raw_cfbd_spread": -10.5,
+          "joined_total": 58.5,
+          "raw_cfbd_total": 58.5,
+          "spread_match": true
+        },
+        {
+          "game_id": 401112219,
+          "joined_spread": -13.5,
+          "raw_cfbd_spread": -13.5,
+          "joined_total": 44.0,
+          "raw_cfbd_total": 44.0,
+          "spread_match": true
+        },
+        {
+          "game_id": 401114277,
+          "joined_spread": -10.0,
+          "raw_cfbd_spread": -10.0,
+          "joined_total": 43.5,
+          "raw_cfbd_total": 43.5,
+          "spread_match": true
+        },
+        {
+          "game_id": 401756929,
+          "joined_spread": -7.5,
+          "raw_cfbd_spread": -7.5,
+          "joined_total": 47.0,
+          "raw_cfbd_total": 47.0,
+          "spread_match": true
+        },
+        {
+          "game_id": 401301053,
+          "joined_spread": -5.5,
+          "raw_cfbd_spread": -5.5,
+          "joined_total": 58.0,
+          "raw_cfbd_total": 58.0,
+          "spread_match": true
+        },
+        {
+          "game_id": 401634306,
+          "joined_spread": -16.5,
+          "raw_cfbd_spread": -16.5,
+          "joined_total": 51.5,
+          "raw_cfbd_total": 51.5,
+          "spread_match": true
+        },
+        {
+          "game_id": 401442013,
+          "joined_spread": -1.5,
+          "raw_cfbd_spread": -1.5,
+          "joined_total": 66.5,
+          "raw_cfbd_total": 66.5,
+          "spread_match": true
+        },
+        {
+          "game_id": 401119281,
+          "joined_spread": 17.5,
+          "raw_cfbd_spread": 17.5,
+          "joined_total": 47.5,
+          "raw_cfbd_total": 47.5,
+          "spread_match": true
+        },
+        {
+          "game_id": 401531371,
+          "joined_spread": 4.5,
+          "raw_cfbd_spread": 4.5,
+          "joined_total": 55.0,
+          "raw_cfbd_total": 55.0,
+          "spread_match": true
+        },
+        {
+          "game_id": 401520295,
+          "joined_spread": 6.0,
+          "raw_cfbd_spread": 6.0,
+          "joined_total": 59.0,
+          "raw_cfbd_total": 59.0,
+          "spread_match": true
+        },
+        {
+          "game_id": 401301009,
+          "joined_spread": -23.5,
+          "raw_cfbd_spread": -23.5,
+          "joined_total": 54.5,
+          "raw_cfbd_total": 54.5,
+          "spread_match": true
+        },
+        {
+          "game_id": 401632068,
+          "joined_spread": -18.5,
+          "raw_cfbd_spread": -18.5,
+          "joined_total": 59.5,
+          "raw_cfbd_total": 59.5,
+          "spread_match": true
+        },
+        {
+          "game_id": 401760414,
+          "joined_spread": -4.5,
+          "raw_cfbd_spread": -4.5,
+          "joined_total": 68.5,
+          "raw_cfbd_total": 68.5,
+          "spread_match": true
+        },
+        {
+          "game_id": 401532450,
+          "joined_spread": 2.5,
+          "raw_cfbd_spread": 2.5,
+          "joined_total": 51.5,
+          "raw_cfbd_total": 51.5,
+          "spread_match": true
+        },
+        {
+          "game_id": 401310748,
+          "joined_spread": -27.5,
+          "raw_cfbd_spread": -27.5,
+          "joined_total": 48.0,
+          "raw_cfbd_total": 48.0,
+          "spread_match": true
+        },
+        {
+          "game_id": 401415638,
+          "joined_spread": 13.5,
+          "raw_cfbd_spread": 13.5,
+          "joined_total": 53.5,
+          "raw_cfbd_total": 53.5,
+          "spread_match": true
+        },
+        {
+          "game_id": 401635575,
+          "joined_spread": -3.5,
+          "raw_cfbd_spread": -3.5,
+          "joined_total": 57.5,
+          "raw_cfbd_total": 57.5,
+          "spread_match": true
+        },
+        {
+          "game_id": 401531346,
+          "joined_spread": -3.0,
+          "raw_cfbd_spread": -3.0,
+          "joined_total": 44.25,
+          "raw_cfbd_total": 44.25,
+          "spread_match": true
+        },
+        {
+          "game_id": 401752693,
+          "joined_spread": -36.75,
+          "raw_cfbd_spread": -36.75,
+          "joined_total": 52.5,
+          "raw_cfbd_total": 52.5,
+          "spread_match": true
+        },
+        {
+          "game_id": 401525892,
+          "joined_spread": 2.5,
+          "raw_cfbd_spread": 2.5,
+          "joined_total": 64.0,
+          "raw_cfbd_total": 64.0,
+          "spread_match": true
+        },
+        {
+          "game_id": 401673467,
+          "joined_spread": -2.5,
+          "raw_cfbd_spread": -2.5,
+          "joined_total": 44.0,
+          "raw_cfbd_total": 44.0,
+          "spread_match": true
+        }
+      ]
+    }
+  },
+  "priced_vs_pooled": {
+    "pooled_mae": 13.730882389702627,
+    "mae_2019": 14.198394689304184,
+    "n_2019": 563,
+    "n_pooled": 5109,
+    "unpriced_2019_n": 4,
+    "note": "2019 is the stack's worst season (14.20 vs 13.73 pooled), consistent with it being the earliest season, the shortest Stage-1 history, and the smallest training window. The D4 encompassing test therefore ran on the least favorable season available. n=4 unpriced games within 2019 supports no comparison."
+  },
+  "expected_possessions": {
+    "death_point": "registered_and_not_materialized",
+    "registry": "present",
+    "builder": "ncaa_quant.features.builders.tempo.ExpectedPossessionsFeatureBuilder",
+    "materialized_files": [],
+    "note": "Feature is registered (registry.yaml) and coded (tempo.py) but data/features has no expected_possessions partitions; D4/D5 sigma revive NaN-fills the column (null rate 1.0). Builder requires a fitted ExpectedPossessionsArtifact; CLI `features` is NotImplemented. Defer materialization \u2014 not a join bug.",
+    "fix": false,
+    "deferred": true
+  },
+  "uncalibrated": {
+    "ml": {
+      "n": 5109,
+      "log_loss": 0.5522751742933478
+    },
+    "ats_close": {
+      "n": 4998,
+      "log_loss": 0.8126680196506677
+    },
+    "ou_close": {
+      "n": 5024,
+      "log_loss": 0.7373194325007608
+    }
+  },
+  "sign_gate": {
+    "ats_close": {
+      "n": 4998.0,
+      "log_loss": 0.8126680196506677,
+      "log_loss_inverted": 0.8965082171543441,
+      "sign_gate_fail": 0.0,
+      "skill_flag": 0.0,
+      "sd_mu_minus_market": 10.107395144490084,
+      "chance_log_loss": 0.6931471805599453
+    },
+    "ou_close": {
+      "n": 5024.0,
+      "log_loss": 0.7373194325007608,
+      "log_loss_inverted": 0.793188835056071,
+      "sign_gate_fail": 0.0,
+      "skill_flag": 0.0,
+      "sd_mu_minus_market": 6.404756293345078,
+      "chance_log_loss": 0.6931471805599453
+    }
+  },
+  "sigma_bakeoff_cis": {
+    "bakeoff_table": [
+      {
+        "scheme": "S0",
+        "n": 4546,
+        "crps": 9.771567063199758,
+        "log_score": 4.278847353528091,
+        "mean_sigma": 17.706745725420376
+      },
+      {
+        "scheme": "S1",
+        "n": 4546,
+        "crps": 9.84759968166576,
+        "log_score": 4.33528740286611,
+        "mean_sigma": 14.0
+      },
+      {
+        "scheme": "S2",
+        "n": 4546,
+        "crps": 9.771567063199758,
+        "log_score": 4.278847353528091,
+        "mean_sigma": 17.706745725420376
+      },
+      {
+        "scheme": "S3",
+        "n": 4546,
+        "crps": 9.846756555720228,
+        "log_score": 4.334857607404883,
+        "mean_sigma": 14.003409287736604
+      },
+      {
+        "scheme": "S4",
+        "n": 4546,
+        "crps": 9.74616213149018,
+        "log_score": 4.270252435310561,
+        "mean_sigma": 17.591626263276993
+      }
+    ],
+    "pairwise_crps_delta": {
+      "S1_minus_S0": {
+        "delta_crps": 0.07603261846600162,
+        "ci_low": 0.03626065991869365,
+        "ci_high": 0.11675119571302792,
+        "n": 4546,
+        "overlaps_zero": false
+      },
+      "S4_minus_S0": {
+        "delta_crps": -0.025404931709577028,
+        "ci_low": -0.04011574716510076,
+        "ci_high": -0.010268304293055674,
+        "n": 4546,
+        "overlaps_zero": false
+      },
+      "S4_minus_S1": {
+        "delta_crps": -0.10143755017557865,
+        "ci_low": -0.1425062093493305,
+        "ci_high": -0.06324610678449746,
+        "n": 4546,
+        "overlaps_zero": false
+      }
+    },
+    "indistinguishable": false,
+    "recommendation": "Prefer S4 on CRPS (paired CIs separate schemes).",
+    "prefer": "S4",
+    "mean_check": {
+      "S0": {
+        "per_game_mean": 9.771567063199758,
+        "bakeoff_crps": 9.771567063199758,
+        "matches": true
+      },
+      "S1": {
+        "per_game_mean": 9.84759968166576,
+        "bakeoff_crps": 9.84759968166576,
+        "matches": true
+      },
+      "S4": {
+        "per_game_mean": 9.74616213149018,
+        "bakeoff_crps": 9.74616213149018,
+        "matches": true
+      }
+    }
+  },
+  "encompassing": {
+    "canonical_v2_sha": "ebb9ce08a6b6534f41392ab5402d7b0ea26f775b89a8c9098b873cb7642cef70",
+    "config": {
+      "seasons": [
+        2019,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "line_column": "spread_close",
+      "market_implied_sign": -1.0,
+      "n_boot": 1000,
+      "seed": 0,
+      "min_games_per_season": 400,
+      "train_seasons": null,
+      "test_seasons": null,
+      "substantial_b2": 0.1,
+      "stability_min_seasons_positive": 3
+    },
+    "joint": {
+      "b1": 0.871212051940331,
+      "b2": 0.21100466125907252,
+      "se_b1": 0.03944830155548744,
+      "se_b2": 0.06193500838329644,
+      "p_b2": 0.0,
+      "a": -0.4392569846826865,
+      "n": 5083,
+      "verdict": "b2 reliably > 0 \u2192 the model carries information the closing line does not. That is the entire basis for a bet.",
+      "ci95": {
+        "low": 0.08961427544562518,
+        "high": 0.3323950470725199,
+        "estimate": 0.21100466125907252,
+        "alpha": 0.05
+      },
+      "verdict_underpowered": "b2 reliably > 0 \u2192 the model carries information the closing line does not. That is the entire basis for a bet.",
+      "stack_mae": 13.755608314473685,
+      "market_mae": 12.145337399173716
+    },
+    "residual_on_residual": {
+      "slope": 0.14020268629500077,
+      "r2": 0.008565525376705407,
+      "corr": 0.09255012359097815,
+      "n": 5083.0
+    },
+    "optimal_combination": {
+      "w": 0.15,
+      "mae_combined": 12.102681108595139,
+      "mae_market": 12.145337399173716,
+      "delta_mae": -0.04265629057857723,
+      "delta_ci": {
+        "low": -0.1269528192949394,
+        "high": 0.03984717092314377,
+        "estimate": -0.04265629057857723
+      },
+      "n": 5083,
+      "note": "w fit on full sample; delta CI is paired week-block bootstrap"
+    },
+    "per_season": {
+      "2019": {
+        "b1": 0.9821638788368741,
+        "b2": 0.06292528928545282,
+        "se_b1": 0.09030622489198864,
+        "se_b2": 0.10687082615989534,
+        "p_b2": 0.56,
+        "a": -0.0077373504550781475,
+        "n": 559,
+        "verdict": "UNDERPOWERED (n=559): b2=0.0629 (SE 0.1069, p=0.5600); 95% CI [-0.147, 0.272] still contains |b2|\u22650.10 \u2014 cannot claim the market encompasses the model.",
+        "ci95": {
+          "low": -0.14653768098598308,
+          "high": 0.2723882595568887,
+          "estimate": 0.06292528928545282,
+          "alpha": 0.05
+        },
+        "verdict_underpowered": "UNDERPOWERED (n=559): b2=0.0629 (SE 0.1069, p=0.5600); 95% CI [-0.147, 0.272] still contains |b2|\u22650.1 \u2014 cannot claim the market encompasses the model, nor claim an edge.",
+        "n_games": 559,
+        "meets_min_games": true
+      },
+      "2021": {
+        "b1": 0.8439904276894283,
+        "b2": 0.2327061280379697,
+        "se_b1": 0.08875193691996806,
+        "se_b2": 0.13765491160716503,
+        "p_b2": 0.078,
+        "a": -1.1896841721114806,
+        "n": 887,
+        "verdict": "b2 reliably > 0 \u2192 the model carries information the closing line does not. That is the entire basis for a bet.",
+        "ci95": {
+          "low": -0.037092541007118396,
+          "high": 0.5025047970830578,
+          "estimate": 0.2327061280379697,
+          "alpha": 0.05
+        },
+        "verdict_underpowered": "b2 reliably > 0 \u2192 the model carries information the closing line does not. That is the entire basis for a bet.",
+        "n_games": 887,
+        "meets_min_games": true
+      },
+      "2022": {
+        "b1": 0.8648281819050697,
+        "b2": 0.18973050107303746,
+        "se_b1": 0.09240504196089395,
+        "se_b2": 0.1854092278812532,
+        "p_b2": 0.602,
+        "a": -0.7438795653533928,
+        "n": 892,
+        "verdict": "UNDERPOWERED (n=892): b2=0.1897 (SE 0.1854, p=0.6020); 95% CI [-0.174, 0.553] still contains |b2|\u22650.10 \u2014 cannot claim the market encompasses the model.",
+        "ci95": {
+          "low": -0.17366490797559841,
+          "high": 0.5531259101216733,
+          "estimate": 0.18973050107303746,
+          "alpha": 0.05
+        },
+        "verdict_underpowered": "UNDERPOWERED (n=892): b2=0.1897 (SE 0.1854, p=0.6020); 95% CI [-0.174, 0.553] still contains |b2|\u22650.1 \u2014 cannot claim the market encompasses the model, nor claim an edge.",
+        "n_games": 892,
+        "meets_min_games": true
+      },
+      "2023": {
+        "b1": 0.8571418416285321,
+        "b2": 0.22208777469710805,
+        "se_b1": 0.0884989551154924,
+        "se_b2": 0.13769215359540002,
+        "p_b2": 0.136,
+        "a": -0.6488863470149996,
+        "n": 907,
+        "verdict": "UNDERPOWERED (n=907): b2=0.2221 (SE 0.1377, p=0.1360); 95% CI [-0.048, 0.492] still contains |b2|\u22650.10 \u2014 cannot claim the market encompasses the model.",
+        "ci95": {
+          "low": -0.04778388730363331,
+          "high": 0.4919594366978494,
+          "estimate": 0.22208777469710805,
+          "alpha": 0.05
+        },
+        "verdict_underpowered": "UNDERPOWERED (n=907): b2=0.2221 (SE 0.1377, p=0.1360); 95% CI [-0.048, 0.492] still contains |b2|\u22650.1 \u2014 cannot claim the market encompasses the model, nor claim an edge.",
+        "n_games": 907,
+        "meets_min_games": true
+      },
+      "2024": {
+        "b1": 0.8781487320748835,
+        "b2": 0.21289176408335392,
+        "se_b1": 0.10550367493612324,
+        "se_b2": 0.16243447282377363,
+        "p_b2": 0.438,
+        "a": 0.2682079949373039,
+        "n": 904,
+        "verdict": "UNDERPOWERED (n=904): b2=0.2129 (SE 0.1624, p=0.4380); 95% CI [-0.105, 0.531] still contains |b2|\u22650.10 \u2014 cannot claim the market encompasses the model.",
+        "ci95": {
+          "low": -0.10547395249899255,
+          "high": 0.5312574806657004,
+          "estimate": 0.21289176408335392,
+          "alpha": 0.05
+        },
+        "verdict_underpowered": "UNDERPOWERED (n=904): b2=0.2129 (SE 0.1624, p=0.4380); 95% CI [-0.105, 0.531] still contains |b2|\u22650.1 \u2014 cannot claim the market encompasses the model, nor claim an edge.",
+        "n_games": 904,
+        "meets_min_games": true
+      },
+      "2025": {
+        "b1": 0.8554729553566939,
+        "b2": 0.2806508220538402,
+        "se_b1": 0.09920299128046503,
+        "se_b2": 0.1342087365215438,
+        "p_b2": 0.06,
+        "a": 0.06896303055356563,
+        "n": 934,
+        "verdict": "b2 reliably > 0 \u2192 the model carries information the closing line does not. That is the entire basis for a bet.",
+        "ci95": {
+          "low": 0.01760653206098889,
+          "high": 0.5436951120466915,
+          "estimate": 0.2806508220538402,
+          "alpha": 0.05
+        },
+        "verdict_underpowered": "b2 reliably > 0 \u2192 the model carries information the closing line does not. That is the entire basis for a bet.",
+        "n_games": 934,
+        "meets_min_games": true
+      }
+    },
+    "by_week_bucket": {
+      "1-4": {
+        "b1": 0.8342574677946538,
+        "b2": 0.36241149568588193,
+        "se_b1": 0.04786050628971347,
+        "se_b2": 0.09281714466852337,
+        "p_b2": 0.002,
+        "a": -2.074686664965167,
+        "n": 1757,
+        "verdict": "b2 reliably > 0 \u2192 the model carries information the closing line does not. That is the entire basis for a bet.",
+        "ci95": {
+          "low": 0.18049323498773223,
+          "high": 0.5443297563840317,
+          "estimate": 0.36241149568588193,
+          "alpha": 0.05
+        },
+        "verdict_underpowered": "b2 reliably > 0 \u2192 the model carries information the closing line does not. That is the entire basis for a bet."
+      },
+      "5-9": {
+        "b1": 0.8868668353544419,
+        "b2": 0.088496191626384,
+        "se_b1": 0.03815982079857547,
+        "se_b2": 0.050636137303417324,
+        "p_b2": 0.098,
+        "a": 0.48886015230292784,
+        "n": 1634,
+        "verdict": "b2 reliably > 0 \u2192 the model carries information the closing line does not. That is the entire basis for a bet.",
+        "ci95": {
+          "low": -0.010748813804539084,
+          "high": 0.18774119705730707,
+          "estimate": 0.088496191626384,
+          "alpha": 0.05
+        },
+        "verdict_underpowered": "b2 reliably > 0 \u2192 the model carries information the closing line does not. That is the entire basis for a bet."
+      },
+      "10+": {
+        "b1": 1.060730269919258,
+        "b2": -0.0293034657254595,
+        "se_b1": 0.051868337198012766,
+        "se_b2": 0.07133124850716516,
+        "p_b2": 0.7,
+        "a": -0.3482848120005277,
+        "n": 1692,
+        "verdict": "UNDERPOWERED (n=1692): b2=-0.0293 (SE 0.0713, p=0.7000); 95% CI [-0.169, 0.111] still contains |b2|\u22650.10 \u2014 cannot claim the market encompasses the model.",
+        "ci95": {
+          "low": -0.16911014377177971,
+          "high": 0.11050321232086072,
+          "estimate": -0.0293034657254595,
+          "alpha": 0.05
+        },
+        "verdict_underpowered": "UNDERPOWERED (n=1692): b2=-0.0293 (SE 0.0713, p=0.7000); 95% CI [-0.169, 0.111] still contains |b2|\u22650.1 \u2014 cannot claim the market encompasses the model, nor claim an edge."
+      }
+    },
+    "exclude_2019": {
+      "b1": 0.8590390251853309,
+      "b2": 0.2296946959060333,
+      "se_b1": 0.040994469695425716,
+      "se_b2": 0.06644794759221784,
+      "p_b2": 0.0,
+      "a": -0.44138619507930454,
+      "n": 4524,
+      "verdict": "b2 reliably > 0 \u2192 the model carries information the closing line does not. That is the entire basis for a bet.",
+      "ci95": {
+        "low": 0.09945911177868136,
+        "high": 0.35993028003338523,
+        "estimate": 0.2296946959060333,
+        "alpha": 0.05
+      },
+      "verdict_underpowered": "b2 reliably > 0 \u2192 the model carries information the closing line does not. That is the entire basis for a bet."
+    },
+    "fbs_vs_fbs": {
+      "b1": 0.897140032943318,
+      "b2": 0.15262940092475508,
+      "se_b1": 0.030013057068370316,
+      "se_b2": 0.04619334167892095,
+      "p_b2": 0.002,
+      "a": -0.36546641048849043,
+      "n": 4513,
+      "verdict": "b2 reliably > 0 \u2192 the model carries information the closing line does not. That is the entire basis for a bet.",
+      "ci95": {
+        "low": 0.062092114908517015,
+        "high": 0.24316668694099314,
+        "estimate": 0.15262940092475508,
+        "alpha": 0.05
+      },
+      "verdict_underpowered": "b2 reliably > 0 \u2192 the model carries information the closing line does not. That is the entire basis for a bet."
+    },
+    "power": {
+      "b2_0.10": {
+        "observed_n": 5083,
+        "observed_se_b2": 0.06193500838329644,
+        "b2_target": 0.1,
+        "power": 0.8,
+        "alpha": 0.05,
+        "n_required": 15304,
+        "z_critical": 2.8015852181129683
+      },
+      "b2_0.15": {
+        "observed_n": 5083,
+        "observed_se_b2": 0.06193500838329644,
+        "b2_target": 0.15,
+        "power": 0.8,
+        "alpha": 0.05,
+        "n_required": 6802,
+        "z_critical": 2.8015852181129683
+      },
+      "detectable_b2_80pct": 0.1735162039703461,
+      "detectable_above_0.10": true
+    },
+    "stability": {
+      "seasons_with_reliable_positive_b2": [
+        "2021",
+        "2025"
+      ],
+      "required": 3,
+      "stable": false
+    },
+    "stop_rule": {
+      "verbatim_from_d5": "if after the powered sample the joint b2 CI lies entirely below +0.05 (no material positive weight on stack \u03bc) or fewer than 3 seasons show reliable positive b2, stop pursuing a fundamental-model betting edge and treat the market-aware / residual stack as the betting workhorse.",
+      "ci_entirely_below_plus_0.05": false,
+      "n_reliable_positive_seasons": 2,
+      "triggered": true,
+      "edge_declared": true,
+      "status": "missed",
+      "verdict_sentence": "Pre-registered stop rule TRIGGERED (missed): b2=0.2110 95% CI [0.090, 0.332], reliable-positive seasons=2 (need \u22653); stop pursuing a fundamental-model betting edge."
+    }
+  },
+  "wall_clock_s": 13.920378684997559
+}

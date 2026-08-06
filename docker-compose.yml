@@ -1,0 +1,41 @@
+# Maintained but unused for Tasks 1–24: MLflow and Prefect run as local processes.
+services:
+  app:
+    build: .
+    volumes:
+      - data:/app/data
+      - ./configs:/app/configs:ro
+    env_file:
+      - .env
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+      - PREFECT_API_URL=http://prefect:4200/api
+    depends_on:
+      - mlflow
+      - prefect
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.19.0
+    command: >
+      mlflow server
+      --host 0.0.0.0
+      --port 5000
+      --backend-store-uri sqlite:///mlflow/mlflow.db
+      --default-artifact-root /mlflow/artifacts
+    volumes:
+      - mlflow_data:/mlflow
+    ports:
+      - "5000:5000"
+
+  prefect:
+    image: prefecthq/prefect:3-python3.11
+    command: prefect server start --host 0.0.0.0
+    ports:
+      - "4200:4200"
+    volumes:
+      - prefect_data:/root/.prefect
+
+volumes:
+  data:
+  mlflow_data:
+  prefect_data:

@@ -1,0 +1,1101 @@
+{
+  "summaries": [
+    {
+      "name": "fundamental_full",
+      "run_id": "task23_fundamental",
+      "ablation_id": "fundamental",
+      "stack": "fundamental",
+      "n_predictions": 6003,
+      "n_bets": 64,
+      "mlflow_run_id": null,
+      "output_dir": "data\\backtests\\task23_fundamental\\fundamental",
+      "html_report": "docs\\notes\\_artifacts\\task23\\fundamental_full.html",
+      "play_counts_gt": {
+        "on": 1865578,
+        "off": 1865578
+      },
+      "metrics": {
+        "n_games": 5435,
+        "ats_accuracy": 0.4936416184971098,
+        "ou_accuracy": 0.5281933256616801,
+        "mae_margin": 14.196002600108708,
+        "mae_total": 15.650182475797921,
+        "crps_margin": {
+          "model": 10.282023855009765,
+          "market": 8.612730022972487,
+          "delta": 1.6692938320372779
+        },
+        "crps_total": {
+          "model": NaN,
+          "market": 9.414551613365571,
+          "delta": NaN
+        },
+        "logloss_ats": {
+          "model": 1.0464066683891151,
+          "market": 0.6931471805599453,
+          "delta": 0.3532594878291698
+        },
+        "logloss_ml": {
+          "model": 0.560700533519819,
+          "market": 0.45043337427001995,
+          "delta": 0.11026715924979902
+        },
+        "logloss_ou": {
+          "model": 2.5018814114824384,
+          "market": 0.6931471805599453,
+          "delta": 1.808734230922493
+        },
+        "mean_clv": 0.0,
+        "pct_positive_clv": 0.0,
+        "n_clv": 64,
+        "calibration_ats": {
+          "slope": -0.005373923059382041,
+          "intercept": 0.0006253153907959983
+        },
+        "cis": {
+          "ats_accuracy": {
+            "rate": 0.4936416184971098,
+            "ci_low": 0.47373921137248265,
+            "ci_high": 0.5180046860754063,
+            "n": 865,
+            "formatted": "ATS accuracy: 49.4% [47.4%, 51.8%] (95% CI, n=865)"
+          },
+          "crps_margin": {
+            "point": NaN,
+            "low": NaN,
+            "high": NaN,
+            "formatted": "unavailable (cannot format an estimate without a finite confidence interval)"
+          },
+          "mean_clv": {
+            "point": 0.0,
+            "low": 0.0,
+            "high": 0.0,
+            "formatted": "0.0000 [0.0000, 0.0000] (95% CI, n=64, block_bootstrap)"
+          },
+          "pct_positive_clv": {
+            "rate": 0.0,
+            "ci_low": 0.0,
+            "ci_high": 0.0,
+            "n": 64,
+            "formatted": "% positive CLV: 0.0% [0.0%, 0.0%] (95% CI, n=64)"
+          }
+        }
+      },
+      "weekly_mae_week4": 15.013300539403472,
+      "weekly_mae_week10": 13.654241501161867,
+      "week10_below_week4": true,
+      "economics": {
+        "flat_roi": -0.10511363636363635,
+        "flat_roi_ci": "-0.1051 [-0.3032, 0.0869] (95% CI, n=64, block_bootstrap)",
+        "quarter_kelly_roi": -0.1597165512405201,
+        "mean_clv_bets": 0.0
+      },
+      "ablation_settings": {
+        "A1_preseason_priors": "fitted",
+        "A2_rating_updates": "continual",
+        "A3_market_features_available": false,
+        "A4_mapping_layer": "ensemble",
+        "A5_garbage_time_filter": true,
+        "A6_market_feature_source": "snapshots"
+      },
+      "seasons": [
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "metrics_corrected_finite": {
+        "mae_margin": 14.196002600108708,
+        "crps_margin_model": 10.282023855009765,
+        "crps_margin_market": 8.612730022972487,
+        "crps_delta_model_minus_market": 1.6692938320372779,
+        "ats_accuracy": 0.4936416184971098,
+        "ou_accuracy": 0.5281933256616801,
+        "n_ats": 865,
+        "n_lines_close": 881,
+        "logloss_ats_model": 1.0464066683891151,
+        "logloss_ats_market": 0.6931471805599453
+      }
+    },
+    {
+      "name": "market_aware_full",
+      "run_id": "task23_market_aware",
+      "ablation_id": "full",
+      "stack": "market_aware",
+      "n_predictions": 6003,
+      "n_bets": 62,
+      "mlflow_run_id": "1fc0bf542be74ccf898e124e8e9de09b",
+      "output_dir": "data\\backtests\\task23_market_aware\\full",
+      "html_report": "docs\\notes\\_artifacts\\task23\\market_aware_full.html",
+      "play_counts_gt": {
+        "on": 1865578,
+        "off": 1865578
+      },
+      "metrics": {
+        "n_games": 5435,
+        "ats_accuracy": 0.4751445086705202,
+        "ou_accuracy": 0.5189873417721519,
+        "mae_margin": 15.518592148634612,
+        "mae_total": 15.679608359201088,
+        "crps_margin": {
+          "model": 11.326180394553719,
+          "market": 8.612730022972487,
+          "delta": 2.7134503715812315
+        },
+        "crps_total": {
+          "model": NaN,
+          "market": 9.414551613365571,
+          "delta": NaN
+        },
+        "logloss_ats": {
+          "model": 1.0222365059135907,
+          "market": 0.6931471805599453,
+          "delta": 0.32908932535364543
+        },
+        "logloss_ml": {
+          "model": 0.5760293341202256,
+          "market": 0.45043337427001995,
+          "delta": 0.12559595985020566
+        },
+        "logloss_ou": {
+          "model": 2.475656400742568,
+          "market": 0.6931471805599453,
+          "delta": 1.7825092201826225
+        },
+        "mean_clv": 0.0,
+        "pct_positive_clv": 0.0,
+        "n_clv": 62,
+        "calibration_ats": {
+          "slope": -0.015463782899776037,
+          "intercept": -0.0071598088824851
+        },
+        "cis": {
+          "ats_accuracy": {
+            "rate": 0.4751445086705202,
+            "ci_low": 0.4365701495626973,
+            "ci_high": 0.5128028791543807,
+            "n": 865,
+            "formatted": "ATS accuracy: 47.5% [43.7%, 51.3%] (95% CI, n=865)"
+          },
+          "crps_margin": {
+            "point": NaN,
+            "low": NaN,
+            "high": NaN,
+            "formatted": "unavailable (cannot format an estimate without a finite confidence interval)"
+          },
+          "mean_clv": {
+            "point": 0.0,
+            "low": 0.0,
+            "high": 0.0,
+            "formatted": "0.0000 [0.0000, 0.0000] (95% CI, n=62, block_bootstrap)"
+          },
+          "pct_positive_clv": {
+            "rate": 0.0,
+            "ci_low": 0.0,
+            "ci_high": 0.0,
+            "n": 62,
+            "formatted": "% positive CLV: 0.0% [0.0%, 0.0%] (95% CI, n=62)"
+          }
+        }
+      },
+      "weekly_mae_week4": 16.140253879088462,
+      "weekly_mae_week10": 14.090851452985605,
+      "week10_below_week4": true,
+      "economics": {
+        "flat_roi": -0.1378299120234604,
+        "flat_roi_ci": "-0.1378 [-0.3957, 0.1395] (95% CI, n=62, block_bootstrap)",
+        "quarter_kelly_roi": -0.1526212651757089,
+        "mean_clv_bets": 0.0
+      },
+      "ablation_settings": {
+        "A1_preseason_priors": "fitted",
+        "A2_rating_updates": "continual",
+        "A3_market_features_available": true,
+        "A4_mapping_layer": "ensemble",
+        "A5_garbage_time_filter": true,
+        "A6_market_feature_source": "snapshots"
+      },
+      "seasons": [
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "metrics_corrected_finite": {
+        "mae_margin": 15.518592148634612,
+        "crps_margin_model": 11.326180394553719,
+        "crps_margin_market": 8.612730022972487,
+        "crps_delta_model_minus_market": 2.7134503715812315,
+        "ats_accuracy": 0.4751445086705202,
+        "ou_accuracy": 0.5189873417721519,
+        "n_ats": 865,
+        "n_lines_close": 881,
+        "logloss_ats_model": 1.0222365059135907,
+        "logloss_ats_market": 0.6931471805599453
+      }
+    },
+    {
+      "name": "A1_priors_off",
+      "run_id": "task23_a1",
+      "ablation_id": "A1_league_mean",
+      "stack": "fundamental",
+      "n_predictions": 6003,
+      "n_bets": 66,
+      "mlflow_run_id": "db30eda056954d6ba49c010b68b5f604",
+      "output_dir": "data\\backtests\\task23_a1\\A1_league_mean",
+      "html_report": "docs\\notes\\_artifacts\\task23\\A1_priors_off.html",
+      "play_counts_gt": {
+        "on": 1865578,
+        "off": 1865578
+      },
+      "metrics": {
+        "n_games": 5435,
+        "ats_accuracy": 0.4936416184971098,
+        "ou_accuracy": 0.5143843498273878,
+        "mae_margin": 14.240848669936064,
+        "mae_total": 15.644497069046478,
+        "crps_margin": {
+          "model": 10.30332196399671,
+          "market": 8.612730022972487,
+          "delta": 1.6905919410242234
+        },
+        "crps_total": {
+          "model": NaN,
+          "market": 9.414551613365571,
+          "delta": NaN
+        },
+        "logloss_ats": {
+          "model": 1.0451775969489285,
+          "market": 0.6931471805599453,
+          "delta": 0.35203041638898325
+        },
+        "logloss_ml": {
+          "model": 0.5609830296177813,
+          "market": 0.45043337427001995,
+          "delta": 0.1105496553477614
+        },
+        "logloss_ou": {
+          "model": 2.509665998441172,
+          "market": 0.6931471805599453,
+          "delta": 1.8165188178812266
+        },
+        "mean_clv": 0.0,
+        "pct_positive_clv": 0.0,
+        "n_clv": 66,
+        "calibration_ats": {
+          "slope": -0.007519557015161943,
+          "intercept": 0.00045628440648946264
+        },
+        "cis": {
+          "ats_accuracy": {
+            "rate": 0.4936416184971098,
+            "ci_low": 0.47468313795395495,
+            "ci_high": 0.5163291844464208,
+            "n": 865,
+            "formatted": "ATS accuracy: 49.4% [47.5%, 51.6%] (95% CI, n=865)"
+          },
+          "crps_margin": {
+            "point": NaN,
+            "low": NaN,
+            "high": NaN,
+            "formatted": "unavailable (cannot format an estimate without a finite confidence interval)"
+          },
+          "mean_clv": {
+            "point": 0.0,
+            "low": 0.0,
+            "high": 0.0,
+            "formatted": "0.0000 [0.0000, 0.0000] (95% CI, n=66, block_bootstrap)"
+          },
+          "pct_positive_clv": {
+            "rate": 0.0,
+            "ci_low": 0.0,
+            "ci_high": 0.0,
+            "n": 66,
+            "formatted": "% positive CLV: 0.0% [0.0%, 0.0%] (95% CI, n=66)"
+          }
+        }
+      },
+      "weekly_mae_week4": 14.93007125483006,
+      "weekly_mae_week10": 13.67856305745168,
+      "week10_below_week4": true,
+      "economics": {
+        "flat_roi": -0.1322314049586777,
+        "flat_roi_ci": "-0.1322 [-0.3264, 0.0910] (95% CI, n=66, block_bootstrap)",
+        "quarter_kelly_roi": -0.12831636352268072,
+        "mean_clv_bets": 0.0
+      },
+      "ablation_settings": {
+        "A1_preseason_priors": "league_mean",
+        "A2_rating_updates": "continual",
+        "A3_market_features_available": false,
+        "A4_mapping_layer": "ensemble",
+        "A5_garbage_time_filter": true,
+        "A6_market_feature_source": "snapshots"
+      },
+      "seasons": [
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "metrics_corrected_finite": {
+        "mae_margin": 14.240848669936064,
+        "crps_margin_model": 10.30332196399671,
+        "crps_margin_market": 8.612730022972487,
+        "crps_delta_model_minus_market": 1.6905919410242234,
+        "ats_accuracy": 0.4936416184971098,
+        "ou_accuracy": 0.5143843498273878,
+        "n_ats": 865,
+        "n_lines_close": 881,
+        "logloss_ats_model": 1.0451775969489285,
+        "logloss_ats_market": 0.6931471805599453
+      }
+    },
+    {
+      "name": "A2_rating_updates_frozen",
+      "run_id": "task23_a2",
+      "ablation_id": "A2_frozen_after_week_1",
+      "stack": "fundamental",
+      "n_predictions": 6003,
+      "n_bets": 63,
+      "mlflow_run_id": "745e628d5ccb4150885d38d275eb283d",
+      "output_dir": "data\\backtests\\task23_a2\\A2_frozen_after_week_1",
+      "html_report": "docs\\notes\\_artifacts\\task23\\A2_rating_updates_frozen.html",
+      "play_counts_gt": {
+        "on": 1865578,
+        "off": 1865578
+      },
+      "metrics": {
+        "n_games": 5435,
+        "ats_accuracy": 0.4705202312138728,
+        "ou_accuracy": 0.5120828538550057,
+        "mae_margin": 16.029588156380505,
+        "mae_total": 15.779835789244657,
+        "crps_margin": {
+          "model": 11.713030927654831,
+          "market": 8.612730022972487,
+          "delta": 3.100300904682344
+        },
+        "crps_total": {
+          "model": NaN,
+          "market": 9.414551613365571,
+          "delta": NaN
+        },
+        "logloss_ats": {
+          "model": 1.18554425295262,
+          "market": 0.6931471805599453,
+          "delta": 0.4923970723926746
+        },
+        "logloss_ml": {
+          "model": 0.636791020518296,
+          "market": 0.45043337427001995,
+          "delta": 0.186357646248276
+        },
+        "logloss_ou": {
+          "model": 2.510574794948329,
+          "market": 0.6931471805599453,
+          "delta": 1.8174276143883836
+        },
+        "mean_clv": 0.0,
+        "pct_positive_clv": 0.0,
+        "n_clv": 63,
+        "calibration_ats": {
+          "slope": -0.008662398479268292,
+          "intercept": 0.0010067701445506806
+        },
+        "cis": {
+          "ats_accuracy": {
+            "rate": 0.4705202312138728,
+            "ci_low": 0.4438681277787571,
+            "ci_high": 0.5000714285714285,
+            "n": 865,
+            "formatted": "ATS accuracy: 47.1% [44.4%, 50.0%] (95% CI, n=865)"
+          },
+          "crps_margin": {
+            "point": NaN,
+            "low": NaN,
+            "high": NaN,
+            "formatted": "unavailable (cannot format an estimate without a finite confidence interval)"
+          },
+          "mean_clv": {
+            "point": 0.0,
+            "low": 0.0,
+            "high": 0.0,
+            "formatted": "0.0000 [0.0000, 0.0000] (95% CI, n=63, block_bootstrap)"
+          },
+          "pct_positive_clv": {
+            "rate": 0.0,
+            "ci_low": 0.0,
+            "ci_high": 0.0,
+            "n": 63,
+            "formatted": "% positive CLV: 0.0% [0.0%, 0.0%] (95% CI, n=63)"
+          }
+        }
+      },
+      "weekly_mae_week4": 16.16720865417159,
+      "weekly_mae_week10": 15.582969598733374,
+      "week10_below_week4": true,
+      "economics": {
+        "flat_roi": -0.18181818181818188,
+        "flat_roi_ci": "-0.1818 [-0.4054, 0.0577] (95% CI, n=63, block_bootstrap)",
+        "quarter_kelly_roi": -0.2081555134713155,
+        "mean_clv_bets": 0.0
+      },
+      "ablation_settings": {
+        "A1_preseason_priors": "fitted",
+        "A2_rating_updates": "frozen_after_week_1",
+        "A3_market_features_available": false,
+        "A4_mapping_layer": "ensemble",
+        "A5_garbage_time_filter": true,
+        "A6_market_feature_source": "snapshots"
+      },
+      "seasons": [
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "metrics_corrected_finite": {
+        "mae_margin": 16.029588156380505,
+        "crps_margin_model": 11.713030927654831,
+        "crps_margin_market": 8.612730022972487,
+        "crps_delta_model_minus_market": 3.100300904682344,
+        "ats_accuracy": 0.4705202312138728,
+        "ou_accuracy": 0.5120828538550057,
+        "n_ats": 865,
+        "n_lines_close": 881,
+        "logloss_ats_model": 1.18554425295262,
+        "logloss_ats_market": 0.6931471805599453
+      }
+    },
+    {
+      "name": "A3_market_features_off",
+      "run_id": "task23_a3",
+      "ablation_id": "A3_market_off",
+      "stack": "market_aware",
+      "n_predictions": 6003,
+      "n_bets": 64,
+      "mlflow_run_id": "c359b56108c24556b6b2f93b19fadc4f",
+      "output_dir": "data\\backtests\\task23_a3\\A3_market_off",
+      "html_report": "docs\\notes\\_artifacts\\task23\\A3_market_features_off.html",
+      "play_counts_gt": {
+        "on": 1865578,
+        "off": 1865578
+      },
+      "metrics": {
+        "n_games": 5435,
+        "ats_accuracy": 0.4936416184971098,
+        "ou_accuracy": 0.5281933256616801,
+        "mae_margin": 14.196002600108708,
+        "mae_total": 15.650182475797921,
+        "crps_margin": {
+          "model": 10.282023855009765,
+          "market": 8.612730022972487,
+          "delta": 1.6692938320372779
+        },
+        "crps_total": {
+          "model": NaN,
+          "market": 9.414551613365571,
+          "delta": NaN
+        },
+        "logloss_ats": {
+          "model": 1.0464066683891151,
+          "market": 0.6931471805599453,
+          "delta": 0.3532594878291698
+        },
+        "logloss_ml": {
+          "model": 0.560700533519819,
+          "market": 0.45043337427001995,
+          "delta": 0.11026715924979902
+        },
+        "logloss_ou": {
+          "model": 2.5018814114824384,
+          "market": 0.6931471805599453,
+          "delta": 1.808734230922493
+        },
+        "mean_clv": 0.0,
+        "pct_positive_clv": 0.0,
+        "n_clv": 64,
+        "calibration_ats": {
+          "slope": -0.005373923059382041,
+          "intercept": 0.0006253153907959983
+        },
+        "cis": {
+          "ats_accuracy": {
+            "rate": 0.4936416184971098,
+            "ci_low": 0.47373921137248265,
+            "ci_high": 0.5180046860754063,
+            "n": 865,
+            "formatted": "ATS accuracy: 49.4% [47.4%, 51.8%] (95% CI, n=865)"
+          },
+          "crps_margin": {
+            "point": NaN,
+            "low": NaN,
+            "high": NaN,
+            "formatted": "unavailable (cannot format an estimate without a finite confidence interval)"
+          },
+          "mean_clv": {
+            "point": 0.0,
+            "low": 0.0,
+            "high": 0.0,
+            "formatted": "0.0000 [0.0000, 0.0000] (95% CI, n=64, block_bootstrap)"
+          },
+          "pct_positive_clv": {
+            "rate": 0.0,
+            "ci_low": 0.0,
+            "ci_high": 0.0,
+            "n": 64,
+            "formatted": "% positive CLV: 0.0% [0.0%, 0.0%] (95% CI, n=64)"
+          }
+        }
+      },
+      "weekly_mae_week4": 15.013300539403472,
+      "weekly_mae_week10": 13.654241501161867,
+      "week10_below_week4": true,
+      "economics": {
+        "flat_roi": -0.10511363636363635,
+        "flat_roi_ci": "-0.1051 [-0.3032, 0.0869] (95% CI, n=64, block_bootstrap)",
+        "quarter_kelly_roi": -0.1597165512405201,
+        "mean_clv_bets": 0.0
+      },
+      "ablation_settings": {
+        "A1_preseason_priors": "fitted",
+        "A2_rating_updates": "continual",
+        "A3_market_features_available": false,
+        "A4_mapping_layer": "ensemble",
+        "A5_garbage_time_filter": true,
+        "A6_market_feature_source": "snapshots"
+      },
+      "seasons": [
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "metrics_corrected_finite": {
+        "mae_margin": 14.196002600108708,
+        "crps_margin_model": 10.282023855009765,
+        "crps_margin_market": 8.612730022972487,
+        "crps_delta_model_minus_market": 1.6692938320372779,
+        "ats_accuracy": 0.4936416184971098,
+        "ou_accuracy": 0.5281933256616801,
+        "n_ats": 865,
+        "n_lines_close": 881,
+        "logloss_ats_model": 1.0464066683891151,
+        "logloss_ats_market": 0.6931471805599453
+      }
+    },
+    {
+      "name": "A4_single_lgbm",
+      "run_id": "task23_a4",
+      "ablation_id": "A4_single_lgbm",
+      "stack": "fundamental",
+      "n_predictions": 6003,
+      "n_bets": 69,
+      "mlflow_run_id": "2ddf9ce41663429a96c52c3b45c0ba3d",
+      "output_dir": "data\\backtests\\task23_a4\\A4_single_lgbm",
+      "html_report": "docs\\notes\\_artifacts\\task23\\A4_single_lgbm.html",
+      "play_counts_gt": {
+        "on": 1865578,
+        "off": 1865578
+      },
+      "metrics": {
+        "n_games": 5435,
+        "ats_accuracy": 0.49248554913294795,
+        "ou_accuracy": 0.5281933256616801,
+        "mae_margin": 14.293289269678223,
+        "mae_total": 15.650182475797921,
+        "crps_margin": {
+          "model": 10.34744688575112,
+          "market": 8.612730022972487,
+          "delta": 1.7347168627786331
+        },
+        "crps_total": {
+          "model": NaN,
+          "market": 9.414551613365571,
+          "delta": NaN
+        },
+        "logloss_ats": {
+          "model": 1.06884946202164,
+          "market": 0.6931471805599453,
+          "delta": 0.3757022814616947
+        },
+        "logloss_ml": {
+          "model": 0.5677196134784932,
+          "market": 0.45043337427001995,
+          "delta": 0.11728623920847325
+        },
+        "logloss_ou": {
+          "model": 2.5018814114824384,
+          "market": 0.6931471805599453,
+          "delta": 1.808734230922493
+        },
+        "mean_clv": 0.0,
+        "pct_positive_clv": 0.0,
+        "n_clv": 69,
+        "calibration_ats": {
+          "slope": -0.008271588219677453,
+          "intercept": 0.00026207202763514555
+        },
+        "cis": {
+          "ats_accuracy": {
+            "rate": 0.49248554913294795,
+            "ci_low": 0.47162468345994935,
+            "ci_high": 0.5199476636150314,
+            "n": 865,
+            "formatted": "ATS accuracy: 49.2% [47.2%, 52.0%] (95% CI, n=865)"
+          },
+          "crps_margin": {
+            "point": NaN,
+            "low": NaN,
+            "high": NaN,
+            "formatted": "unavailable (cannot format an estimate without a finite confidence interval)"
+          },
+          "mean_clv": {
+            "point": 0.0,
+            "low": 0.0,
+            "high": 0.0,
+            "formatted": "0.0000 [0.0000, 0.0000] (95% CI, n=69, block_bootstrap)"
+          },
+          "pct_positive_clv": {
+            "rate": 0.0,
+            "ci_low": 0.0,
+            "ci_high": 0.0,
+            "n": 69,
+            "formatted": "% positive CLV: 0.0% [0.0%, 0.0%] (95% CI, n=69)"
+          }
+        }
+      },
+      "weekly_mae_week4": 15.200107528710456,
+      "weekly_mae_week10": 13.707040506637409,
+      "week10_below_week4": true,
+      "economics": {
+        "flat_roi": 0.02371541501976286,
+        "flat_roi_ci": "0.0237 [-0.1701, 0.2555] (95% CI, n=69, block_bootstrap)",
+        "quarter_kelly_roi": -0.044413601914607484,
+        "mean_clv_bets": 0.0
+      },
+      "ablation_settings": {
+        "A1_preseason_priors": "fitted",
+        "A2_rating_updates": "continual",
+        "A3_market_features_available": false,
+        "A4_mapping_layer": "single_lgbm",
+        "A5_garbage_time_filter": true,
+        "A6_market_feature_source": "snapshots"
+      },
+      "seasons": [
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "metrics_corrected_finite": {
+        "mae_margin": 14.293289269678223,
+        "crps_margin_model": 10.34744688575112,
+        "crps_margin_market": 8.612730022972487,
+        "crps_delta_model_minus_market": 1.7347168627786331,
+        "ats_accuracy": 0.49248554913294795,
+        "ou_accuracy": 0.5281933256616801,
+        "n_ats": 865,
+        "n_lines_close": 881,
+        "logloss_ats_model": 1.06884946202164,
+        "logloss_ats_market": 0.6931471805599453
+      }
+    },
+    {
+      "name": "A5_garbage_time_filter_off",
+      "run_id": "task23_a5",
+      "ablation_id": "A5_gt_off",
+      "stack": "fundamental",
+      "n_predictions": 6003,
+      "n_bets": 64,
+      "mlflow_run_id": "7886b661c54c43b7a7b02d7a70a5d036",
+      "output_dir": "data\\backtests\\task23_a5\\A5_gt_off",
+      "html_report": "docs\\notes\\_artifacts\\task23\\A5_garbage_time_filter_off.html",
+      "play_counts_gt": {
+        "on": 1865578,
+        "off": 1865578
+      },
+      "metrics": {
+        "n_games": 5435,
+        "ats_accuracy": 0.4936416184971098,
+        "ou_accuracy": 0.5281933256616801,
+        "mae_margin": 14.196002600108708,
+        "mae_total": 15.650182475797921,
+        "crps_margin": {
+          "model": 10.282023855009765,
+          "market": 8.612730022972487,
+          "delta": 1.6692938320372779
+        },
+        "crps_total": {
+          "model": NaN,
+          "market": 9.414551613365571,
+          "delta": NaN
+        },
+        "logloss_ats": {
+          "model": 1.0464066683891151,
+          "market": 0.6931471805599453,
+          "delta": 0.3532594878291698
+        },
+        "logloss_ml": {
+          "model": 0.560700533519819,
+          "market": 0.45043337427001995,
+          "delta": 0.11026715924979902
+        },
+        "logloss_ou": {
+          "model": 2.5018814114824384,
+          "market": 0.6931471805599453,
+          "delta": 1.808734230922493
+        },
+        "mean_clv": 0.0,
+        "pct_positive_clv": 0.0,
+        "n_clv": 64,
+        "calibration_ats": {
+          "slope": -0.005373923059382041,
+          "intercept": 0.0006253153907959983
+        },
+        "cis": {
+          "ats_accuracy": {
+            "rate": 0.4936416184971098,
+            "ci_low": 0.47373921137248265,
+            "ci_high": 0.5180046860754063,
+            "n": 865,
+            "formatted": "ATS accuracy: 49.4% [47.4%, 51.8%] (95% CI, n=865)"
+          },
+          "crps_margin": {
+            "point": NaN,
+            "low": NaN,
+            "high": NaN,
+            "formatted": "unavailable (cannot format an estimate without a finite confidence interval)"
+          },
+          "mean_clv": {
+            "point": 0.0,
+            "low": 0.0,
+            "high": 0.0,
+            "formatted": "0.0000 [0.0000, 0.0000] (95% CI, n=64, block_bootstrap)"
+          },
+          "pct_positive_clv": {
+            "rate": 0.0,
+            "ci_low": 0.0,
+            "ci_high": 0.0,
+            "n": 64,
+            "formatted": "% positive CLV: 0.0% [0.0%, 0.0%] (95% CI, n=64)"
+          }
+        }
+      },
+      "weekly_mae_week4": 15.013300539403472,
+      "weekly_mae_week10": 13.654241501161867,
+      "week10_below_week4": true,
+      "economics": {
+        "flat_roi": -0.10511363636363635,
+        "flat_roi_ci": "-0.1051 [-0.3032, 0.0869] (95% CI, n=64, block_bootstrap)",
+        "quarter_kelly_roi": -0.1597165512405201,
+        "mean_clv_bets": 0.0
+      },
+      "ablation_settings": {
+        "A1_preseason_priors": "fitted",
+        "A2_rating_updates": "continual",
+        "A3_market_features_available": false,
+        "A4_mapping_layer": "ensemble",
+        "A5_garbage_time_filter": false,
+        "A6_market_feature_source": "snapshots"
+      },
+      "seasons": [
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "metrics_corrected_finite": {
+        "mae_margin": 14.196002600108708,
+        "crps_margin_model": 10.282023855009765,
+        "crps_margin_market": 8.612730022972487,
+        "crps_delta_model_minus_market": 1.6692938320372779,
+        "ats_accuracy": 0.4936416184971098,
+        "ou_accuracy": 0.5281933256616801,
+        "n_ats": 865,
+        "n_lines_close": 881,
+        "logloss_ats_model": 1.0464066683891151,
+        "logloss_ats_market": 0.6931471805599453
+      }
+    }
+  ],
+  "ablation_deltas": {
+    "market_aware_full": {
+      "vs": "fundamental_full",
+      "delta_mae_margin": 1.3225895485259045,
+      "delta_ats_accuracy": -0.018497109826589586,
+      "delta_crps_margin": 1.0441565395439536
+    },
+    "A1_priors_off": {
+      "vs": "fundamental_full",
+      "delta_mae_margin": 0.04484606982735606,
+      "delta_ats_accuracy": 0.0,
+      "delta_crps_margin": 0.021298108986945508
+    },
+    "A2_rating_updates_frozen": {
+      "vs": "fundamental_full",
+      "delta_mae_margin": 1.8335855562717978,
+      "delta_ats_accuracy": -0.023121387283236983,
+      "delta_crps_margin": 1.431007072645066
+    },
+    "A3_market_features_off": {
+      "vs": "market_aware_full",
+      "delta_mae_margin": -1.3225895485259045,
+      "delta_ats_accuracy": 0.018497109826589586,
+      "delta_crps_margin": -1.0441565395439536
+    },
+    "A4_single_lgbm": {
+      "vs": "fundamental_full",
+      "delta_mae_margin": 0.09728666956951493,
+      "delta_ats_accuracy": -0.0011560693641618491,
+      "delta_crps_margin": 0.06542303074135525
+    },
+    "A5_garbage_time_filter_off": {
+      "vs": "fundamental_full",
+      "delta_mae_margin": 0.0,
+      "delta_ats_accuracy": 0.0,
+      "delta_crps_margin": 0.0
+    }
+  },
+  "a2_headline": {
+    "vs": "fundamental_full",
+    "delta_mae_margin": 1.8335855562717978,
+    "delta_ats_accuracy": -0.023121387283236983,
+    "delta_crps_margin": 1.431007072645066
+  },
+  "notes": {
+    "sigma": "fixed league residual \u03c3_m=14, \u03c3_t=13.5 (production_stack has no \u03c3 heads wired)",
+    "odds_snapshots": "absent; bet as-of = CFBD open; CLV = model cover-prob shift asof\u2192close",
+    "odds_estimate_credits": 54090,
+    "odds_ceiling": 16000,
+    "returning_roster_blocked": "schema rejects CFBD negatives; priors = initial_team_state"
+  },
+  "corrected_metrics": {
+    "fundamental_full": {
+      "mae_margin": 14.196002600108708,
+      "crps_margin_model": 10.282023855009765,
+      "crps_margin_market": 8.612730022972487,
+      "crps_delta_model_minus_market": 1.6692938320372779,
+      "ats_accuracy": 0.4936416184971098,
+      "ou_accuracy": 0.5281933256616801,
+      "n_ats": 865,
+      "n_lines_close": 881,
+      "logloss_ats_model": 1.0464066683891151,
+      "logloss_ats_market": 0.6931471805599453
+    },
+    "market_aware_full": {
+      "mae_margin": 15.518592148634612,
+      "crps_margin_model": 11.326180394553719,
+      "crps_margin_market": 8.612730022972487,
+      "crps_delta_model_minus_market": 2.7134503715812315,
+      "ats_accuracy": 0.4751445086705202,
+      "ou_accuracy": 0.5189873417721519,
+      "n_ats": 865,
+      "n_lines_close": 881,
+      "logloss_ats_model": 1.0222365059135907,
+      "logloss_ats_market": 0.6931471805599453
+    },
+    "A1_priors_off": {
+      "mae_margin": 14.240848669936064,
+      "crps_margin_model": 10.30332196399671,
+      "crps_margin_market": 8.612730022972487,
+      "crps_delta_model_minus_market": 1.6905919410242234,
+      "ats_accuracy": 0.4936416184971098,
+      "ou_accuracy": 0.5143843498273878,
+      "n_ats": 865,
+      "n_lines_close": 881,
+      "logloss_ats_model": 1.0451775969489285,
+      "logloss_ats_market": 0.6931471805599453
+    },
+    "A2_rating_updates_frozen": {
+      "mae_margin": 16.029588156380505,
+      "crps_margin_model": 11.713030927654831,
+      "crps_margin_market": 8.612730022972487,
+      "crps_delta_model_minus_market": 3.100300904682344,
+      "ats_accuracy": 0.4705202312138728,
+      "ou_accuracy": 0.5120828538550057,
+      "n_ats": 865,
+      "n_lines_close": 881,
+      "logloss_ats_model": 1.18554425295262,
+      "logloss_ats_market": 0.6931471805599453
+    },
+    "A3_market_features_off": {
+      "mae_margin": 14.196002600108708,
+      "crps_margin_model": 10.282023855009765,
+      "crps_margin_market": 8.612730022972487,
+      "crps_delta_model_minus_market": 1.6692938320372779,
+      "ats_accuracy": 0.4936416184971098,
+      "ou_accuracy": 0.5281933256616801,
+      "n_ats": 865,
+      "n_lines_close": 881,
+      "logloss_ats_model": 1.0464066683891151,
+      "logloss_ats_market": 0.6931471805599453
+    },
+    "A4_single_lgbm": {
+      "mae_margin": 14.293289269678223,
+      "crps_margin_model": 10.34744688575112,
+      "crps_margin_market": 8.612730022972487,
+      "crps_delta_model_minus_market": 1.7347168627786331,
+      "ats_accuracy": 0.49248554913294795,
+      "ou_accuracy": 0.5281933256616801,
+      "n_ats": 865,
+      "n_lines_close": 881,
+      "logloss_ats_model": 1.06884946202164,
+      "logloss_ats_market": 0.6931471805599453
+    },
+    "A5_garbage_time_filter_off": {
+      "mae_margin": 14.196002600108708,
+      "crps_margin_model": 10.282023855009765,
+      "crps_margin_market": 8.612730022972487,
+      "crps_delta_model_minus_market": 1.6692938320372779,
+      "ats_accuracy": 0.4936416184971098,
+      "ou_accuracy": 0.5281933256616801,
+      "n_ats": 865,
+      "n_lines_close": 881,
+      "logloss_ats_model": 1.0464066683891151,
+      "logloss_ats_market": 0.6931471805599453
+    }
+  },
+  "line_coverage": {
+    "ats_ou_metrics_are_2019_only": true,
+    "reason": "\u00a77.2 item 8: seasons \u22652021 require Odds snapshots; none staged \u2192 all null lines",
+    "n_ats_decided": 865,
+    "n_headline_games": 5435
+  },
+  "weekly_error_curve_fundamental": [
+    {
+      "week": 1,
+      "n": 812,
+      "mae": 12.621352123889972,
+      "rmse": 16.940168412845896,
+      "target": "margin"
+    },
+    {
+      "week": 2,
+      "n": 484,
+      "mae": 18.46044529542718,
+      "rmse": 23.39124200461579,
+      "target": "margin"
+    },
+    {
+      "week": 3,
+      "n": 421,
+      "mae": 17.682079076739345,
+      "rmse": 22.49960116019356,
+      "target": "margin"
+    },
+    {
+      "week": 4,
+      "n": 384,
+      "mae": 15.013300539403472,
+      "rmse": 19.14371542363823,
+      "target": "margin"
+    },
+    {
+      "week": 5,
+      "n": 347,
+      "mae": 13.792409162413474,
+      "rmse": 17.459447706518944,
+      "target": "margin"
+    },
+    {
+      "week": 6,
+      "n": 307,
+      "mae": 12.436242136926944,
+      "rmse": 15.823127585171527,
+      "target": "margin"
+    },
+    {
+      "week": 7,
+      "n": 321,
+      "mae": 13.271960088308484,
+      "rmse": 16.961076447572733,
+      "target": "margin"
+    },
+    {
+      "week": 8,
+      "n": 342,
+      "mae": 13.613667190099338,
+      "rmse": 16.7706608301195,
+      "target": "margin"
+    },
+    {
+      "week": 9,
+      "n": 320,
+      "mae": 13.373254802127278,
+      "rmse": 16.55760865270298,
+      "target": "margin"
+    },
+    {
+      "week": 10,
+      "n": 335,
+      "mae": 13.654241501161867,
+      "rmse": 17.138820464107063,
+      "target": "margin"
+    },
+    {
+      "week": 11,
+      "n": 343,
+      "mae": 13.665852237021882,
+      "rmse": 16.78485842304561,
+      "target": "margin"
+    },
+    {
+      "week": 12,
+      "n": 368,
+      "mae": 13.198331970636703,
+      "rmse": 16.994287432729955,
+      "target": "margin"
+    },
+    {
+      "week": 13,
+      "n": 386,
+      "mae": 13.104012849326981,
+      "rmse": 16.716669504632566,
+      "target": "margin"
+    },
+    {
+      "week": 14,
+      "n": 231,
+      "mae": 14.039091311303302,
+      "rmse": 17.650776111419173,
+      "target": "margin"
+    },
+    {
+      "week": 15,
+      "n": 32,
+      "mae": 15.97457363226349,
+      "rmse": 20.246918464109005,
+      "target": "margin"
+    },
+    {
+      "week": 16,
+      "n": 2,
+      "mae": 15.898689164000249,
+      "rmse": 18.224317448479635,
+      "target": "margin"
+    }
+  ]
+}

@@ -1,0 +1,256 @@
+{
+  "d1": {
+    "frame_p_mkt_ml_finite": 0,
+    "frame_p_mkt_ats": "constant_0.5",
+    "spread_close_finite": 0,
+    "resolution_without_prices": {
+      "status": "NOT_COMPUTED",
+      "reason": "p_mkt_ml_home present but all-null (typical when spread_close is null for seasons without Odds snapshots and CFBD close is excluded from the line ladder)",
+      "model_ll": 1.0880389773979942,
+      "market_ll": NaN
+    },
+    "resolution_with_cfbd_ml": {
+      "status": "devigged_american",
+      "n_finite": 783,
+      "reason": "proportional de-vig of home_ml/away_ml American odds (n_finite=783/910)",
+      "model_ll": 1.0880389773979942,
+      "market_ll": 0.5363178019704893,
+      "overlap_n": 787,
+      "overlap_model_ll": 1.1582084904838885,
+      "overlap_market_ll": 0.5363178019704893,
+      "home_win_rate": 0.5781448538754765
+    }
+  },
+  "d2": {
+    "mae": 16.604688787660955,
+    "mean_pred_sigma": 11.352070842814745,
+    "resid_sd": 20.369744443505613,
+    "sigma_ratio": 0.5573006020914548,
+    "pit_bin_density": [
+      1.3736263736263736,
+      0.8791208791208791,
+      0.4615384615384614,
+      0.6703296703296705,
+      0.5384615384615385,
+      0.571428571428571,
+      0.7802197802197803,
+      0.5934065934065935,
+      0.9670329670329673,
+      3.164835164835165
+    ],
+    "pit_outer_over_middle": 3.5450643776824036,
+    "gaussian_interval": {
+      "0.5": {
+        "coverage": 0.3098901098901099,
+        "mean_width": 15.313710853956682,
+        "nominal": 0.5,
+        "n": 910.0
+      },
+      "0.8": {
+        "coverage": 0.5461538461538461,
+        "mean_width": 29.0965283215649,
+        "nominal": 0.8,
+        "n": 910.0
+      },
+      "0.95": {
+        "coverage": 0.6824175824175824,
+        "mean_width": 44.49930000372832,
+        "nominal": 0.95,
+        "n": 910.0
+      }
+    },
+    "cqr": {
+      "nominal": 0.8,
+      "empirical_coverage": 0.8848263254113345,
+      "mean_width": 54.92569859324703,
+      "n": 547,
+      "n_missing": 363
+    },
+    "clipping": {
+      "calibrate": "1e-6 .. 1-1e-6",
+      "log_loss_metric": "1e-15 .. 1-1e-15",
+      "p_ml_home_min": 1e-06,
+      "p_ml_home_max": 0.999999
+    },
+    "pooled_ll": 1.0880389773979942,
+    "ll_without_top10": 0.9466226265028134,
+    "top10": [
+      {
+        "game_id": 401539475,
+        "week": 14,
+        "home_points": 34,
+        "away_points": 31,
+        "pred_margin": -13.649199778377401,
+        "sigma_m": 12.014873932169863,
+        "p_ml_home": 1e-06,
+        "y_home_win": 1.0,
+        "logloss": 13.815510557964274,
+        "p_ml_home_raw": 0.0825
+      },
+      {
+        "game_id": 401531924,
+        "week": 13,
+        "home_points": 35,
+        "away_points": 21,
+        "pred_margin": -13.052281629684593,
+        "sigma_m": 12.225261680320546,
+        "p_ml_home": 1e-06,
+        "y_home_win": 1.0,
+        "logloss": 13.815510557964274,
+        "p_ml_home_raw": 0.13
+      },
+      {
+        "game_id": 401524031,
+        "week": 7,
+        "home_points": 48,
+        "away_points": 20,
+        "pred_margin": -8.72276436643807,
+        "sigma_m": 12.735984677391187,
+        "p_ml_home": 1e-06,
+        "y_home_win": 1.0,
+        "logloss": 13.815510557964274,
+        "p_ml_home_raw": 0.25875
+      },
+      {
+        "game_id": 401525864,
+        "week": 7,
+        "home_points": 39,
+        "away_points": 32,
+        "pred_margin": -9.417244585285793,
+        "sigma_m": 15.11726668545477,
+        "p_ml_home": 1e-06,
+        "y_home_win": 1.0,
+        "logloss": 13.815510557964274,
+        "p_ml_home_raw": 0.275
+      },
+      {
+        "game_id": 401524034,
+        "week": 7,
+        "home_points": 36,
+        "away_points": 33,
+        "pred_margin": -13.579627924698434,
+        "sigma_m": 14.305486075879486,
+        "p_ml_home": 1e-06,
+        "y_home_win": 1.0,
+        "logloss": 13.815510557964274,
+        "p_ml_home_raw": 0.17
+      },
+      {
+        "game_id": 401525525,
+        "week": 7,
+        "home_points": 38,
+        "away_points": 21,
+        "pred_margin": -17.3388125181379,
+        "sigma_m": 12.402590218151595,
+        "p_ml_home": 1e-06,
+        "y_home_win": 1.0,
+        "logloss": 13.815510557964274,
+        "p_ml_home_raw": 0.0875
+      },
+      {
+        "game_id": 401531928,
+        "week": 13,
+        "home_points": 52,
+        "away_points": 44,
+        "pred_margin": -12.236223966973036,
+        "sigma_m": 7.887411940876527,
+        "p_ml_home": 1e-06,
+        "y_home_win": 1.0,
+        "logloss": 13.815510557964274,
+        "p_ml_home_raw": 0.0525
+      },
+      {
+        "game_id": 401532415,
+        "week": 6,
+        "home_points": 37,
+        "away_points": 13,
+        "pred_margin": -11.663120408713143,
+        "sigma_m": 12.592911566936356,
+        "p_ml_home": 1e-06,
+        "y_home_win": 1.0,
+        "logloss": 13.815510557964274,
+        "p_ml_home_raw": 0.19375
+      },
+      {
+        "game_id": 401525439,
+        "week": 6,
+        "home_points": 33,
+        "away_points": 20,
+        "pred_margin": -9.6525167696171,
+        "sigma_m": 11.494990133264325,
+        "p_ml_home": 1e-06,
+        "y_home_win": 1.0,
+        "logloss": 13.815510557964274,
+        "p_ml_home_raw": 0.22125
+      },
+      {
+        "game_id": 401525857,
+        "week": 6,
+        "home_points": 29,
+        "away_points": 21,
+        "pred_margin": -12.412346884276687,
+        "sigma_m": 10.067565039263876,
+        "p_ml_home": 1e-06,
+        "y_home_win": 1.0,
+        "logloss": 13.815510557964274,
+        "p_ml_home_raw": 0.095
+      }
+    ]
+  },
+  "d3": {
+    "n": 792,
+    "elo_logloss": 0.5569081931549308,
+    "stack_logloss": 1.1527886573204698,
+    "elo_mae": 13.541333522844608,
+    "stack_mae": 14.826155657274047
+  },
+  "d5": {
+    "credits_per_call": 30,
+    "ceiling": 20000,
+    "one_call_returns": "ALL events at timestamp (sport-level /historical/.../odds)",
+    "ladder": [
+      {
+        "scope": "2021-2025 all DPs (baseline tuesday+slot_close)",
+        "requests": 1803,
+        "credits": 54090,
+        "fits_20k_ceiling": false
+      },
+      {
+        "scope": "2021-2025 tuesday_0600_et only",
+        "requests": 77,
+        "credits": 2310,
+        "fits_20k_ceiling": true
+      },
+      {
+        "scope": "2024 tuesday only",
+        "requests": 16,
+        "credits": 480,
+        "fits_20k_ceiling": true
+      },
+      {
+        "scope": "2024-2025 tuesday only",
+        "requests": 32,
+        "credits": 960,
+        "fits_20k_ceiling": true
+      },
+      {
+        "scope": "2024 slot_close only",
+        "requests": 369,
+        "credits": 11070,
+        "fits_20k_ceiling": true
+      },
+      {
+        "scope": "2024-2025 slot_close only",
+        "requests": 750,
+        "credits": 22500,
+        "fits_20k_ceiling": false
+      },
+      {
+        "scope": "2024 tuesday+slot_close",
+        "requests": 385,
+        "credits": 11550,
+        "fits_20k_ceiling": true
+      }
+    ]
+  }
+}

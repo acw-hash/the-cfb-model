@@ -1,0 +1,16 @@
+run_id: abl_a2_frozen
+ablation_id: A2_frozen_after_week_1
+walkforward:
+  test_seasons: [2023]
+  continuity_seasons: []
+  retrain_weeks: [5, 10]
+  preseason_priors: fitted
+  rating_updates: frozen_after_week_1
+  mapping_layer: ensemble
+  garbage_time_filter: true
+  market_features_available: false
+  market_feature_source: snapshots
+  seed: 42
+  model_version: production-v0
+  run_id: abl_a2_frozen
+  ablation_id: A2_frozen_after_week_1

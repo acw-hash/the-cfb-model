@@ -1,0 +1,17 @@
+ratings:
+  # v1-minimal latent dims (DESIGN §9.2): off_epa, def_epa, st_value, pace.
+  state_dims:
+    - off_epa
+    - def_epa
+    - st_value
+    - pace
+  # Winsorize observation residuals at ±N σ (DESIGN §9.5).
+  residual_winsor_sigma: 2.5
+  # PLACEHOLDER — Q diagonal scale; tuned offseason via predictive likelihood (§9.4).
+  process_noise_scale: 0.05
+  # PLACEHOLDER — base observation noise before informativeness scaling (§9.3).
+  obs_noise_scale: 0.15
+  # Last-season posterior regression-to-conference mean (DESIGN §9.6: 25–35%).
+  prior_regression_to_conf_mean: 0.30
+  # Epistemic posterior draws through Stage 2 (DESIGN §2.6).
+  rating_posterior_draws: 50
