@@ -51,24 +51,27 @@ def ingest_odds(
         help="Run a single snapshot pull (required for manual/smoke runs).",
     ),
 ) -> None:
-    """Capture The Odds API NCAAF snapshot (raw archive + staged Parquet)."""
+    """Capture The Odds API NCAAF snapshot to the raw archive (Task 4a).
+
+    Normalization / Parquet staging ship with the remainder of Task 4.
+    """
     if not once:
         typer.echo("Pass --once for a manual run, or serve the Prefect ingest_odds deployment.")
         raise typer.Exit(code=2)
     configure_logging()
     log = get_logger("ncaa_quant.cli")
-    from ncaa_quant.ingestion.odds_api import run_odds_ingest
+    from ncaa_quant.ingestion.odds_api import run_odds_raw_capture
 
-    result = run_odds_ingest()
+    result = run_odds_raw_capture()
     log.info(
-        "cli_ingest_odds_complete",
-        rows_written=result.rows_written,
-        rows_fetched=result.rows_fetched,
+        "cli_ingest_odds_raw_complete",
         raw_path=str(result.raw_path),
+        bytes_written=result.bytes_written,
+        captured_at=result.captured_at.isoformat(),
     )
     typer.echo(
-        f"wrote {result.rows_written} new rows "
-        f"(fetched {result.rows_fetched}) raw={result.raw_path}"
+        f"raw archived bytes={result.bytes_written} "
+        f"captured_at={result.captured_at.isoformat()} path={result.raw_path}"
     )
 
 

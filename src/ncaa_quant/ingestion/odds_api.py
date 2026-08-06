@@ -93,6 +93,7 @@ __all__ = (
     "reconcile_cfbd_close_vs_slot_close",
     "run_historical_backfill",
     "run_odds_ingest",
+    "run_odds_raw_capture",
     "tuesday_0600_et_for_week",
     "write_odds_snapshots",
 )
@@ -179,12 +180,21 @@ def _is_retryable(exc: BaseException) -> bool:
 
 @dataclass(frozen=True)
 class OddsIngestResult:
-    """Summary of one live snapshot pull."""
+    """Summary of one live snapshot pull (raw + normalize + stage)."""
 
     raw_path: Path
     rows_written: int
     rows_fetched: int
     captured_at: datetime
+
+
+@dataclass(frozen=True)
+class OddsRawCaptureResult:
+    """Summary of a raw-only live capture (Task 4a — no normalize/stage)."""
+
+    raw_path: Path
+    captured_at: datetime
+    bytes_written: int
 
 
 @dataclass(frozen=True)
@@ -1023,6 +1033,48 @@ def estimate_historical_credits(
     return plan, lines
 
 
+def run_odds_raw_capture(
+    *,
+    config: AppConfig | None = None,
+    api_key: str | None = None,
+    raw_root: Path | str | None = None,
+    captured_at: datetime | None = None,
+    client: OddsAPIClient | None = None,
+) -> OddsRawCaptureResult:
+    """Fetch live Odds API payload and archive it verbatim (Task 4a).
+
+    Uses the same httpx client retries (5× exponential on 429/5xx/timeout) and
+    rate-limit reserve guard as the full ingest path. Does **not** normalize or
+    write Parquet — those land in the remainder of Task 4. From this point,
+    every scheduled pull persists a recoverable raw JSON snapshot.
+    """
+    cfg = config or load_config()
+    key = api_key if api_key is not None else load_secrets().odds_api_key.get_secret_value()
+    captured = to_utc(captured_at or datetime.now(tz=UTC))
+    raw_dir = Path(raw_root) if raw_root is not None else Path(cfg.paths.raw_dir) / "odds_api"
+
+    owns_client = client is None
+    odds_client = client or OddsAPIClient(
+        key,
+        books=cfg.data.odds_books,
+        markets=cfg.data.odds_markets,
+        regions=cfg.data.odds_regions,
+        rate_limit_reserve=cfg.data.odds_rate_limit_reserve,
+        budget_kind="live",
+    )
+    try:
+        body, _headers = odds_client.fetch_odds()
+        raw_path = archive_raw_response(raw_dir, captured, body)
+        return OddsRawCaptureResult(
+            raw_path=raw_path,
+            captured_at=captured,
+            bytes_written=len(body),
+        )
+    finally:
+        if owns_client:
+            odds_client.close()
+
+
 def run_odds_ingest(
     *,
     config: AppConfig | None = None,
@@ -1036,6 +1088,7 @@ def run_odds_ingest(
     """Fetch → archive raw → normalize → dedupe → Parquet (live path).
 
     Raw archival happens before parse so parser exceptions never lose the body.
+    Prefer :func:`run_odds_raw_capture` when only archival is required (Task 4a).
     """
     cfg = config or load_config()
     key = api_key if api_key is not None else load_secrets().odds_api_key.get_secret_value()
@@ -1061,8 +1114,15 @@ def run_odds_ingest(
         budget_kind="live",
     )
     try:
-        body, _headers = odds_client.fetch_odds()
-        raw_path = archive_raw_response(raw_dir, captured, body)
+        # Archive first via the raw-capture path so parse failures never lose bytes.
+        raw = run_odds_raw_capture(
+            config=cfg,
+            api_key=key,
+            raw_root=raw_dir,
+            captured_at=captured,
+            client=odds_client,
+        )
+        body = raw.raw_path.read_bytes()
         frame = normalize_odds_payload(
             body,
             captured_at=captured,
@@ -1075,7 +1135,7 @@ def run_odds_ingest(
         with ParquetStore(staged_dir) as store:
             added = write_odds_snapshots(store, frame)
         return OddsIngestResult(
-            raw_path=raw_path,
+            raw_path=raw.raw_path,
             rows_written=added,
             rows_fetched=len(frame),
             captured_at=captured,

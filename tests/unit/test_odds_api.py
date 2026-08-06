@@ -32,6 +32,7 @@ from ncaa_quant.ingestion.odds_api import (
     plan_historical_units,
     run_historical_backfill,
     run_odds_ingest,
+    run_odds_raw_capture,
     tuesday_0600_et_for_week,
     within_asof_tolerance,
     write_odds_snapshots,
@@ -736,22 +737,22 @@ def test_cli_odds_once(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     from typer.testing import CliRunner
 
     from ncaa_quant.cli import app
-    from ncaa_quant.ingestion.odds_api import OddsIngestResult
+    from ncaa_quant.ingestion.odds_api import OddsRawCaptureResult
 
     runner = CliRunner()
 
-    def fake_run(**_kwargs: object) -> OddsIngestResult:
-        return OddsIngestResult(
+    def fake_run(**_kwargs: object) -> OddsRawCaptureResult:
+        return OddsRawCaptureResult(
             raw_path=tmp_path / "raw.json",
-            rows_written=3,
-            rows_fetched=3,
             captured_at=datetime(2024, 9, 1, tzinfo=UTC),
+            bytes_written=42,
         )
 
-    monkeypatch.setattr("ncaa_quant.ingestion.odds_api.run_odds_ingest", fake_run)
+    monkeypatch.setattr("ncaa_quant.ingestion.odds_api.run_odds_raw_capture", fake_run)
     result = runner.invoke(app, ["ingest", "odds", "--once"])
     assert result.exit_code == 0, result.output
-    assert "wrote 3 new rows" in result.output
+    assert "raw archived bytes=42" in result.output
+    assert "path=" in result.output
 
 
 def test_cli_odds_requires_once() -> None:
@@ -951,19 +952,49 @@ def test_failure_hook_logs() -> None:
 
 
 def test_ingest_odds_flow(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    from ncaa_quant.ingestion.odds_api import OddsIngestResult
+    from ncaa_quant.ingestion.odds_api import OddsRawCaptureResult
     from ncaa_quant.pipelines.odds import ingest_odds_flow
 
-    def fake_run(**_kwargs: object) -> OddsIngestResult:
-        return OddsIngestResult(
+    def fake_run(**_kwargs: object) -> OddsRawCaptureResult:
+        return OddsRawCaptureResult(
             raw_path=tmp_path / "x.json",
-            rows_written=2,
-            rows_fetched=2,
             captured_at=datetime(2024, 9, 1, tzinfo=UTC),
+            bytes_written=99,
         )
 
-    monkeypatch.setattr("ncaa_quant.pipelines.odds.run_odds_ingest", fake_run)
+    monkeypatch.setattr("ncaa_quant.pipelines.odds.run_odds_raw_capture", fake_run)
     monkeypatch.setattr("ncaa_quant.pipelines.odds.configure_logging", lambda: "run")
     out = ingest_odds_flow.fn()
-    assert out["rows_written"] == 2
-    assert out["rows_fetched"] == 2
+    assert out["bytes_written"] == 99
+    assert out["raw_path"].endswith("x.json")
+
+
+def test_run_odds_raw_capture(tmp_path: Path) -> None:
+    body = json.dumps(SAMPLE_PAYLOAD).encode()
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            content=body,
+            headers={"x-requests-remaining": "200"},
+        )
+
+    transport = httpx.MockTransport(handler)
+    client = OddsAPIClient(
+        "test-key",
+        books=["draftkings"],
+        markets=["h2h"],
+        rate_limit_reserve=50,
+        transport=transport,
+    )
+    result = run_odds_raw_capture(
+        config=load_config(),
+        api_key="test-key",
+        raw_root=tmp_path / "raw",
+        client=client,
+        captured_at=datetime(2024, 9, 1, 15, 30, 0, tzinfo=UTC),
+    )
+    assert result.bytes_written == len(body)
+    assert result.raw_path.is_file()
+    assert result.raw_path.read_bytes() == body
+    assert result.raw_path.parent.name == "2024-09-01"
