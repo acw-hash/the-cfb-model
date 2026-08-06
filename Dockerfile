@@ -23,6 +23,9 @@ COPY --chown=app:app src ./src
 COPY --chown=app:app configs ./configs
 COPY --chown=app:app docs ./docs
 
+# /app is created as root; grant ownership so non-root `uv sync` can write .venv
+RUN chown app:app /app
+
 USER app
 
 RUN uv sync --frozen --no-dev

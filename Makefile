@@ -14,7 +14,7 @@ typecheck:
 	$(UV) run mypy
 
 test:
-	$(UV) run pytest
+	$(UV) run pytest -m "not live"
 
 format:
 	$(UV) run ruff check --fix src tests

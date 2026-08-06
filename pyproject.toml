@@ -27,6 +27,18 @@ dependencies = [
     "prefect>=2,<4",
     "great-expectations>=1,<2",
     "matplotlib>=3,<4",
+    "dvc>=3,<4",
+    "scipy>=1,<2",
+    "shap>=0.44,<1",
+    "jinja2>=3,<4",
+    "plotly>=5,<6",
+]
+
+[project.optional-dependencies]
+research = [
+    "numpyro>=0.15,<1",
+    "jax>=0.4,<1",
+    "pymc-bart>=0.5,<1",
 ]
 
 [dependency-groups]
@@ -42,6 +54,16 @@ dev = [
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+# shap → numba: default resolve without an override picks older numba and can
+# leave numpy at 2.2, which regresses mypy strict vs the project's 2.4 baseline.
+# numba 0.64+ supports numpy 2.4. research/pymc-bart may still conflict —
+# install that extra in a dedicated env if needed.
+[tool.uv]
+override-dependencies = [
+    "numba>=0.64,<0.65",
+    "numpy>=2.4,<3",
+]
 
 [project.scripts]
 ncaa-quant = "ncaa_quant.cli:app"
@@ -64,6 +86,9 @@ mypy_path = "src"
 testpaths = ["tests"]
 addopts = "--cov=src --cov-fail-under=80"
 pythonpath = ["src", "."]
+markers = [
+    "live: hits the network; excluded from CI and default make test",
+]
 
 [tool.coverage.run]
 source = ["src"]
