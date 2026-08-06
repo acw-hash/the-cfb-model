@@ -132,6 +132,10 @@ def test_partition_write_idempotent_byte_identical(tmp_path: Path) -> None:
     hash2 = hashlib.sha256(path2.read_bytes()).hexdigest()
     assert path1 == path2
     assert hash1 == hash2
+    # Visible under `pytest -s` for AUDIT-9 acceptance evidence.
+    print(f"partition_path={path1}")
+    print(f"hash_write_1={hash1}")
+    print(f"hash_write_2={hash2}")
 
 
 def test_partition_write_idempotent_shuffled_rows(tmp_path: Path) -> None:
@@ -225,6 +229,66 @@ def test_as_of_join_excludes_event_time_equal_as_of() -> None:
     )
     out = as_of_join(left, right, on="team_id", ts_col="event_time", as_of=as_of.to_pydatetime())
     assert out.iloc[0]["rating"] == 3.0
+    # Equal-bound row (rating=99) must not win; only strict '<' is eligible.
+    assert 99.0 not in set(out["rating"].dropna())
+    print(
+        "boundary: right.event_time == as_of excluded; "
+        f"selected_rating={out.iloc[0]['rating']} (expected 3.0, not 99.0)"
+    )
+
+
+def _crosswalk_row(**overrides: object) -> dict[str, object]:
+    base: dict[str, object] = {
+        "odds_event_id": "odds-evt-1",
+        "game_id": 401520123,
+        "game_key": "2024:Alabama:Auburn:2024-11-30",
+        "season": 2024,
+        "home_team": "Alabama",
+        "away_team": "Auburn",
+        "kickoff": _ts("2024-11-30T17:00:00"),
+        "kickoff_delta_hours": 0.5,
+        "match_status": "matched",
+        "source_version": "test",
+        "event_time": _ts("2024-11-28T12:00:00"),
+        "ingested_at": _ts("2024-11-28T12:01:00"),
+    }
+    base.update(overrides)
+    return base
+
+
+def test_odds_cfbd_crosswalk_schema_round_trip() -> None:
+    """AUDIT-6: crosswalk schema exists even though population is Task 4/5."""
+    from ncaa_quant.data.schemas import OddsCfbdGameCrosswalkSchema
+
+    df = pd.DataFrame([_crosswalk_row()])
+    validated = OddsCfbdGameCrosswalkSchema.validate(df, lazy=True)
+    assert int(validated.iloc[0]["game_id"]) == 401520123
+    assert validated.iloc[0]["match_status"] == "matched"
+
+
+def test_odds_cfbd_crosswalk_quarantine_allows_null_game_id() -> None:
+    from ncaa_quant.data.schemas import OddsCfbdGameCrosswalkSchema
+
+    ok = pd.DataFrame([_crosswalk_row(game_id=None, match_status="quarantined")])
+    OddsCfbdGameCrosswalkSchema.validate(ok, lazy=True)
+
+
+def test_odds_cfbd_crosswalk_matched_requires_game_id() -> None:
+    from ncaa_quant.data.schemas import OddsCfbdGameCrosswalkSchema
+
+    bad = pd.DataFrame([_crosswalk_row(game_id=None, match_status="matched")])
+    with pytest.raises(SchemaErrors):
+        OddsCfbdGameCrosswalkSchema.validate(bad, lazy=True)
+
+
+def test_crosswalk_partition_by_season(tmp_path: Path) -> None:
+    store = ParquetStore(tmp_path / "staged")
+    df = pd.DataFrame([_crosswalk_row()])
+    path = store.write_partition("odds_cfbd_game_crosswalk", df, {"season": 2024})
+    assert path.exists()
+    out = store.read("odds_cfbd_game_crosswalk", filters={"season": 2024})
+    assert len(out) == 1
+    assert int(out.iloc[0]["game_id"]) == 401520123
 
 
 def _odds_row(**overrides: object) -> dict[str, object]:

@@ -27,7 +27,8 @@ data/staged/{table}/season={YYYY}/week={W}/part.parquet
 ```
 
 **Reference tables** — `teams`, `venues`, `coaches`, `rosters`, `talent`,
-`returning_production`, `recruiting`, `portal`:
+`returning_production`, `recruiting`, `portal`, `qb_status`,
+`odds_cfbd_game_crosswalk`:
 
 ```text
 data/staged/{table}/season={YYYY}/part.parquet
@@ -35,6 +36,13 @@ data/staged/{table}/season={YYYY}/part.parquet
 
 Writes go through `ncaa_quant.data.storage.ParquetStore`: atomic temp-file +
 `os.replace`, idempotent when the normalized payload is byte-identical.
+
+## Canonical game identity (AUDIT-6)
+
+CFBD's stable numeric `game_id` is the only canonical game key. Odds API event
+ids map through the `odds_cfbd_game_crosswalk` table (schema registered in
+Task 3; population in Task 4 / Task 5). The derived string `game_key`
+`(season, home_team, away_team, kickoff_date)` is matcher input only.
 
 ## Point-in-time columns
 
@@ -45,7 +53,7 @@ Every staged schema includes:
 
 Constraint: `event_time <= ingested_at`. Feature and rating code may only
 consume rows via `ncaa_quant.data.asof.as_of_join` (strict
-`event_time < as_of`).
+`right.event_time < as_of` — equality at the bound is **excluded**).
 
 ## Source placeholders
 

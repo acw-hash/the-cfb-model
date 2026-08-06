@@ -4,6 +4,12 @@ Every fact and reference table carries UTC ``event_time`` (when the row's
 information became knowable) and ``ingested_at``, with
 ``event_time <= ingested_at``. Range checks follow DESIGN §8 step 2 where
 applicable: ``0 <= points <= 100``, ``|spread| < 70``, totals in ``[20, 100]``.
+
+**Canonical game identity (AUDIT-6):** CFBD's stable numeric ``game_id`` is the
+only canonical game key across sources. Odds API (and other non-CFBD) event ids
+are mapped through :class:`OddsCfbdGameCrosswalkSchema`; the derived matcher
+string ``game_key`` (season / teams / kickoff_date) is matcher input only and
+must never replace ``game_id`` as the identity of record.
 """
 
 from __future__ import annotations
@@ -136,8 +142,11 @@ class LinesHistoricalSchema(_TimedModel):
 class OddsSnapshotsSchema(_TimedModel):
     """Odds snapshots from The Odds API (live capture or historical backfill).
 
-    ``game_key`` is the stable cross-source join key (never pack it into
-    ``snapshot_id``). ``game_id`` is a nullable CFBD convenience id when known.
+    **Canonical identity:** ``game_id`` is CFBD's stable numeric game id
+    (AUDIT-6). It is nullable only until the Odds↔CFBD crosswalk resolves the
+    row; never invent a substitute. ``game_key`` is the derived
+    (season, home, away, kickoff_date) matcher input used to *find* that id —
+    not a second identity of record (never pack identity into ``snapshot_id``).
 
     ``captured_at`` is when the book price was observed. ``event_time`` is when
     that information became knowable for PIT joins (live: equals ``captured_at``;
@@ -151,8 +160,8 @@ class OddsSnapshotsSchema(_TimedModel):
     """
 
     snapshot_id: Series[str] = pa.Field()
-    game_key: Series[str] = pa.Field()
-    game_id: Series[pa.Int64] = pa.Field(ge=0, nullable=True)
+    game_key: Series[str] = pa.Field()  # derived matcher input only
+    game_id: Series[pa.Int64] = pa.Field(ge=0, nullable=True)  # CFBD canonical
     season: Series[pa.Int32] = pa.Field(ge=1900, le=2100, nullable=True)
     week: Series[pa.Int32] = pa.Field(ge=0, le=25, nullable=True)
     book: Series[str] = pa.Field()
@@ -182,6 +191,36 @@ class OddsSnapshotsSchema(_TimedModel):
             | ((df["line"] >= 20.0) & (df["line"] <= 100.0))
         )
         return spread_ok & total_ok
+
+
+class OddsCfbdGameCrosswalkSchema(_TimedModel):
+    """Odds API event id ↔ CFBD ``game_id`` crosswalk (AUDIT-6).
+
+    ``game_id`` is the only canonical game identity. Odds events are matched via
+    normalized team pair + kickoff within ±36h. Ambiguous matches are
+    ``match_status='quarantined'`` with ``game_id`` null — never guessed.
+    ``game_key`` retains the derived (season, home, away, kickoff_date) matcher
+    input only.
+
+    Schema is registered in Task 3; row population is Task 4 / Task 5.
+    """
+
+    odds_event_id: Series[str] = pa.Field()
+    game_id: Series[pa.Int64] = pa.Field(ge=0, nullable=True)  # CFBD canonical
+    game_key: Series[str] = pa.Field()  # derived matcher input only
+    season: Series[pa.Int32] = pa.Field(ge=1900, le=2100)
+    home_team: Series[str] = pa.Field()
+    away_team: Series[str] = pa.Field()
+    kickoff: Series[DateTime] = pa.Field(dtype_kwargs=_UTC_DT)
+    kickoff_delta_hours: Series[pa.Float64] = pa.Field(nullable=True)
+    match_status: Series[str] = pa.Field(isin=["matched", "quarantined", "unmatched"])
+    source_version: Series[str] = pa.Field(nullable=True)
+
+    @pa.dataframe_check
+    def matched_requires_game_id(cls, df: pd.DataFrame) -> pd.Series:  # type: ignore[misc]
+        """Matched rows must carry the CFBD canonical id; quarantined may not."""
+        matched = df["match_status"] == "matched"
+        return (~matched) | df["game_id"].notna()
 
 
 class TeamsSchema(_TimedModel):
@@ -344,6 +383,7 @@ SCHEMA_REGISTRY: dict[str, type[_TimedModel]] = {
     "advanced_box": AdvancedBoxSchema,
     "lines_historical": LinesHistoricalSchema,
     "odds_snapshots": OddsSnapshotsSchema,
+    "odds_cfbd_game_crosswalk": OddsCfbdGameCrosswalkSchema,
     "weather": WeatherSchema,
     "teams": TeamsSchema,
     "venues": VenuesSchema,
@@ -379,6 +419,8 @@ REFERENCE_TABLES: frozenset[str] = frozenset(
         "recruiting",
         "portal",
         "qb_status",
+        # Season-keyed; postpone keeps one CFBD id across week shifts.
+        "odds_cfbd_game_crosswalk",
     }
 )
 
