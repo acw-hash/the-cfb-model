@@ -261,6 +261,40 @@ def winsorize_innovation(
     return clipped, z, was_clipped
 
 
+def effective_obs_noise(
+    r: np.ndarray,
+    z: np.ndarray,
+    was_clipped: np.ndarray,
+    *,
+    sigma: float,
+) -> np.ndarray:
+    """Inflate observation noise for winsorized components (DESIGN §9.4).
+
+    ``R_eff = R · (|z| / sigma)²`` on clipped rows. A clipped residual carries
+    less information than the raw tail implies, but the Joseph covariance update
+    does not know the residual was dampened — it shrinks ``P`` as if the whole
+    tail had been observed. The visible symptom is overconfident November ratings
+    after early-season blowouts: the filter treats a 60-point margin as a
+    high-precision measurement while only acting on 2.5σ of it.
+
+    Rows *and* columns are scaled by ``sqrt`` of the factor so a correlated ``R``
+    stays positive semi-definite; for the diagonal ``R`` used here this reduces
+    to scaling each variance by ``(|z| / sigma)²``.
+    """
+    r_arr = np.asarray(r, dtype=float)
+    if r_arr.ndim == 1:
+        r_arr = np.diag(r_arr)
+    clipped = np.asarray(was_clipped, dtype=bool)
+    if not np.any(clipped):
+        return r_arr.copy()
+
+    factor = np.ones(r_arr.shape[0], dtype=float)
+    z_arr = np.abs(np.asarray(z, dtype=float))
+    factor[clipped] = (z_arr[clipped] / float(sigma)) ** 2
+    root = np.sqrt(factor)
+    return np.asarray(r_arr * np.outer(root, root), dtype=float)
+
+
 def kalman_update(
     state: GaussianState,
     h: np.ndarray,
@@ -288,18 +322,21 @@ def kalman_update(
     s = h @ state.cov @ h.T + r
     innov = y - h @ state.mean
     pred_var = np.diag(s).copy()
-    innov_used, z, _ = winsorize_innovation(innov, pred_var, sigma=winsor_sigma)
+    innov_used, z, was_clipped = winsorize_innovation(innov, pred_var, sigma=winsor_sigma)
 
-    # Solve K = P H^T S^{-1} without forming S^{-1} explicitly when possible.
+    r_eff = effective_obs_noise(r, z, was_clipped, sigma=winsor_sigma)
+    s_eff = h @ state.cov @ h.T + r_eff
+
+    # Solve K = P H^T S_eff^{-1} without forming the inverse explicitly.
     try:
-        gain_t = np.linalg.solve(s, h @ state.cov.T)
+        gain_t = np.linalg.solve(s_eff, h @ state.cov.T)
         k = gain_t.T
     except np.linalg.LinAlgError:
-        k = state.cov @ h.T @ np.linalg.pinv(s)
+        k = state.cov @ h.T @ np.linalg.pinv(s_eff)
 
     mean_new = state.mean + k @ innov_used
     i_kh = np.eye(state.mean.shape[0]) - k @ h
-    cov_new = i_kh @ state.cov @ i_kh.T + k @ r @ k.T
+    cov_new = i_kh @ state.cov @ i_kh.T + k @ r_eff @ k.T
     # Numerical hygiene.
     cov_new = 0.5 * (cov_new + cov_new.T)
 
@@ -318,6 +355,53 @@ def kalman_update(
         z,
         log_lik,
     )
+
+
+def mean_centering_operator(n: int, index_sets: Sequence[Sequence[int]]) -> np.ndarray:
+    """Build ``I − M``, the projection that zeroes the mean of each index set.
+
+    ``index_sets`` lists the position groups to centre independently — typically
+    the offensive block across all FBS teams, and the defensive block. Groups must
+    not overlap: a position centred twice would be projected onto the intersection
+    of two constraints, which is not what §9.3 asks for.
+    """
+    seen: set[int] = set()
+    proj = np.eye(int(n), dtype=float)
+    for group in index_sets:
+        idx = np.asarray(sorted(set(int(i) for i in group)), dtype=int)
+        if idx.size == 0:
+            continue
+        overlap = seen.intersection(int(i) for i in idx)
+        if overlap:
+            msg = f"index sets overlap at positions {sorted(overlap)}; centring must be disjoint"
+            raise ValueError(msg)
+        seen.update(int(i) for i in idx)
+        block = np.ix_(idx, idx)
+        proj[block] = np.eye(idx.size) - np.full((idx.size, idx.size), 1.0 / idx.size)
+    return proj
+
+
+def project_league_mean_zero(
+    state: GaussianState,
+    index_sets: Sequence[Sequence[int]],
+) -> GaussianState:
+    """Project a state onto the league-mean-zero subspace (DESIGN §9.3, A-3).
+
+    The measurement contrast ``off_h − def_a`` identifies only *differences*:
+    adding a constant to every team's offense and every team's defense leaves
+    every measurement unchanged. That null direction is collinear with the league
+    scoring-environment state, so without a hard constraint the filter has a ridge
+    it can wander along — team ratings drift jointly while fitting the data
+    equally well, and the absolute level is arbitrary.
+
+    The constraint is applied as an explicit projection, ``x ← (I−M)x`` and
+    ``P ← (I−M) P (I−M)ᵀ``, rather than as a zero-noise pseudo-observation, so it
+    holds *exactly* after every update rather than approximately.
+    """
+    proj = mean_centering_operator(state.mean.shape[0], index_sets)
+    mean = proj @ state.mean
+    cov = proj @ state.cov @ proj.T
+    return GaussianState(mean=mean, cov=0.5 * (cov + cov.T))
 
 
 def analytic_1d_kalman_update(
