@@ -1,28 +1,35 @@
 """Bayesian state-space (Kalman) team rating engine (DESIGN §9.2–§9.5 / §15 item 14).
 
-Stage-1 dynamic state layer: per-team latent strength with full covariance,
-updated after every completed game. This is the production rating engine;
-Elo (:mod:`ncaa_quant.ratings.elo_baseline`) remains the benchmark only.
+Stage-1 dynamic state layer: a **joint league** latent with full cross-team
+covariance, updated after every completed game. This is the production rating
+engine; Elo (:mod:`ncaa_quant.ratings.elo_baseline`) remains the benchmark only.
 
 State (DESIGN §9.2)
 -------------------
-Per team ``i`` the latent state is a configurable vector. v1-minimal::
+A single joint vector holds every FBS team's block plus league-level states
+(``hfa_global``, per-team ``hfa_deviation``, ``scoring_env``). Cross-team
+covariance is retained — that is how schedule information propagates.
+
+Per-team block ``i`` (configurable)::
 
     x_i = [off_epa, def_epa, st_value, pace]
 
 v1.1 adds ``off_rush_bias``, ``off_explos``, ``def_explos`` by extending
-``StateSpaceConfig.state_dims`` — measurement equations for those dims are
-not yet wired (priors + Q only). League-level: ``hfa_global`` and a heavily
-shrunk per-team ``hfa_deviation``.
+``StateSpaceConfig.state_dims``.
+
+Identifiability (DESIGN §9.3)
+-----------------------------
+After every measurement update, offensive and defensive blocks are projected
+onto league-mean zero. ``scoring_env`` carries the absolute efficiency level.
 
 Measurement (DESIGN §9.3)
 -------------------------
 For a home/away game (neutral drops HFA)::
 
-    epa_h = off_h − def_a + hfa_global + hfa_dev_h + ε
-    epa_a = off_a − def_h + ε
+    epa_h = off_h − def_a + hfa_global + hfa_dev_h + scoring_env + ε
+    epa_a = off_a − def_h + scoring_env + ε
     st    = st_h − st_a + ε_st
-    pace  = 0.5·(pace_h + pace_a) + ε_pace   # obs = mean plays / ref_plays − 1
+    pace  = 0.5·(pace_h + pace_a) + ε_pace
     margin = margin_scale · (off_h − def_a − off_a + def_h + hfa) + ε_m
 
 Observation noise on EPA scales with informativeness::
@@ -30,7 +37,7 @@ Observation noise on EPA scales with informativeness::
     σ²_epa = r_epa_base² · (ref_plays / max(n_plays, 1))
 
 FCS opponents are replaced by a pooled FCS prior with large variance for the
-duration of the update (their state is not written back as a named school).
+duration of the update (their state is not written into the joint league).
 
 Process noise (DESIGN §9.4)
 ---------------------------
@@ -41,7 +48,7 @@ coordinator change, or a manual multiplier hook).
 Robustness (DESIGN §9.5)
 ------------------------
 Standardized innovations are winsorized at ±``residual_winsor_sigma`` (default
-2.5) before the gain is applied.
+2.5) before the gain is applied; clipped rows inflate ``R_eff``.
 
 Time semantics
 --------------
@@ -130,6 +137,10 @@ class StateSpaceConfig:
     hfa_q: float = 1.0e-6
     hfa_team_prior_var: float = 1.0e-4  # heavily shrunk
     hfa_team_q: float = 1.0e-7
+    # League scoring-environment state (identified absolute efficiency level).
+    scoring_env_prior_mean: float = 0.0
+    scoring_env_prior_var: float = 0.01
+    scoring_env_q: float = 1.0e-5
     # FCS pooled prior.
     fcs_prior_mean: float = -0.05
     fcs_prior_var: float = 0.25
@@ -755,9 +766,12 @@ def update_game(
 ) -> GameUpdateResult:
     """Joint Kalman update for one game's measurement vector.
 
-    Team states are stacked with league HFA into a joint Gaussian; after the
-    update the home/away/HFA marginals are extracted (cross-covariance is
-    discarded for storage — standard independent-team approximation).
+    .. note::
+
+       This helper stacks **two teams only** and discards cross-covariance after
+       the update. Production filtering uses :class:`~ncaa_quant.ratings.league_state.LeagueState`,
+       which retains the full joint covariance and applies the §9.3
+       identifiability projection. Prefer that path for any multi-game run.
     """
     cfg = config or StateSpaceConfig()
     d = cfg.n_dims
@@ -1017,7 +1031,7 @@ def run_filter(
     record_weekly: bool = True,
     preseason_states: Mapping[int, Mapping[Any, GaussianState]] | None = None,
 ) -> FilterResult:
-    """Run the Kalman filter over a chronologically sorted observation frame.
+    """Run the joint-league Kalman filter over a chronologically sorted frame.
 
     Required columns: ``game_id``, ``season``, ``week``, ``event_time``,
     ``home_team_id``, ``away_team_id``, ``home_epa``, ``away_epa``,
@@ -1037,6 +1051,8 @@ def run_filter(
     that want widened missing-input variance must supply those priors via
     :func:`ncaa_quant.ratings.priors.build_preseason_states`.
     """
+    from ncaa_quant.ratings.league_state import LeagueState
+
     cfg = config or StateSpaceConfig()
     if observations.empty:
         return FilterResult(
@@ -1051,9 +1067,7 @@ def run_filter(
     obs["event_time"] = [to_utc(pd.Timestamp(ts).to_pydatetime()) for ts in obs["event_time"]]
     obs = obs.sort_values(["event_time", "game_id"], kind="mergesort").reset_index(drop=True)
 
-    teams: dict[str, GaussianState] = {}
-    hfa_devs: dict[str, GaussianState] = {}
-    hfa = initial_hfa_global(cfg)
+    league = LeagueState.empty(cfg)
     last_week: dict[str, tuple[int, int]] = {}
     history_rows: list[dict[str, Any]] = []
     innov_rows: list[InnovationRecord] = []
@@ -1073,45 +1087,56 @@ def run_filter(
             return season_map[parsed]
         return None
 
-    def _ensure(tid: str, *, is_fcs: bool, season: int) -> GaussianState:
-        if is_fcs:
-            return fcs_pinned_state(cfg)
-        if tid not in teams:
-            prior = _lookup_prior(tid, season)
-            teams[tid] = prior if prior is not None else initial_team_state(cfg)
-            hfa_devs[tid] = initial_hfa_team(cfg)
-            last_week[tid] = (-1, -1)
-        return teams[tid]
+    def _ensure(tid: str, *, season: int) -> None:
+        if league.has_team(tid):
+            return
+        prior = _lookup_prior(tid, season)
+        league.admit(tid, prior=prior)
 
-    def _predict_team(
-        tid: str,
-        state: GaussianState,
-        *,
-        season: int,
-        week: int,
-        is_fcs: bool,
-    ) -> GaussianState:
-        if is_fcs:
-            return fcs_pinned_state(cfg)
-        prev = last_week.get(tid, (-1, -1))
-        q = cfg.q_matrix()
-        # Season boundary.
-        if prev[0] != -1 and season > prev[0]:
-            prior = _lookup_prior(tid, season)
-            state = prior if prior is not None else apply_season_regression(state, cfg)
-            # Soft-reset team HFA deviation toward zero with inflated variance.
-            prev_dev = hfa_devs.get(tid, initial_hfa_team(cfg))
-            hfa_devs[tid] = GaussianState(
+    def _admit_season_roster(season: int, season_obs: pd.DataFrame) -> None:
+        """Admit every FBS team that appears this season before any game is played.
+
+        Lazy admission mid-season would let early games project over a partial
+        roster, then fold in late teams with informative priors — breaking the
+        §9.3 shift-invariance property and making early-week ratings depend on
+        schedule order rather than the full league constraint.
+        """
+        ids: set[str] = set()
+        for col, fcs_col in (
+            ("home_team_id", "home_is_fcs"),
+            ("away_team_id", "away_is_fcs"),
+        ):
+            for row in season_obs.itertuples(index=False):
+                is_fcs = bool(getattr(row, fcs_col, False))
+                tid = getattr(row, col)
+                if fbs_team_ids is not None:
+                    is_fcs = is_fcs or (tid not in fbs_team_ids)
+                if not is_fcs:
+                    ids.add(str(tid))
+        for tid in sorted(ids, key=lambda x: (len(x), x)):
+            _ensure(tid, season=season)
+        # Project once so a non-zero preseason level is absorbed into scoring_env
+        # before week 1, rather than leaking into the first game's residual.
+        league.project_identifiability()
+
+    def _season_boundary(tid: str, season: int) -> None:
+        prior = _lookup_prior(tid, season)
+        if prior is not None:
+            league.set_team_state(tid, prior)
+        else:
+            league.set_team_state(tid, apply_season_regression(league.team_marginal(tid), cfg))
+        prev_dev = league.hfa_dev_marginal(tid)
+        league.set_hfa_dev(
+            tid,
+            GaussianState(
                 mean=(1.0 - cfg.season_regression) * prev_dev.mean,
                 cov=prev_dev.cov + np.array([[cfg.season_var_inflation * 0.05]]),
-            )
-            weeks_elapsed = max(week, 1)
-        elif prev[0] == season:
-            weeks_elapsed = max(int(week) - int(prev[1]), 1)
-        else:
-            weeks_elapsed = 1
+            ),
+        )
 
-        # Event-triggered inflation for this team-week.
+    def _apply_week_noise(tid: str, *, season: int, week: int) -> None:
+        """One week of process noise, with event-triggered Q inflation."""
+        q = cfg.q_matrix()
         seen: set[tuple[Any, int, int]] = set()
         for key in ((tid, season, week), (_parse_tid(tid), season, week)):
             if key in seen:
@@ -1125,21 +1150,41 @@ def run_filter(
                     manual_multiplier=manual,
                     dim_names=cfg.state_dims,
                 )
+        league.add_process_noise_block(league.team_slice(tid), q)
+        league.add_process_noise_scalar(league.hfa_dev_index(tid), cfg.hfa_team_q)
 
-        return kalman_predict(state, q * float(weeks_elapsed))
-
+    noise_week: tuple[int, int] | None = None
     prev_season = None
     for row in obs.itertuples(index=False):
         season = int(row.season)
         week = int(row.week)
-        if prev_season is not None and season > prev_season:
-            # League HFA soft persistence across seasons.
-            hfa = GaussianState(
-                mean=(1.0 - cfg.season_regression) * hfa.mean
-                + cfg.season_regression * cfg.hfa_prior_mean,
-                cov=hfa.cov + np.array([[cfg.season_var_inflation * 0.1]]),
-            )
+        if prev_season is None or season > prev_season:
+            if prev_season is not None and season > prev_season:
+                hfa = league.hfa_global_marginal()
+                env = league.scoring_env_marginal()
+                hfa_i = league.hfa_global_index()
+                env_i = league.scoring_env_index()
+                league.mean[hfa_i] = (1.0 - cfg.season_regression) * float(hfa.mean[0]) + (
+                    cfg.season_regression * cfg.hfa_prior_mean
+                )
+                league.cov[hfa_i, hfa_i] = float(hfa.cov[0, 0]) + cfg.season_var_inflation * 0.1
+                league.mean[env_i] = (1.0 - cfg.season_regression) * float(env.mean[0]) + (
+                    cfg.season_regression * cfg.scoring_env_prior_mean
+                )
+                league.cov[env_i, env_i] = float(env.cov[0, 0]) + cfg.season_var_inflation * 0.05
+                for tid in list(league.team_ids):
+                    _season_boundary(tid, season)
+            _admit_season_roster(season, obs.loc[obs["season"] == season])
+            noise_week = None
         prev_season = season
+
+        # §9.4: every team gets one week of Q at the start of each week.
+        if noise_week != (season, week):
+            for tid in list(league.team_ids):
+                _apply_week_noise(tid, season=season, week=week)
+            league.add_process_noise_scalar(league.hfa_global_index(), cfg.hfa_q)
+            league.add_process_noise_scalar(league.scoring_env_index(), cfg.scoring_env_q)
+            noise_week = (season, week)
 
         home_id = row.home_team_id
         away_id = row.away_team_id
@@ -1152,25 +1197,6 @@ def run_filter(
         h_key = _team_key(home_id, is_fcs=home_fcs)
         a_key = _team_key(away_id, is_fcs=away_fcs)
 
-        h_state = _predict_team(
-            h_key,
-            _ensure(h_key, is_fcs=home_fcs, season=season),
-            season=season,
-            week=week,
-            is_fcs=home_fcs,
-        )
-        a_state = _predict_team(
-            a_key,
-            _ensure(a_key, is_fcs=away_fcs, season=season),
-            season=season,
-            week=week,
-            is_fcs=away_fcs,
-        )
-        hfa = kalman_predict(hfa, np.array([[cfg.hfa_q]]))
-        h_dev = hfa_devs.get(h_key, initial_hfa_team(cfg))
-        if not home_fcs:
-            h_dev = kalman_predict(h_dev, np.array([[cfg.hfa_team_q]]))
-
         et = to_utc(pd.Timestamp(row.event_time).to_pydatetime())
         home_st = getattr(row, "home_st_epa", None)
         away_st = getattr(row, "away_st_epa", None)
@@ -1180,11 +1206,9 @@ def run_filter(
             ap = float(row.away_plays) if pd.notna(row.away_plays) else cfg.ref_plays
             pace = 0.5 * (hp + ap)
 
-        result = update_game(
-            h_state,
-            a_state,
-            hfa,
-            h_dev,
+        result = league.update_game(
+            home_id,
+            away_id,
             home_epa=float(row.home_epa) if pd.notna(row.home_epa) else None,
             away_epa=float(row.away_epa) if pd.notna(row.away_epa) else None,
             home_plays=float(row.home_plays) if pd.notna(row.home_plays) else cfg.ref_plays,
@@ -1194,26 +1218,24 @@ def run_filter(
             pace_obs=float(pace) if pace is not None and pd.notna(pace) else None,
             margin=float(row.margin) if pd.notna(row.margin) else None,
             neutral_site=bool(row.neutral_site),
-            config=cfg,
+            home_is_fcs=home_fcs,
+            away_is_fcs=away_fcs,
             game_id=int(row.game_id),
-            home_team_id=home_id,
-            away_team_id=away_id,
             season=season,
             week=week,
             event_time=et,
         )
         total_ll += result.log_likelihood
         innov_rows.extend(result.innovations)
-        hfa = result.hfa_global
+        hfa = league.hfa_global_marginal()
+        env = league.scoring_env_marginal()
 
         if not home_fcs:
-            teams[h_key] = result.home
-            hfa_devs[h_key] = result.hfa_dev_home
             last_week[h_key] = (season, week)
             history_rows.append(
                 _state_to_row(
                     home_id,
-                    result.home,
+                    league.team_marginal(h_key),
                     season=season,
                     week=week,
                     game_id=int(row.game_id),
@@ -1223,12 +1245,11 @@ def run_filter(
                 )
             )
         if not away_fcs:
-            teams[a_key] = result.away
             last_week[a_key] = (season, week)
             history_rows.append(
                 _state_to_row(
                     away_id,
-                    result.away,
+                    league.team_marginal(a_key),
                     season=season,
                     week=week,
                     game_id=int(row.game_id),
@@ -1246,8 +1267,11 @@ def run_filter(
                 "event_time": et,
                 "hfa_global": float(hfa.mean[0]),
                 "sd_hfa_global": float(math.sqrt(max(hfa.cov[0, 0], 0.0))),
+                "scoring_env": float(env.mean[0]),
+                "sd_scoring_env": float(math.sqrt(max(env.cov[0, 0], 0.0))),
             }
         )
+
 
     history = pd.DataFrame(history_rows)
     if record_weekly and not history.empty:

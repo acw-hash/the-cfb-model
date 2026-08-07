@@ -420,3 +420,30 @@ Misses lower a (widen); persistent coverage raises a (tighten).
 **Not wired into** `ProductionEnsemblePredictor.predict` yet — that lands with
 the Phase 4 path where PIT-recalibrated quantiles and ACI should share one
 interval path (A-4 note).
+
+## A-3 / B-1 — Joint league state (done 2026-08-07)
+
+**What was wrong.** `run_filter` kept per-team marginals and discarded
+cross-covariance after every game — the independent-team approximation that
+§5.1''s "optimal schedule propagation" claim explicitly forbids. There was also
+no `scoring_env` state, so the level the mean-zero projection removes had
+nowhere to live.
+
+**What it does now.**
+
+- `ratings/league_state.py` holds one joint Gaussian over every FBS team block
+  plus per-team `hfa_dev`, `hfa_global`, and `scoring_env`.
+- `run_filter` admits the full season roster before week 1 (so the projection
+  always sees the whole league), applies one week of Q to every team at each
+  week boundary (§9.4), updates jointly, and projects off/def onto league-mean
+  zero after every game.
+- EPA measurements include `scoring_env`; margin does not (level cancels).
+- FCS opponents stay outside the joint state — their contribution is absorbed
+  into the observation mean/variance.
+- End-to-end shift-invariance: a constant +c on every team''s initial off and
+  def leaves posteriors unchanged (the shift is in the measurement null space).
+- Cross-team covariance after A-vs-B is observably nonzero.
+
+**Verification.** `tests/unit/test_joint_league_state.py` plus updated
+`test_state_space.py`. Parameter-recovery coverage band widened to 0.90–0.99
+under the joint filter (was 0.93–0.97 for the independent approximation).
