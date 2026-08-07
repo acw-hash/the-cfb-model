@@ -1,3 +1,12 @@
+# ADR 0002: Historical odds source (The Odds API)
+
+**Status:** Accepted (applied)
+**Date:** 2026-08-06
+
+This change set has been applied to `docs/DESIGN.md` and `docs/TASKS.md` as of 2026-08-06 (AUDIT-1). The body below is the original edit list preserved for audit trail; do not re-apply it.
+
+---
+
 # Change Set — Incorporating The Odds API Historical Endpoint
 
 Apply these edits to `docs/DESIGN.md` and `TASKS.md` before running any further tasks.

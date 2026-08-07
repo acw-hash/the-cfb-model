@@ -37,20 +37,27 @@ Deliverables:
 2. pyproject.toml using uv, Python 3.11. Deps (pin major versions only): pandas,
    polars, duckdb, pyarrow, pandera, pydantic, pydantic-settings, omegaconf,
    structlog, typer, httpx, tenacity, scikit-learn, lightgbm, xgboost, catboost,
-   ngboost, optuna, mlflow, prefect, great-expectations, matplotlib. Dev group:
-   pytest, pytest-cov, hypothesis, ruff, mypy, pre-commit. Generate uv.lock.
+   ngboost, optuna, mlflow, prefect, great-expectations, matplotlib, dvc, scipy,
+   shap, jinja2, plotly. Optional extra `research`: numpyro, jax, pymc-bart
+   (install via `uv sync --extra research`). This Task 1 dependency list is the
+   approved set under `.cursorrules` — do not add further deps without an explicit
+   amendment. Dev group: pytest, pytest-cov, hypothesis, ruff, mypy, pre-commit.
+   Generate uv.lock.
 3. Tool config in pyproject: ruff (line length 100), mypy strict on src/, pytest
-   with --cov=src --cov-fail-under=80, testpaths=tests.
+   with --cov=src --cov-fail-under=80, testpaths=tests. Register `pytest.mark.live`
+   for tests that hit the network; CI and default `make test` exclude `@pytest.mark.live`.
 4. Dockerfile on an NVIDIA CUDA 12.x runtime base for Ubuntu 22.04, non-root user,
    uv-installed deps, workdir /app. docker-compose.yml with services: app, mlflow
-   (sqlite backend + local artifact volume), prefect server, named volume for data/.
+   (local **file-store** backend + local artifact volume — not SQLite under
+   multi-writer / parallel logging; see §10), prefect server, named volume for data/.
+   Compose is a deferred artifact; Phase 1 runs natively.
 5. Makefile: install, lint, typecheck, test, format, ingest, features, ratings,
    train, predict, backtest, clean. Not-yet-built targets invoke the CLI and exit
    with "not implemented" — that is expected at this stage.
 6. src/ncaa_quant/cli.py: typer app with command groups matching Makefile verbs,
    each raising NotImplementedError with a clear message.
 7. .github/workflows/ci.yml: on push/PR — uv sync, ruff check, ruff format --check,
-   mypy, pytest.
+   mypy, pytest excluding `@pytest.mark.live` (no live network in CI).
 8. .pre-commit-config.yaml: ruff, ruff-format, mypy, trailing-whitespace,
    check-yaml, detect-private-key.
 9. .gitignore (python, data/, .env, mlruns/, .dvc cache). .env.example listing
@@ -96,10 +103,15 @@ Deliverables:
 5. utils/timeutils.py: all timestamps UTC-aware. Functions: to_utc, season_of(ts),
    week_of(ts, season) using the CFB convention documented in a docstring,
    as_of_bound(ts) helper, and an assert_tz_aware guard used at boundaries. Include
-   a NAIVE-DATETIME-FORBIDDEN docstring note.
+   a NAIVE-DATETIME-FORBIDDEN docstring note. Decision points are defined in
+   America/New_York local time and resolved to UTC per date via zoneinfo (same
+   contract as Task 5B). Provide helpers that take (decision_point_name, local_date)
+   → aware UTC instant.
 6. Tests: config precedence (all four levels), secret redaction in both config dump
    and log output, seed manifest reproducibility, timeutils DST and season-boundary
-   cases (early January bowl games belong to the prior season — test this).
+   cases (early January bowl games belong to the prior season — test this). Explicit
+   fixtures for DST-transition weeks in early November (America/New_York EST↔EDT)
+   proving decision-point local → UTC resolution.
 
 Acceptance:
 - make lint typecheck test pass
@@ -174,10 +186,18 @@ Deliverables:
    failures must never lose the raw payload.
 3. Normalization to the odds_snapshots schema from Task 3:
    (game_key, book, market, side, line, price_american, captured_at, source_version).
-   game_key must be a stable deterministic key derived from (season, home_team,
-   away_team, kickoff_date) with a documented team-name normalization function —
-   team naming mismatches across sources are the #1 integration bug in this project,
-   so put the normalization map in configs/ and make it testable.
+   Include `snapshot_source='live'`, `decision_point=null`, and `n_books_available`
+   so live and historical rows share one schema. If Task 4 is already built and
+   running, this is a schema migration — do it as part of Task 5B, and do not
+   interrupt the live capture to do it.
+   **Canonical game key:** CFBD's stable numeric game id. Odds API events are
+   matched to it via normalized team pair + kickoff within ±36h, persisted in a
+   crosswalk table; ambiguous matches are quarantined, never guessed. The derived
+   (season, home_team, away_team, kickoff_date) key is retained only as a matcher
+   input — put the team-name normalization map in configs/ and make it testable
+   (team naming mismatches across sources are the #1 integration bug). Required
+   fixture: a game postponed by one day retains a single canonical key and
+   continuous snapshot history across the postpone.
 4. Deduplication: identical (game_key, book, market, side, line, price, captured_at
    rounded to minute) is written once. Snapshots that differ only in captured_at are
    all retained — line movement history is the point.
@@ -186,7 +206,9 @@ Deliverables:
 6. CLI: `ncaa-quant ingest odds --once` for manual/smoke runs.
 7. Tests: retry behavior against a mocked failing endpoint, rate-limit guard trips
    correctly, dedupe logic, team-name normalization fixtures, raw archival happens
-   before parse (test by making the parser throw and asserting the raw file exists).
+   before parse (test by making the parser throw and asserting the raw file exists),
+   postponed-game fixture (one-day postpone → single CFBD game id, continuous
+   snapshot history), raw-archive request metadata scrubbed of API keys.
 
 Acceptance:
 - make lint typecheck test pass
@@ -219,15 +241,22 @@ Deliverables:
 3. Incremental mode: `ncaa-quant ingest cfbd --incremental` pulls only the current
    season's unfetched or recently-changed weeks.
 4. event_time assignment per endpoint, documented explicitly in the module docstring.
-   This is a spec-critical judgment call: game results get event_time = kickoff +
-   game duration estimate (or the actual completion timestamp if available); season-
-   level reference data (recruiting, returning production, talent) gets event_time =
-   a documented preseason date; portal entries get their transaction date. Get this
-   wrong and every downstream point-in-time guarantee is void. If an endpoint gives
-   you no usable timestamp, assign the most conservative (latest) defensible time
-   and flag it in the notes.
-5. Team-name normalization shared with Task 4 — refactor to a common module if
-   needed, this is the one sanctioned cross-task edit.
+   This is a spec-critical judgment call. Game-result event_time uses the actual
+   completion timestamp when available; otherwise kickoff + a deliberately generous
+   upper bound (5h; more when OT is flagged), with `event_time_estimated=True`
+   recorded. The "most conservative (latest) defensible time" rule applies to
+   results too, not only timestamp-free endpoints. Season-level reference data
+   (recruiting, returning production, talent) gets event_time = a documented
+   preseason date; portal entries get their transaction date. Get this wrong and
+   every downstream point-in-time guarantee is void. If an endpoint gives you no
+   usable timestamp, assign the most conservative (latest) defensible time and flag
+   it in the notes.
+5. Team-name normalization and Odds-API↔CFBD game-id crosswalk shared with Task 4 —
+   refactor to a common module if needed, this is the one sanctioned cross-task edit.
+   Canonical game key is CFBD's stable game id; the derived (season, teams, date) key
+   is matcher input only. Ambiguous Odds API matches quarantine, never guess.
+   Required fixture: postponed game (kickoff slips one day) keeps one CFBD id and
+   continuous snapshot history.
 6. Tests: mocked-endpoint parsing per endpoint, resumability (kill and restart mid-
    backfill leaves no partial partitions), event_time assignment fixtures.
 
@@ -258,7 +287,11 @@ estimator and dry-run gate are first-class deliverables, not conveniences.
 Deliverables:
 
 1. Snapshot schedule in configs/data.yaml, PRE-REGISTERED before any spend. Each
-   entry is a named decision point stored on every row. v1 schedule:
+   entry is a named decision point stored on every row. Decision points are defined
+   in America/New_York local time and resolved to UTC per date via zoneinfo; every
+   snapshot row stores both the decision-point name and the resolved UTC instant.
+   Explicit test fixtures for DST-transition weeks (early November EST↔EDT).
+   v1 schedule:
      - `tuesday_0600_et`  — one request per week (the §7.2 item 1 primary as-of)
      - `slot_close`       — one request per distinct kickoff slot, at slot minus 5 min
    Do NOT add per-game T-6h/T-1h points in v1; see the budget note below. Adding or
@@ -320,7 +353,8 @@ BUDGET (verify with --estimate, do not trust these numbers blindly):
 
 Tests: returned-vs-requested timestamp discipline, tolerance by era, budget bucket
 isolation, resumability across simulated crash, estimator arithmetic vs hand-computed
-fixtures, envelope parsing, dedupe against live rows covering the same moment.
+fixtures, envelope parsing, dedupe against live rows covering the same moment,
+DST-transition decision-point resolution via zoneinfo (early November fixtures).
 
 Acceptance:
 - `--estimate` for 2021-2025 prints a credit figure BEFORE any spend. Show me that
@@ -392,6 +426,14 @@ Deliverables:
      play sequence numbers are monotone within a drive
    - line sanity: opening and closing lines for the same game differ by < 20 points
      (flag, not fail — genuine large moves exist and are interesting)
+   - Snapshot monotonicity: within a (game_key, book, market), snapshots ordered by
+     event_time must not contain duplicate timestamps, and the last pre-kickoff
+     snapshot must actually precede kickoff
+   - Source reconciliation: flag (not fail) games where the CFBD close and the
+     snapshot close differ beyond tolerance. Genuine late movement exists;
+     systematic divergence is a bug
+   - Snapshot cadence: per (game, decision window), captured snapshot count >=
+     expected minus configured tolerance; shortfalls alert within 24h (§10)
 3. A quarantine flow: failures mark the affected partition
    status=QUARANTINED in a validation_results table with the failing expectation and
    sample rows; downstream consumers must skip quarantined partitions rather than
@@ -400,7 +442,9 @@ Deliverables:
    docs-friendly markdown/HTML.
 5. Tests: seeded corrupt fixtures (negative score, orphan PBP game, duplicated rows,
    future event_time, mismatched box/final) are each caught by the right check; a
-   clean season passes with zero failures.
+   clean season passes with zero failures; cadence shortfall fixture fires the
+   expectation; live-network tests if any are marked `@pytest.mark.live` and excluded
+   from CI.
 
 Acceptance:
 - Run against the full backfill; show the summary. Real data WILL have real issues —
@@ -563,7 +607,9 @@ Deliverables:
    distance (haversine, venue-to-venue), time zones crossed with direction, altitude
    delta vs home venue elevation, surface and surface-change flag, neutral site,
    week number, month, conference game, rivalry flag (rivalry pairs in a config
-   YAML — hand-curated, ~60 pairs is fine), post-rivalry and lookahead flags.
+   YAML — hand-curated, ~60 pairs is fine), post-rivalry and lookahead flags,
+   **rule-era categorical** (`pre_2023_clock` vs `post_2023_clock` per §4.5 — the
+   2023 clock-rule change hypothesis for plays/totals).
 4. All registered with hypotheses.
 5. Tests: haversine against known city pairs, timezone-crossing direction sign,
    rest-day computation across bye weeks and midweek games, expected-possessions
@@ -662,19 +708,26 @@ carefully before writing code.
 Implement src/ncaa_quant/ratings/state_space.py and diagnostics.py only.
 
 Deliverables:
-1. State per §9.2: v1 state vector is [off_epa, def_epa, st_value, pace] per team
-   with full covariance. Design the code so extending to the 7-dim v1.1 state is a
-   config change, not a rewrite. League-level states: hfa_global, and
-   hfa_team_deviation heavily shrunk.
+1. State per §9.2: a **single joint league state vector** with full cross-team
+   covariance. v1 per-team block is [off_epa, def_epa, st_value, pace]; design the
+   code so extending to the 7-dim v1.1 block is a config change, not a rewrite.
+   League-level states: hfa_global, hfa_team_deviation (heavily shrunk), and the
+   identified season scoring-environment state. Dimension ≈540 for v1; per-game
+   update applies both teams' measurement equations in one joint update.
 2. Measurement model per §9.3: observations are garbage-filtered per-play offensive
    EPA for each side, plays run, ST EPA, plus final margin as a secondary
    high-noise observation. Observation noise scaled by informativeness — fewer plays
    means larger sigma. FCS opponents pinned to the pooled FCS prior with large
-   variance.
+   variance. **Identifiability:** after every update, project off and def blocks to
+   league-mean zero (constraint projection on mean and covariance); scoring_env
+   carries the absolute level.
 3. Process noise per §9.4: weekly Q, tuned per state dimension by maximizing
    one-step-ahead predictive likelihood over historical seasons. Event-triggered Q
    inflation on QB change, coordinator change, and a manual override hook.
-4. Robustness per §9.5: winsorize standardized innovations at +/-2.5 sigma.
+4. Robustness per §9.5: winsorize standardized innovations at +/-2.5 sigma, and when
+   |z| > 2.5 inflate effective observation noise
+   R_eff = R * (|z|/2.5)^2 so the covariance update is consistent with the dampened
+   state update.
 5. diagnostics.py: standardized innovation series per team, the 3-consecutive-
    same-signed->2-sigma flag, filter health checks (innovation mean ~0, variance ~1 —
    if standardized innovations have variance far from 1 the noise model is
@@ -687,7 +740,17 @@ Deliverables:
      known random walk and a real schedule; assert the filter recovers the latent
      paths within stated tolerance and that posterior variances are well-calibrated
      (empirical coverage of the 95% band is 93-97%)
+   - IDENTIFIABILITY / INVARIANCE: shift all initial off and def states (and the
+     scoring_env level, consistently) by an arbitrary constant c; run the filter on
+     the same game sequence; assert that after constraint projection the team off/def
+     states and all one-step-ahead predictions are unchanged to numerical tolerance
+     (only scoring_env may absorb the level shift — relative ratings and forecasts
+     must be invariant)
    - winsorization triggers on an extreme planted result and bounds the update
+   - CLIPPED-UPDATE VARIANCE: on a synthetic game with |z| > 2.5, the posterior
+     variance after the winsorized update with R_eff inflation shrinks *strictly less*
+     than the same update without clipping (full residual, uninflated R) — proving
+     the covariance stays consistent with the dampened information content
    - Q inflation widens posterior variance as expected
    - as-of queries never return a posterior computed from future games (pit_audit)
 
@@ -708,16 +771,22 @@ docs/notes/14.md — include the fitted Q values and the filter health statistic
 # TASK 15 — Preseason prior builder
 
 ```
-TASK 15 of 25: Preseason priors. Read @docs/DESIGN.md §9.6, §15 item 15.
+TASK 15 of 25: Preseason priors. Read @docs/DESIGN.md §9.6, §15 item 15, ADR 0003.
 
 Implement src/ncaa_quant/ratings/priors.py only.
 
 Deliverables:
 1. Prior mean blend per §9.6: last-season final posterior regressed toward conference
    mean, returning production adjustment, recruiting/talent, portal net (2021+),
-   coaching-change discontinuity, QB carryover. Weights FIT — not assumed — by
-   regressing next-season early ratings on these predictors over 2015-2024. Report
-   the fitted weights and their standard errors.
+   coaching-change discontinuity, QB carryover. For the market-aware stack only, also
+   include SP+ preseason as a blend component (ADR 0003); fundamental priors MUST omit
+   SP+. Weights FIT — not assumed — by regressing each season's LATE-SEASON (≥8 games)
+   posterior ratings FROM A DIFFUSE-INITIALIZATION FILTER RUN on the preseason
+   predictors over 2015-2024. Do NOT fit against prior-initialized early ratings
+   (that recovers the assumed weights — circular). Preferred upgrade path (implement
+   or stub behind a config flag with a clear NotImplemented until ready): maximize
+   Weeks 1-4 one-step-ahead predictive likelihood of game observations w.r.t. the
+   weights. Report fitted weights and standard errors.
 2. Prior variance: base variance inflated by roster turnover, so a team returning 40%
    of production starts with a materially wider posterior than one returning 85%.
    This is what makes the prior-decay schedule self-adjusting per §9.6 — verify the
@@ -729,15 +798,22 @@ Deliverables:
    default to the league mean with false confidence.
 5. Tests: weight-fitting reproducible under a fixed seed, turnover-variance
    monotonicity, missing-input widens variance, a new-HC team's prior is pulled
-   toward talent-implied level.
+   toward talent-implied level, and CIRCULARITY DEMONSTRATION: on synthetic data
+   where the true generative prior weights differ from a planted "assumed" blend
+   used to initialize an informative-prior filter, fitting against that filter's
+   early (prior-dominated) ratings recovers the planted ASSUMED weights (not the
+   true generative ones) — proving why the diffuse-late / likelihood targets are
+   required.
 
 Acceptance:
-- Report fitted weights with standard errors, and out-of-sample R^2 of the prior
-  against realized early-season ratings for 2 held-out seasons
+- Report fitted weights with standard errors, and out-of-sample score of the prior
+  against REALIZED GAME OBSERVATIONS or against diffuse-run late ratings for 2
+  held-out seasons — NEVER against prior-initialized early posteriors
 - Generate and store Week 1 predictions for 2023 and 2024 for later evaluation
 - Show the prior-vs-evidence crossover: for a high-continuity and a low-continuity
   team, at what game number does accumulated evidence outweigh the prior? §9.6
   expects roughly games 5-7 on average with real variation between them.
+- Circularity demonstration test passes and is documented in notes
 - make lint typecheck test pass
 
 docs/notes/15.md.
@@ -761,28 +837,41 @@ Deliverables:
    as-of that timestamp AND against closing lines, then reveal results and update
    ratings. The information set at each step must exactly match what production would
    have.
-2. OOF prediction storage: a predictions table with prediction_id, game_key, as_of,
-   model_version, feature_hash, all predicted quantities, and the realized outcome
-   joined after the fact.
-3. Configurable: test seasons, retrain cadence (to support the Task 23 ablations),
+2. Line lookup must resolve to the snapshot at the configured decision point via
+   as-of join, with an explicit fallback ladder that is **logged per game**:
+   snapshot at decision point → nearest earlier snapshot within a configured
+   tolerance → null with indicator. The CFBD open/close must never enter this ladder
+   for snapshot-backed seasons. Record `line_source` and `n_books_available` on every
+   prediction row so Task 21 can slice by them.
+3. OOF prediction storage: a predictions table with prediction_id, game_key, as_of,
+   model_version, feature_hash, all predicted quantities, `line_source`,
+   `n_books_available`, and the realized outcome joined after the fact.
+4. Configurable: test seasons, retrain cadence (to support the Task 23 ablations),
    as-of day/time, whether market features are available.
-4. 2020 handling per §7.2 item 5: included for rating continuity, excluded from
+5. 2020 handling per §7.2 item 5: included for rating continuity, excluded from
    headline metrics, with a flag to run the sensitivity comparison.
-5. Determinism: two runs with the same config and seed produce byte-identical
-   prediction tables.
-6. Tests:
-   - determinism test
+6. Determinism: two runs with the same config, seed, and **fixed model artifacts
+   (pinned by content hash)** produce byte-identical prediction tables. Scope matches
+   §1.4: bit-for-bit applies to inference / walk-forward replay given pinned
+   artifacts — not to re-running asynchronous parallel HPO (see Task 18 / §6).
+7. Tests:
+   - determinism test (pinned-artifact replay scope above)
    - INFORMATION-SET AUDIT: for a sample of (season, week) points, recompute the
      feature vector from raw data using only rows with event_time < as_of and assert
-     equality with what the harness fed the predictor
-   - SHIFTED-LABEL TEST per §14: a model given future features to predict PAST games
-     must score approximately at chance. Build the hook for this now.
+     equality with what the harness fed the predictor. Also assert no line used at a
+     Tuesday decision point has an event_time later than that Tuesday timestamp.
+   - WITHIN-WEEK LABEL PERMUTATION TEST per §14: train a model on labels permuted
+     within week; out-of-sample it must score approximately at chance. Build the
+     hook for this now.
+   - PLANTED PROPHECY TEST per §14: add a deliberately future-leaking feature in a
+     test fixture; BOTH pit_audit and the information-set audit must catch it.
    - the harness runs end-to-end with a placeholder predictor that always predicts
      the league-average margin
 
 Acceptance:
 - Information-set audit passes on at least 20 sampled week-points
 - Placeholder predictor runs across 2019-2024 and produces a metrics-ready table
+  (lockbox 2025 excluded per §7.2 item 9)
 - make lint typecheck test pass
 
 docs/notes/16.md.
@@ -805,8 +894,13 @@ Deliverables:
    malformed constraint specs.
 2. LightGBM quantile heads for margin and total at q in {0.05,0.1,0.25,0.5,0.75,0.9,
    0.95}.
-3. Sigma heads: LightGBM trained on absolute OOF residuals with situational and
-   rating-uncertainty features per §5.2 item 7.
+3. Sigma heads per §5.2 Predictive variance: LightGBM trained on absolute OOF
+   residuals of the stacked mean, |y - mu_stack|, then multiplied by sqrt(pi/2) for
+   an unbiased Normal sigma. Training labels MUST be net of the member-mean
+   (fixed Stage-1 point estimates; no posterior-draw mixture in the sigma-head
+   target) so epistemic variance is not double-counted when member-disagreement and
+   Stage-1 draw variance are added later. Situational and rating-uncertainty
+   features are allowed as inputs.
 4. Diversity members: XGBoost and CatBoost mu heads (GPU-enabled via config),
    ElasticNet on the top-30 features, NGBoost Normal(mu, sigma) for margin and total.
 5. A uniform Predictor interface: fit(X, y, sample_weight), predict(X) ->
@@ -818,7 +912,10 @@ Deliverables:
 7. Tests: monotone constraint respected (construct inputs proving it), feature
    signature mismatch raises, quantile crossing check (q05 <= q50 <= q95 — if
    crossing occurs, sort and log a warning), save/load round trip reproduces
-   predictions exactly, each member trains on a 3-season fixture without error.
+   predictions exactly, each member trains on a 3-season fixture without error,
+   SIGMA UNBIASEDNESS: on synthetic heteroskedastic data with known sigma(x), the
+   abs-residual head times sqrt(pi/2) recovers E[sigma] within stated tolerance
+   (and a control without the sqrt(pi/2) factor is biased low).
 
 Acceptance:
 - All members train through the Task 16 harness on 3 train seasons and produce OOF
@@ -851,14 +948,22 @@ Deliverables:
    from inside the objective and asserts it raises.
 4. Parallelism per §6: CPU-parallel LightGBM trials (4 concurrent), GPU trials for
    XGBoost/CatBoost via device=cuda. Wall-clock guard and MaxTrialsCallback.
+   Asynchronous parallel TPE is **not** run-order deterministic — do not claim
+   bit-for-bit search replay. The reproducibility unit is the logged champion
+   artifact (params + seed + deterministic refit → content hash), per §1.4 / §6.
 5. Seed management: seed = f(study_name, trial_number), logged per trial to MLflow
-   along with params, per-season losses, and a feature-importance snapshot.
-6. Quarantine-season tiebreak per §6: after the study, compare the top-5 configs on a
-   season never used in the study; if their ranking is unstable, select the more
-   regularized config by a codified rule (document the rule precisely — e.g. higher
-   min_child_samples, then lower num_leaves, then higher lambda_l2).
+   along with params, per-season losses, and a feature-importance snapshot. Final
+   champion refits use deterministic settings (CPU or framework deterministic mode).
+   MLflow logging uses a local file store or single-writer pattern — not SQLite
+   under 4-way parallel writers (§10).
+6. Quarantine-season tiebreak per §6: after the study, compare the top-5 configs on
+   season **2024** (never used in the study; distinct from lockbox **2025** per
+   §7.2 item 9); if their ranking is unstable, select the more regularized config by
+   a codified rule (document the rule precisely — e.g. higher min_child_samples, then
+   lower num_leaves, then higher lambda_l2).
 7. Tests: resumability (kill mid-study, restart, trial count continues), nested
-   isolation test above, seed determinism, tiebreak rule unit tests.
+   isolation test above, seed logging + deterministic champion refit → stable
+   artifact hash (not full async-search bit-identity), tiebreak rule unit tests.
 
 Acceptance:
 - The nested isolation test passes — show me the code path that makes leakage
@@ -883,42 +988,63 @@ Implement src/ncaa_quant/models/ensemble.py, calibrate.py, conformal.py and
 src/ncaa_quant/distribution/ only.
 
 Deliverables:
-1. NNLS stacking per §5.2: non-negative least squares over level-0 OOF predictions
-   per target, weights summing to 1. Fit ONLY on out-of-fold predictions — add an
-   assertion that the stacking input contains no in-fold predictions.
-2. Ensemble sigma via law of total variance across members plus the sigma head.
-3. Isotonic calibration per derived market (ML, ATS at close, OU at close), fit on
-   OOF only, with Platt fallback when a market has thin data. Report calibration
-   slope/intercept before and after.
-4. Conformal layer: split conformal / CQR on the quantile heads using trailing 2
-   seasons as the calibration set. Report empirical coverage vs nominal at 50/80/95%.
+1. Level-1 stacking per §5.2: simplex-constrained least squares over level-0 OOF
+   predictions per target (weights >= 0, sum to 1), solved as a constrained QP —
+   NOT plain NNLS with post-hoc normalization. No intercept (rationale in §5.2).
+   Fit ONLY on out-of-fold predictions — add an assertion that the stacking input
+   contains no in-fold predictions. Test that returned weights lie on the simplex
+   by construction (including cases where unconstrained NNLS would need renorm).
+2. Ensemble sigma via §5.2 Predictive variance: sigma_pred^2 = sigma_aleatoric^2
+   (sigma-head) + member-disagreement Var_k(mu_k) + Stage-1 posterior-draw variance.
+   Do not fold epistemic terms into the sigma-head target.
+3. Distributional recalibration per §2.6 / §5.2 Level 2: a single monotone map fit
+   on the PIT values of the OOF margin predictive CDF, and one for total — so ALL
+   derived market probabilities recalibrate coherently. Do NOT fit separate isotonic
+   maps per market (that breaks §2.2 consistency). Per-market reliability diagrams
+   (ML, ATS@close, OU@close) are diagnostics only. For the fundamental stack,
+   calibration targets are market-free (moneyline / distribution PIT only);
+   ATS@close reliability is reported, never fit. Platt/parametric-PIT fallback when
+   OOF n is thin. Report Cox slope/intercept before and after on diagnostic markets.
+4. Conformal layer per §2.6: Adaptive Conformal Inference (ACI) as the production
+   variant (online alpha adjustment under non-exchangeability), initialized from
+   trailing-2-season split conformal / CQR on the quantile heads. Split-conformal
+   coverage is approximate under season-over-season drift — report empirical
+   coverage vs nominal at 50/80/95% and monitor weekly; do not claim a
+   distribution-free guarantee.
 5. distribution/bivariate.py: assemble the joint (margin, total) predictive
    distribution with estimated correlation rho (estimate it from residuals per §2.3 —
    do not assume zero, but report the estimated value; §2.3 expects small positive
    ~0.05-0.15).
-6. distribution/key_numbers.py: empirical discretization kernel per §2.3
-   reallocating probability mass to exact margins learned from historical residuals.
-   Do NOT hand-tune key-number bumps.
+6. distribution/key_numbers.py: empirical discretization kernel per §2.3 learned
+   CONDITIONAL on the predicted margin — at minimum by buckets of mu_M; a smooth
+   model of P(M=k | mu_M, sigma_M) preferred. Do NOT hand-tune key-number bumps.
+   Validation: compare empirical exact-margin frequencies by predicted-spread
+   bucket to kernel output (same buckets); material divergence is a fail.
 7. distribution/simulate.py: Monte Carlo (100k draws, seeded) producing probabilities
    for any spread, total, or moneyline from the joint distribution.
 8. Epistemic uncertainty per §2.6: 50 draws from the Stage-1 rating posteriors pushed
    through the mapping layer to produce a mixture predictive distribution.
 9. Tests (property-based where possible):
    - all probabilities in [0,1]; P(over) + P(under) + P(push) == 1
-   - INTERNAL CONSISTENCY: P(win) derived from the margin distribution equals
-     P(cover at spread 0) within tolerance
+   - INTERNAL CONSISTENCY (POST-CALIBRATION): after applying the PIT maps, P(win)
+     derived from the margin distribution equals P(cover at spread 0) within
+     tolerance — this must run on POST-calibration outputs, not pre-calibration
    - probabilities are monotone in the line (P(cover) decreases as the spread
      against you grows)
-   - conformal coverage within tolerance on held-out seasons
-   - NNLS weights non-negative and sum to 1
+   - conformal approximate coverage within tolerance on held-out seasons
+   - stacking weights non-negative, sum to 1, on the simplex by construction
+     (constrained QP; include a fixture where plain NNLS+renorm would differ)
    - simulation is deterministic under a fixed seed
+   - key-number kernel vs empirical margin frequencies by predicted-spread bucket
 
 Acceptance:
 - Report ensemble CRPS, log-loss, and Brier vs BOTH the Elo baseline and the
   de-vigged market baseline per §7.3. The market comparison is the one that matters —
   report it honestly even if the model loses.
 - Reliability diagram and PIT histogram generated for a held-out season
-- Report estimated rho and conformal coverage numbers
+  (diagnostics; fundamental stack must not have been fit on ATS@close)
+- Report estimated rho and conformal coverage numbers (state approximate coverage;
+  ACI vs initializer)
 - make lint typecheck test pass
 
 docs/notes/19.md.
@@ -929,7 +1055,7 @@ docs/notes/19.md.
 # TASK 20 — Betting layer
 
 ```
-TASK 20 of 25: Betting layer. Read @docs/DESIGN.md §12, §15 item 20.
+TASK 20 of 25: Betting layer. Read @docs/DESIGN.md §12, §2.7, §15 item 20.
 
 Implement src/ncaa_quant/betting/ only.
 
@@ -939,7 +1065,12 @@ Deliverables:
    why.
 2. edges.py: edge = calibrated model probability minus de-vigged market probability,
    computed per side against the BEST available captured price across books (line
-   shopping is alpha per §16 item 5).
+   shopping is alpha per §16 item 5). Add `n_books_available` to the output and
+   require Task 21 to report edge and ROI stratified by it — otherwise line-shopping
+   alpha in §16 item 5 will be overestimated in later seasons purely from coverage
+   growth. Also emit `line_shopping_capture` per §2.7
+   (`implied_prob(best@bet_time) − implied_prob(consensus@bet_time)`); Task 21
+   reports it alongside CLV and must not fold it into CLV aggregates.
 3. EV computation per bet at the actual available price.
 4. kelly.py: fractional Kelly at 25% of full, capped at 1.5% of bankroll per bet, per
    §12. Include a weekly aggregate exposure limit and per-team exposure limit.
@@ -948,16 +1079,32 @@ Deliverables:
 5. filters.py per §12: min edge (2.5% sides / 3% totals), no-bet on STALE inputs,
    no-bet when QB status is unknown, stricter bowl threshold, max bets per week.
    All configurable, all defaults from configs/betting.yaml.
-6. clv.py: store line-at-recommendation and consensus close for every recommendation;
-   compute CLV in de-vigged probability space per §2.7; weekly settlement job.
+6. clv.py: store book identity, line-at-recommendation, bet-time price, consensus
+   price at bet time, same-book close, and consensus close (fallback diagnostic)
+   for every recommendation. Settle CLV per §2.7: same-book closing price first;
+   if that book's close is missing, flag `clv_settlement=fallback_consensus` and
+   never pool those rows with `same_book`. For spreads/totals, translate the close
+   to the bet's line (`clv_method` ∈ alt_line_price / model_dist / line_units /
+   same_line). Compute probability-space CLV only when method is probability-valued;
+   report `line_shopping_capture` as a separate field. Weekly settlement job.
 7. Tests: hand-computed fixtures for each de-vig method, Kelly math against known
    closed-form cases, the cap holds even when Kelly recommends more, filters fire
    correctly for each condition, CLV sign convention verified with a fixture where
-   the line moved in our favor and one where it moved against.
+   the line moved in our favor and one where it moved against. Additionally: a
+   fixture where the spread moves from -6.5 to -7 with unchanged -110 / -110 prices
+   at the same book; supply a fixed margin distribution; hand-compute the correct
+   line-translated CLV (`clv_method=model_dist`); assert that naive price-only CLV
+   (`implied_prob(close_price) − implied_prob(bet_price)` at the moved line, no
+   translation) differs from the line-translated value — this test must fail any
+   implementation that still settles CLV as price-only against a moved line (the
+   bug §2.7's definition change prevents). Also assert same-book vs
+   fallback_consensus rows are not pooled in the settlement summary helper.
 
 Acceptance:
 - A test proves the staking cap cannot be bypassed by configuration
-- CLV computed correctly on fixtures — show both directions
+- CLV computed correctly on fixtures — show both directions, same-book settlement,
+  and the -6.5→-7 line-translation case (naive price-only ≠ line-translated)
+- line_shopping_capture is present and distinct from CLV on fixtures
 - make lint typecheck test pass
 
 docs/notes/20.md.
@@ -984,8 +1131,10 @@ Deliverables:
    interval next to it. Implement this as a formatting function that makes it
    impossible to render a bare win rate. This is a cultural safeguard — enforce it.
 4. Slice analysis per §7.2 item 3: by conference, P5/G5, favorite/dog, totals bucket,
-   ranked, bowl, rivalry, weather. Output as a heatmap-ready table. Label these as
-   DIAGNOSTIC — not model-selection inputs.
+   ranked, bowl, rivalry, weather, plus `line_source` and book-count bucket, plus
+   **totals bias per rule era** (`pre_2023_clock` vs `post_2023_clock` per §4.5 —
+   mean residual and CRPS/calibration on totals sliced by era). Output as a
+   heatmap-ready table. Label these as DIAGNOSTIC — not model-selection inputs.
 5. Economic simulation: flat-stake ROI, quarter- and half-Kelly bankroll paths, max
    drawdown distribution, all with bootstrap CIs.
 6. reports.py: HTML weekly report (predictions, edges, confidence, rating movements)
@@ -1021,19 +1170,29 @@ Deliverables:
 2. Registry stages per §10: candidate -> challenger -> champion -> archived.
 3. Promotion gate per §8 item 7: a candidate is promoted ONLY if it beats the
    incumbent on the pre-registered metric set (CRPS + log-loss + CLV backtest) on the
-   SAME walk-forward seasons, with a paired block-bootstrap test at p < 0.10, AND
-   passes calibration and leakage gates. Failing candidates are archived with the
-   comparison report, not discarded.
+   SAME walk-forward seasons (lockbox 2025 excluded), with a paired block-bootstrap
+   test whose alpha is Bonferroni-adjusted for promotion multiplicity, AND passes
+   calibration and leakage gates. Exact rule: the registry maintains an append-only
+   promotion-attempt ledger; within each calendar year, let k = number of promotion
+   attempts recorded that year including the current attempt, and alpha_0 = 0.10;
+   the attempt is significant only if p < alpha_0 / k. The comparison report MUST
+   print k, alpha_0, and the adjusted threshold alpha_0/k. Failing candidates are
+   archived with the comparison report, not discarded. Live forward paper-trade
+   (§16 item 2; named in §1.6) is the confirmatory instrument for success criteria
+   after promotion.
 4. The gate must be non-bypassable from config — promotion of a failing candidate
    requires an explicit, logged, human --force flag that writes an override record.
 5. Rollback CLI: one command re-pins any prior champion. Inference always resolves
    'champion' at runtime — never a hardcoded version.
 6. Tests: promotion blocked on a deliberately worse candidate, promotion succeeds on
-   a deliberately better one, --force writes an override record, rollback restores
-   golden predictions byte-identically, inference fails loudly if no champion exists.
+   a deliberately better one, Bonferroni adjustment tightens when k>1 (fixture with
+   two attempts in the same year), comparison report prints k and alpha_0/k, --force
+   writes an override record, rollback restores golden predictions byte-identically,
+   inference fails loudly if no champion exists.
 
 Acceptance:
 - Show the gate blocking a worse model and the comparison report it produced
+  (including attempt count and adjusted threshold)
 - Rollback verified against golden predictions
 - make lint typecheck test pass
 
@@ -1063,8 +1222,9 @@ TASK 23 of 25: Backtest and ablations. Read @docs/DESIGN.md §7.2, §15 item 23.
 No new subsystems. Run the system and report results honestly.
 
 Deliverables:
-1. Full walk-forward backtest 2019-2025 (2020 handled per §7.2 item 5) for BOTH the
-   fundamental and market-aware stacks.
+1. Full walk-forward backtest 2019-2024 (2020 handled per §7.2 item 5; lockbox
+   **2025** excluded from all development/HPO/ablation/promotion evaluations per
+   §7.2 item 9) for BOTH the fundamental and market-aware stacks.
 2. Ablation suite, each a full walk-forward run:
    - A1: preseason priors off (league-mean initialization)
    - A2: rating updates FROZEN at Week 1 — this quantifies the entire continual-
@@ -1074,17 +1234,27 @@ Deliverables:
    - A3: market features off
    - A4: ensemble vs single LightGBM
    - A5: garbage-time filter off
+   - A6: market features from CFBD open/close only, vs full snapshot history.
+     This is the direct measurement of whether the historical odds purchase paid for
+     itself. Run it on 2021-2024 only, where both are available and lockbox is
+     excluded. Report the delta in CRPS, log-loss, and mean CLV with CIs. If A6
+     shows no material difference, say so plainly — that is a legitimate and useful
+     result, and it tells you whether to keep renewing the subscription.
 3. The within-season weekly error curve per §7.2 item 2 — verify Week 10 error is
    below Week 4 error, or report that it is not.
 4. Bet-layer backtest per §7.2 item 7: bets at stored snapshot lines (never the
-   close), realistic pricing, CLV per bet, equity curves with bootstrap CIs.
+   close), realistic pricing, CLV per bet, equity curves with bootstrap CIs. Split all
+   headline bet-layer metrics by line-source regime per §7.2 item 8, and state
+   explicitly that 2019 market-aware results are not comparable to 2021+.
 5. All runs archived to MLflow with full manifests.
 
 Acceptance — report these numbers without spin:
 - Fundamental model ATS and OU accuracy vs close, with CIs, per §1.6
 - CRPS and log-loss vs the de-vigged market baseline
 - The A2 ablation delta — the headline result
-- Mean CLV of simulated bets with CI
+- The A6 ablation delta (snapshot history vs CFBD open/close) on 2021-2024
+  (lockbox 2025 excluded)
+- Mean CLV of simulated bets with CI, split by line-source regime
 - The weekly error curve
 - If any success criterion in §1.6 is missed, state it explicitly in the notes. Do
   not tune anything to hit a target — that is backtest overfitting and it will cost
@@ -1120,10 +1290,17 @@ Deliverables:
    else automated. The bet-confirmation output must show line-at-recommendation and
    enforce §16 item 3 — a recommendation is VOID if the line has moved past its
    threshold. Implement that check.
-6. Runbooks in docs/runbooks/: what to do when each alarm fires.
+6. Runbooks in docs/runbooks/: what to do when each alarm fires. Must include:
+   - raw odds archive off-machine replication (versioned S3-class target within 24h
+     of capture) and the quarterly restore drill;
+   - MLflow/Prefect UIs never exposed off-host without auth;
+   - cadence shortfall response (snapshot count < expected − tolerance within 24h);
+   - API-key scrub verification on raw-archive request metadata.
 7. Tests: end-to-end dry run on a fixture week; chaos test (kill ingestion mid-flow,
    assert STALE predictions still publish and bets are suppressed); idempotency
-   (re-running a flow changes nothing); notification hooks fire on seeded failures.
+   (re-running a flow changes nothing); notification hooks fire on seeded failures;
+   raw-archive metadata scrub strips API keys; any live-network tests marked
+   `@pytest.mark.live` and excluded from CI.
 
 Acceptance:
 - Chaos test passes — show the STALE-stamped output and the suppressed bets
