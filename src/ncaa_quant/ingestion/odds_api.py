@@ -31,6 +31,13 @@ structurally incapable of consuming the live reserve.
 Team naming mismatches across sources are the #1 integration bug in this
 project. Canonical school names come from ``configs/team_names.yaml`` via
 :func:`normalize_team_name` / :func:`make_game_key`.
+
+**Canonical game identity (AUDIT-6).** CFBD's numeric ``game_id`` is the only
+identity of record. Odds API events are matched via normalized team pair +
+kickoff within ±36h and persisted in ``odds_cfbd_game_crosswalk``. Ambiguous
+matches are quarantined (``game_id`` null) — never guessed. The derived
+``game_key`` is matcher input only. A one-day postpone keeps one CFBD id
+because a prior matched ``odds_event_id`` is reused across commence-time shifts.
 """
 
 from __future__ import annotations
@@ -76,25 +83,31 @@ __all__ = (
     "OddsIngestResult",
     "RateLimitBudgetError",
     "ReconcileReport",
+    "OddsEventRef",
     "archive_historical_response",
     "archive_raw_response",
     "asof_tolerance_for",
     "backfill_live_odds_metadata",
     "dedupe_snapshots",
     "estimate_historical_credits",
+    "extract_odds_events",
     "is_unit_complete",
+    "load_cfbd_schedule",
     "load_team_name_map",
     "make_game_key",
     "mark_unit_complete",
+    "match_odds_events_to_cfbd",
     "normalize_odds_payload",
     "normalize_team_name",
     "parse_historical_envelope",
     "plan_historical_units",
     "reconcile_cfbd_close_vs_slot_close",
+    "resolve_event_game_ids",
     "run_historical_backfill",
     "run_odds_ingest",
     "run_odds_raw_capture",
     "tuesday_0600_et_for_week",
+    "write_odds_cfbd_crosswalk",
     "write_odds_snapshots",
 )
 
@@ -104,6 +117,8 @@ SOURCE_VERSION: Final[str] = "odds_api_v4"
 SPORT_KEY: Final[str] = "americanfootball_ncaaf"
 BASE_URL: Final[str] = "https://api.the-odds-api.com/v4"
 _ET: Final[ZoneInfo] = ZoneInfo("America/New_York")
+# Odds↔CFBD kickoff match window (AUDIT-6 / Task 4 amended).
+KICKOFF_MATCH_TOLERANCE: Final[timedelta] = timedelta(hours=36)
 # Snapshot granularity change (DESIGN §3.4).
 _GRANULARITY_CUTOVER: Final[datetime] = datetime(2022, 9, 1, tzinfo=UTC)
 
@@ -195,6 +210,18 @@ class OddsRawCaptureResult:
     raw_path: Path
     captured_at: datetime
     bytes_written: int
+
+
+@dataclass(frozen=True)
+class OddsEventRef:
+    """One Odds API event used as crosswalk matcher input (not identity of record)."""
+
+    odds_event_id: str
+    game_key: str
+    season: int
+    home_team: str
+    away_team: str
+    kickoff: datetime
 
 
 @dataclass(frozen=True)
@@ -680,16 +707,22 @@ def normalize_odds_payload(
     snapshot_source: Literal["live", "historical"] = "live",
     decision_point: str | None = None,
     event_time: datetime | None = None,
+    event_game_ids: Mapping[str, int] | None = None,
 ) -> pd.DataFrame:
     """Parse Odds API JSON into an ``odds_snapshots``-shaped DataFrame.
 
     For live pulls, ``event_time`` defaults to ``captured_at``. For historical
     pulls, pass the envelope's returned ``timestamp`` as both ``captured_at``
     and ``event_time`` — never the request ``date``.
+
+    ``event_game_ids`` maps Odds API event id → CFBD ``game_id`` for rows whose
+    crosswalk match has already resolved (AUDIT-6). Unmapped events keep
+    ``game_id`` null.
     """
     captured = to_utc(captured_at)
     ingested = to_utc(ingested_at)
     knowable = to_utc(event_time) if event_time is not None else captured
+    id_map = dict(event_game_ids) if event_game_ids is not None else {}
     data = json.loads(payload) if isinstance(payload, (bytes, str)) else payload
     if not isinstance(data, list):
         msg = "Odds API odds payload must be a JSON array"
@@ -710,6 +743,8 @@ def normalize_odds_payload(
         home = normalize_team_name(home_raw, team_map)
         away = normalize_team_name(away_raw, team_map)
         game_key = make_game_key(season, home, away, kickoff.date())
+        odds_event_id = str(event.get("id", ""))
+        game_id = id_map.get(odds_event_id)
 
         bookmakers = event.get("bookmakers") or []
         if not isinstance(bookmakers, list):
@@ -758,7 +793,7 @@ def normalize_odds_payload(
                                 captured,
                             ),
                             "game_key": game_key,
-                            "game_id": None,
+                            "game_id": game_id,
                             "season": season,
                             "week": week,
                             "book": book_key,
@@ -781,6 +816,278 @@ def normalize_odds_payload(
     if not rows:
         return pd.DataFrame(columns=list(_ODDS_COLUMNS))
     return pd.DataFrame(rows)
+
+
+def extract_odds_events(
+    payload: bytes | str | list[Any],
+    team_map: Mapping[str, str],
+) -> list[OddsEventRef]:
+    """Extract unique Odds API events as crosswalk matcher inputs."""
+    data = json.loads(payload) if isinstance(payload, (bytes, str)) else payload
+    if not isinstance(data, list):
+        msg = "Odds API odds payload must be a JSON array"
+        raise OddsAPIError(msg)
+    out: list[OddsEventRef] = []
+    seen: set[str] = set()
+    for event in data:
+        if not isinstance(event, dict):
+            continue
+        event_id = str(event.get("id", "")).strip()
+        home_raw = str(event.get("home_team", ""))
+        away_raw = str(event.get("away_team", ""))
+        commence_raw = event.get("commence_time")
+        if not event_id or not home_raw or not away_raw or not isinstance(commence_raw, str):
+            continue
+        if event_id in seen:
+            continue
+        seen.add(event_id)
+        kickoff = _parse_commence(commence_raw)
+        season = season_of(kickoff)
+        home = normalize_team_name(home_raw, team_map)
+        away = normalize_team_name(away_raw, team_map)
+        out.append(
+            OddsEventRef(
+                odds_event_id=event_id,
+                game_key=make_game_key(season, home, away, kickoff.date()),
+                season=season,
+                home_team=home,
+                away_team=away,
+                kickoff=kickoff,
+            )
+        )
+    return out
+
+
+def load_cfbd_schedule(
+    store: ParquetStore,
+    seasons: Sequence[int],
+    team_map: Mapping[str, str] | None = None,
+) -> pd.DataFrame:
+    """Load CFBD games with canonical school names for Odds↔CFBD matching.
+
+    Returns columns: ``game_id``, ``season``, ``home_team``, ``away_team``,
+    ``start_date`` (UTC-aware).
+    """
+    mapping = dict(team_map) if team_map is not None else {}
+    frames: list[pd.DataFrame] = []
+    for season in seasons:
+        games = store.read("games", filters={"season": int(season)})
+        if games.empty:
+            continue
+        teams = store.read("teams", filters={"season": int(season)})
+        if teams.empty:
+            continue
+        id_to_school = {
+            int(r.team_id): normalize_team_name(str(r.school), mapping)
+            if mapping
+            else str(r.school)
+            for r in teams.itertuples(index=False)
+        }
+        rows: list[dict[str, Any]] = []
+        for g in games.itertuples(index=False):
+            home = id_to_school.get(int(g.home_team_id))
+            away = id_to_school.get(int(g.away_team_id))
+            if home is None or away is None:
+                continue
+            rows.append(
+                {
+                    "game_id": int(g.game_id),
+                    "season": int(g.season),
+                    "home_team": home,
+                    "away_team": away,
+                    "start_date": to_utc(pd.Timestamp(g.start_date).to_pydatetime()),
+                }
+            )
+        if rows:
+            frames.append(pd.DataFrame(rows))
+    if not frames:
+        return pd.DataFrame(columns=["game_id", "season", "home_team", "away_team", "start_date"])
+    return pd.concat(frames, ignore_index=True)
+
+
+def match_odds_events_to_cfbd(
+    events: Sequence[OddsEventRef],
+    schedule: pd.DataFrame,
+    *,
+    existing: pd.DataFrame | None = None,
+    ingested_at: datetime,
+    source_version: str = SOURCE_VERSION,
+    tolerance: timedelta = KICKOFF_MATCH_TOLERANCE,
+) -> pd.DataFrame:
+    """Match Odds events to CFBD ``game_id`` via team pair + kickoff ±tolerance.
+
+    Prior ``matched`` rows for the same ``odds_event_id`` are reused so a
+    one-day postpone keeps a single canonical key. Ambiguous windows are
+    ``quarantined`` with null ``game_id`` — never guessed.
+    """
+    ingested = to_utc(ingested_at)
+    prior_ids: dict[str, int] = {}
+    if existing is not None and not existing.empty:
+        matched = existing[(existing["match_status"] == "matched") & existing["game_id"].notna()]
+        for row in matched.itertuples(index=False):
+            prior_ids[str(row.odds_event_id)] = int(row.game_id)
+
+    rows: list[dict[str, Any]] = []
+    for ev in events:
+        game_id: int | None = None
+        status = "unmatched"
+        delta_hours: float | None = None
+
+        if ev.odds_event_id in prior_ids:
+            game_id = prior_ids[ev.odds_event_id]
+            status = "matched"
+            if not schedule.empty:
+                hit = schedule[schedule["game_id"] == game_id]
+                if not hit.empty:
+                    cfbd_kick = to_utc(pd.Timestamp(hit.iloc[0]["start_date"]).to_pydatetime())
+                    delta_hours = abs((ev.kickoff - cfbd_kick).total_seconds()) / 3600.0
+        else:
+            if schedule.empty:
+                cands = schedule
+            else:
+                cands = schedule[
+                    (schedule["season"] == ev.season)
+                    & (schedule["home_team"] == ev.home_team)
+                    & (schedule["away_team"] == ev.away_team)
+                ]
+            if not cands.empty:
+                kick = ev.kickoff
+                delta_vals: list[float] = []
+                for ts in cands["start_date"]:
+                    cfbd_kick = to_utc(pd.Timestamp(ts).to_pydatetime())
+                    delta_vals.append(abs((kick - cfbd_kick).total_seconds()) / 3600.0)
+                deltas = pd.Series(delta_vals, index=cands.index)
+                within = cands.loc[deltas <= tolerance.total_seconds() / 3600.0].copy()
+                within["_delta"] = deltas.loc[within.index]
+                if len(within) == 1:
+                    game_id = int(within.iloc[0]["game_id"])
+                    status = "matched"
+                    delta_hours = float(within.iloc[0]["_delta"])
+                elif len(within) > 1:
+                    status = "quarantined"
+                    delta_hours = float(within["_delta"].min())
+
+        rows.append(
+            {
+                "odds_event_id": ev.odds_event_id,
+                "game_id": game_id,
+                "game_key": ev.game_key,
+                "season": ev.season,
+                "home_team": ev.home_team,
+                "away_team": ev.away_team,
+                "kickoff": ev.kickoff,
+                "kickoff_delta_hours": delta_hours,
+                "match_status": status,
+                "source_version": source_version,
+                # Knowable-at is match time, not future kickoff (PIT / schema).
+                "event_time": ingested,
+                "ingested_at": ingested,
+            }
+        )
+
+    if not rows:
+        return pd.DataFrame(
+            columns=[
+                "odds_event_id",
+                "game_id",
+                "game_key",
+                "season",
+                "home_team",
+                "away_team",
+                "kickoff",
+                "kickoff_delta_hours",
+                "match_status",
+                "source_version",
+                "event_time",
+                "ingested_at",
+            ]
+        )
+    out = pd.DataFrame(rows)
+    # Keep nullable int dtype when every game_id is null (unmatched season).
+    out["game_id"] = out["game_id"].astype("Int64")
+    out["season"] = out["season"].astype("int32")
+    return out
+
+
+def resolve_event_game_ids(crosswalk: pd.DataFrame) -> dict[str, int]:
+    """Return ``odds_event_id`` → CFBD ``game_id`` for matched crosswalk rows."""
+    if crosswalk.empty:
+        return {}
+    matched = crosswalk[(crosswalk["match_status"] == "matched") & crosswalk["game_id"].notna()]
+    return {str(row.odds_event_id): int(row.game_id) for row in matched.itertuples(index=False)}
+
+
+def write_odds_cfbd_crosswalk(store: ParquetStore, df: pd.DataFrame) -> int:
+    """Upsert crosswalk rows by ``odds_event_id`` within each season partition.
+
+    Returns the number of rows written across partitions (post-upsert counts).
+    """
+    if df.empty:
+        return 0
+    written = 0
+    for season, part in df.groupby("season", sort=True):
+        season_i = int(season)
+        existing = store.read(
+            "odds_cfbd_game_crosswalk",
+            filters={"season": season_i},
+        )
+        if not existing.empty:
+            ids = set(part["odds_event_id"].astype(str))
+            kept = existing[~existing["odds_event_id"].astype(str).isin(ids)]
+            combined = pd.concat([kept, part], ignore_index=True)
+        else:
+            combined = part
+        store.write_partition(
+            "odds_cfbd_game_crosswalk",
+            combined,
+            {"season": season_i},
+            mode="overwrite",
+        )
+        written += len(combined)
+    return written
+
+
+def _enrich_frame_via_crosswalk(
+    store: ParquetStore,
+    payload: bytes | str | list[Any],
+    team_map: Mapping[str, str],
+    *,
+    captured_at: datetime,
+    ingested_at: datetime,
+    snapshot_source: Literal["live", "historical"],
+    decision_point: str | None,
+    event_time: datetime | None,
+) -> pd.DataFrame:
+    """Match payload events, persist crosswalk, normalize with resolved game ids."""
+    events = extract_odds_events(payload, team_map)
+    seasons = sorted({ev.season for ev in events})
+    if not seasons:
+        seasons = [season_of(to_utc(captured_at))]
+    schedule = load_cfbd_schedule(store, seasons, team_map)
+    existing_parts: list[pd.DataFrame] = []
+    for season in seasons:
+        part = store.read("odds_cfbd_game_crosswalk", filters={"season": int(season)})
+        if not part.empty:
+            existing_parts.append(part)
+    existing = pd.concat(existing_parts, ignore_index=True) if existing_parts else None
+    crosswalk = match_odds_events_to_cfbd(
+        events,
+        schedule,
+        existing=existing,
+        ingested_at=ingested_at,
+    )
+    if not crosswalk.empty:
+        write_odds_cfbd_crosswalk(store, crosswalk)
+    return normalize_odds_payload(
+        payload,
+        captured_at=captured_at,
+        ingested_at=ingested_at,
+        team_map=team_map,
+        snapshot_source=snapshot_source,
+        decision_point=decision_point,
+        event_time=event_time,
+        event_game_ids=resolve_event_game_ids(crosswalk),
+    )
 
 
 def _captured_at_minute(series: pd.Series) -> pd.Series:
@@ -1123,16 +1430,17 @@ def run_odds_ingest(
             client=odds_client,
         )
         body = raw.raw_path.read_bytes()
-        frame = normalize_odds_payload(
-            body,
-            captured_at=captured,
-            ingested_at=ingested,
-            team_map=names,
-            snapshot_source="live",
-            decision_point=None,
-            event_time=captured,
-        )
         with ParquetStore(staged_dir) as store:
+            frame = _enrich_frame_via_crosswalk(
+                store,
+                body,
+                names,
+                captured_at=captured,
+                ingested_at=ingested,
+                snapshot_source="live",
+                decision_point=None,
+                event_time=captured,
+            )
             added = write_odds_snapshots(store, frame)
         return OddsIngestResult(
             raw_path=raw.raw_path,
@@ -1263,11 +1571,12 @@ def run_historical_backfill(
 
                     ingested = datetime.now(tz=UTC)
                     # CRITICAL: event_time = returned timestamp, not request date.
-                    frame = normalize_odds_payload(
+                    frame = _enrich_frame_via_crosswalk(
+                        store,
                         envelope.data,
+                        names,
                         captured_at=envelope.timestamp,
                         ingested_at=ingested,
-                        team_map=names,
                         snapshot_source="historical",
                         decision_point=unit.decision_point,
                         event_time=envelope.timestamp,

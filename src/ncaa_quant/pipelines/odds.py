@@ -1,7 +1,8 @@
-"""Prefect flow and deployment for Odds API raw snapshot capture (Task 4a).
+"""Prefect flow and deployment for Odds API live snapshot ingestion (Task 4).
 
-Normalization / staging land in the remainder of Task 4. This deployment exists
-so live odds payloads are never lost while that work proceeds.
+Migrated from Task 4a raw-only capture: every scheduled run still archives the
+raw JSON first, then normalizes to ``odds_snapshots`` (with crosswalk) and
+stages Parquet. The 6×/day cron must stay up — live odds cannot be backfilled.
 """
 
 from __future__ import annotations
@@ -11,7 +12,7 @@ from typing import Any
 from prefect import flow
 
 from ncaa_quant.config import load_config
-from ncaa_quant.ingestion.odds_api import OddsRawCaptureResult, run_odds_raw_capture
+from ncaa_quant.ingestion.odds_api import OddsIngestResult, run_odds_ingest
 from ncaa_quant.utils.logging import configure_logging, get_logger
 
 
@@ -32,19 +33,21 @@ def notify_ingest_odds_failure(
 
 @flow(name="ingest_odds", on_failure=[notify_ingest_odds_failure])
 def ingest_odds_flow() -> dict[str, Any]:
-    """Pull one Odds API snapshot and archive the raw JSON (Task 4a)."""
+    """Pull one Odds API snapshot: raw archive → normalize → stage."""
     configure_logging()
     log = get_logger("ncaa_quant.pipelines.odds")
-    result: OddsRawCaptureResult = run_odds_raw_capture()
+    result: OddsIngestResult = run_odds_ingest()
     log.info(
-        "ingest_odds_raw_complete",
+        "ingest_odds_complete",
         raw_path=str(result.raw_path),
-        bytes_written=result.bytes_written,
+        rows_written=result.rows_written,
+        rows_fetched=result.rows_fetched,
         captured_at=result.captured_at.isoformat(),
     )
     return {
         "raw_path": str(result.raw_path),
-        "bytes_written": result.bytes_written,
+        "rows_written": result.rows_written,
+        "rows_fetched": result.rows_fetched,
         "captured_at": result.captured_at.isoformat(),
     }
 
@@ -57,7 +60,7 @@ def serve_ingest_odds(*, cron: str | None = None) -> None:
     get_logger("ncaa_quant.pipelines.odds").info(
         "serving_ingest_odds",
         cron=schedule,
-        mode="raw_capture",
+        mode="normalize_and_stage",
     )
     ingest_odds_flow.serve(name="ingest_odds", cron=schedule)
 

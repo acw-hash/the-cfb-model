@@ -16,16 +16,20 @@ from ncaa_quant.ingestion.odds_api import (
     CalibrationError,
     HistoricalBudgetCeilingError,
     OddsAPIClient,
+    OddsEventRef,
     RateLimitBudgetError,
     archive_historical_response,
     archive_raw_response,
     asof_tolerance_for,
     dedupe_snapshots,
     estimate_historical_credits,
+    extract_odds_events,
     is_unit_complete,
+    load_cfbd_schedule,
     load_team_name_map,
     make_game_key,
     mark_unit_complete,
+    match_odds_events_to_cfbd,
     normalize_odds_payload,
     normalize_team_name,
     parse_historical_envelope,
@@ -35,6 +39,7 @@ from ncaa_quant.ingestion.odds_api import (
     run_odds_raw_capture,
     tuesday_0600_et_for_week,
     within_asof_tolerance,
+    write_odds_cfbd_crosswalk,
     write_odds_snapshots,
 )
 from ncaa_quant.utils.logging import configure_logging
@@ -737,22 +742,23 @@ def test_cli_odds_once(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     from typer.testing import CliRunner
 
     from ncaa_quant.cli import app
-    from ncaa_quant.ingestion.odds_api import OddsRawCaptureResult
+    from ncaa_quant.ingestion.odds_api import OddsIngestResult
 
     runner = CliRunner()
 
-    def fake_run(**_kwargs: object) -> OddsRawCaptureResult:
-        return OddsRawCaptureResult(
+    def fake_run(**_kwargs: object) -> OddsIngestResult:
+        return OddsIngestResult(
             raw_path=tmp_path / "raw.json",
+            rows_written=12,
+            rows_fetched=12,
             captured_at=datetime(2024, 9, 1, tzinfo=UTC),
-            bytes_written=42,
         )
 
-    monkeypatch.setattr("ncaa_quant.ingestion.odds_api.run_odds_raw_capture", fake_run)
+    monkeypatch.setattr("ncaa_quant.ingestion.odds_api.run_odds_ingest", fake_run)
     result = runner.invoke(app, ["ingest", "odds", "--once"])
     assert result.exit_code == 0, result.output
-    assert "raw archived bytes=42" in result.output
-    assert "path=" in result.output
+    assert "wrote 12 new rows (fetched 12)" in result.output
+    assert "raw=" in result.output
 
 
 def test_cli_odds_requires_once() -> None:
@@ -952,20 +958,22 @@ def test_failure_hook_logs() -> None:
 
 
 def test_ingest_odds_flow(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    from ncaa_quant.ingestion.odds_api import OddsRawCaptureResult
+    from ncaa_quant.ingestion.odds_api import OddsIngestResult
     from ncaa_quant.pipelines.odds import ingest_odds_flow
 
-    def fake_run(**_kwargs: object) -> OddsRawCaptureResult:
-        return OddsRawCaptureResult(
+    def fake_run(**_kwargs: object) -> OddsIngestResult:
+        return OddsIngestResult(
             raw_path=tmp_path / "x.json",
+            rows_written=7,
+            rows_fetched=7,
             captured_at=datetime(2024, 9, 1, tzinfo=UTC),
-            bytes_written=99,
         )
 
-    monkeypatch.setattr("ncaa_quant.pipelines.odds.run_odds_raw_capture", fake_run)
+    monkeypatch.setattr("ncaa_quant.pipelines.odds.run_odds_ingest", fake_run)
     monkeypatch.setattr("ncaa_quant.pipelines.odds.configure_logging", lambda: "run")
     out = ingest_odds_flow.fn()
-    assert out["bytes_written"] == 99
+    assert out["rows_written"] == 7
+    assert out["rows_fetched"] == 7
     assert out["raw_path"].endswith("x.json")
 
 
@@ -998,3 +1006,254 @@ def test_run_odds_raw_capture(tmp_path: Path) -> None:
     assert result.raw_path.is_file()
     assert result.raw_path.read_bytes() == body
     assert result.raw_path.parent.name == "2024-09-01"
+
+
+def _schedule_row(
+    *,
+    game_id: int,
+    season: int,
+    home: str,
+    away: str,
+    start: datetime,
+) -> dict[str, object]:
+    return {
+        "game_id": game_id,
+        "season": season,
+        "home_team": home,
+        "away_team": away,
+        "start_date": start,
+    }
+
+
+def test_postponed_game_keeps_single_cfbd_key_and_continuous_history(
+    team_map: dict[str, str],
+) -> None:
+    """AUDIT-6.3 / Task 4: one-day postpone → one CFBD id, continuous snapshots."""
+    cfbd_id = 401628999
+    original_kick = datetime(2024, 9, 7, 19, 0, tzinfo=UTC)
+    postponed_kick = original_kick + timedelta(days=1)
+    schedule = pd.DataFrame(
+        [
+            _schedule_row(
+                game_id=cfbd_id,
+                season=2024,
+                home="Michigan",
+                away="Texas",
+                start=original_kick,
+            )
+        ]
+    )
+    event_id = "evt-postpone-1"
+    pre = OddsEventRef(
+        odds_event_id=event_id,
+        game_key=make_game_key(2024, "Michigan", "Texas", original_kick.date()),
+        season=2024,
+        home_team="Michigan",
+        away_team="Texas",
+        kickoff=original_kick,
+    )
+    post = OddsEventRef(
+        odds_event_id=event_id,
+        game_key=make_game_key(2024, "Michigan", "Texas", postponed_kick.date()),
+        season=2024,
+        home_team="Michigan",
+        away_team="Texas",
+        kickoff=postponed_kick,
+    )
+    ingested = datetime(2024, 9, 6, 12, 0, tzinfo=UTC)
+    first = match_odds_events_to_cfbd([pre], schedule, ingested_at=ingested)
+    assert len(first) == 1
+    assert first.iloc[0]["match_status"] == "matched"
+    assert int(first.iloc[0]["game_id"]) == cfbd_id
+
+    # Second pull after postpone: same odds_event_id, new commence / game_key.
+    second = match_odds_events_to_cfbd(
+        [post],
+        schedule,
+        existing=first,
+        ingested_at=ingested + timedelta(hours=20),
+    )
+    assert len(second) == 1
+    assert second.iloc[0]["match_status"] == "matched"
+    assert int(second.iloc[0]["game_id"]) == cfbd_id
+    assert second.iloc[0]["game_key"] != first.iloc[0]["game_key"]
+
+    # Snapshot history across the postpone shares one canonical game_id.
+    t0 = datetime(2024, 9, 6, 12, 0, tzinfo=UTC)
+    t1 = datetime(2024, 9, 7, 8, 0, tzinfo=UTC)
+    payload_pre = [
+        {
+            **SAMPLE_PAYLOAD[0],
+            "id": event_id,
+            "commence_time": original_kick.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        }
+    ]
+    payload_post = [
+        {
+            **SAMPLE_PAYLOAD[0],
+            "id": event_id,
+            "commence_time": postponed_kick.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        }
+    ]
+    ids = {event_id: cfbd_id}
+    snap_pre = normalize_odds_payload(
+        payload_pre,
+        captured_at=t0,
+        ingested_at=t0,
+        team_map=team_map,
+        event_game_ids=ids,
+    )
+    snap_post = normalize_odds_payload(
+        payload_post,
+        captured_at=t1,
+        ingested_at=t1,
+        team_map=team_map,
+        event_game_ids=ids,
+    )
+    history = pd.concat([snap_pre, snap_post], ignore_index=True)
+    assert set(history["game_id"].dropna().astype(int)) == {cfbd_id}
+    assert history["game_key"].nunique() == 2
+    assert history["captured_at"].nunique() == 2
+
+
+def test_ambiguous_match_is_quarantined_never_guessed() -> None:
+    kick = datetime(2024, 9, 7, 19, 0, tzinfo=UTC)
+    schedule = pd.DataFrame(
+        [
+            _schedule_row(
+                game_id=1,
+                season=2024,
+                home="Michigan",
+                away="Texas",
+                start=kick,
+            ),
+            _schedule_row(
+                game_id=2,
+                season=2024,
+                home="Michigan",
+                away="Texas",
+                start=kick + timedelta(hours=12),
+            ),
+        ]
+    )
+    ev = OddsEventRef(
+        odds_event_id="ambig",
+        game_key="2024:Michigan:Texas:2024-09-07",
+        season=2024,
+        home_team="Michigan",
+        away_team="Texas",
+        kickoff=kick + timedelta(hours=6),
+    )
+    out = match_odds_events_to_cfbd([ev], schedule, ingested_at=kick)
+    assert out.iloc[0]["match_status"] == "quarantined"
+    assert pd.isna(out.iloc[0]["game_id"])
+
+
+def test_raw_archive_body_has_no_api_key(tmp_path: Path) -> None:
+    """Raw archival stores response body only — never request metadata with apiKey."""
+    secret = "SUPER_SECRET_ODDS_KEY_DO_NOT_LEAK"
+    body = json.dumps(SAMPLE_PAYLOAD).encode()
+    assert secret.encode() not in body
+    path = archive_raw_response(
+        tmp_path,
+        datetime(2024, 9, 1, 12, 0, tzinfo=UTC),
+        body,
+    )
+    archived = path.read_bytes()
+    assert archived == body
+    assert b"apiKey" not in archived
+    assert secret.encode() not in archived
+
+
+def test_crosswalk_write_and_load_schedule(
+    tmp_path: Path,
+    team_map: dict[str, str],
+) -> None:
+    kick = datetime(2024, 9, 7, 19, 0, tzinfo=UTC)
+    staged = tmp_path / "staged"
+    with ParquetStore(staged) as store:
+        store.write_partition(
+            "games",
+            pd.DataFrame(
+                [
+                    {
+                        "game_id": 401628331,
+                        "season": 2024,
+                        "week": 1,
+                        "season_type": "regular",
+                        "start_date": kick,
+                        "home_team_id": 130,
+                        "away_team_id": 251,
+                        "home_points": None,
+                        "away_points": None,
+                        "neutral_site": False,
+                        "conference_game": False,
+                        "venue_id": None,
+                        "completed": False,
+                        "source_version": "test",
+                        "event_time": kick,
+                        "ingested_at": kick,
+                    }
+                ]
+            ),
+            {"season": 2024, "week": 1},
+        )
+        store.write_partition(
+            "teams",
+            pd.DataFrame(
+                [
+                    {
+                        "team_id": 130,
+                        "season": 2024,
+                        "school": "Michigan",
+                        "conference": "Big Ten",
+                        "abbreviation": "MICH",
+                        "classification": "fbs",
+                        "source_version": "test",
+                        "event_time": kick,
+                        "ingested_at": kick,
+                    },
+                    {
+                        "team_id": 251,
+                        "season": 2024,
+                        "school": "Texas",
+                        "conference": "SEC",
+                        "abbreviation": "TEX",
+                        "classification": "fbs",
+                        "source_version": "test",
+                        "event_time": kick,
+                        "ingested_at": kick,
+                    },
+                ]
+            ),
+            {"season": 2024},
+        )
+        schedule = load_cfbd_schedule(store, [2024], team_map)
+        assert len(schedule) == 1
+        assert int(schedule.iloc[0]["game_id"]) == 401628331
+        events = extract_odds_events(SAMPLE_PAYLOAD, team_map)
+        crosswalk = match_odds_events_to_cfbd(events, schedule, ingested_at=kick)
+        n = write_odds_cfbd_crosswalk(store, crosswalk)
+        assert n == 1
+        saved = store.read("odds_cfbd_game_crosswalk", filters={"season": 2024})
+        assert int(saved.iloc[0]["game_id"]) == 401628331
+        assert saved.iloc[0]["match_status"] == "matched"
+
+
+@pytest.mark.live
+def test_live_odds_ingest_once_writes_raw_and_parquet() -> None:
+    """Live network smoke; excluded from CI / default ``make test`` via -m 'not live'."""
+    from ncaa_quant.config import load_secrets
+
+    key = load_secrets().odds_api_key.get_secret_value()
+    if not key:
+        pytest.skip("ODDS_API_KEY not configured")
+
+    result = run_odds_ingest()
+    assert result.raw_path.is_file()
+    assert result.raw_path.stat().st_size > 0
+    assert b"apiKey" not in result.raw_path.read_bytes()
+    assert result.rows_fetched > 0
+    # Second call in the same minute must not duplicate staged rows.
+    again = run_odds_ingest(captured_at=result.captured_at)
+    assert again.rows_written == 0
