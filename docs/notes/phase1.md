@@ -223,6 +223,46 @@ uncertainty about a quantity the data cannot speak to. Tests pin the group means
 to zero, idempotence, zero variance along the all-ones direction with contrast
 variance preserved, and the shift-invariance property.
 
+## A-10 (part 1) — Simplex-constrained stacking (done 2026-08-07)
+
+**What was wrong.** `fit_nnls_stack` ran `nnls(x, y)` and then `raw / total`.
+NNLS minimizes over the non-negative *cone*; dividing by the sum slides along a
+ray and generally lands somewhere other than the constrained minimizer. §5 rejects
+this explicitly, and the audit asked for a demonstration rather than an assertion.
+
+**The demonstration.** Two orthogonal members with `y = [0.2, 0.6]`. The
+unconstrained non-negative solution is `(0.2, 0.6)`, which sums to 0.8 and so sits
+off the simplex. Renormalizing gives `(0.25, 0.75)`; the true constrained optimum,
+from `w1 − 0.2 = w2 − 0.6` with `w1 + w2 = 1`, is `(0.3, 0.7)`. Squared error
+0.025 versus 0.020 — the rejected approach gives away 25% more error on a problem
+small enough to check by hand.
+
+`solve_simplex_least_squares` now solves the QP directly with SLSQP and an
+analytic gradient, from a uniform start plus every vertex, keeping the best
+objective. The problem is convex and 4-6 dimensional, so this is both cheap and
+free of any dependence on the starting point. `renormalized_nnls_weights` is kept
+in the module solely so the regression test can price the gap; a future reader
+tempted to "simplify" back to renormalization will trip that test.
+
+**One judgement call.** Degeneracy is still judged on the unconstrained NNLS
+solve, not the constrained one. Under `Σw = 1` the solver always returns weights
+summing to 1, which would look like a healthy fit even when no member carries any
+signal — the constraint would hide exactly the condition the existing loud error
+exists to catch.
+
+Also pinned: weights on the simplex by construction across random problems, pure
+noise driven under 3% weight, determinism across repeated calls, and the no-intercept
+property (two members both biased 10+ points low must yield a stack that is still
+biased low, because correcting the level is Level-2's job).
+
+**Verification.** `tests/unit/test_simplex_stacking.py` (10 tests).
+`make test`: 620 passed, coverage 81.05%.
+
+**Still open in A-10.** The single non-overlapping variance decomposition
+(`σ²_pred = σ²_aleatoric + σ²_members + σ²_Stage-1` with no double counting) is
+untouched; it needs the joint league state to supply a real `σ²_Stage-1`, so it is
+bundled with the state-space task.
+
 ### Still open: the joint league state (A-3 part 2 / B-1)
 
 The projection primitive exists but is **not yet wired into the filter**, because

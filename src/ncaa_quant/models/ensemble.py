@@ -1,8 +1,15 @@
-"""Level-1 NNLS stacking and ensemble σ (DESIGN §5.2).
+"""Level-1 simplex-constrained stacking and ensemble σ (DESIGN §5 / §5.2).
 
-Non-negative least squares over level-0 out-of-fold μ predictions, constrained
-to weights summing to 1. Ensemble predictive variance follows the law of total
-variance across members plus the σ-head.
+Weights are fit over level-0 out-of-fold μ predictions by solving the constrained
+QP ``min ||Xw − y||²`` subject to ``w ≥ 0`` and ``Σw = 1`` directly — not by
+running NNLS and renormalizing, which does not recover the constrained optimum
+(audit A-10). No intercept: the stack must remain a convex combination of member
+predictions, so any residual systematic bias is the job of Level-2 distributional
+recalibration rather than a free parameter that would also destroy the
+soft-model-selection reading of the weights.
+
+Ensemble predictive variance follows the law of total variance across members plus
+the σ-head.
 """
 
 from __future__ import annotations
@@ -13,7 +20,7 @@ from typing import Any, Literal
 
 import numpy as np
 import pandas as pd  # type: ignore[import-untyped]
-from scipy.optimize import nnls  # type: ignore[import-untyped]
+from scipy.optimize import minimize, nnls  # type: ignore[import-untyped]
 
 TargetKind = Literal["margin", "total"]
 
@@ -135,6 +142,86 @@ def _oof_condition_number(x: np.ndarray) -> float:
     return float(finite.max() / finite.min())
 
 
+def solve_simplex_least_squares(x: np.ndarray, y: np.ndarray) -> np.ndarray:
+    """Solve ``min ||Xw − y||²`` subject to ``w ≥ 0`` and ``Σw = 1``.
+
+    This is the §5 Level-1 stack: a convex QP over the probability simplex, with
+    no intercept, so the ensemble stays a convex combination of its members and
+    cannot invent a location shift absent from every one of them.
+
+    Solving it directly matters. Running plain NNLS and dividing by the sum does
+    **not** recover this optimum when the unconstrained solution lies off the
+    simplex face: NNLS minimizes over the non-negative cone, and rescaling the
+    result moves along a ray that generally leaves the constrained minimizer
+    behind. See :func:`renormalized_nnls_weights` and the regression test that
+    prices the difference.
+
+    SLSQP with an analytic gradient is used because the problem is convex, tiny
+    (4-6 members) and must be deterministic. A uniform start plus each simplex
+    vertex is tried and the best objective kept, which costs microseconds and
+    removes any dependence on the optimizer's starting point.
+    """
+    x = np.asarray(x, dtype=float)
+    y = np.asarray(y, dtype=float)
+    k = int(x.shape[1])
+    if k == 1:
+        return np.ones(1, dtype=float)
+
+    gram = x.T @ x
+    xty = x.T @ y
+
+    def objective(w: np.ndarray) -> float:
+        return float(0.5 * w @ gram @ w - w @ xty)
+
+    def gradient(w: np.ndarray) -> np.ndarray:
+        return np.asarray(gram @ w - xty, dtype=float)
+
+    starts = [np.full(k, 1.0 / k, dtype=float), *list(np.eye(k, dtype=float))]
+    best: np.ndarray | None = None
+    best_obj = float("inf")
+    for x0 in starts:
+        res = minimize(
+            objective,
+            x0,
+            jac=gradient,
+            method="SLSQP",
+            bounds=[(0.0, 1.0)] * k,
+            constraints=({"type": "eq", "fun": lambda w: float(np.sum(w) - 1.0)},),
+            options={"maxiter": 200, "ftol": 1e-12},
+        )
+        if not res.success:
+            continue
+        w = np.clip(np.asarray(res.x, dtype=float), 0.0, None)
+        total = float(w.sum())
+        if total <= 0.0:
+            continue
+        w = w / total  # numerical tidy-up; the equality constraint is already active
+        obj = objective(w)
+        if obj < best_obj:
+            best_obj, best = obj, w
+
+    if best is None:
+        # Every start failed: take the best simplex vertex. That is a feasible
+        # point with a defined objective, not a fabricated blend.
+        vertex_objs = [objective(e) for e in np.eye(k, dtype=float)]
+        best = np.eye(k, dtype=float)[int(np.argmin(vertex_objs))]
+    return best
+
+
+def renormalized_nnls_weights(x: np.ndarray, y: np.ndarray) -> np.ndarray:
+    """The rejected approach, kept so the regression test can price the gap.
+
+    Plain NNLS followed by division by the sum. Retained for comparison only;
+    :func:`solve_simplex_least_squares` is what the stack uses.
+    """
+    x = np.asarray(x, dtype=float)
+    raw, _residual = nnls(x, np.asarray(y, dtype=float))
+    total = float(np.sum(raw))
+    if total <= 0.0 or not np.isfinite(total):
+        return np.full(x.shape[1], 1.0 / x.shape[1], dtype=float)
+    return np.asarray(raw / total, dtype=float)
+
+
 def fit_nnls_stack(
     oof: pd.DataFrame,
     *,
@@ -144,10 +231,13 @@ def fit_nnls_stack(
     flag_column: str = OOF_FLAG_COLUMN,
     allow_equal_weight_fallback: bool = False,
 ) -> NNLSStackResult:
-    """Fit non-negative least-squares stacking weights (sum to 1).
+    """Fit simplex-constrained stacking weights (``w ≥ 0``, ``Σw = 1``).
 
-    Solves ``min ||X w - y||_2`` s.t. ``w >= 0``, then renormalizes ``w`` to
-    sum to 1. Degenerate OOF (thin data, all-zero NNLS weights) raises unless
+    Solves the constrained QP directly per §5 (audit A-10). The previous
+    implementation ran NNLS and renormalized, which does not recover the
+    constrained optimum when the unconstrained solution lies off the simplex face.
+
+    Degenerate OOF (thin data, no informative member) raises unless
     ``allow_equal_weight_fallback`` is explicitly True — never silent.
     """
     assert_oof_only(oof, flag_column=flag_column)
@@ -174,9 +264,12 @@ def fit_nnls_stack(
         raise EnsembleError(msg)
 
     cond = _oof_condition_number(x)
+    fallback: str | None = None
+    # Degeneracy is still judged on the unconstrained cone solve: an all-zero NNLS
+    # result means no member carries signal. The simplex constraint would hide that
+    # by forcing the weights to sum to 1 regardless.
     raw, _residual = nnls(x, y)
     total = float(np.sum(raw))
-    fallback: str | None = None
     if total <= 0.0 or not np.isfinite(total):
         if not allow_equal_weight_fallback:
             msg = (
@@ -189,7 +282,7 @@ def fit_nnls_stack(
         weights = np.full(len(cols), 1.0 / len(cols), dtype=float)
         fallback = "equal_weight"
     else:
-        weights = raw / total
+        weights = solve_simplex_least_squares(x, y)
 
     return NNLSStackResult(
         target=target,
