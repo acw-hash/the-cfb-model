@@ -528,11 +528,52 @@ def backtest_run(
         typer.echo(f"LABEL={label}")
 
 
+@backtest_app.command("verify")
+def backtest_verify(
+    output_root: str = typer.Option(
+        "data/backtests",
+        "--output-root",
+        help="Scan every manifest.json beneath this root.",
+    ),
+    run_dir: str = typer.Option("", "--run-dir", help="Verify a single run directory instead."),
+) -> None:
+    """Report whether each run's results may be cited as evidence (ADR 0005).
+
+    A run is citable only when its recorded git SHA resolves to a commit in this
+    repository and the working tree was clean when it ran. Exits non-zero if any
+    scanned run fails, so this can gate publication.
+    """
+    from ncaa_quant.registry.manifest import read_manifest, verify_provenance
+
+    roots = [Path(run_dir)] if run_dir else sorted(Path(output_root).rglob("manifest.json"))
+    paths = [p if p.name == "manifest.json" else p / "manifest.json" for p in roots]
+    if not paths:
+        typer.echo(f"no manifests found under {run_dir or output_root}")
+        raise typer.Exit(code=2)
+
+    failures = 0
+    for path in paths:
+        if not path.is_file():
+            typer.echo(f"MISSING  {path}")
+            failures += 1
+            continue
+        report = verify_provenance(read_manifest(path))
+        label = "CITABLE " if report.citable else "REJECTED"
+        typer.echo(f"{label} {path.parent}")
+        for problem in report.problems:
+            typer.echo(f"         - {problem}")
+        failures += 0 if report.citable else 1
+
+    typer.echo(f"{len(paths) - failures}/{len(paths)} runs citable")
+    if failures:
+        raise typer.Exit(code=1)
+
+
 @backtest_app.callback(invoke_without_command=True)
 def backtest(ctx: typer.Context) -> None:
     """Run walk-forward backtests."""
     if ctx.invoked_subcommand is None:
-        typer.echo("Usage: ncaa-quant backtest [plan|run] --config <name>")
+        typer.echo("Usage: ncaa-quant backtest [plan|run|verify] --config <name>")
         raise typer.Exit(code=2)
 
 

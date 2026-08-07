@@ -7,9 +7,12 @@ from __future__ import annotations
 
 from ncaa_quant.registry.manifest import (
     ManifestError,
+    ProvenanceReport,
     RunManifest,
     build_manifest,
     read_manifest,
+    require_citable_provenance,
+    verify_provenance,
     write_manifest,
 )
 from ncaa_quant.registry.promote import (
@@ -59,6 +62,7 @@ __all__ = [
     "NoChampionError",
     "PromotionError",
     "PromotionResult",
+    "ProvenanceReport",
     "RegistryError",
     "RunManifest",
     "TrackingSession",
@@ -74,7 +78,9 @@ __all__ = [
     "promote",
     "promote_from_mlflow_runs",
     "read_manifest",
+    "require_citable_provenance",
     "resolve_champion",
     "rollback",
+    "verify_provenance",
     "write_manifest",
 ]
