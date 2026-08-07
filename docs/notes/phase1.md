@@ -178,3 +178,78 @@ integration test. `make test`: 594 passed, coverage 81.00%.
 distribution rather than through `transform_quantile_level`, so conformal
 intervals do not yet inherit the recalibration. That belongs with A-9 (ACI
 conformal), which is the next integrity item.
+
+## A-6 / A-3 (part 1) — Kalman covariance consistency and the identifiability projection (done 2026-08-07)
+
+Two independent defects in `ratings/state_space.py`, both fixed at the primitive
+level so the joint-state rewrite (below) can build on them.
+
+### A-6: clipped updates were shrinking the covariance as if fully observed
+
+`kalman_update` winsorized the innovation at 2.5σ before moving the mean, but then
+ran the Joseph covariance update with the **nominal** `R`. So the mean moved 2.5σ
+while `P` shrank as though the entire residual had been informative. The concrete
+consequence is overconfident November ratings: an early-season 60-point blowout was
+treated as a high-precision measurement of team strength, when the filter had
+explicitly decided to distrust most of it.
+
+`effective_obs_noise` now applies §9.4's `R_eff = R · (|z|/σ)²` to clipped rows.
+Rows and columns are scaled by the square root of the factor, so a correlated `R`
+stays positive semi-definite; for the diagonal `R` in use this reduces to scaling
+each variance. The gain and the Joseph update both use `R_eff`. The predictive
+log-likelihood deliberately still uses the raw `S` — that is the honest density of
+the observation that actually arrived, and inflating it would flatter the model's
+likelihood-based tuning.
+
+Behaviour now pinned by test: posterior variance rises monotonically with `|z|`
+past the clip point and approaches the prior in the limit (a 25σ outlier teaches
+almost nothing), with the closed-form value `272/289` checked at `z = 10`.
+Parameter-recovery and calibrated-coverage tests pass unchanged, which is the
+signal that mattered most — the inflation could easily have broken coverage.
+
+### A-3 (part 1): the constraint projection
+
+`project_league_mean_zero` implements §9.3 as an explicit projection,
+`x ← (I−M)x` and `P ← (I−M)P(I−M)ᵀ`, not a zero-noise pseudo-observation, so the
+constraint holds *exactly* after every update rather than approximately.
+
+Worth stating why this matters: `off_h − def_a` identifies only differences. Add a
+constant to every team's offense and every team's defense and no measurement
+changes at all. That null direction is collinear with the league
+scoring-environment state, so the filter has a ridge it can wander along, fitting
+the data equally well while the absolute level drifts. The projection also removes
+posterior *variance* along that direction — the filter should not claim
+uncertainty about a quantity the data cannot speak to. Tests pin the group means
+to zero, idempotence, zero variance along the all-ones direction with contrast
+variance preserved, and the shift-invariance property.
+
+### Still open: the joint league state (A-3 part 2 / B-1)
+
+The projection primitive exists but is **not yet wired into the filter**, because
+wiring it requires the joint state it is meant to constrain. `run_filter` still
+keeps `teams: dict[str, GaussianState]` — per-team marginals — and `update_game`
+says so plainly in its own docstring: "cross-covariance is discarded for storage —
+standard independent-team approximation".
+
+That approximation contradicts three separate spec claims:
+
+1. §9.2's single joint league state with full cross-team covariance.
+2. §5.1's footnote that schedule information propagates optimally, which holds
+   "only because the filter is joint". With cross-covariance discarded after every
+   game, beating Team C tells the filter nothing about Team A that played C
+   earlier, beyond C's own marginal — so opponent adjustments do not flow through
+   the league graph.
+3. §2.6's epistemic draws, which are specified to draw both teams' blocks jointly
+   "preserving their cross-team covariance — not independent marginal draws".
+   There is currently no cross-team covariance to preserve, so those draws are
+   independent whatever the code intends.
+
+Scope of the remaining work, deliberately left as its own task rather than rushed:
+a `LeagueState` holding one mean vector and one full covariance with a position
+registry, dynamic team admission, per-team process noise and season regression
+applied to slices of the joint covariance, a `scoring_env` league dimension to
+absorb the level the projection removes, the projection applied after every
+measurement update, and the end-to-end shift-invariance acceptance test from
+§15 item 14. Runtime needs checking against the "<5 min for 2014-2025" criterion:
+roughly 540 dims means a 540x540 covariance and a rank-5 update per game, which
+should be comfortable, but it needs measuring rather than assuming.
