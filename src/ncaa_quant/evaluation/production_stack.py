@@ -57,7 +57,6 @@ from ncaa_quant.evaluation.walkforward import (
     WalkForwardError,
     resolve_lines_for_games,
 )
-from ncaa_quant.models.calibrate import CalibrationBundle, fit_market_calibrator
 from ncaa_quant.models.conformal import CQRResult, conformalize_intervals, fit_cqr
 from ncaa_quant.models.ensemble import (
     EnsembleError,
@@ -73,6 +72,15 @@ from ncaa_quant.models.heads.elasticnet import ElasticNetMuHead
 from ncaa_quant.models.heads.margin import LightGBMMuHead
 from ncaa_quant.models.heads.quantile import QUANTILES, LightGBMQuantileHead, quantile_column
 from ncaa_quant.models.heads.sigma import LightGBMSigmaHead, abs_residual_labels
+from ncaa_quant.models.pit_calibration import (
+    DistributionalCalibrationBundle,
+    DistributionTarget,
+    PitCalibrationError,
+    PitRecalibrator,
+    fit_pit_recalibrator,
+    gate_pit_recalibrator,
+    pit_values_normal,
+)
 from ncaa_quant.ratings.priors import (
     PriorConfig,
     build_preseason_states,
@@ -807,7 +815,9 @@ class ProductionEnsemblePredictor:
     _fitted: bool = field(default=False, init=False, repr=False)
     _nnls_fold_reports: list[dict[str, Any]] = field(default_factory=list, init=False, repr=False)
     _nnls_fallback: str | None = field(default=None, init=False, repr=False)
-    _calibration: CalibrationBundle | None = field(default=None, init=False, repr=False)
+    _calibration: DistributionalCalibrationBundle | None = field(
+        default=None, init=False, repr=False
+    )
     _cqr: CQRResult | None = field(default=None, init=False, repr=False)
     _key_kernel: KeyNumberKernel | None = field(default=None, init=False, repr=False)
     _rho: float = field(default=0.0, init=False, repr=False)
@@ -877,7 +887,7 @@ class ProductionEnsemblePredictor:
                 self.quantile_margin_head.fit(features, labels)
             self._fit_rho_and_kernel(oof)
             self._fit_cqr_layer(features, labels, oof)
-            self._fit_calibration_from_oof(oof)
+            self._fit_calibration_from_oof(features, oof)
         self._fitted = True
 
     def predict(self, features: pd.DataFrame) -> pd.DataFrame:
@@ -1279,74 +1289,106 @@ class ProductionEnsemblePredictor:
                 frame[quantile_column("margin", q)] = frame["pred_margin"] + z * max(mad, 1.0)
             self._cqr = fit_cqr(frame, target="margin", n_trailing=min(2, len(seasons)))
 
-    def _fit_calibration_from_oof(self, oof: pd.DataFrame) -> None:
-        """Fit isotonic/Platt on OOF raw probs only (Task 19 deliverable 3)."""
+    def _fit_calibration_from_oof(self, features: pd.DataFrame, oof: pd.DataFrame) -> None:
+        """Fit distributional PIT maps on the OOF predictive distributions.
+
+        §2.6 / §5.2 as amended (audit A-4): one monotone map on the margin
+        predictive CDF and one on the total, rather than three per-market
+        probability maps. Every margin-derived market (moneyline, ATS at any line)
+        is then read off one recalibrated CDF, so they cannot disagree about the
+        same event — which independent ML and ATS maps had no way to prevent.
+
+        σ comes from the fitted σ-heads, not from the residuals being calibrated
+        against. The previous implementation built σ from ``|y − μ|``, which put
+        the label inside the predictive distribution it was meant to score.
+        """
         gids = oof["game_id"].to_numpy()
-        spreads, totals = self._lookup_closes(gids)
-        # σ proxy for OOF raw probs: |residual| MAD scaled per-row via uncertainty
-        # is unavailable here; use per-row absolute residual when known else MAD.
-        resid = (oof["realized_margin"] - oof["pred_margin"]).abs().to_numpy(dtype=float)
-        mad = float(np.nanmedian(resid[np.isfinite(resid)])) if np.any(np.isfinite(resid)) else 10.0
-        sig = np.maximum(resid, mad * 0.5)
-        sig = np.where(np.isfinite(sig) & (sig > 1e-6), sig, mad)
-        # Heteroskedastic: jitter by game_id hash so σ is never constant.
-        jitter = 1.0 + 0.05 * ((gids.astype(np.int64) % 7) - 3).astype(float)
-        sig = sig * jitter
+        feat_oof = features.merge(oof[["game_id"]], on="game_id", how="inner")
+        sig_m, sig_t = self._predict_sigma_heads(feat_oof, gids)
 
-        mu = oof["pred_margin"].to_numpy(dtype=float)
-        p_ml = scipy_stats.norm.cdf(mu / sig)
-        y_ml = (oof["realized_margin"].to_numpy(dtype=float) > 0).astype(float)
-        p_ats = np.full(len(oof), np.nan)
-        y_ats = np.full(len(oof), np.nan)
-        for i, sp in enumerate(spreads):
-            if np.isfinite(sp):
-                p_ats[i] = scipy_stats.norm.cdf((mu[i] + sp) / sig[i])
-                edge = float(oof["realized_margin"].iloc[i]) + float(sp)
-                y_ats[i] = float(edge > 0) if abs(edge) > 1e-12 else float("nan")
-        p_ou = np.full(len(oof), np.nan)
-        y_ou = np.full(len(oof), np.nan)
-        if "realized_total" in oof.columns and "pred_total" in oof.columns:
-            mt = oof["pred_total"].to_numpy(dtype=float)
-            rt = oof["realized_total"].to_numpy(dtype=float)
-            for i, tot in enumerate(totals):
-                if np.isfinite(tot) and np.isfinite(mt[i]):
-                    p_ou[i] = scipy_stats.norm.cdf((mt[i] - tot) / max(sig[i], 1e-6))
-                    edge_t = float(rt[i]) - float(tot)
-                    y_ou[i] = float(edge_t > 0) if abs(edge_t) > 1e-12 else float("nan")
-
-        bundle = CalibrationBundle()
+        bundle = DistributionalCalibrationBundle()
         report: dict[str, Any] = {}
-        for market, raw, y in (
-            ("ml", p_ml, y_ml),
-            ("ats_close", p_ats, y_ats),
-            ("ou_close", p_ou, y_ou),
-        ):
-            mask = np.isfinite(raw) & np.isfinite(y)
-            if int(mask.sum()) < _MIN_CALIBRATION_ROWS or len(np.unique(y[mask])) < 2:
+
+        targets: tuple[tuple[DistributionTarget, str, str, np.ndarray], ...] = (
+            ("margin", "pred_margin", "realized_margin", sig_m),
+            ("total", "pred_total", "realized_total", sig_t),
+        )
+        for target, mu_col, y_col, sig in targets:
+            if mu_col not in oof.columns or y_col not in oof.columns:
+                report[f"{target}_pit_skipped"] = f"missing column ({mu_col} or {y_col})"
                 continue
-            with contextlib.suppress(Exception):
-                cal = fit_market_calibrator(raw[mask], y[mask], market=market)  # type: ignore[arg-type]
-                bundle.markets[market] = cal  # type: ignore[index]
-                report[market] = {
-                    "kind": cal.kind,
-                    "n": cal.before.n,
-                    "slope_before": cal.before.slope,
-                    "intercept_before": cal.before.intercept,
-                    "slope_after": cal.after.slope,
-                    "intercept_after": cal.after.intercept,
-                }
-        self._calibration = bundle if bundle.markets else None
+            pit = pit_values_normal(
+                oof[y_col].to_numpy(dtype=float),
+                oof[mu_col].to_numpy(dtype=float),
+                np.asarray(sig, dtype=float),
+            )
+            finite = pit[np.isfinite(pit)]
+            if finite.size < _MIN_CALIBRATION_ROWS:
+                # Record why rather than leaving an empty report: a calibration
+                # layer that quietly does nothing is indistinguishable from one
+                # that ran and found nothing to fix.
+                report[f"{target}_pit_skipped"] = (
+                    f"only {finite.size} finite PIT rows (need {_MIN_CALIBRATION_ROWS}); "
+                    f"sigma finite on {int(np.isfinite(sig).sum())}/{len(oof)} rows"
+                )
+                continue
+            try:
+                cal = self._fit_and_gate_pit_map(pit, target=target)
+            except PitCalibrationError as exc:
+                report[f"{target}_pit_skipped"] = f"fit failed: {exc}"
+                continue
+            if target == "margin":
+                bundle.margin = cal
+            else:
+                bundle.total = cal
+        report.update(bundle.report())
+
+        self._calibration = bundle if (bundle.margin or bundle.total) else None
         self._calibration_report = report
 
+    def _fit_and_gate_pit_map(
+        self, pit: np.ndarray, *, target: DistributionTarget
+    ) -> PitRecalibrator:
+        """Fit on the earlier OOF rows, gate on the later ones, refit on all.
+
+        Isotonic-on-PIT is uniform in sample by construction, so the gate has to
+        see rows the map was not fit on. The split is time-ordered (the OOF frame
+        is already in time order) — never random, per the cardinal rule.
+        """
+        finite_idx = np.flatnonzero(np.isfinite(pit))
+        u = pit[finite_idx]
+        split = int(u.size * 0.7)
+        if split >= 4 and (u.size - split) >= 4:
+            trial = fit_pit_recalibrator(u[:split], target=target)
+            gate_pit_recalibrator(trial, u[split:])
+            passed = bool(trial.applied)
+            gate_meta = {k: v for k, v in trial.meta.items() if k.startswith("gate_")}
+        else:
+            passed = False
+            gate_meta = {"gate_reason": f"OOF too small to split (n={u.size})"}
+
+        final = fit_pit_recalibrator(u, target=target)
+        final.applied = passed
+        final.meta.update(gate_meta)
+        return final
+
     def _apply_calibrator(self, market: str, raw: np.ndarray) -> np.ndarray:
+        """Recalibrate a market probability through its distribution's PIT map.
+
+        ``ml`` and ``ats_close`` both resolve to the margin map; ``ou_close``
+        resolves to the total map. That routing is the coherence guarantee.
+        """
         out = np.asarray(raw, dtype=float).copy()
-        if self._calibration is None or market not in self._calibration.markets:
+        if self._calibration is None:
             return out
-        cal = self._calibration.markets[market]
+        target: DistributionTarget = "total" if market == "ou_close" else "margin"
+        cal = self._calibration.get(target)
+        if cal is None or not cal.applied:
+            return out
         mask = np.isfinite(out)
         if not np.any(mask):
             return out
-        out[mask] = cal.transform(out[mask])
+        out[mask] = cal.side_prob(out[mask])
         return out
 
     def _lookup_closes(self, gids: np.ndarray) -> tuple[np.ndarray, np.ndarray]:

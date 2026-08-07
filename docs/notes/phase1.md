@@ -112,3 +112,69 @@ logs the reads we feel good about is not a register.
 keep is `test_shipped_ablation_configs_exclude_the_lockbox`, which walks every
 shipped config; it failed on first run and caught `task23_full.yaml`.
 `make test`: 571 passed, coverage 80.86%.
+
+## A-4 — Distributional PIT recalibration (done 2026-08-07)
+
+**What was wrong.** Three independent per-market isotonic/Platt maps (ML,
+ATS@close, OU@close) with nothing tying them together. `P(home wins)` and
+`P(home covers 0)` are the *same event*, and separate maps can move them in
+opposite directions, which breaks the §2.2 internal-consistency guarantee that
+the whole bivariate-simulation design exists to provide.
+
+A second defect in the same function: σ for the OOF probabilities was built from
+`|y − μ|`, the very residual being calibrated against. The label was inside the
+predictive distribution that was supposed to score it.
+
+**What it does now.** `models/pit_calibration.py` implements the amended §2.6:
+one monotone map per predictive distribution, fit on PIT values
+(Kuleshov et al. 2018). `R` is the empirical CDF of the OOF PIT values; reporting
+`F̃ = R ∘ F` makes the PIT uniform by construction, and because `R` is monotone,
+`F̃` is a valid CDF. Every derived probability is read off that one recalibrated
+distribution, so coherence is structural rather than hoped for.
+
+- Isotonic-on-PIT when there are enough distinct OOF values; parametric Beta map
+  as §2.6's thin-data fallback (`Beta(1,1)` is uniform, so the identity is inside
+  the family).
+- `assert_market_free_target` refuses `ats_close` / `ou_close` / `ml` as fitting
+  targets, so the closing line cannot re-enter the fundamental stack through the
+  calibration layer after §4 kept it out of the features.
+- σ now comes from the fitted σ-heads.
+- Gate is time-ordered: fit on the earlier 70% of OOF, gate on the later 30%,
+  refit on all rows only if held-out PIT uniformity improved. Isotonic-on-PIT is
+  perfect in sample by construction, so an in-sample gate would always pass.
+- `ProductionEnsemblePredictor._apply_calibrator` routes `ml` and `ats_close` to
+  the margin map and `ou_close` to the total map. That routing *is* the coherence
+  guarantee.
+- `models/calibrate.py` keeps its reliability/Cox machinery but now carries a
+  warning banner that it is diagnostics only.
+
+**Fixed a silent no-op while here.** The calibration fit was wrapped in
+`contextlib.suppress(Exception)`, so any failure left an empty report that looked
+identical to "ran and found nothing to fix". It now records a reason string
+(`margin_pit_skipped`) naming the row counts or the exception. This is what
+surfaced that the 12-game `_games()` fixture is below `_MIN_OOF_ROWS`, so the σ,
+calibration and CQR layers were all being skipped on it — meaning the existing
+`test_production_predict_emits_varying_sigma` never exercised calibration at all.
+The new integration test uses a 112-game fixture where the OOF frame actually
+forms (58 OOF rows, both maps fit).
+
+**The property test that matters.**
+`test_moneyline_equals_cover_at_zero_after_calibration` asserts the two
+probabilities agree to 1e-12 *post*-calibration, which is where A-4 said the check
+belonged. Also pinned: cover probability stays monotone in the line, two-way
+probabilities still sum to 1, outputs never reach 0 or 1, and quantile-level
+inversion round-trips.
+
+Thresholds in the PIT tests are stated as multiples of the KS critical value
+`1.36/√n` rather than hand-picked constants, after a first pass asserted
+`> 0.15` against a true value of 0.1245 — an arbitrary threshold that happened to
+be wrong. The overconfident-forecaster fixture sits at roughly 6× critical;
+recalibration brings it under 1×.
+
+**Verification.** `tests/unit/test_pit_calibration.py` (22 tests) plus the
+integration test. `make test`: 594 passed, coverage 81.00%.
+
+**Not done here.** Quantile columns and CQR bands are still read off the raw
+distribution rather than through `transform_quantile_level`, so conformal
+intervals do not yet inherit the recalibration. That belongs with A-9 (ACI
+conformal), which is the next integrity item.

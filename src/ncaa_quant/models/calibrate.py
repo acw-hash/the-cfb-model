@@ -1,4 +1,19 @@
-"""Per-market probability calibration on OOF predictions (DESIGN §2.6 / §5.2).
+"""Per-market probability calibration — **diagnostics only** (DESIGN §2.6 / §5.2).
+
+.. warning::
+
+   This module is no longer the production calibration path. Amended §2.6 / §5.2
+   specify **distributional recalibration**: one monotone map on the PIT values of
+   the margin predictive CDF and one on the total, so that every derived market
+   probability recalibrates coherently. See
+   :mod:`ncaa_quant.models.pit_calibration`, which is what
+   ``ProductionPredictor`` uses.
+
+   Fitting independent maps per market breaks the §2.2 internal-consistency
+   guarantee: `P(home wins)` and `P(home covers 0)` are the same event, and
+   separate ML and ATS maps can move them in opposite directions. Reliability
+   diagrams and Cox slope/intercept from this module remain useful as
+   **diagnostics** — they are never a fitting target.
 
 Bounded calibrators only (Platt / beta / isotonic with minimum bin occupancy).
 A calibrator that would emit 0 or 1 is disqualified — never floored to 1e-6.

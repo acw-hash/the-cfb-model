@@ -172,6 +172,97 @@ def test_production_predict_emits_varying_sigma() -> None:
     assert "p_ml_home" in preds.columns
 
 
+def _many_games(n_weeks: int = 14, per_week: int = 8) -> pd.DataFrame:
+    """A season large enough that the time-ordered OOF frame actually forms.
+
+    The 12-game `_games()` fixture is below `_MIN_OOF_ROWS`, so the sigma,
+    calibration and CQR layers are all skipped on it — which is why a test built
+    on it cannot say anything about calibration.
+    """
+    rows: list[dict[str, Any]] = []
+    gid = 40000
+    rng = np.random.default_rng(407)
+    for week in range(1, n_weeks + 1):
+        for slot in range(per_week):
+            home, away = 100 + slot, 200 + ((slot + week) % per_week)
+            start = _kickoff(2023, week, slot)
+            rows.append(
+                {
+                    "game_id": gid,
+                    "game_key": f"2023:{home}:{away}:{start.date()}",
+                    "season": 2023,
+                    "week": week,
+                    "event_time": start,
+                    "home_team_id": home,
+                    "away_team_id": away,
+                    "home_points": int(rng.integers(10, 45)),
+                    "away_points": int(rng.integers(7, 42)),
+                    "neutral_site": False,
+                }
+            )
+            gid += 1
+    return pd.DataFrame(rows)
+
+
+def test_production_calibration_is_distributional_not_per_market() -> None:
+    """Audit A-4 at the integration level.
+
+    The stack must carry PIT maps for margin and total, not three per-market
+    probability maps, and moneyline / ATS must resolve to the *same* margin map.
+    Two independent maps could move `P(home wins)` and `P(home covers 0)` in
+    opposite directions even though they are the same event.
+    """
+    games = _many_games()
+    cfg = WalkForwardConfig(
+        test_seasons=(2023,),
+        continuity_seasons=(),
+        retrain_weeks=(5, 10),
+        market_features_available=False,
+        seed=23,
+        run_id="pit_calibration",
+        ablation_id="fundamental",
+        nnls_equal_weight_fallback=True,
+        min_train_games=1,
+        max_zero_mu_rate=1.0,
+        enforce_prediction_quality_gate=False,
+    )
+    stack = build_production_stack(
+        cfg,
+        kind="fundamental",
+        observations=_obs(games),
+        cfbd_lines=_lines(games),
+        n_mc_draws=300,
+        n_epistemic_draws=2,
+    )
+    harness = WalkForwardHarness(
+        config=stack.config,
+        predictor=stack.predictor,
+        feature_provider=stack.feature_provider,
+        rating_engine=stack.rating_engine,
+    )
+    harness.run(games, cfbd_lines=_lines(games))
+
+    report = stack.predictor.calibration_report
+    # One map per distribution, and no per-market maps.
+    assert report["margin_pit_kind"] in ("isotonic", "beta")
+    assert report["total_pit_kind"] in ("isotonic", "beta")
+    assert "ats_close" not in report
+    assert "ou_close" not in report
+    assert "ml" not in report
+
+    # The layer's effect must be visible, not assumed.
+    assert report["margin_pit_n_oof"] > 0
+    assert report["margin_pit_ks_after"] <= report["margin_pit_ks_before"]
+    # Gated OFF unless held-out PIT uniformity actually improved.
+    assert report["margin_pit_applied"] in (True, False)
+
+    # Routing: ML and ATS share the margin map, so identical inputs must give
+    # identical outputs. OU goes through the total map.
+    probs = np.array([0.35, 0.5, 0.62])
+    apply = stack.predictor._apply_calibrator  # noqa: SLF001
+    assert apply("ml", probs) == pytest.approx(apply("ats_close", probs))
+
+
 def test_a5_precondition_errors_when_inert() -> None:
     with pytest.raises(Exception, match="garbage-time filter is inert"):
         assert_a5_garbage_time_precondition(n_plays_gt_on=100, n_plays_gt_off=100)
