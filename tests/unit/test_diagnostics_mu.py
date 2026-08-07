@@ -300,7 +300,9 @@ def test_shifted_label_probe_and_signature_helpers(tmp_path: Path) -> None:
 
     shifted = _run_shifted_label_probe(skip_heavy=False)
     assert shifted["status"] == "ok"
+    assert shifted["null_is_invalid"] is True
     assert "model_mae" in shifted
+    assert "DIAGNOSTIC" in shifted["verdict"] or "CHEATER" in shifted["verdict"]
 
     frame = _toy_frame(24)
     neut = block_b_neutral_slopes(frame, games=frame)

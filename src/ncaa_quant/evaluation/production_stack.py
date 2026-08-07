@@ -41,7 +41,11 @@ from ncaa_quant.distribution.bivariate import (
     estimate_rho,
     residuals_from_predictions,
 )
-from ncaa_quant.distribution.key_numbers import KeyNumberKernel, fit_key_number_kernel
+from ncaa_quant.distribution.key_numbers import (
+    ConditionalKeyNumberKernel,
+    KeyNumberKernel,
+    fit_key_number_kernel,
+)
 from ncaa_quant.distribution.simulate import (
     DEFAULT_N_DRAWS,
     default_epistemic_draws,
@@ -819,7 +823,9 @@ class ProductionEnsemblePredictor:
         default=None, init=False, repr=False
     )
     _cqr: CQRResult | None = field(default=None, init=False, repr=False)
-    _key_kernel: KeyNumberKernel | None = field(default=None, init=False, repr=False)
+    _key_kernel: KeyNumberKernel | ConditionalKeyNumberKernel | None = field(
+        default=None, init=False, repr=False
+    )
     _rho: float = field(default=0.0, init=False, repr=False)
     _calibration_report: dict[str, Any] = field(default_factory=dict, init=False, repr=False)
 

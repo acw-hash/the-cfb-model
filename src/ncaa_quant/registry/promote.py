@@ -117,6 +117,12 @@ class ComparisonReport:
     created_at: str
     reason: str = ""
     override_record: dict[str, Any] | None = None
+    #: Base (pre-multiplicity) α; usually :data:`PROMOTION_ALPHA`.
+    alpha_base: float = PROMOTION_ALPHA
+    #: 1-based attempt index within the calendar year (audit A-11).
+    attempt_index: int = 1
+    #: Attempts already recorded this year *before* this one.
+    prior_attempts_this_year: int = 0
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize for JSON artifact."""
@@ -133,6 +139,9 @@ class ComparisonReport:
             "leakage_passed": self.leakage_passed,
             "force_override": self.force_override,
             "alpha": self.alpha,
+            "alpha_base": self.alpha_base,
+            "attempt_index": self.attempt_index,
+            "prior_attempts_this_year": self.prior_attempts_this_year,
             "created_at": self.created_at,
             "reason": self.reason,
             "override_record": self.override_record,
@@ -169,7 +178,10 @@ class ComparisonReport:
             f"<h1>Promotion comparison — {verdict}</h1>"
             f"<p>candidate=v{self.candidate_version} "
             f"champion={'v' + str(self.champion_version) if self.champion_version else 'none'} "
-            f"seasons={self.seasons} alpha={self.alpha}</p>"
+            f"seasons={self.seasons} "
+            f"alpha_base={self.alpha_base} attempt={self.attempt_index} "
+            f"alpha_adjusted={self.alpha} "
+            f"(Bonferroni α₀/k; prior_attempts_this_year={self.prior_attempts_this_year})</p>"
             f"<p class='{'pass' if self.calibration_passed else 'fail'}'>"
             f"calibration slope={self.calibration_slope:.4f} "
             f"band=[{self.calibration_slope_low}, {self.calibration_slope_high}] "
@@ -252,13 +264,22 @@ def evaluate_gate(
     n_boot: int = DEFAULT_N_BOOT,
     seed: int = 0,
     require_metric_significance: bool = True,
+    attempt_index: int = 1,
+    prior_attempts_this_year: int = 0,
+    alpha_base: float | None = None,
 ) -> ComparisonReport:
-    """Evaluate the pre-registered promotion gate (no side effects)."""
+    """Evaluate the pre-registered promotion gate (no side effects).
+
+    ``alpha`` is the threshold actually applied (Bonferroni-adjusted when the
+    caller consulted the promotion ledger). ``alpha_base`` records the
+    pre-adjustment value for the comparison report.
+    """
     by_name = {m.name: m for m in metrics}
     missing = [name for name in REQUIRED_METRICS if name not in by_name]
     if missing:
         raise PromotionError(f"promotion gate missing required metrics: {missing}")
 
+    base = float(alpha) if alpha_base is None else float(alpha_base)
     results: list[MetricTestResult] = []
     for name in REQUIRED_METRICS:
         m = by_name[name]
@@ -311,6 +332,11 @@ def evaluate_gate(
         )
     if not leakage_gate_passed:
         reasons.append("leakage gate failed")
+    if attempt_index > 1:
+        reasons.append(
+            f"multiplicity: attempt {attempt_index} this year; "
+            f"α adjusted {base} → {alpha} (Bonferroni α₀/k)"
+        )
     if passed and require_metric_significance:
         reasons.append("all pre-registered gates passed")
     elif passed:
@@ -329,6 +355,9 @@ def evaluate_gate(
         leakage_passed=bool(leakage_gate_passed),
         force_override=False,
         alpha=float(alpha),
+        alpha_base=base,
+        attempt_index=int(attempt_index),
+        prior_attempts_this_year=int(prior_attempts_this_year),
         created_at=datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
         reason="; ".join(reasons),
     )
@@ -351,6 +380,7 @@ def promote(
     n_boot: int = DEFAULT_N_BOOT,
     seed: int = 0,
     to_challenger_first: bool = True,
+    apply_multiplicity: bool = True,
 ) -> PromotionResult:
     """Run the gate and promote or archive.
 
@@ -360,6 +390,10 @@ def promote(
         Human override only. Config cannot set this. Writes an override record
         and promotes even when the gate fails. ``force_reason`` and
         ``force_actor`` are required when ``force=True``.
+    apply_multiplicity:
+        When True (default), consult the registry's promotion ledger and apply
+        Bonferroni ``α₀ / k`` for the k-th attempt this calendar year (audit
+        A-11). The attempt is recorded whether the gate passes or fails.
     """
     if force and (not force_reason.strip() or not force_actor.strip()):
         raise PromotionError("--force requires non-empty force_reason and force_actor")
@@ -376,6 +410,16 @@ def promote(
     except NoChampionError:
         champ_version = None
 
+    from ncaa_quant.registry.promotion_ledger import PromotionLedger
+
+    ledger = PromotionLedger(registry.root)
+    alpha_base = float(alpha)
+    if apply_multiplicity:
+        attempt_index, alpha_adj = ledger.planned_alpha(base_alpha=alpha_base)
+        prior = attempt_index - 1
+    else:
+        attempt_index, alpha_adj, prior = 1, alpha_base, 0
+
     report = evaluate_gate(
         metrics,
         seasons=seasons,
@@ -385,7 +429,10 @@ def promote(
         champion_version=champ_version,
         calibration_slope_low=calibration_slope_low,
         calibration_slope_high=calibration_slope_high,
-        alpha=alpha,
+        alpha=alpha_adj,
+        alpha_base=alpha_base,
+        attempt_index=attempt_index,
+        prior_attempts_this_year=prior,
         n_boot=n_boot,
         seed=seed,
         require_metric_significance=champ_version is not None,
@@ -415,9 +462,24 @@ def promote(
             leakage_passed=report.leakage_passed,
             force_override=True,
             alpha=report.alpha,
+            alpha_base=report.alpha_base,
+            attempt_index=report.attempt_index,
+            prior_attempts_this_year=report.prior_attempts_this_year,
             created_at=datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
             reason=f"FORCE override by {force_actor}: {force_reason}",
             override_record=override_record,
+        )
+
+    if apply_multiplicity:
+        ledger.record(
+            candidate_version=candidate_version,
+            champion_version=champ_version,
+            alpha_base=report.alpha_base,
+            alpha_adjusted=report.alpha,
+            attempt_index=report.attempt_index,
+            passed=bool(report.passed),
+            force_override=bool(report.force_override),
+            reason=report.reason,
         )
 
     html = report.to_html()
@@ -433,6 +495,8 @@ def promote(
             "promotion_blocked",
             candidate=candidate_version,
             reason=report.reason,
+            attempt_index=report.attempt_index,
+            alpha_adjusted=report.alpha,
         )
         return PromotionResult(
             report=report,

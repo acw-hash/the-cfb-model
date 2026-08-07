@@ -21,7 +21,10 @@ import pandas as pd  # type: ignore[import-untyped]
 from scipy import stats  # type: ignore[import-untyped]
 
 from ncaa_quant.distribution.bivariate import BivariateParams
-from ncaa_quant.distribution.key_numbers import KeyNumberKernel, sample_discrete_margins
+from ncaa_quant.distribution.key_numbers import (
+    KernelLike,
+    sample_discrete_margins,
+)
 from ncaa_quant.utils.seeding import set_global_seed
 
 DEFAULT_N_DRAWS: int = 100_000
@@ -119,7 +122,7 @@ def sample_bivariate_normal(
 def sample_joint(
     params: BivariateParams,
     *,
-    kernel: KeyNumberKernel | None = None,
+    kernel: KernelLike | None = None,
     n_draws: int = DEFAULT_N_DRAWS,
     seed: int = 0,
 ) -> JointDraws:

@@ -374,19 +374,22 @@ def test_information_set_audit_catches_leaky_provider() -> None:
     del leaky
 
 
-def test_shifted_label_hook_placeholder_at_chance() -> None:
+def test_shifted_label_hook_is_diagnostic_only() -> None:
+    """A-8: scoring at chance on this hook is not a cleanliness gate.
+
+    The null is invalid (strength persists), so ``passed`` is meaningless.
+    The function survives only as a cheater detector — see the next test.
+    """
     games = build_multi_season_games(seasons=(2022, 2023), weeks=(1, 2, 3), games_per_week=3)
     history = build_team_history(games)
     provider = PitMeanMarginFeatureProvider(history)
     predictor = LeagueAverageMarginPredictor()
-    # Fit on 2022 so mean is non-trivial.
     lab = games.loc[games["season"] == 2022].copy()
     lab["realized_margin"] = lab["home_points"].astype(float) - lab["away_points"].astype(float)
     lab["realized_total"] = lab["home_points"].astype(float) + lab["away_points"].astype(float)
     predictor.fit(pd.DataFrame({"game_id": lab["game_id"]}), lab)
 
     past = games.loc[games["season"] == 2022].copy()
-    # Shift as_of to after the season — features include postgame facts.
     shifted_as_of = datetime(2023, 1, 15, tzinfo=UTC)
     result = run_shifted_label_test(
         predictor,
@@ -397,10 +400,12 @@ def test_shifted_label_hook_placeholder_at_chance() -> None:
         tolerance=0.05,
     )
     assert result.n > 0
-    assert result.passed, result.detail
+    assert result.null_is_invalid
+    # Do not assert result.passed — that is the retired gate.
 
 
 def test_shifted_label_hook_detects_cheater() -> None:
+    """Still useful: a model that reads leaked outcomes will beat chance here."""
     games = build_multi_season_games(seasons=(2022,), weeks=(1, 2, 3), games_per_week=4)
     provider = PitMeanMarginFeatureProvider(build_team_history(games))
     cheater = CheatingPredictor()
@@ -414,6 +419,7 @@ def test_shifted_label_hook_detects_cheater() -> None:
         tolerance=0.05,
     )
     assert result.n > 0
+    assert result.null_is_invalid
     assert not result.passed, result.detail
     assert result.model_score < result.chance_score * 0.5
 

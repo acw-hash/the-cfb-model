@@ -29,6 +29,12 @@ from ncaa_quant.registry.promote import (
     promote_from_mlflow_runs,
     rollback,
 )
+from ncaa_quant.registry.promotion_ledger import (
+    LedgerEntry,
+    LedgerError,
+    PromotionLedger,
+    bonferroni_alpha,
+)
 from ncaa_quant.registry.resolve import (
     load_champion_feature_signature,
     load_champion_manifest,
@@ -60,12 +66,16 @@ __all__ = [
     "ModelStage",
     "ModelVersionRecord",
     "NoChampionError",
+    "LedgerEntry",
+    "LedgerError",
     "PromotionError",
+    "PromotionLedger",
     "PromotionResult",
     "ProvenanceReport",
     "RegistryError",
     "RunManifest",
     "TrackingSession",
+    "bonferroni_alpha",
     "build_manifest",
     "evaluate_gate",
     "load_champion_feature_signature",

@@ -1817,7 +1817,7 @@ def _partial_l0_l7(preds: pd.DataFrame, elo_by_game: Mapping[int, float]) -> dic
 
 
 def _run_shifted_label_probe(*, skip_heavy: bool) -> dict[str, Any]:
-    """B6: Task 16 shifted-label test on a synthetic production stack."""
+    """B6: shifted-label diagnostic (null invalid — audit A-8). Cheater detector only."""
     if skip_heavy:
         return {
             "status": "SKIPPED",
@@ -1910,6 +1910,7 @@ def _run_shifted_label_probe(*, skip_heavy: bool) -> dict[str, Any]:
         beats_chance = bool(model_mae < lo)
         return {
             "status": "ok",
+            "null_is_invalid": True,
             "model_mae": model_mae,
             "chance_mae": chance_mae,
             "band": [lo, hi],
@@ -1918,10 +1919,16 @@ def _run_shifted_label_probe(*, skip_heavy: bool) -> dict[str, Any]:
             "n": int(len(merged)),
             "within_chance_band": within,
             "beats_chance": beats_chance,
+            # At-chance is not a pass: strength persistence makes the null false.
+            # Beating chance remains a useful cheater signal.
             "verdict": (
-                "PLUMBING_BUG_beats_chance"
+                "CHEATER_SIGNAL_beats_chance"
                 if beats_chance
-                else ("PASS_at_chance" if within else "FAIL_worse_than_chance_band")
+                else (
+                    "DIAGNOSTIC_at_chance_not_a_gate"
+                    if within
+                    else "DIAGNOSTIC_worse_than_chance_band"
+                )
             ),
         }
     except Exception as exc:  # noqa: BLE001

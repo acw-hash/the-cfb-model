@@ -262,7 +262,10 @@ def win_equals_cover_at_zero(
        guard the old Φ-only test could never fire.
     """
     from ncaa_quant.distribution.bivariate import assemble_bivariate
-    from ncaa_quant.distribution.key_numbers import KeyNumberKernel
+    from ncaa_quant.distribution.key_numbers import (
+        ConditionalKeyNumberKernel,
+        KeyNumberKernel,
+    )
     from ncaa_quant.distribution.simulate import (
         moneyline_probs,
         sample_joint,
@@ -285,8 +288,10 @@ def win_equals_cover_at_zero(
             "path": "mc",
         }
 
-    if kernel is not None and not isinstance(kernel, KeyNumberKernel):
-        msg = "kernel must be a KeyNumberKernel or None"
+    if kernel is not None and not isinstance(
+        kernel, (KeyNumberKernel, ConditionalKeyNumberKernel)
+    ):
+        msg = "kernel must be a KeyNumberKernel, ConditionalKeyNumberKernel, or None"
         raise TypeError(msg)
 
     # Cap MC batch size — full walk-forward tables are thousands of rows.

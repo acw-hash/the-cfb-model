@@ -1,8 +1,15 @@
-"""Split conformal / CQR layer on quantile heads (DESIGN §2.6).
+"""Conformal / CQR layer on quantile heads (DESIGN §2.6, audit A-9).
 
-Conformalized Quantile Regression (Romano et al.) wrapped on the LightGBM
-quantile set, using the trailing 2 seasons as the calibration set. Reports
-empirical coverage vs nominal at 50% / 80% / 95%.
+Conformalized Quantile Regression (Romano et al.) on the LightGBM quantile set,
+initialized from the trailing 2 seasons as a split-conformal calibration set.
+
+Coverage language (A-9): split conformal's finite-sample guarantee requires
+exchangeability between calibration and test points. Season-over-season drift
+(rule changes, portal-era shift, scoring-environment movement) violates that,
+so the layer provides **approximate** coverage under mild drift — it does not
+deliver an exchangeability-based guarantee in production. Production uses
+Adaptive Conformal Inference (Gibbs & Candès): online α adjustment that tracks
+realized coverage, with the trailing-2-season split fit as the initializer.
 """
 
 from __future__ import annotations
@@ -242,4 +249,164 @@ def coverage_table(cqr: CQRResult) -> pd.DataFrame:
         }
         for r in cqr.coverage.values()
     ]
+    return pd.DataFrame(rows)
+
+
+# ---------------------------------------------------------------------------
+# Adaptive Conformal Inference (production variant)
+# ---------------------------------------------------------------------------
+
+
+DEFAULT_ACI_GAMMA: float = 0.005
+
+
+@dataclass
+class AdaptiveCQR:
+    """Online-α CQR: split-conformal initializer + ACI updates (A-9).
+
+    Holds the calibration conformity scores from :func:`fit_cqr` and an online
+    miscoverage level ``alpha_t``. Each observation updates
+
+        α_{t+1} = clip(α_t + γ · (α_target − err_t), 0, 1)
+
+    where ``err_t`` is 1 if the interval missed and 0 otherwise. The interval
+    threshold is the ``(1 − α_t)``-quantile of the frozen calibration scores
+    (with the usual ``ceil((n+1)(1-α))/n`` finite-sample index).
+    """
+
+    target: TargetKind
+    nominal: float
+    target_alpha: float
+    gamma: float
+    alpha_t: float
+    calibration_scores: np.ndarray
+    calibration_seasons: tuple[int, ...]
+    n_updates: int = 0
+    n_misses: int = 0
+    meta: dict[str, Any] = field(default_factory=dict)
+
+    @property
+    def empirical_coverage(self) -> float:
+        if self.n_updates == 0:
+            return float("nan")
+        return 1.0 - float(self.n_misses) / float(self.n_updates)
+
+    def threshold(self) -> float:
+        """Current CQR score threshold from ``alpha_t`` and calibration scores."""
+        scores = np.asarray(self.calibration_scores, dtype=float)
+        n = int(scores.size)
+        if n < 1:
+            raise ConformalError("AdaptiveCQR has no calibration scores")
+        alpha = float(np.clip(self.alpha_t, 0.0, 1.0))
+        # Same finite-sample index as fit_cqr; α→0 → use the max score.
+        q_level = min(1.0, np.ceil((n + 1) * (1.0 - alpha)) / n)
+        return float(np.quantile(scores, q_level, method="higher"))
+
+    def interval(self, q_lo: float, q_hi: float) -> tuple[float, float]:
+        """Widen raw quantile bounds by the current threshold."""
+        thr = self.threshold()
+        return float(q_lo) - thr, float(q_hi) + thr
+
+    def update(self, y: float, q_lo: float, q_hi: float) -> dict[str, float]:
+        """Observe one outcome, return coverage diagnostics, advance ``alpha_t``."""
+        lo, hi = self.interval(q_lo, q_hi)
+        covered = bool(lo <= float(y) <= hi)
+        err = 0.0 if covered else 1.0
+        self.n_updates += 1
+        self.n_misses += int(err)
+        self.alpha_t = float(
+            np.clip(
+                self.alpha_t + float(self.gamma) * (self.target_alpha - err),
+                0.0,
+                1.0,
+            )
+        )
+        return {
+            "covered": float(covered),
+            "err": err,
+            "alpha_t": self.alpha_t,
+            "lo": lo,
+            "hi": hi,
+            "threshold": self.threshold(),
+        }
+
+
+def fit_adaptive_cqr(
+    frame: pd.DataFrame,
+    *,
+    target: TargetKind,
+    nominal: float = 0.8,
+    label_column: str | None = None,
+    season_column: str = "season",
+    calibration_seasons: Sequence[int] | None = None,
+    n_trailing: int = DEFAULT_CALIBRATION_SEASONS,
+    gamma: float = DEFAULT_ACI_GAMMA,
+    quantiles: Sequence[float] = QUANTILES,
+) -> AdaptiveCQR:
+    """Initialize ACI from a trailing-season split-conformal fit.
+
+    ``alpha_t`` starts at the nominal miscoverage ``1 - nominal``. Subsequent
+    calls to :meth:`AdaptiveCQR.update` track realized coverage online.
+    """
+    if float(nominal) not in NOMINAL_TO_QUANTILES:
+        msg = f"unsupported nominal level {nominal}; expected one of {list(NOMINAL_TO_QUANTILES)}"
+        raise ConformalError(msg)
+
+    cqr = fit_cqr(
+        frame,
+        target=target,
+        label_column=label_column,
+        season_column=season_column,
+        calibration_seasons=calibration_seasons,
+        n_trailing=n_trailing,
+        nominal_levels=(float(nominal),),
+        quantiles=quantiles,
+    )
+
+    y_col = label_column or ("realized_margin" if target == "margin" else "realized_total")
+    q_lo_v, q_hi_v = NOMINAL_TO_QUANTILES[float(nominal)]
+    lo_col, hi_col = _q_cols(target, q_lo_v, q_hi_v)
+    calib = frame.loc[frame[season_column].isin(cqr.calibration_seasons)]
+    y = np.asarray(calib[y_col], dtype=float)
+    lo = np.asarray(calib[lo_col], dtype=float)
+    hi = np.asarray(calib[hi_col], dtype=float)
+    mask = _finite_mask(y, lo, hi)
+    scores = conformity_scores(y[mask], lo[mask], hi[mask])
+    target_alpha = 1.0 - float(nominal)
+
+    return AdaptiveCQR(
+        target=target,
+        nominal=float(nominal),
+        target_alpha=target_alpha,
+        gamma=float(gamma),
+        alpha_t=target_alpha,
+        calibration_scores=scores,
+        calibration_seasons=cqr.calibration_seasons,
+        meta={
+            "initializer": "split_cqr",
+            "split_threshold": cqr.score_thresholds[float(nominal)],
+            "n_calib": int(scores.size),
+            "gamma": float(gamma),
+        },
+    )
+
+
+def run_aci_stream(
+    aci: AdaptiveCQR,
+    y: np.ndarray | Sequence[float],
+    q_lo: np.ndarray | Sequence[float],
+    q_hi: np.ndarray | Sequence[float],
+) -> pd.DataFrame:
+    """Replay a stream of observations through ACI; return per-row diagnostics."""
+    yt = np.asarray(y, dtype=float).ravel()
+    lo = np.asarray(q_lo, dtype=float).ravel()
+    hi = np.asarray(q_hi, dtype=float).ravel()
+    if yt.shape != lo.shape or yt.shape != hi.shape:
+        msg = "y/q_lo/q_hi length mismatch"
+        raise ConformalError(msg)
+    rows: list[dict[str, float]] = []
+    for i in range(yt.size):
+        if not (np.isfinite(yt[i]) and np.isfinite(lo[i]) and np.isfinite(hi[i])):
+            continue
+        rows.append(aci.update(float(yt[i]), float(lo[i]), float(hi[i])))
     return pd.DataFrame(rows)

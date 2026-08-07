@@ -349,3 +349,74 @@ measurement update, and the end-to-end shift-invariance acceptance test from
 Â§15 item 14. Runtime needs checking against the "<5 min for 2014-2025" criterion:
 roughly 540 dims means a 540x540 covariance and a rank-5 update per game, which
 should be comfortable, but it needs measuring rather than assuming.
+
+## A-8 — Leakage suite with well-posed nulls (done 2026-08-07)
+
+**What was wrong.** The shifted-label test asserted that future features predicting
+past games must score at chance. Strength persists, so a November rating is
+legitimately informative about a September game. A leak-free system fails that
+null, inviting threshold-fiddling.
+
+**What it does now.**
+
+- `evaluation/leakage.py` implements three falsifiable checks:
+  1. Within-week label permutation (train on shuffled labels ? OOS at chance).
+  2. Planted prophecy (outcome-derived feature must be caught).
+  3. As-of sensitivity (features must change when `as_of` moves).
+- `tests/leakage/test_shifted_label.py` deleted.
+- `run_shifted_label_test` retained as a **cheater detector only**, with
+  `null_is_invalid=True`. Scoring at chance is not a gate; beating chance is still
+  worth investigating.
+- Production leakage test (`test_task22b`) gates on information-set + prophecy
+  audit; shifted-label is diagnostic.
+
+**Verification.** `tests/leakage/test_label_permutation.py` plus updated walkforward /
+task22b / diagnostics tests. Targeted suite: 63 passed.
+
+## A-7 — Conditional key-number kernel (done 2026-08-07)
+
+**What was wrong.** A single pooled residual-offset kernel over- or under-allocated
+key-number mass exactly where ATS pricing is most sensitive. Pick''em games land
+on ±3 far more often than 20-point spreads; the pooled fit cannot express that.
+
+**What it does now.** `fit_key_number_kernel` returns a
+`ConditionalKeyNumberKernel` by default, with `|µ|` buckets at edges
+`(0, 3.5, 7.5, 14.5, 21.5, 8)`. Thin buckets fall back to the pooled fit.
+`discrete_margin_pmf` / `sample_discrete_margins` resolve the bucket for each
+game''s µ. Pass `mu_abs_edges=None` for the pre-A-7 pooled behaviour.
+`validate_key_number_kernel` compares empirical exact-margin frequencies to
+kernel output by predicted-spread bucket — the A-7 acceptance check.
+
+**Verification.** `tests/unit/test_conditional_key_numbers.py` plants a world
+where pick''em piles on +3 and blowouts on +14; the conditional fit separates
+them and beats the pooled L1 error on the validation report.
+
+## A-11 (part 2) — Promotion ledger + Bonferroni a (done 2026-08-07)
+
+**What was wrong.** The gate re-tested at a = 0.10 with no memory of prior looks.
+Repeated mid-season / offseason attempts make spurious promotion near-certain.
+
+**What it does now.** `registry/promotion_ledger.py` is an append-only JSONL
+ledger under the registry root. `promote()` (default) consults it, applies
+`a_adj = a0 / k` for the k-th attempt this calendar year, records every attempt
+(pass or fail), and prints attempt count + adjusted threshold on the comparison
+report. `apply_multiplicity=False` remains for cold-start / test seeding.
+
+**Verification.** `tests/unit/test_promotion_ledger.py` — Bonferroni arithmetic,
+ledger integrity, a tightening across real promotes, and a pinned p=0.06 case
+that passes at a=0.10 but fails at a=0.05.
+
+## A-9 — Adaptive Conformal Inference (done 2026-08-07)
+
+**What was wrong.** The module claimed a "distribution-free guarantee layer".
+Split conformal needs exchangeability; season-over-season drift violates it.
+
+**What it does now.** Module docstring states approximate coverage under mild
+drift. `AdaptiveCQR` / `fit_adaptive_cqr` initialize from the trailing-2-season
+split CQR fit and update `a_t ? clip(a_t + ?(a_target - err_t))` online.
+Misses lower a (widen); persistent coverage raises a (tighten).
+`run_aci_stream` replays a holdout for diagnostics.
+
+**Not wired into** `ProductionEnsemblePredictor.predict` yet — that lands with
+the Phase 4 path where PIT-recalibrated quantiles and ACI should share one
+interval path (A-4 note).

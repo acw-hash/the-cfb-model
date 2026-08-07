@@ -21,6 +21,10 @@ from ncaa_quant.evaluation.production_stack import (
     assert_feature_signature,
     build_production_stack,
 )
+from ncaa_quant.evaluation.leakage import (
+    assert_no_prophecy_features,
+    audit_prophecy_features,
+)
 from ncaa_quant.evaluation.walkforward import (
     WalkForwardConfig,
     WalkForwardError,
@@ -573,7 +577,8 @@ def test_plan_task23_includes_wall_clock() -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_production_infoset_determinism_shifted_label() -> None:
+def test_production_infoset_determinism_and_leakage_suite() -> None:
+    """A-8: information-set + prophecy audit gate; shifted-label is diagnostic only."""
     games = _synth_games(weeks=(1, 2, 3, 4, 5))
     cfg = WalkForwardConfig(
         test_seasons=(2023,),
@@ -618,7 +623,6 @@ def test_production_infoset_determinism_shifted_label() -> None:
     assert audit.n_week_points >= 4
     assert audit.passed, audit.mismatches[:3]
 
-    # Fit predictor on early weeks so shifted-label has a real model.
     early = games.loc[games["week"] < 5]
     labels = early.copy()
     labels["realized_margin"] = labels["home_points"].astype(float) - labels["away_points"].astype(
@@ -636,6 +640,11 @@ def test_production_infoset_determinism_shifted_label() -> None:
     )
     stack.predictor.fit(feats, labels)
 
+    # Gate: honest features must not be outcome copies (prophecy audit).
+    prophecy = audit_prophecy_features(feats, labels)
+    assert_no_prophecy_features(prophecy)
+
+    # Diagnostic only — null is invalid per audit A-8 / amended §14.
     past = games.loc[games["week"] <= 2].copy()
     shifted_as_of = datetime(2024, 1, 15, tzinfo=UTC)
     shifted = run_shifted_label_test(
@@ -648,8 +657,8 @@ def test_production_infoset_determinism_shifted_label() -> None:
         tolerance=0.25,
     )
     assert shifted.n > 0
-    print(f"SHIFTED_LABEL_SCORE={shifted.model_score} CHANCE={shifted.chance_score}")
-    assert shifted.passed, (
-        f"shifted-label score={shifted.model_score} chance={shifted.chance_score} "
-        f"detail={shifted.detail}"
+    assert shifted.null_is_invalid
+    print(
+        f"SHIFTED_LABEL_DIAGNOSTIC model={shifted.model_score} "
+        f"chance={shifted.chance_score} (not a gate)"
     )

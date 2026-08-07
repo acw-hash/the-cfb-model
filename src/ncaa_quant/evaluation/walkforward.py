@@ -959,11 +959,25 @@ class InformationSetAuditResult:
 
 @dataclass
 class ShiftedLabelResult:
-    """Outcome of the §14 shifted-label leakage hook.
+    """Outcome of the retired shifted-label hook — **diagnostic only**.
 
-    A model given *future* features to predict *past* labels should score
-    approximately at chance. ``passed`` is True when the model's score is not
-    meaningfully better than the chance baseline (within ``tolerance``).
+    .. warning::
+
+       The null this measures is wrong, and §14 as amended deletes it (audit A-8).
+       "Future features must not predict past games above chance" is false: team
+       strength persists, so a November rating is legitimately informative about a
+       September game. A leak-free system fails this test, and the only ways to
+       make it pass are to loosen the threshold until it means nothing or to break
+       the feature pipeline.
+
+       ``passed`` is therefore **not** evidence of anything and must not gate
+       promotion. Use :mod:`ncaa_quant.evaluation.leakage` — within-week label
+       permutation, planted prophecy, and as-of sensitivity — which are
+       falsifiable for the right reason.
+
+       The one still-valid use is as a *cheater detector*: a model that reads
+       leaked outcomes will beat chance here, so a large improvement remains
+       informative even though scoring at chance proves nothing.
     """
 
     model_score: float
@@ -973,6 +987,8 @@ class ShiftedLabelResult:
     tolerance: float
     passed: bool
     detail: str = ""
+    #: Marks that ``passed`` came from a null the spec deleted.
+    null_is_invalid: bool = True
 
 
 # ---------------------------------------------------------------------------
@@ -1558,12 +1574,16 @@ def run_shifted_label_test(
     tolerance: float = 0.05,
     relative: bool = True,
 ) -> ShiftedLabelResult:
-    """Score ``predictor`` on future-features → past-labels; compare to chance.
+    """Score ``predictor`` on future-features → past-labels. **Diagnostic only.**
 
-    Per DESIGN §14: a model given future features to predict past games must
-    score approximately at chance. The hook builds features at
-    ``shifted_as_of`` (after the games), predicts, and fails when the model
-    beats the constant-baseline MAE by more than ``tolerance``.
+    Retained as a cheater detector, not as a gate: see
+    :class:`ShiftedLabelResult` for why the underlying null was deleted from §14
+    (audit A-8). A model that beats chance here is worth investigating; one that
+    scores at chance has demonstrated nothing.
+
+    The hook builds features at ``shifted_as_of`` (after the games), predicts, and
+    reports whether the model beat the constant-baseline MAE by more than
+    ``tolerance``.
 
     Chance baseline defaults to predicting the sample mean of the shifted
     labels (best constant predictor). The placeholder (ignores features)

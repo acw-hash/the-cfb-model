@@ -12,12 +12,16 @@ from ncaa_quant.distribution.bivariate import (
     residuals_from_predictions,
 )
 from ncaa_quant.distribution.key_numbers import (
+    DEFAULT_MU_ABS_EDGES,
+    ConditionalKeyNumberKernel,
+    KeyNumberBucketValidation,
     KeyNumberError,
     KeyNumberKernel,
     continuous_integer_mass,
     discrete_margin_pmf,
     fit_key_number_kernel,
     sample_discrete_margins,
+    validate_key_number_kernel,
 )
 from ncaa_quant.distribution.simulate import (
     DEFAULT_EPISTEMIC_DRAWS,
@@ -54,6 +58,9 @@ __all__ = [
     "BivariateParams",
     "EpistemicMixture",
     "JointDraws",
+    "DEFAULT_MU_ABS_EDGES",
+    "ConditionalKeyNumberKernel",
+    "KeyNumberBucketValidation",
     "KeyNumberError",
     "KeyNumberKernel",
     "MarketProbabilities",
@@ -86,4 +93,5 @@ __all__ = [
     "total_probs",
     "two_way_probs_sum_to_one",
     "two_way_side_prob",
+    "validate_key_number_kernel",
 ]
