@@ -53,6 +53,7 @@ from ncaa_quant.ratings.state_space import (
     GaussianState,
     StateSpaceConfig,
     end_of_season_ratings,
+    run_filter,
 )
 from ncaa_quant.utils.seeding import set_global_seed
 from ncaa_quant.utils.timeutils import to_utc
@@ -82,6 +83,11 @@ _ROSTER_COLS: Final[tuple[str, ...]] = (
 
 MissingPolicy = Literal["widen"]  # only honest policy per §9.6 / Task 15
 
+#: The non-circular fitting target: late-season posterior from a diffuse run.
+LATE_TARGET_COLUMN: Final[str] = "late_rating"
+#: Targets the preseason prior helped produce, so they cannot validate it (A-2).
+CIRCULAR_TARGET_COLUMNS: Final[frozenset[str]] = frozenset({"early_rating"})
+
 
 @dataclass(frozen=True)
 class PriorConfig:
@@ -108,6 +114,12 @@ class PriorConfig:
     talent_rating_scale: float = 0.08
     returning_elasticity: float = 1.0
     fit_intercept: bool = True
+    # Late-season cutoff for the non-circular fitting target (audit A-2).
+    late_n_games: int = 8
+    # Initial variance for the diffuse filter run that produces that target.
+    # Large enough that the preseason prior mean is effectively ignored, so the
+    # late posterior reflects observed games rather than the prior being fit.
+    diffuse_prior_var: float = 100.0
 
 
 @dataclass(frozen=True)
@@ -123,6 +135,14 @@ class FittedPriorWeights:
     predictor_names: tuple[str, ...] = PREDICTOR_NAMES
     intercept: float = 0.0
     intercept_se: float = 0.0
+    #: Which target these weights were fit against. Recorded because an R² is
+    #: uninterpretable without it: a high R² against a prior-dominated target
+    #: means the fit is circular, not that the priors forecast well (audit A-2).
+    target_column: str = LATE_TARGET_COLUMN
+
+    @property
+    def target_is_circular(self) -> bool:
+        return self.target_column in CIRCULAR_TARGET_COLUMNS
 
     def weight_vector(self) -> np.ndarray:
         return np.array([self.weights[n] for n in self.predictor_names], dtype=float)
@@ -428,6 +448,126 @@ def early_season_ratings(
     return pd.DataFrame(rows)
 
 
+def late_season_ratings(
+    history: pd.DataFrame,
+    season: int,
+    *,
+    dim: str,
+    n_games: int = 8,
+    kind: str = "postgame",
+) -> pd.DataFrame:
+    """Per-team rating after at least ``n_games`` observations of ``season``.
+
+    This is the **non-circular** fitting target (audit A-2), and it is only valid
+    when ``history`` comes from a diffuse-initialization filter run — see
+    :func:`diffuse_late_ratings`. Teams with fewer than ``n_games`` games are
+    dropped rather than being scored on a still-prior-dominated posterior.
+
+    Returns ``team_id``, ``season``, ``late_rating``, ``n_games_used``.
+    """
+    empty = pd.DataFrame(columns=["team_id", "season", "late_rating", "n_games_used"])
+    if history.empty:
+        return empty
+    sub = history.loc[(history["season"] == season) & (history["kind"] == kind)].copy()
+    if sub.empty:
+        sub = history.loc[history["season"] == season].copy()
+    if sub.empty or dim not in sub.columns:
+        return empty
+
+    sub["event_time"] = [to_utc(pd.Timestamp(ts).to_pydatetime()) for ts in sub["event_time"]]
+    sub = sub.sort_values(["team_id", "event_time", "game_id"], kind="mergesort")
+    rows: list[dict[str, Any]] = []
+    for tid, grp in sub.groupby("team_id", sort=False):
+        if len(grp) < int(n_games):
+            continue
+        rows.append(
+            {
+                "team_id": int(tid) if _can_int(tid) else tid,
+                "season": int(season),
+                "late_rating": float(grp.iloc[-1][dim]),
+                "n_games_used": int(len(grp)),
+            }
+        )
+    return pd.DataFrame(rows) if rows else empty
+
+
+def diffuse_filter_config(config: PriorConfig | None = None) -> StateSpaceConfig:
+    """A :class:`StateSpaceConfig` whose initial state carries almost no information.
+
+    The point of the diffuse run (audit A-2) is to produce a target the preseason
+    prior had no hand in. With ``prior_var`` set very wide the filter's opening
+    position is essentially "I know nothing", so by game 8 the posterior reflects
+    the season's observations rather than the prior weights being estimated.
+    """
+    cfg = config or PriorConfig()
+    return StateSpaceConfig(state_dims=cfg.state_dims, prior_var=float(cfg.diffuse_prior_var))
+
+
+def diffuse_late_ratings(
+    observations: pd.DataFrame,
+    *,
+    seasons: Sequence[int],
+    dim: str,
+    config: PriorConfig | None = None,
+    fbs_team_ids: set[Any] | None = None,
+) -> pd.DataFrame:
+    """Late-season ratings from a diffuse-initialization filter run (audit A-2).
+
+    Runs the filter with **no preseason states** and a diffuse initial covariance,
+    then takes each team's posterior after at least ``late_n_games`` games. Because
+    the prior never entered this run, regressing these ratings on the preseason
+    predictors is an honest test of whether those predictors forecast anything.
+
+    Fitting against *early* ratings from a prior-initialized run cannot do that:
+    the early posterior is dominated by the prior, so the regression largely
+    recovers the weights that were assumed. See
+    :func:`fit_prior_weights` and the circularity demonstration test.
+    """
+    cfg = config or PriorConfig()
+    if observations.empty:
+        return pd.DataFrame(columns=["team_id", "season", "late_rating", "n_games_used"])
+
+    result = run_filter(
+        observations,
+        config=diffuse_filter_config(cfg),
+        fbs_team_ids=fbs_team_ids,
+        preseason_states=None,
+    )
+    frames = [
+        late_season_ratings(
+            result.history,
+            int(season),
+            dim=dim,
+            n_games=cfg.late_n_games,
+        )
+        for season in seasons
+    ]
+    keep = [f for f in frames if not f.empty]
+    if not keep:
+        return pd.DataFrame(columns=["team_id", "season", "late_rating", "n_games_used"])
+    return pd.concat(keep, ignore_index=True)
+
+
+def attach_late_target(
+    design: pd.DataFrame,
+    late: pd.DataFrame,
+) -> pd.DataFrame:
+    """Join diffuse-run late ratings onto a design frame as the fitting target.
+
+    Left join on ``(team_id, season)``; team-seasons without a late rating get
+    ``NaN`` and are dropped at fit time rather than being silently filled.
+    """
+    if design.empty:
+        return design.copy()
+    out = design.copy()
+    if late.empty:
+        out[LATE_TARGET_COLUMN] = float("nan")
+        return out
+    cols = ["team_id", "season", LATE_TARGET_COLUMN]
+    right = late.loc[:, cols].drop_duplicates(subset=["team_id", "season"], keep="last")
+    return out.merge(right, on=["team_id", "season"], how="left")
+
+
 def conference_means_from_ratings(
     ratings: pd.DataFrame,
     teams: pd.DataFrame,
@@ -582,8 +722,20 @@ def fit_prior_weights(
     seasons_train: Sequence[int] | None = None,
     config: PriorConfig | None = None,
     seed: int = 42,
+    target_column: str = LATE_TARGET_COLUMN,
+    allow_circular_target: bool = False,
 ) -> FittedPriorWeights:
-    """OLS of ``early_rating`` on the six predictors (optionally + intercept).
+    """OLS of the target on the six predictors (optionally + intercept).
+
+    The target must be **prior-free** (audit A-2). By default that is
+    ``late_rating`` from a diffuse-initialization filter run — see
+    :func:`diffuse_late_ratings`.
+
+    Fitting against ``early_rating`` is refused unless ``allow_circular_target``
+    is set, because early posteriors are prior-dominated: the regression then
+    largely recovers the weights that were assumed rather than testing them, and
+    the fit looks excellent for exactly the wrong reason. The escape hatch exists
+    so the circularity demonstration test can show the failure explicitly.
 
     Reproducible under ``seed`` via :func:`set_global_seed` (numpy LSTSQ is
     deterministic; seed is recorded for the run manifest).
@@ -593,6 +745,14 @@ def fit_prior_weights(
     if design.empty:
         msg = "design frame is empty; cannot fit prior weights"
         raise ValueError(msg)
+    if target_column in CIRCULAR_TARGET_COLUMNS and not allow_circular_target:
+        msg = (
+            f"target_column={target_column!r} is prior-dominated, so fitting against it "
+            "recovers the assumed weights instead of testing them (audit A-2). Use "
+            f"{LATE_TARGET_COLUMN!r} from diffuse_late_ratings(), or pass "
+            "allow_circular_target=True only to demonstrate the circularity."
+        )
+        raise ValueError(msg)
 
     frame = design.loc[design["dim"] == dim].copy() if "dim" in design.columns else design.copy()
     if seasons_train is not None:
@@ -601,8 +761,18 @@ def fit_prior_weights(
     if frame.empty:
         msg = f"no design rows for dim={dim!r} in seasons_train={seasons_train}"
         raise ValueError(msg)
+    if target_column not in frame.columns:
+        msg = (
+            f"target column {target_column!r} missing from the design frame. "
+            "Attach it with attach_late_target(design, diffuse_late_ratings(...))."
+        )
+        raise ValueError(msg)
+    frame = frame.loc[np.isfinite(frame[target_column].to_numpy(dtype=float))]
+    if frame.empty:
+        msg = f"no finite {target_column!r} rows for dim={dim!r}"
+        raise ValueError(msg)
 
-    y = frame["early_rating"].to_numpy(dtype=float)
+    y = frame[target_column].to_numpy(dtype=float)
     x_cols = list(PREDICTOR_NAMES)
     x = frame[x_cols].to_numpy(dtype=float)
     if cfg.fit_intercept:
@@ -646,6 +816,7 @@ def fit_prior_weights(
         seasons_train=seasons,
         intercept=intercept,
         intercept_se=intercept_se,
+        target_column=str(target_column),
     )
 
 
@@ -656,6 +827,8 @@ def fit_all_dims(
     seasons_train: Sequence[int] | None = None,
     config: PriorConfig | None = None,
     seed: int = 42,
+    target_column: str = LATE_TARGET_COLUMN,
+    allow_circular_target: bool = False,
 ) -> PriorFitResult:
     """Fit :func:`fit_prior_weights` for each requested state dimension."""
     cfg = config or PriorConfig()
@@ -671,6 +844,8 @@ def fit_all_dims(
             seasons_train=seasons_train,
             config=cfg,
             seed=seed + i,
+            target_column=target_column,
+            allow_circular_target=allow_circular_target,
         )
     return PriorFitResult(by_dim=by_dim, design=design)
 
@@ -680,15 +855,26 @@ def out_of_sample_r2(
     fitted: FittedPriorWeights,
     *,
     seasons_test: Sequence[int],
+    target_column: str | None = None,
 ) -> float:
-    """R² of fitted prior mean vs ``early_rating`` on held-out seasons."""
+    """R² of the fitted prior mean against the held-out seasons' target.
+
+    Defaults to the same target the weights were fit on, which for a valid fit is
+    the diffuse-run ``late_rating``. Task 15's acceptance criterion scores priors
+    against prior-free ratings, never against prior-initialized early posteriors
+    (audit A-2).
+    """
+    column = target_column or fitted.target_column
     test_set = {int(s) for s in seasons_test}
     frame = design.loc[design["season"].isin(test_set)].copy()
     if "dim" in frame.columns:
         frame = frame.loc[frame["dim"] == fitted.dim]
+    if frame.empty or column not in frame.columns:
+        return float("nan")
+    frame = frame.loc[np.isfinite(frame[column].to_numpy(dtype=float))]
     if frame.empty:
         return float("nan")
-    y = frame["early_rating"].to_numpy(dtype=float)
+    y = frame[column].to_numpy(dtype=float)
     preds = [
         blend_prior_mean({n: float(row[n]) for n in PREDICTOR_NAMES}, fitted)
         for row in frame.to_dict(orient="records")

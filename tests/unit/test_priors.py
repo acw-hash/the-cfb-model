@@ -11,8 +11,10 @@ import pytest
 
 from ncaa_quant.features.builders.efficiency import resolve_priors
 from ncaa_quant.ratings.priors import (
+    LATE_TARGET_COLUMN,
     PREDICTOR_NAMES,
     PriorConfig,
+    attach_late_target,
     blend_prior_mean,
     build_design_frame,
     build_predictors,
@@ -107,7 +109,10 @@ def test_weight_fitting_reproducible_under_fixed_seed() -> None:
                 "team_id": i,
                 "season": 2018 + (i % 5),
                 "dim": "off_epa",
-                "early_rating": y,
+                # Generated from the predictors independently of any prior, so this
+                # stands in for a diffuse-run late rating (audit A-2), not an
+                # early prior-dominated posterior.
+                LATE_TARGET_COLUMN: y,
                 "returning_pct": ret,
                 "n_missing": 0,
                 **preds,
@@ -305,8 +310,21 @@ def test_build_design_and_states_roundtrip() -> None:
         dim="off_epa",
     )
     assert len(design) == 2
+    # The design frame's own `early_rating` is prior-dominated, so the fit needs a
+    # prior-free target attached (audit A-2). Stand in for the diffuse filter run
+    # here; `test_prior_circularity.py` covers why this substitution matters.
+    late = pd.DataFrame(
+        {
+            "team_id": [1, 2],
+            "season": [2022, 2022],
+            LATE_TARGET_COLUMN: [0.26, -0.21],
+        }
+    )
+    design = attach_late_target(design, late)
     fitted = fit_prior_weights(design, dim="off_epa", seed=7)
     assert fitted.n_obs == 2
+    assert fitted.target_column == LATE_TARGET_COLUMN
+    assert fitted.target_is_circular is False
     assert set(fitted.weights) == set(PREDICTOR_NAMES)
 
     priors = build_preseason_priors_frame(
@@ -380,7 +398,7 @@ def test_oos_r2_helper() -> None:
         rows.append(
             {
                 **preds,
-                "early_rating": y,
+                LATE_TARGET_COLUMN: y,
                 "season": 2022 if i < 30 else 2023,
                 "dim": "off_epa",
             }

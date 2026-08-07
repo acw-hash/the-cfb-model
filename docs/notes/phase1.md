@@ -263,6 +263,62 @@ biased low, because correcting the level is Level-2's job).
 untouched; it needs the joint league state to supply a real `σ²_Stage-1`, so it is
 bundled with the state-space task.
 
+## A-2 — Non-circular preseason prior fitting (done 2026-08-07)
+
+**What was wrong.** `fit_prior_weights` regressed each season's `early_rating` on
+the six preseason predictors. But early ratings come from a filter *initialized
+with those very priors*, so the target is prior-dominated and the regression
+largely recovers the weights that were assumed. The reported R² was high for
+exactly the wrong reason, and the priors that govern Weeks 1-5 — the softest market
+window, where the system expects its edge — were never validated against anything.
+
+**What it does now.** The fitting target must be prior-free. `diffuse_late_ratings`
+runs the filter with **no preseason states** and `prior_var = 100.0` (2500x the
+standard 0.04), then takes each team's posterior after at least 8 games. Regressing
+those on the preseason predictors is an honest test of whether the predictors
+forecast anything, because the prior had no hand in producing them.
+
+`fit_prior_weights` now **refuses** `early_rating` unless
+`allow_circular_target=True`. The escape hatch exists only so the demonstration
+test can show the failure; `FittedPriorWeights.target_column` is recorded on every
+fit, with a `target_is_circular` property, because an R² is uninterpretable without
+knowing what it was scored against. `out_of_sample_r2` follows the fitted target by
+default, so Task 15's acceptance criterion now scores priors against prior-free
+ratings.
+
+**The demonstration.** `test_circular_target_recovers_the_assumed_weights` plants a
+world where `talent` drives the rating and `last_regressed` does nothing, then
+gives the prior the opposite belief. Fitting against early ratings returns the
+*assumed* weights (`last_regressed ≈ 0.9`, `talent ≈ 0.0`) with R² > 0.99. Fitting
+against diffuse-run late ratings returns the truth (`talent ≈ 0.9`). The two
+disagree by more than 0.5 on which predictor matters at all.
+
+A second test makes the point harder: with priors that predict *nothing*, the
+circular target still scores above 0.99 out of sample — the prior predicts the
+prior — while the honest target correctly reports under 0.05.
+
+**One correction during the work.** The no-skill test first asserted in-sample R²
+below 0.1 and measured 0.109. That was my threshold being wrong rather than the
+code: six predictors on 160 rows fit that much noise in sample. Rewritten to use
+out-of-sample R², which is the honest yardstick and makes the contrast sharper.
+
+**Three existing tests updated.** `test_priors.py` had synthetic frames whose target
+was generated from the predictors but named `early_rating`. They were testing
+reproducibility, roundtrip and the OOS helper, not circularity, so the column is
+renamed to `late_rating` to say what it actually is. The roundtrip test now attaches
+a prior-free target explicitly via `attach_late_target`.
+
+**Verification.** `tests/unit/test_prior_circularity.py` (13 tests), including an
+end-to-end diffuse filter run that recovers a planted strength ordering with
+correlation above 0.8. `make test`: 633 passed, coverage 81.12%.
+
+**Not done here.** The spec's preferred upgrade — maximizing Weeks 1-4
+one-step-ahead predictive likelihood with respect to the weights — is not
+implemented. The diffuse-late-ratings route is the audit's primary recommendation
+and is what ships; the likelihood route would be a strict improvement and is worth
+its own task once the joint filter lands, since it needs the filter's likelihood to
+be trustworthy.
+
 ### Still open: the joint league state (A-3 part 2 / B-1)
 
 The projection primitive exists but is **not yet wired into the filter**, because
