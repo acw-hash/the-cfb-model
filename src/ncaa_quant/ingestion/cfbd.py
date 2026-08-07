@@ -4,12 +4,14 @@ Raw archival happens *before* parse under ``data/raw/cfbd/{date}/…json`` so a
 parser failure never loses the payload. Staged writes go through
 :class:`~ncaa_quant.data.storage.ParquetStore`.
 
-event_time assignment (PIT-critical)
-------------------------------------
+event_time assignment (PIT-critical; AUDIT-6 / Task 5)
+------------------------------------------------------
 | Endpoint / table        | event_time                                              |
 |-------------------------|---------------------------------------------------------|
-| games, plays, drives,   | ``start_date + GAME_DURATION`` (3.5h). CFBD does not    |
-| advanced_box            | expose a reliable completion timestamp.                 |
+| games, plays, drives,   | Actual completion timestamp when present on the payload;|
+| advanced_box            | else kickoff + 5h (7h when OT flagged).                 |
+|                         | ``games.event_time_estimated`` records the estimate.    |
+|                         | CFBD v1 has no completion field — always estimated.     |
 | lines_historical        | kickoff ``start_date`` (conservative latest for open/   |
 |                         | close when open timestamps are absent).                 |
 | talent, returning,      | ``{season}-08-01T00:00:00Z`` documented preseason.      |
@@ -23,12 +25,18 @@ schema exists; scores already live on ``games``.
 
 ``/teams`` is included (beyond the task bullet list) to populate ``teams`` and
 resolve school→``team_id`` for reference endpoints.
+
+Canonical game identity is CFBD's stable numeric ``game_id`` (AUDIT-6). The
+Odds API↔CFBD crosswalk and team-name map live in
+:mod:`ncaa_quant.ingestion.teams` / :mod:`ncaa_quant.ingestion.odds_api`
+(shared with Task 4); ambiguous Odds matches quarantine, never guess.
 """
 
 from __future__ import annotations
 
 import json
 import logging
+import re
 import time
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
@@ -56,13 +64,31 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 
 SOURCE_VERSION: Final[str] = "cfbd_v1"
 BASE_URL: Final[str] = "https://api.collegefootballdata.com"
-GAME_DURATION: Final[timedelta] = timedelta(hours=3, minutes=30)
+# Deliberately generous upper bound for regulation (AUDIT-6 / Task 5).
+GAME_DURATION: Final[timedelta] = timedelta(hours=5)
+# Extra cushion when OT is flagged via line scores or notes.
+GAME_DURATION_OT: Final[timedelta] = timedelta(hours=7)
 PRESEASON_MONTH: Final[int] = 8
 PRESEASON_DAY: Final[int] = 1
 DEFAULT_RATE_LIMIT_RESERVE: Final[int] = 10
 # Regular-season weeks 0–15 cover Week Zero through late November; postseason
 # continues into higher week numbers returned by CFBD.
 MAX_REGULAR_WEEK: Final[int] = 16
+
+_COMPLETION_KEYS: Final[tuple[str, ...]] = (
+    "end_date",
+    "endDate",
+    "completed_at",
+    "completedAt",
+    "finish_date",
+    "finishDate",
+    "end_time",
+    "endTime",
+)
+_OT_NOTES_RE: Final[re.Pattern[str]] = re.compile(
+    r"(?<![A-Za-z])OT(?![A-Za-z])|overtime",
+    re.IGNORECASE,
+)
 
 _REMAINING_HEADERS: Final[tuple[str, ...]] = (
     "x-ratelimit-remaining",
@@ -142,9 +168,64 @@ def preseason_event_time(season: int) -> datetime:
     return datetime(season, PRESEASON_MONTH, PRESEASON_DAY, tzinfo=UTC)
 
 
-def game_event_time(start_date: datetime) -> datetime:
-    """Knowable-at for game results / PBP: kickoff + duration estimate."""
-    return to_utc(start_date) + GAME_DURATION
+@dataclass(frozen=True)
+class GameKnowableAt:
+    """Resolved game-result knowable-at instant and whether it was estimated."""
+
+    event_time: datetime
+    estimated: bool
+
+
+def _parse_completion_timestamp(item: Mapping[str, Any]) -> datetime | None:
+    """Return a CFBD completion timestamp if the payload carries one."""
+    for key in _COMPLETION_KEYS:
+        if key in item and item[key] not in (None, ""):
+            parsed = _parse_ts(item[key])
+            if parsed is not None:
+                return parsed
+    return None
+
+
+def game_went_overtime(item: Mapping[str, Any]) -> bool:
+    """True when line scores exceed four periods or notes mention OT."""
+    for key in (
+        "home_line_scores",
+        "homeLineScores",
+        "away_line_scores",
+        "awayLineScores",
+    ):
+        scores = item.get(key)
+        if isinstance(scores, list) and len(scores) > 4:
+            return True
+    notes = item.get("notes")
+    return notes is not None and _OT_NOTES_RE.search(str(notes)) is not None
+
+
+def resolve_game_event_time(
+    start_date: datetime,
+    *,
+    completion: datetime | None = None,
+    overtime: bool = False,
+) -> GameKnowableAt:
+    """Game-result knowable-at per AUDIT-6 / Task 5.
+
+    Prefer an actual completion timestamp when available; otherwise kickoff plus
+    a deliberately generous upper bound (5h regulation, 7h when OT is flagged).
+    """
+    if completion is not None:
+        return GameKnowableAt(event_time=to_utc(completion), estimated=False)
+    duration = GAME_DURATION_OT if overtime else GAME_DURATION
+    return GameKnowableAt(event_time=to_utc(start_date) + duration, estimated=True)
+
+
+def game_event_time(
+    start_date: datetime,
+    *,
+    completion: datetime | None = None,
+    overtime: bool = False,
+) -> datetime:
+    """Knowable-at for game results / PBP (datetime only; see ``resolve_game_event_time``)."""
+    return resolve_game_event_time(start_date, completion=completion, overtime=overtime).event_time
 
 
 @dataclass(frozen=True)
@@ -544,6 +625,7 @@ _GAMES_COLS: Final[tuple[str, ...]] = (
     "conference_game",
     "venue_id",
     "completed",
+    "event_time_estimated",
     "source_version",
     "event_time",
     "ingested_at",
@@ -752,6 +834,11 @@ def normalize_games_payload(
             week = week_of(start, season)
         season_type_raw = str(item.get("season_type") or item.get("seasonType") or "regular")
         season_type = "postseason" if "post" in season_type_raw.casefold() else "regular"
+        knowable = resolve_game_event_time(
+            start,
+            completion=_parse_completion_timestamp(item),
+            overtime=game_went_overtime(item),
+        )
         rows.append(
             {
                 "game_id": game_id,
@@ -783,8 +870,9 @@ def normalize_games_payload(
                 "completed": bool(
                     _as_bool(item.get("completed")) if item.get("completed") is not None else False
                 ),
+                "event_time_estimated": knowable.estimated,
                 "source_version": source_version,
-                "event_time": game_event_time(start),
+                "event_time": knowable.event_time,
                 "ingested_at": ingested,
             }
         )
@@ -799,11 +887,14 @@ def normalize_plays_payload(
     ingested_at: datetime,
     school_to_id: Mapping[str, int],
     team_map: Mapping[str, str],
-    game_start_by_id: Mapping[int, datetime],
+    game_start_by_id: Mapping[int, datetime] | None = None,
+    game_event_by_id: Mapping[int, datetime] | None = None,
     source_version: str = SOURCE_VERSION,
 ) -> pd.DataFrame:
     """Normalize CFBD ``/plays`` into ``plays`` schema rows."""
     ingested = to_utc(ingested_at)
+    starts = game_start_by_id or {}
+    events = game_event_by_id or {}
     rows: list[dict[str, Any]] = []
     for item in _parse_json_list(payload):
         if not isinstance(item, dict):
@@ -829,8 +920,11 @@ def normalize_plays_payload(
         if offense_id is None or defense_id is None:
             continue
         period = _period(item.get("period")) or 1
-        start = game_start_by_id.get(game_id)
-        event = game_event_time(start) if start is not None else preseason_event_time(season)
+        if game_id in events:
+            event = events[game_id]
+        else:
+            start = starts.get(game_id)
+            event = game_event_time(start) if start is not None else preseason_event_time(season)
         success_raw = item.get("success")
         scoring_raw = item.get("scoring")
         rows.append(
@@ -882,11 +976,14 @@ def normalize_drives_payload(
     ingested_at: datetime,
     school_to_id: Mapping[str, int],
     team_map: Mapping[str, str],
-    game_start_by_id: Mapping[int, datetime],
+    game_start_by_id: Mapping[int, datetime] | None = None,
+    game_event_by_id: Mapping[int, datetime] | None = None,
     source_version: str = SOURCE_VERSION,
 ) -> pd.DataFrame:
     """Normalize CFBD ``/drives`` into ``drives`` schema rows."""
     ingested = to_utc(ingested_at)
+    starts = game_start_by_id or {}
+    events = game_event_by_id or {}
     rows: list[dict[str, Any]] = []
     for item in _parse_json_list(payload):
         if not isinstance(item, dict):
@@ -907,8 +1004,11 @@ def normalize_drives_payload(
         )
         if offense_id is None or defense_id is None:
             continue
-        start = game_start_by_id.get(game_id)
-        event = game_event_time(start) if start is not None else preseason_event_time(season)
+        if game_id in events:
+            event = events[game_id]
+        else:
+            start = starts.get(game_id)
+            event = game_event_time(start) if start is not None else preseason_event_time(season)
         end_off = _as_int(
             item["end_offense_score"]
             if item.get("end_offense_score") is not None
@@ -970,11 +1070,14 @@ def normalize_advanced_payload(
     ingested_at: datetime,
     school_to_id: Mapping[str, int],
     team_map: Mapping[str, str],
-    game_start_by_id: Mapping[int, datetime],
+    game_start_by_id: Mapping[int, datetime] | None = None,
+    game_event_by_id: Mapping[int, datetime] | None = None,
     source_version: str = SOURCE_VERSION,
 ) -> pd.DataFrame:
     """Normalize CFBD ``/stats/game/advanced`` into ``advanced_box`` rows."""
     ingested = to_utc(ingested_at)
+    starts = game_start_by_id or {}
+    events = game_event_by_id or {}
     rows: list[dict[str, Any]] = []
     for item in _parse_json_list(payload):
         if not isinstance(item, dict):
@@ -992,8 +1095,11 @@ def normalize_advanced_payload(
         defense_raw = item.get("defense")
         offense: dict[str, Any] = offense_raw if isinstance(offense_raw, dict) else {}
         defense: dict[str, Any] = defense_raw if isinstance(defense_raw, dict) else {}
-        start = game_start_by_id.get(game_id)
-        event = game_event_time(start) if start is not None else preseason_event_time(season)
+        if game_id in events:
+            event = events[game_id]
+        else:
+            start = starts.get(game_id)
+            event = game_event_time(start) if start is not None else preseason_event_time(season)
         havoc_raw = defense.get("havoc")
         havoc: dict[str, Any] = havoc_raw if isinstance(havoc_raw, dict) else {}
         finishing = (
@@ -1530,6 +1636,23 @@ def _game_starts_from_games(df: pd.DataFrame) -> dict[int, datetime]:
     return out
 
 
+def _game_events_from_games(df: pd.DataFrame) -> dict[int, datetime]:
+    """Map game_id → resolved result event_time from staged/normalized games."""
+    out: dict[int, datetime] = {}
+    if df.empty or "event_time" not in df.columns:
+        return out
+    for _, row in df.iterrows():
+        event = row["event_time"]
+        if isinstance(event, datetime):
+            out[int(row["game_id"])] = to_utc(event)
+        else:
+            ts = pd.Timestamp(event)
+            if ts.tzinfo is None:
+                ts = ts.tz_localize("UTC")
+            out[int(row["game_id"])] = to_utc(ts.to_pydatetime())
+    return out
+
+
 def _write_partition(
     store: ParquetStore,
     table: str,
@@ -1572,6 +1695,7 @@ class _RunState:
     raw_paths: list[Path] = field(default_factory=list)
     school_to_id: dict[str, int] = field(default_factory=dict)
     game_starts: dict[int, datetime] = field(default_factory=dict)
+    game_events: dict[int, datetime] = field(default_factory=dict)
     week_season_types: dict[int, set[str]] = field(default_factory=dict)
 
 
@@ -1758,6 +1882,7 @@ def _ingest_games_season(
     existing_season = store.read("games", filters={"season": season})
     if not force and not existing_season.empty and weeks_filter is None:
         state.game_starts.update(_game_starts_from_games(existing_season))
+        state.game_events.update(_game_events_from_games(existing_season))
         if "season_type" in existing_season.columns:
             for _, row in existing_season.iterrows():
                 state.week_season_types.setdefault(int(row["week"]), set()).add(
@@ -1804,6 +1929,7 @@ def _ingest_games_season(
 
     combined = pd.concat(frames, ignore_index=True).drop_duplicates(subset=["game_id"], keep="last")
     state.game_starts.update(_game_starts_from_games(combined))
+    state.game_events.update(_game_events_from_games(combined))
     state.week_season_types = week_season_types
 
     for week, part in combined.groupby("week", sort=True):
@@ -1814,6 +1940,7 @@ def _ingest_games_season(
             existing = store.read("games", filters={"season": season, "week": week_i})
             if not existing.empty:
                 state.game_starts.update(_game_starts_from_games(existing))
+                state.game_events.update(_game_events_from_games(existing))
             state.partitions_skipped += 1
             log.info(
                 "cfbd_partition_skipped",
@@ -1841,6 +1968,7 @@ def _weeks_for_season(store: ParquetStore, season: int, state: _RunState) -> lis
     if not games.empty:
         weeks.update(int(w) for w in games["week"].unique())
         state.game_starts.update(_game_starts_from_games(games))
+        state.game_events.update(_game_events_from_games(games))
         if "season_type" in games.columns:
             for _, row in games.iterrows():
                 state.week_season_types.setdefault(int(row["week"]), set()).add(
@@ -1968,6 +2096,7 @@ def _ingest_week_endpoint(
                 school_to_id=state.school_to_id,
                 team_map=team_map,
                 game_start_by_id=state.game_starts,
+                game_event_by_id=state.game_events,
             )
         elif endpoint == "drives":
             frame = normalize_drives_payload(
@@ -1978,6 +2107,7 @@ def _ingest_week_endpoint(
                 school_to_id=state.school_to_id,
                 team_map=team_map,
                 game_start_by_id=state.game_starts,
+                game_event_by_id=state.game_events,
             )
         elif endpoint == "advanced":
             frame = normalize_advanced_payload(
@@ -1988,6 +2118,7 @@ def _ingest_week_endpoint(
                 school_to_id=state.school_to_id,
                 team_map=team_map,
                 game_start_by_id=state.game_starts,
+                game_event_by_id=state.game_events,
             )
         else:
             frame = normalize_lines_payload(
@@ -2145,6 +2276,7 @@ def run_cfbd_backfill(
                     games = store.read("games", filters={"season": season})
                     if not games.empty:
                         state.game_starts.update(_game_starts_from_games(games))
+                        state.game_events.update(_game_events_from_games(games))
 
                 week_endpoints = [
                     e

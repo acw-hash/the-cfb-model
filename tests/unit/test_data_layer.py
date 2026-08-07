@@ -40,6 +40,7 @@ def _game_row(**overrides: object) -> dict[str, object]:
         "conference_game": True,
         "venue_id": 5,
         "completed": True,
+        "event_time_estimated": True,
         "source_version": "test",
         "event_time": _ts("2024-09-01T23:00:00"),
         "ingested_at": _ts("2024-09-02T02:00:00"),

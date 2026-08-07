@@ -38,6 +38,7 @@ def _games_frame(**overrides: object) -> pd.DataFrame:
         "conference_game": True,
         "venue_id": 100,
         "completed": True,
+        "event_time_estimated": True,
         "source_version": "test",
         "event_time": EVENT,
         "ingested_at": INGESTED,

@@ -153,6 +153,7 @@ def _games_suite() -> gx.ExpectationSuite:
         "conference_game",
         "venue_id",
         "completed",
+        "event_time_estimated",
         "source_version",
         "event_time",
         "ingested_at",

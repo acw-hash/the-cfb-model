@@ -58,6 +58,9 @@ class GamesSchema(_TimedModel):
     conference_game: Series[pa.Bool] = pa.Field()
     venue_id: Series[pa.Int64] = pa.Field(ge=0, nullable=True)
     completed: Series[pa.Bool] = pa.Field()
+    # AUDIT-6 / Task 5: True when event_time is kickoff+duration (not a real
+    # completion timestamp). See docs/adr/0004-event-time-estimated-schema.md.
+    event_time_estimated: Series[pa.Bool] = pa.Field()
     source_version: Series[str] = pa.Field(nullable=True)
 
 

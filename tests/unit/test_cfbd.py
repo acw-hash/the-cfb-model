@@ -15,10 +15,12 @@ from ncaa_quant.cli import app
 from ncaa_quant.data.storage import ParquetStore
 from ncaa_quant.ingestion.cfbd import (
     GAME_DURATION,
+    GAME_DURATION_OT,
     CFBDClient,
     RateLimitBudgetError,
     archive_raw_cfbd,
     game_event_time,
+    game_went_overtime,
     is_partition_complete,
     normalize_advanced_payload,
     normalize_coaches_payload,
@@ -35,6 +37,7 @@ from ncaa_quant.ingestion.cfbd import (
     normalize_venues_payload,
     parse_seasons_arg,
     preseason_event_time,
+    resolve_game_event_time,
     run_cfbd_backfill,
 )
 from ncaa_quant.utils.logging import configure_logging
@@ -153,11 +156,55 @@ def test_event_time_game_and_preseason() -> None:
     assert preseason_event_time(2023) == datetime(2023, 8, 1, tzinfo=UTC)
 
 
+def test_resolve_game_event_time_regulation_ot_and_completion() -> None:
+    reg = resolve_game_event_time(KICKOFF)
+    assert reg.event_time == KICKOFF + GAME_DURATION
+    assert reg.estimated is True
+
+    ot = resolve_game_event_time(KICKOFF, overtime=True)
+    assert ot.event_time == KICKOFF + GAME_DURATION_OT
+    assert ot.estimated is True
+
+    done = datetime(2023, 9, 2, 22, 15, tzinfo=UTC)
+    actual = resolve_game_event_time(KICKOFF, completion=done, overtime=True)
+    assert actual.event_time == done
+    assert actual.estimated is False
+
+
+def test_game_went_overtime_line_scores_and_notes() -> None:
+    assert game_went_overtime({"homeLineScores": [7, 7, 7, 7, 3]}) is True
+    assert game_went_overtime({"away_line_scores": [0, 0, 0, 0]}) is False
+    assert game_went_overtime({"notes": "2OT"}) is True
+    assert game_went_overtime({"notes": "overtime thriller"}) is True
+
+
 def test_normalize_games_event_time() -> None:
     df = normalize_games_payload(GAMES_PAYLOAD, ingested_at=INGESTED)
     assert len(df) == 1
     assert df.iloc[0]["game_id"] == 401520182
     assert df.iloc[0]["event_time"] == KICKOFF + GAME_DURATION
+    assert bool(df.iloc[0]["event_time_estimated"]) is True
+
+
+def test_normalize_games_ot_uses_longer_duration() -> None:
+    payload = [
+        {
+            **GAMES_PAYLOAD[0],
+            "home_line_scores": [7, 14, 7, 7, 3],
+            "away_line_scores": [0, 7, 7, 14, 0],
+        }
+    ]
+    df = normalize_games_payload(payload, ingested_at=INGESTED)
+    assert df.iloc[0]["event_time"] == KICKOFF + GAME_DURATION_OT
+    assert bool(df.iloc[0]["event_time_estimated"]) is True
+
+
+def test_normalize_games_completion_timestamp_not_estimated() -> None:
+    done = "2023-09-02T22:45:00.000Z"
+    payload = [{**GAMES_PAYLOAD[0], "end_date": done}]
+    df = normalize_games_payload(payload, ingested_at=INGESTED)
+    assert df.iloc[0]["event_time"] == datetime(2023, 9, 2, 22, 45, tzinfo=UTC)
+    assert bool(df.iloc[0]["event_time_estimated"]) is False
 
 
 def test_normalize_teams_and_talent(team_map: dict[str, str]) -> None:
@@ -464,7 +511,8 @@ def test_cli_cfbd_backfill(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_game_duration_constant() -> None:
-    assert timedelta(hours=3, minutes=30) == GAME_DURATION
+    assert timedelta(hours=5) == GAME_DURATION
+    assert timedelta(hours=7) == GAME_DURATION_OT
 
 
 def test_normalize_remaining_endpoints(team_map: dict[str, str]) -> None:
