@@ -9,7 +9,13 @@ encompassing:
   # D6: CFBD closes joined for evaluation on all canonical seasons (2020 still
   # continuity-only / excluded from headline). Stop-rule thresholds unchanged
   # from D5 pre-registration (2026-08-06).
-  seasons: [2019, 2021, 2022, 2023, 2024, 2025]
+  #
+  # 2025 removed 2026-08-07: it is the lockbox season (§7.2 item 9), so it may
+  # not back a development-time powered test. The D6 run that included it is
+  # archived history, not a template. Note this lowers the season count feeding
+  # the stability gate from 6 to 5, which the gate's 3-of-N threshold must be
+  # read against.
+  seasons: [2019, 2021, 2022, 2023, 2024]
   line_column: spread_close
   market_implied_sign: -1.0
   n_boot: 1000
@@ -24,6 +30,8 @@ encompassing:
 
 odds_purchase_spec:
   # Drives the Odds API historical purchase (Task 5b / D5 §15).
+  # 2025 IS purchased — the lockbox restricts reading, not acquiring. Staging it
+  # now means the confirmatory read is possible later without re-buying.
   seasons: [2021, 2022, 2023, 2024, 2025]
   line_types_required: [tuesday_0600_et, close]
   tuesday_alone_sufficient: false

@@ -1,4 +1,5 @@
 # Task 23 full run set (plan target). Actual seasons depend on staged data.
+# 2025 excluded 2026-08-07: lockbox season (§7.2 item 9).
 run_id: task23_full
 ablation_id: full
 stack: fundamental
@@ -7,7 +8,7 @@ experiment_name: ncaa-quant-backtest
 tracking_uri: file:./mlruns
 
 walkforward:
-  test_seasons: [2019, 2021, 2022, 2023, 2024, 2025]
+  test_seasons: [2019, 2021, 2022, 2023, 2024]
   continuity_seasons: [2020]
   warmup_seasons: [2014, 2015, 2016, 2017, 2018]
   retrain_weeks: [5, 10]

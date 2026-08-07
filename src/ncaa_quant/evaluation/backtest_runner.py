@@ -283,6 +283,7 @@ def walkforward_config_from_mapping(payload: Mapping[str, Any]) -> WalkForwardCo
         enforce_prediction_quality_gate=bool(
             wf.get("enforce_prediction_quality_gate", run_kind_raw != "smoke")
         ),
+        lockbox_confirmatory_read=bool(wf.get("lockbox_confirmatory_read", False)),
     )
 
 

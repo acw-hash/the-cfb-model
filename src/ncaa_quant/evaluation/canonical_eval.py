@@ -28,7 +28,7 @@ from ncaa_quant.evaluation.metrics import (
     rmse,
 )
 from ncaa_quant.evaluation.walkforward import (
-    DEFAULT_TEST_SEASONS,
+    HISTORICAL_CANONICAL_SEASONS,
     assert_prediction_quality_gate,
     scored_prediction_rows,
 )
@@ -85,7 +85,10 @@ def file_sha256(path: Path | str) -> str:
 def _headline_frame(predictions: pd.DataFrame) -> pd.DataFrame:
     frame = scored_prediction_rows(predictions)
     if "season" in frame.columns:
-        frame = frame.loc[frame["season"].isin(DEFAULT_TEST_SEASONS)].copy()
+        # Frozen D2-D7 definition, which predates the lockbox designation. New
+        # evaluations use DEFAULT_TEST_SEASONS; this exists to keep the archived
+        # canonical frames and their SHAs reproducible.
+        frame = frame.loc[frame["season"].isin(HISTORICAL_CANONICAL_SEASONS)].copy()
     return frame.reset_index(drop=True)
 
 

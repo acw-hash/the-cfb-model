@@ -72,3 +72,43 @@ frame — `edges.py` still needs to emit `line_shopping_capture` and
 `n_books_available` onto recommendations, and the backtest bet layer needs to
 supply `ClosingQuote`s and per-bet model distributions. That wiring lands with
 the Phase 4 re-run, where it is observable end to end.
+
+## A-11 — Lockbox enforcement in code (done 2026-08-07)
+
+Taken out of plan order and done early, because every run after this point risks
+touching 2025 and the mistake is irreversible.
+
+**What was wrong.** The lockbox was documentation only. `DEFAULT_TEST_SEASONS`
+included 2025, and so did **every** `task23_*` config — the exact configs the
+Phase 4 re-run would have used. Nothing in code would have objected.
+
+**What it does now.** `evaluation/lockbox.py` holds `LOCKBOX_SEASON`,
+`assert_lockbox_excluded()` and `LockboxViolation`.
+`WalkForwardConfig.validate_ablations()` calls it over `all_replay_seasons()`, so
+test, continuity *and* warm-up roles are all guarded, and a violating run fails
+before it spends compute. Permitting a read takes an explicit
+`lockbox_confirmatory_read=True`, which is deliberately an argument rather than a
+config default so that allowing it is visible in review.
+
+Configs corrected: `task23_full.yaml`, all seven runs in `task23_run_set.yaml`,
+A6's snapshot-regime list, and `configs/eval/encompassing.yaml`. The odds purchase
+spec still buys 2025 — the lockbox restricts *reading* the season, not acquiring
+its data, and buying now means a later confirmatory read needs no repurchase.
+
+`HISTORICAL_CANONICAL_SEASONS` preserves the lockbox-inclusive list that the
+frozen D2-D7 canonical frames were built on, so those archived SHAs stay
+reproducible. It is named to be impossible to reach for by accident.
+
+**Finding: 2025 is not a virgin holdout.** D7 used 2025 weeks 1-4 as its
+pre-registered confirmatory holdout on 2026-08-06, hours before the lockbox
+designation was written — legitimate then, but it means the season has already
+been looked at, and the largest early-week effect in the whole D7 table
+(`b2 = 0.376`) came from it. `docs/lockbox_access.md` now records that read
+instead of claiming "none yet", and states that a future confirmatory report on
+2025 is weaker evidence than a first read would have been. A register that only
+logs the reads we feel good about is not a register.
+
+**Verification.** `tests/unit/test_lockbox.py` — 12 tests. The one that earns its
+keep is `test_shipped_ablation_configs_exclude_the_lockbox`, which walks every
+shipped config; it failed on first run and caught `task23_full.yaml`.
+`make test`: 571 passed, coverage 80.86%.

@@ -49,6 +49,7 @@ from zoneinfo import ZoneInfo
 import numpy as np
 import pandas as pd  # type: ignore[import-untyped]
 
+from ncaa_quant.evaluation.lockbox import assert_lockbox_excluded
 from ncaa_quant.utils.seeding import SeedManifest, set_global_seed
 from ncaa_quant.utils.timeutils import assert_tz_aware, to_utc
 
@@ -68,8 +69,14 @@ SNAPSHOT_BACKED_FROM_SEASON = 2021
 #: Default COVID continuity season: ratings update, headline metrics exclude.
 DEFAULT_CONTINUITY_SEASONS: tuple[int, ...] = (2020,)
 
-#: Default outer-loop test seasons per §7.2 item 1 (2020 omitted from headline).
-DEFAULT_TEST_SEASONS: tuple[int, ...] = (2019, 2021, 2022, 2023, 2024, 2025)
+#: Default outer-loop test seasons per §7.2 item 1 (2020 omitted from headline;
+#: 2025 is the lockbox per §7.2 item 9 and is excluded from development runs).
+DEFAULT_TEST_SEASONS: tuple[int, ...] = (2019, 2021, 2022, 2023, 2024)
+
+#: The season set the frozen D2-D7 canonical frames were built on, which predates
+#: the lockbox designation. Kept only so those historical artifacts stay
+#: reproducible — never use it for a new evaluation.
+HISTORICAL_CANONICAL_SEASONS: tuple[int, ...] = (2019, 2021, 2022, 2023, 2024, 2025)
 
 #: Default mapping-layer warm-up seasons (feature bank + fit before first test).
 DEFAULT_WARMUP_SEASONS: tuple[int, ...] = (2014, 2015, 2016, 2017, 2018)
@@ -294,6 +301,8 @@ class WalkForwardConfig:
     max_zero_mu_rate: float = DEFAULT_MAX_ZERO_MU_RATE
     nnls_equal_weight_fallback: bool = False
     enforce_prediction_quality_gate: bool = False
+    lockbox_confirmatory_read: bool = False
+    """Permit the lockbox season. Only for the logged annual confirmatory read."""
 
     def all_replay_seasons(self) -> tuple[int, ...]:
         """Warm-up ∪ test ∪ continuity seasons, sorted unique."""
@@ -336,6 +345,11 @@ class WalkForwardConfig:
         if self.run_kind not in ("smoke", "backtest", "production"):
             msg = f"run_kind must be smoke|backtest|production, got {self.run_kind!r}"
             raise WalkForwardError(msg)
+        assert_lockbox_excluded(
+            self.all_replay_seasons(),
+            context=f"walk-forward run {self.run_id}/{self.ablation_id}",
+            confirmatory_read=self.lockbox_confirmatory_read,
+        )
         if self.market_feature_source == "cfbd_open_close":
             bad = [s for s in self.all_replay_seasons() if s not in A6_CFBD_SOURCE_SEASONS]
             if bad:

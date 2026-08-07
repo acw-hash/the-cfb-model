@@ -1,6 +1,8 @@
 # Task 23 eight-run set for `backtest plan --config task23_run_set`.
-# Per-run seasons: full walk-forward 2019–2025 (2020 continuity) except A6
-# which is snapshot-regime 2021–2025 only (§7.2 / historical-odds change set).
+# Per-run seasons: full walk-forward 2019–2024 (2020 continuity) except A6
+# which is snapshot-regime 2021–2024 only (§7.2 / historical-odds change set).
+# 2025 excluded 2026-08-07: it is the lockbox season (§7.2 item 9), and
+# WalkForwardConfig.validate_ablations now refuses a config that reads it.
 run_set: task23
 description: >
   Eight Task 23 runs — fundamental + market-aware full systems and A1–A6.
@@ -12,7 +14,7 @@ runs:
     run_id: task23_fundamental
     ablation_id: full
     walkforward:
-      test_seasons: [2019, 2021, 2022, 2023, 2024, 2025]
+      test_seasons: [2019, 2021, 2022, 2023, 2024]
       continuity_seasons: [2020]
       retrain_weeks: [5, 10]
       market_features_available: false
@@ -31,7 +33,7 @@ runs:
     run_id: task23_market_aware
     ablation_id: full
     walkforward:
-      test_seasons: [2019, 2021, 2022, 2023, 2024, 2025]
+      test_seasons: [2019, 2021, 2022, 2023, 2024]
       continuity_seasons: [2020]
       retrain_weeks: [5, 10]
       market_features_available: true
@@ -50,7 +52,7 @@ runs:
     run_id: task23_a1
     ablation_id: A1_league_mean
     walkforward:
-      test_seasons: [2019, 2021, 2022, 2023, 2024, 2025]
+      test_seasons: [2019, 2021, 2022, 2023, 2024]
       continuity_seasons: [2020]
       retrain_weeks: [5, 10]
       market_features_available: false
@@ -69,7 +71,7 @@ runs:
     run_id: task23_a2
     ablation_id: A2_frozen_after_week_1
     walkforward:
-      test_seasons: [2019, 2021, 2022, 2023, 2024, 2025]
+      test_seasons: [2019, 2021, 2022, 2023, 2024]
       continuity_seasons: [2020]
       retrain_weeks: [5, 10]
       market_features_available: false
@@ -88,7 +90,7 @@ runs:
     run_id: task23_a3
     ablation_id: A3_market_off
     walkforward:
-      test_seasons: [2019, 2021, 2022, 2023, 2024, 2025]
+      test_seasons: [2019, 2021, 2022, 2023, 2024]
       continuity_seasons: [2020]
       retrain_weeks: [5, 10]
       market_features_available: false
@@ -107,7 +109,7 @@ runs:
     run_id: task23_a4
     ablation_id: A4_single_lgbm
     walkforward:
-      test_seasons: [2019, 2021, 2022, 2023, 2024, 2025]
+      test_seasons: [2019, 2021, 2022, 2023, 2024]
       continuity_seasons: [2020]
       retrain_weeks: [5, 10]
       market_features_available: false
@@ -126,7 +128,7 @@ runs:
     run_id: task23_a5
     ablation_id: A5_gt_off
     walkforward:
-      test_seasons: [2019, 2021, 2022, 2023, 2024, 2025]
+      test_seasons: [2019, 2021, 2022, 2023, 2024]
       continuity_seasons: [2020]
       retrain_weeks: [5, 10]
       market_features_available: false
@@ -146,7 +148,7 @@ runs:
     ablation_id: A6_cfbd_open_close
     walkforward:
       # Snapshot-regime seasons only — not a clean multiple of the others.
-      test_seasons: [2021, 2022, 2023, 2024, 2025]
+      test_seasons: [2021, 2022, 2023, 2024]
       continuity_seasons: []
       retrain_weeks: [5, 10]
       market_features_available: true

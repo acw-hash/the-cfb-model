@@ -151,7 +151,9 @@ def test_underpowered_verdict_when_ci_covers_edge() -> None:
 def test_load_encompassing_config() -> None:
     path = Path("configs/eval/encompassing.yaml")
     cfg = load_encompassing_config(path)
-    assert cfg.seasons == (2019, 2021, 2022, 2023, 2024, 2025)
+    # 2025 excluded: lockbox season (§7.2 item 9). The powered encompassing test
+    # is development work, so it may not read it.
+    assert cfg.seasons == (2019, 2021, 2022, 2023, 2024)
     assert cfg.min_games_per_season == 400
     assert cfg.substantial_b2 == 0.10
     assert cfg.stability_min_seasons_positive == 3
