@@ -17,11 +17,11 @@ app = typer.Typer(
 
 ingest_app = typer.Typer(help="Ingest raw data from external sources.")
 quality_app = typer.Typer(help="Data quality validation and quarantine.")
-features_app = typer.Typer(help="Build and materialize features.")
+features_app = typer.Typer(help="Build and materialize features. NOT WIRED — see `backtest run`.")
 roster_app = typer.Typer(help="Roster / QB-status manual entry.")
-ratings_app = typer.Typer(help="Update team ratings.")
-train_app = typer.Typer(help="Train prediction models.")
-predict_app = typer.Typer(help="Generate predictions.")
+ratings_app = typer.Typer(help="Update team ratings. NOT WIRED — see `backtest run`.")
+train_app = typer.Typer(help="Train prediction models. NOT WIRED — see `backtest run`.")
+predict_app = typer.Typer(help="Generate predictions. NOT WIRED — see `backtest run`.")
 backtest_app = typer.Typer(help="Run walk-forward backtests.")
 diag_app = typer.Typer(help="Read-only diagnostics (no model/config changes).")
 
@@ -36,11 +36,31 @@ app.add_typer(backtest_app, name="backtest")
 app.add_typer(diag_app, name="diag")
 
 
+def _not_wired(verb: str) -> None:
+    """Exit with a pointer instead of a traceback.
+
+    `ratings`, `train`, `predict` and `features` are declared in DESIGN §10 as
+    production verbs but have no standalone implementation. The walk-forward
+    path (`backtest run`) drives ratings, training and prediction internally, and
+    is the only entry point whose output carries a verifiable manifest. These
+    verbs get wired when the weekly production loop is built; until then they say
+    so rather than raising.
+    """
+    typer.echo(
+        f"`{verb}` is not wired as a standalone verb. The walk-forward path drives "
+        f"ratings, training and prediction together:\n"
+        f"  ncaa-quant backtest plan --config <config>   # cost, spends nothing\n"
+        f"  ncaa-quant backtest run  --config <config>   # writes a verifiable manifest"
+    )
+    raise typer.Exit(code=2)
+
+
 @ingest_app.callback(invoke_without_command=True)
 def ingest(ctx: typer.Context) -> None:
     """Ingest raw data from external sources."""
     if ctx.invoked_subcommand is None:
-        raise NotImplementedError("ingest is not implemented")
+        typer.echo("Usage: ncaa-quant ingest [cfbd|odds|weather|...] — see --help")
+        raise typer.Exit(code=2)
 
 
 @ingest_app.command("odds")
@@ -355,8 +375,8 @@ def quality_run(
 
 @features_app.callback(invoke_without_command=True)
 def features() -> None:
-    """Build and materialize features."""
-    raise NotImplementedError("features is not implemented")
+    """Build and materialize features — not wired as a standalone verb."""
+    _not_wired("features")
 
 
 @roster_app.command("set-qb")
@@ -410,20 +430,20 @@ def roster_set_qb(
 
 @ratings_app.callback(invoke_without_command=True)
 def ratings() -> None:
-    """Update team ratings."""
-    raise NotImplementedError("ratings is not implemented")
+    """Update team ratings — not wired as a standalone verb."""
+    _not_wired("ratings")
 
 
 @train_app.callback(invoke_without_command=True)
 def train() -> None:
-    """Train prediction models."""
-    raise NotImplementedError("train is not implemented")
+    """Train prediction models — not wired as a standalone verb."""
+    _not_wired("train")
 
 
 @predict_app.callback(invoke_without_command=True)
 def predict() -> None:
-    """Generate predictions."""
-    raise NotImplementedError("predict is not implemented")
+    """Generate predictions — not wired as a standalone verb."""
+    _not_wired("predict")
 
 
 @backtest_app.command("plan")

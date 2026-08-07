@@ -72,8 +72,14 @@ checkable even though the generating process is not.
 - Manifest writing gains a validation step: a manifest whose `git_sha` does not
   resolve locally is a hard failure, not a warning. This is the check that would
   have caught the problem at the time.
-- Evaluation code moves out of `docs/notes/_artifacts/` and `scripts/` into
-  `src/ncaa_quant/evaluation`, where it is covered by `make test`.
+- Going forward, evaluation logic lives in `src/ncaa_quant/evaluation` where
+  `make test` covers it; `docs/notes/_artifacts/` holds outputs, not logic. The
+  existing one-shot D2-D7 runners there are **not** migrated: they read the
+  non-citable frames and Phase 4 supersedes them, so rewriting them under test
+  would buy coverage of code that is about to be retired. They stay as evidence,
+  with `docs/notes/_artifacts/README.md` recording that status. The substantive
+  D-series logic already lives in `src/ncaa_quant/evaluation/d*_eval.py` and is
+  tested.
 - The project's honest status reverts to: no validated performance measurement
   exists yet. That is a less comfortable claim than `docs/notes/23.md` implies,
   and it is the accurate one.

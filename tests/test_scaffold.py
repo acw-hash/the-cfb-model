@@ -30,8 +30,8 @@ PACKAGES = [
 ]
 
 COMMAND_GROUPS = ["ingest", "features", "ratings", "train", "predict", "backtest"]
-# Groups whose bare invoke still raises NotImplementedError (no real subcommands yet).
-UNIMPLEMENTED_GROUPS = ["ratings", "train", "predict"]
+# Groups with no standalone implementation: the walk-forward path drives them.
+UNWIRED_GROUPS = ["features", "ratings", "train", "predict"]
 
 runner = CliRunner()
 
@@ -49,12 +49,14 @@ def test_cli_help_exits_zero() -> None:
         assert name in result.output
 
 
-@pytest.mark.parametrize("group", UNIMPLEMENTED_GROUPS)
-def test_cli_group_not_implemented(group: str) -> None:
+@pytest.mark.parametrize("group", UNWIRED_GROUPS)
+def test_unwired_cli_group_points_at_the_walkforward_path(group: str) -> None:
+    """An unwired verb must say so and name what does work, not raise."""
     result = runner.invoke(app, [group])
-    assert result.exit_code != 0
-    assert isinstance(result.exception, NotImplementedError)
-    assert "not implemented" in str(result.exception).lower()
+    assert result.exit_code == 2
+    assert result.exception is None or isinstance(result.exception, SystemExit)
+    assert "not wired" in result.output.lower()
+    assert "backtest run" in result.output
 
 
 def test_cli_backtest_help() -> None:
@@ -62,6 +64,7 @@ def test_cli_backtest_help() -> None:
     assert result.exit_code == 0
     assert "plan" in result.output
     assert "run" in result.output
+    assert "verify" in result.output
 
 
 def test_cli_app_is_typer() -> None:
