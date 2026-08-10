@@ -14,6 +14,7 @@ from ncaa_quant.data.asof import AsOfJoinError, as_of_join
 from ncaa_quant.data.schemas import (
     GamesSchema,
     LinesHistoricalSchema,
+    PlaysSchema,
     TeamsSchema,
     validate_table,
 )
@@ -74,6 +75,57 @@ def test_games_schema_round_trip() -> None:
     validated = GamesSchema.validate(df)
     assert list(validated.columns) == list(df.columns)
     assert validated.iloc[0]["home_points"] == 31
+
+
+def _plays_df(**overrides: object) -> pd.DataFrame:
+    row: dict[str, object] = {
+        "play_id": 1,
+        "game_id": 1001,
+        "drive_id": 10,
+        "season": 2024,
+        "week": 1,
+        "offense_id": 10,
+        "defense_id": 20,
+        "period": 1,
+        "down": 1,
+        "distance": 10,
+        "yards_to_goal": 75,
+        "play_type": "Rush",
+        "yards_gained": 4,
+        "epa": 0.1,
+        "wp": None,
+        "offense_score": 14,
+        "defense_score": 7,
+        "clock": 600,
+        "score_margin": 7,
+        "success": True,
+        "scoring": False,
+        "source_version": "test",
+        "event_time": _ts("2024-09-01T23:00:00"),
+        "ingested_at": _ts("2024-09-02T02:00:00"),
+    }
+    row.update(overrides)
+    return pd.DataFrame([row])
+
+
+def test_plays_schema_round_trip() -> None:
+    df = _plays_df()
+    validated = PlaysSchema.validate(df)
+    assert int(validated.iloc[0]["offense_score"]) == 14
+    assert int(validated.iloc[0]["clock"]) == 600
+    assert int(validated.iloc[0]["score_margin"]) == 7
+
+
+def test_plays_schema_score_out_of_range_raises() -> None:
+    df = _plays_df(offense_score=101)
+    with pytest.raises(SchemaErrors):
+        PlaysSchema.validate(df, lazy=True)
+
+
+def test_plays_schema_clock_out_of_range_raises() -> None:
+    df = _plays_df(clock=901)
+    with pytest.raises(SchemaErrors):
+        PlaysSchema.validate(df, lazy=True)
 
 
 def test_schema_points_out_of_range_raises() -> None:

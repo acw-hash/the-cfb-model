@@ -335,6 +335,54 @@ def _yards_to_goal(value: Any) -> int | None:
     return ytg
 
 
+def _play_score(value: Any) -> int | None:
+    """Non-negative in-game score; out-of-range → null (never zero-filled)."""
+    score = _as_int(value)
+    if score is None or score < 0 or score > _PLAY_SCORE_MAX:
+        return None
+    return score
+
+
+def _clock_seconds(value: Any) -> int | None:
+    """CFBD clock as seconds remaining in the period.
+
+    Accepts ``{\"minutes\": m, \"seconds\": s}``, a bare int/float seconds
+    value, or ``\"M:SS\"`` / ``\"MM:SS\"`` strings. Out-of-range → null.
+    """
+    if value is None or (isinstance(value, float) and pd.isna(value)):
+        return None
+    if isinstance(value, Mapping):
+        minutes = _as_int(value.get("minutes"))
+        seconds = _as_int(value.get("seconds"))
+        if minutes is None and seconds is None:
+            return None
+        total = int(minutes or 0) * 60 + int(seconds or 0)
+    elif isinstance(value, str):
+        text = value.strip()
+        if not text:
+            return None
+        if ":" in text:
+            left, _, right = text.partition(":")
+            minutes = _as_int(left)
+            seconds = _as_int(right)
+            if minutes is None or seconds is None:
+                return None
+            total = minutes * 60 + seconds
+        else:
+            parsed = _as_int(text)
+            if parsed is None:
+                return None
+            total = parsed
+    else:
+        parsed = _as_int(value)
+        if parsed is None:
+            return None
+        total = parsed
+    if total < 0 or total > _PLAY_CLOCK_MAX_S:
+        return None
+    return total
+
+
 def _as_int(value: Any) -> int | None:
     if value is None or value == "":
         return None
@@ -647,12 +695,21 @@ _PLAYS_COLS: Final[tuple[str, ...]] = (
     "yards_gained",
     "epa",
     "wp",
+    "offense_score",
+    "defense_score",
+    "clock",
+    "score_margin",
     "success",
     "scoring",
     "source_version",
     "event_time",
     "ingested_at",
 )
+
+# College regulation period length (seconds). Clock values outside ``[0, 900]``
+# are coerced to null (same dirty-field policy as yards_to_goal / period).
+_PLAY_CLOCK_MAX_S: Final[int] = 900
+_PLAY_SCORE_MAX: Final[int] = 100
 
 _DRIVES_COLS: Final[tuple[str, ...]] = (
     "drive_id",
@@ -927,6 +984,20 @@ def normalize_plays_payload(
             event = game_event_time(start) if start is not None else preseason_event_time(season)
         success_raw = item.get("success")
         scoring_raw = item.get("scoring")
+        offense_score = _play_score(
+            item.get("offenseScore")
+            if item.get("offenseScore") is not None
+            else item.get("offense_score")
+        )
+        defense_score = _play_score(
+            item.get("defenseScore")
+            if item.get("defenseScore") is not None
+            else item.get("defense_score")
+        )
+        score_margin: int | None = None
+        if offense_score is not None and defense_score is not None:
+            score_margin = offense_score - defense_score
+        clock = _clock_seconds(item.get("clock"))
         rows.append(
             {
                 "play_id": play_id,
@@ -958,6 +1029,10 @@ def normalize_plays_payload(
                     if item.get("homeWinProb") is not None
                     else item.get("wp")
                 ),
+                "offense_score": offense_score,
+                "defense_score": defense_score,
+                "clock": clock,
+                "score_margin": score_margin,
                 "success": _as_bool(success_raw),
                 "scoring": _as_bool(scoring_raw),
                 "source_version": source_version,

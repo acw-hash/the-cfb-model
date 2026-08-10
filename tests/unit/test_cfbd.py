@@ -96,6 +96,9 @@ PLAYS_PAYLOAD = [
         "play_type": "Rush",
         "yards_gained": 5,
         "ppa": 0.12,
+        "offenseScore": 7,
+        "defenseScore": 0,
+        "clock": {"minutes": 12, "seconds": 30},
         "success": True,
         "scoring": False,
     }
@@ -239,6 +242,11 @@ def test_normalize_plays(team_map: dict[str, str]) -> None:
     assert df.iloc[0]["offense_id"] == 333
     assert df.iloc[0]["epa"] == pytest.approx(0.12)
     assert df.iloc[0]["event_time"] == KICKOFF + GAME_DURATION
+    assert int(df.iloc[0]["offense_score"]) == 7
+    assert int(df.iloc[0]["defense_score"]) == 0
+    assert int(df.iloc[0]["score_margin"]) == 7
+    assert int(df.iloc[0]["clock"]) == 12 * 60 + 30
+    assert pd.isna(df.iloc[0]["wp"])
 
 
 def test_normalize_lines_open_close() -> None:

@@ -65,7 +65,13 @@ class GamesSchema(_TimedModel):
 
 
 class PlaysSchema(_TimedModel):
-    """Play-by-play (PBP) rows."""
+    """Play-by-play (PBP) rows.
+
+    ``offense_score`` / ``defense_score`` / ``clock`` (seconds remaining in the
+    period) / ``score_margin`` (= offense − defense when both scores present)
+    are required for DESIGN §4.2 Connelly garbage-time fallback. ``wp`` remains
+    nullable — CFBD ``/plays`` archives probed through 2025 do not ship WP.
+    """
 
     # CFBD sometimes emits negative play/drive ids; treat them as opaque keys.
     play_id: Series[pa.Int64] = pa.Field()
@@ -83,6 +89,12 @@ class PlaysSchema(_TimedModel):
     yards_gained: Series[pa.Int32] = pa.Field(nullable=True)
     epa: Series[pa.Float64] = pa.Field(nullable=True)
     wp: Series[pa.Float64] = pa.Field(ge=0.0, le=1.0, nullable=True)
+    offense_score: Series[pa.Int32] = pa.Field(ge=0, le=100, nullable=True)
+    defense_score: Series[pa.Int32] = pa.Field(ge=0, le=100, nullable=True)
+    # Seconds remaining in the current period (college period length ≤ 900).
+    clock: Series[pa.Int32] = pa.Field(ge=0, le=900, nullable=True)
+    # Derived at ingest: offense_score - defense_score when both present.
+    score_margin: Series[pa.Int32] = pa.Field(ge=-100, le=100, nullable=True)
     success: Series[pa.Bool] = pa.Field(nullable=True)
     scoring: Series[pa.Bool] = pa.Field(nullable=True)
     source_version: Series[str] = pa.Field(nullable=True)

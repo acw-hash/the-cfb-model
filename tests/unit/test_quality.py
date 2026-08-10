@@ -15,6 +15,7 @@ from ncaa_quant.quality.validators import (
     check_line_open_close_move,
     check_pbp_drive_points_reconcile,
     check_play_sequence_monotone,
+    check_plays_score_clock_null_rates,
     check_referential_plays_in_games,
     check_score_consistency_box,
 )
@@ -87,6 +88,10 @@ def _plays_frame(rows: list[dict[str, object]] | None = None) -> pd.DataFrame:
         "yards_gained": 4,
         "epa": 0.1,
         "wp": 0.5,
+        "offense_score": 7,
+        "defense_score": 0,
+        "clock": 750,
+        "score_margin": 7,
         "success": True,
         "scoring": False,
         "source_version": "test",
@@ -378,3 +383,32 @@ def test_quarantine_soft_continues_other_partitions(tmp_path: Path) -> None:
     assert is_quarantined(root, "games", season=2023, week=1)
     assert not is_quarantined(root, "games", season=2023, week=2)
     assert result.partitions_checked >= 2
+
+
+def test_plays_score_clock_null_rate_guard_trips_on_scoreless() -> None:
+    """GT-FIX Step 5: seeded score-less fixture must fail the null-rate guard."""
+    blank = {
+        "offense_score": None,
+        "defense_score": None,
+        "clock": None,
+        "score_margin": None,
+    }
+    plays = _plays_frame(
+        [
+            {"play_id": 1, **blank},
+            {"play_id": 2, **blank},
+            {"play_id": 3, **blank},
+        ]
+    )
+    findings = check_plays_score_clock_null_rates(plays)
+    expectations = {f.expectation for f in findings}
+    assert "plays_gt_input_null_rate_offense_score" in expectations
+    assert "plays_gt_input_null_rate_defense_score" in expectations
+    assert "plays_gt_input_null_rate_clock" in expectations
+    assert "plays_gt_input_null_rate_score_margin" in expectations
+    assert all(f.severity == "fail" for f in findings)
+
+
+def test_plays_score_clock_null_rate_guard_passes_when_populated() -> None:
+    plays = _plays_frame([{"play_id": i} for i in range(1, 21)])
+    assert check_plays_score_clock_null_rates(plays) == []

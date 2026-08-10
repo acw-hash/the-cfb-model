@@ -19,6 +19,10 @@ LINE_MOVE_FLAG_THRESHOLD = 20.0
 # CFBD-close vs Odds-API slot_close divergence (docs/historical_odds_change_set.md).
 CFBD_SLOT_CLOSE_TOLERANCE = 1.5
 
+# GT-FIX: max allowed null fraction for Connelly GT inputs on staged plays.
+# WP is intentionally excluded — CFBD /plays archives do not ship it.
+PLAYS_GT_INPUT_MAX_NULL_FRAC = 0.05
+
 _SAMPLE_LIMIT = 5
 
 
@@ -78,6 +82,53 @@ def check_referential_plays_in_games(
             n_failures=int(orphan_mask.sum()),
         )
     ]
+
+
+def check_plays_score_clock_null_rates(
+    plays: pd.DataFrame,
+    *,
+    max_null_frac: float = PLAYS_GT_INPUT_MAX_NULL_FRAC,
+) -> list[CheckFinding]:
+    """Fail when offense/defense score or clock are mostly null (GT-FIX guard).
+
+    Prevents silent recurrence of Task 5 dropping Connelly GT inputs at ingest.
+    ``wp`` is not gated — source archives leave it null by design.
+    """
+    if plays.empty:
+        return []
+    findings: list[CheckFinding] = []
+    for col in ("offense_score", "defense_score", "clock", "score_margin"):
+        if col not in plays.columns:
+            findings.append(
+                CheckFinding(
+                    expectation=f"plays_gt_input_null_rate_{col}",
+                    severity="fail",
+                    message=(
+                        f"plays missing required GT input column {col!r} "
+                        "(null-rate guard cannot run)"
+                    ),
+                    sample_rows=[],
+                    n_failures=1,
+                )
+            )
+            continue
+        null_frac = float(plays[col].isna().mean())
+        if null_frac > max_null_frac:
+            bad = plays.loc[plays[col].isna()]
+            findings.append(
+                CheckFinding(
+                    expectation=f"plays_gt_input_null_rate_{col}",
+                    severity="fail",
+                    message=(
+                        f"plays.{col} null_frac={null_frac:.4f} exceeds "
+                        f"max_null_frac={max_null_frac:.4f} "
+                        "(Connelly garbage-time inputs must be staged)"
+                    ),
+                    sample_rows=_sample_records(bad),
+                    n_failures=int(plays[col].isna().sum()),
+                )
+            )
+    return findings
 
 
 def check_referential_games_venue(

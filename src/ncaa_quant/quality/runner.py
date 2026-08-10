@@ -30,6 +30,7 @@ from ncaa_quant.quality.validators import (
     check_line_open_close_move,
     check_pbp_drive_points_reconcile,
     check_play_sequence_monotone,
+    check_plays_score_clock_null_rates,
     check_referential_games_venue,
     check_referential_plays_in_games,
     check_score_consistency_box,
@@ -335,6 +336,7 @@ def _validate_partition(
         findings.extend(check_referential_plays_in_games(df, games))
         findings.extend(check_completeness_game_counts(games, df, dependent_name="plays"))
         findings.extend(check_play_sequence_monotone(df))
+        findings.extend(check_plays_score_clock_null_rates(df))
     elif table == "drives":
         findings.extend(check_completeness_game_counts(games, df, dependent_name="drives"))
         findings.extend(check_pbp_drive_points_reconcile(games, df))

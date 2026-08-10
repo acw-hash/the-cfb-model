@@ -193,6 +193,10 @@ def _plays_suite() -> gx.ExpectationSuite:
         "yards_gained",
         "epa",
         "wp",
+        "offense_score",
+        "defense_score",
+        "clock",
+        "score_margin",
         "success",
         "scoring",
         "source_version",
@@ -202,11 +206,25 @@ def _plays_suite() -> gx.ExpectationSuite:
     suite.add_expectation(ExpectTableColumnsToMatchSet(column_set=sorted(cols), exact_match=True))
     for col in ("play_id", "game_id", "season", "week", "offense_id", "defense_id", "period"):
         suite.add_expectation(ExpectColumnValuesToNotBeNull(column=col))
+    # GT-FIX: score/clock must be present on nearly all rows. WP may be 100% null
+    # (CFBD /plays archives do not ship it); do not require wp non-null.
+    for col in ("offense_score", "defense_score", "clock", "score_margin"):
+        suite.add_expectation(ExpectColumnValuesToNotBeNull(column=col, mostly=0.95))
     suite.add_expectation(ExpectCompoundColumnsToBeUnique(column_list=["game_id", "play_id"]))
     suite.add_expectation(ExpectColumnValuesToBeBetween(column="period", min_value=1, max_value=8))
     suite.add_expectation(ExpectColumnValuesToBeBetween(column="wp", min_value=0.0, max_value=1.0))
     suite.add_expectation(
         ExpectColumnValuesToBeBetween(column="yards_to_goal", min_value=0, max_value=100)
+    )
+    suite.add_expectation(
+        ExpectColumnValuesToBeBetween(column="offense_score", min_value=0, max_value=100)
+    )
+    suite.add_expectation(
+        ExpectColumnValuesToBeBetween(column="defense_score", min_value=0, max_value=100)
+    )
+    suite.add_expectation(ExpectColumnValuesToBeBetween(column="clock", min_value=0, max_value=900))
+    suite.add_expectation(
+        ExpectColumnValuesToBeBetween(column="score_margin", min_value=-100, max_value=100)
     )
     return suite
 
