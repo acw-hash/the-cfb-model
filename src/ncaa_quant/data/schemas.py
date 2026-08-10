@@ -344,12 +344,19 @@ class ReturningProductionSchema(_TimedModel):
 
 
 class RecruitingSchema(_TimedModel):
-    """Team recruiting-class aggregates."""
+    """Team recruiting-class aggregates.
+
+    CFBD emits small negative ``points`` for some 2014–2018 classes (observed
+    ``-0.04``). Rejecting them left recruiting partitions unwritten while the
+    Task 23 run still published numbers — Phase 2 forbids that silent skip.
+    Allow signed points; treat null-with-indicator downstream rather than
+    dropping the season.
+    """
 
     season: Series[pa.Int32] = pa.Field(ge=1900, le=2100)
     team_id: Series[pa.Int64] = pa.Field(ge=0)
     rank: Series[pa.Int32] = pa.Field(ge=1, nullable=True)
-    points: Series[pa.Float64] = pa.Field(ge=0.0, nullable=True)
+    points: Series[pa.Float64] = pa.Field(nullable=True)
     average_rating: Series[pa.Float64] = pa.Field(nullable=True)
     blue_chip_ratio: Series[pa.Float64] = pa.Field(ge=0.0, le=1.0, nullable=True)
     source_version: Series[str] = pa.Field(nullable=True)

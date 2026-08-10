@@ -475,6 +475,7 @@ def run_backtest(
     cfbd_lines: pd.DataFrame | None = None,
     observations: pd.DataFrame | None = None,
     priors_frame: pd.DataFrame | None = None,
+    play_counts: tuple[int, int] | None = None,
     output_root: Path | str = DEFAULT_OUTPUT_ROOT,
     force: bool = False,
     tracking_uri: str | None = None,
@@ -507,7 +508,8 @@ def run_backtest(
             n_mc = int(payload["n_mc_draws"])
         if "n_epistemic_draws" in payload:
             n_ep = int(payload["n_epistemic_draws"])
-        enforce = bool(payload.get("enforce_ablation_preconditions", False))
+        # Phase 2: inert A1/A5 must fail loud unless the config explicitly opts out.
+        enforce = bool(payload.get("enforce_ablation_preconditions", True))
         stack = build_production_stack(
             cfg,
             kind=stack_kind,
@@ -515,6 +517,7 @@ def run_backtest(
             priors_frame=priors_frame,
             snapshots=snapshots,
             cfbd_lines=cfbd_lines,
+            play_counts=play_counts,
             n_mc_draws=n_mc,
             n_epistemic_draws=n_ep,
             enforce_ablation_preconditions=enforce,

@@ -243,15 +243,26 @@ def _ingest_dataset_reporting(
     season: int,
     endpoint: str,
     force: bool,
+    allow_schema_skip: bool = False,
 ) -> str | None:
-    """Run ingest; on schema failure return a finding string (do not raise)."""
+    """Run ingest; prior-family schema failures raise unless ``allow_schema_skip``.
+
+    Phase 2: refusing to stage recruiting/returning/roster while still publishing
+    numbers is forbidden. Schema failures on those endpoints are loud by default.
+    """
+    prior_family = {"roster", "returning", "recruiting", "talent"}
     try:
         _ingest_dataset(season=season, endpoint=endpoint, force=force)
     except Exception as exc:  # noqa: BLE001
-        # Pandera SchemaErrors and PartitionError wrap validation failures.
         name = type(exc).__name__
-        if "Schema" in name or "schema" in str(exc).lower() or "DATAFRAME_CHECK" in str(exc):
-            return f"SCHEMA_FAIL {season}/{endpoint}: {exc}"
+        is_schema = (
+            "Schema" in name or "schema" in str(exc).lower() or "DATAFRAME_CHECK" in str(exc)
+        )
+        if is_schema:
+            finding = f"SCHEMA_FAIL {season}/{endpoint}: {exc}"
+            if endpoint in prior_family and not allow_schema_skip:
+                raise SchemaValidationFinding(finding) from exc
+            return finding
         raise
     return None
 

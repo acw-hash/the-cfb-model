@@ -373,6 +373,77 @@ def quality_run(
         raise typer.Exit(code=1)
 
 
+@quality_app.command("pit-audit")
+def quality_pit_audit(
+    seasons: str = typer.Option(
+        ...,
+        "--seasons",
+        help="Season or inclusive range, e.g. 2023 or 2014-2025.",
+    ),
+    staged_dir: str = typer.Option("data/staged", "--staged-dir"),
+) -> None:
+    """Full staged-set temporal PIT audit (event_time ≤ ingested_at)."""
+    configure_logging()
+    from ncaa_quant.ingestion.cfbd import parse_seasons_arg
+    from ncaa_quant.quality.pit_audit import run_staged_pit_audit
+
+    season_tuple = parse_seasons_arg(seasons)
+    result = run_staged_pit_audit(season_tuple, staged_dir=Path(staged_dir))
+    for line in result.summary_lines():
+        typer.echo(line)
+    if not result.passed:
+        raise typer.Exit(code=1)
+
+
+@ingest_app.command("odds-backup")
+def ingest_odds_backup(
+    dest: str = typer.Option(
+        ...,
+        "--dest",
+        help=(
+            "Off-machine backup root for this source only (required). "
+            "Live and historical archives must use separate dest roots — "
+            "see docs/runbooks/odds_archive_backup.md."
+        ),
+    ),
+    source: str = typer.Option("data/raw/odds_api", "--source"),
+    restore_drill_flag: bool = typer.Option(
+        False,
+        "--restore-drill",
+        help="After backup, copy current/ to a restore dir and verify digests.",
+    ),
+) -> None:
+    """Replicate a raw Odds API archive off-machine (DESIGN §10 / E-1)."""
+    configure_logging()
+    log = get_logger("ncaa_quant.cli")
+    from ncaa_quant.ops.odds_backup import (
+        OddsBackupError,
+        assert_backup_fresh,
+        replicate_odds_archive,
+        restore_drill,
+    )
+
+    try:
+        manifest = replicate_odds_archive(source, dest)
+        log.info(
+            "odds_backup_complete",
+            n_files=manifest.n_files,
+            total_bytes=manifest.total_bytes,
+            dest=manifest.dest_root,
+        )
+        typer.echo(
+            f"odds backup n_files={manifest.n_files} bytes={manifest.total_bytes} "
+            f"dest={manifest.dest_root} created_at={manifest.created_at}"
+        )
+        assert_backup_fresh(manifest.dest_root)
+        if restore_drill_flag:
+            drill = restore_drill(manifest.dest_root, source_root=source)
+            typer.echo(f"restore drill ok n_files={drill.n_files} out={drill.dest_root}")
+    except OddsBackupError as exc:
+        typer.echo(str(exc))
+        raise typer.Exit(code=1) from exc
+
+
 @features_app.callback(invoke_without_command=True)
 def features() -> None:
     """Build and materialize features — not wired as a standalone verb."""
@@ -499,6 +570,15 @@ def backtest_run(
     output_path = Path(output_root)
     payload = load_backtest_config(config)
     cfg = walkforward_config_from_mapping(payload)
+
+    from ncaa_quant.evaluation.inert import InertComponentError, assert_prior_family_staged
+
+    try:
+        assert_prior_family_staged(cfg.all_replay_seasons(), staged_root=staged_path)
+    except InertComponentError as exc:
+        typer.echo(str(exc))
+        raise typer.Exit(code=2) from exc
+
     games = load_staged_games(staged_path, cfg.all_replay_seasons())
     if games.empty:
         typer.echo(f"No staged games for seasons {cfg.all_replay_seasons()} under {staged_path}")
@@ -519,12 +599,13 @@ def backtest_run(
     advanced = pd.concat(advanced_frames, ignore_index=True) if advanced_frames else None
     plays = pd.concat(plays_frames, ignore_index=True) if plays_frames else None
     cfbd_lines = pd.concat(lines_frames, ignore_index=True) if lines_frames else None
-    obs, _n_on, _n_off = build_observations_from_staged(
+    obs, n_on, n_off = build_observations_from_staged(
         plays=plays,
         games=games,
         advanced=advanced,
         garbage_time_filter=cfg.garbage_time_filter,
     )
+    play_counts = (n_on, n_off) if n_off > 0 else None
 
     result = run_backtest(
         config,
@@ -532,6 +613,7 @@ def backtest_run(
         snapshots=None,
         cfbd_lines=cfbd_lines,
         observations=obs,
+        play_counts=play_counts,
         output_root=output_path,
         force=force,
         tracking_uri=tracking_uri,

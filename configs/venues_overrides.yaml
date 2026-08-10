@@ -11,3 +11,34 @@ venues:
     timezone: Europe/Dublin
     surface: grass
     is_dome: false
+
+  # Ireland — Croke Park (2014 Navy–Notre Dame etc.). CFBD omits lat/lon/state.
+  4737:
+    name: Croke Park Stadium
+    city: Dublin
+    timezone: Europe/Dublin
+    lat: 53.3607
+    lon: -6.2517
+    surface: grass
+    is_dome: false
+
+  # Frisco TX — Ford Center at The Star (SMU / neutral). CFBD omits lat/lon.
+  5455:
+    name: Ford Center At The Star
+    city: Frisco
+    state: TX
+    timezone: America/Chicago
+    lat: 33.1107
+    lon: -96.8198
+    surface: turf
+    is_dome: true
+
+  # Bahamas — Bahamas Bowl / international neutrals. No USPS state → no TZ infer.
+  4779:
+    name: Thomas A. Robinson National Stadium
+    city: Nassau
+    timezone: America/Nassau
+    lat: 25.0500
+    lon: -77.3580
+    surface: grass
+    is_dome: false

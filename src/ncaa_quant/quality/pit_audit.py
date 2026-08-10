@@ -1,17 +1,51 @@
 """Point-in-time temporal sanity checks (DESIGN §8 / §15 item 7).
 
 These are the quality-layer PIT guards. Feature-store ``pit_audit`` that
-recomputes feature rows belongs to a later task; this module only asserts
-ingestion temporal contracts on staged partitions.
+recomputes feature rows belongs to :mod:`ncaa_quant.features.pit_audit`; this
+module asserts ingestion temporal contracts on staged partitions.
 """
 
 from __future__ import annotations
 
+from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any
 
 import pandas as pd  # type: ignore[import-untyped]
 
 from ncaa_quant.quality.validators import CheckFinding, _sample_records
+
+
+@dataclass
+class StagedPitAuditResult:
+    """Aggregate temporal PIT audit over staged partitions."""
+
+    seasons: tuple[int, ...]
+    partitions_checked: int = 0
+    partitions_passed: int = 0
+    partition_failures: list[dict[str, Any]] = field(default_factory=list)
+
+    @property
+    def passed(self) -> bool:
+        return not self.partition_failures
+
+    def summary_lines(self) -> list[str]:
+        lines = [
+            f"pit_audit seasons={list(self.seasons)}",
+            f"  partitions checked={self.partitions_checked} "
+            f"passed={self.partitions_passed} "
+            f"failed={len(self.partition_failures)}",
+        ]
+        for failure in self.partition_failures[:30]:
+            week = failure.get("week")
+            week_s = f" w{week}" if week is not None else ""
+            lines.append(
+                f"  FAIL {failure['table']} s{failure['season']}{week_s} — "
+                f"{failure['expectation']}: {failure['message']}"
+            )
+        if len(self.partition_failures) > 30:
+            lines.append(f"  ... and {len(self.partition_failures) - 30} more")
+        return lines
 
 
 def check_temporal_sanity(df: pd.DataFrame) -> list[CheckFinding]:
@@ -99,3 +133,87 @@ def assert_no_future_event_times(
             n_failures=int(bad_mask.sum()),
         )
     ]
+
+
+def run_staged_pit_audit(
+    seasons: tuple[int, ...] | list[int],
+    *,
+    staged_dir: Path | str | None = None,
+    tables: tuple[str, ...] | None = None,
+    sample_rows_per_partition: int = 0,
+) -> StagedPitAuditResult:
+    """Run ingestion temporal PIT checks over every staged partition in ``seasons``.
+
+    This is the Phase 2 "full pit_audit" over the staged set (amended
+    ``event_time`` semantics). Feature-store recomputation audits live in
+    :mod:`ncaa_quant.features.pit_audit` and require materialized features.
+    """
+    from ncaa_quant.config import load_config
+    from ncaa_quant.data.schemas import GAME_GRAINED_TABLES, REFERENCE_TABLES
+    from ncaa_quant.data.storage import ParquetStore
+
+    cfg = load_config()
+    root = Path(staged_dir) if staged_dir is not None else Path(cfg.paths.staged_dir)
+    season_tuple = tuple(int(s) for s in seasons)
+    target = tables or tuple(sorted(set(GAME_GRAINED_TABLES) | set(REFERENCE_TABLES)))
+    result = StagedPitAuditResult(seasons=season_tuple)
+    del sample_rows_per_partition  # reserved for future row-level sampling reports
+
+    with ParquetStore(root) as store:
+        for season in season_tuple:
+            for table in target:
+                try:
+                    paths = list(store._matching_paths(table, {"season": season}))  # noqa: SLF001
+                except Exception:  # noqa: BLE001
+                    paths = []
+                if not paths:
+                    continue
+                for path in paths:
+                    try:
+                        df = pd.read_parquet(path)
+                    except Exception as exc:  # noqa: BLE001
+                        result.partition_failures.append(
+                            {
+                                "table": table,
+                                "season": season,
+                                "path": str(path),
+                                "expectation": "parquet_readable",
+                                "message": str(exc),
+                                "n_failures": 1,
+                            }
+                        )
+                        continue
+                    week = _week_from_path(path)
+                    findings = check_temporal_sanity(df)
+                    if table == "games":
+                        findings.extend(check_negative_scores(df))
+                    result.partitions_checked += 1
+                    if not findings:
+                        result.partitions_passed += 1
+                        continue
+                    for finding in findings:
+                        if finding.severity != "fail":
+                            continue
+                        result.partition_failures.append(
+                            {
+                                "table": table,
+                                "season": season,
+                                "week": week,
+                                "path": str(path),
+                                "expectation": finding.expectation,
+                                "message": finding.message,
+                                "n_failures": int(finding.n_failures),
+                            }
+                        )
+
+    return result
+
+
+def _week_from_path(path: Path) -> int | None:
+    for part in path.parts:
+        if part.startswith("week="):
+            try:
+                return int(part.split("=", 1)[1])
+            except ValueError:
+                return None
+    return None

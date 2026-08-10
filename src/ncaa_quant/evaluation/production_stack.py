@@ -1638,15 +1638,16 @@ def build_production_stack(
     play_counts: tuple[int, int] | None = None,
     n_mc_draws: int | None = None,
     n_epistemic_draws: int | None = None,
-    enforce_ablation_preconditions: bool = False,
+    enforce_ablation_preconditions: bool = True,
 ) -> ProductionStack:
     """Config-driven construction of a fully-specified production stack.
 
     ``fundamental`` forces ``market_features_available=False``;
     ``market_aware`` keeps the caller's A3 setting.
 
-    When ``enforce_ablation_preconditions`` is True, A1/A5 switches that cannot
-    change inputs raise :class:`ProductionStackError` instead of silent no-ops.
+    ``enforce_ablation_preconditions`` defaults to True (Phase 2): A1/A5
+    switches that cannot change inputs raise :class:`ProductionStackError`
+    instead of silent no-ops. Pass False only for cold-start wiring proofs.
     """
     config.validate_ablations()
     if kind == "fundamental":
@@ -1665,7 +1666,9 @@ def build_production_stack(
             # A1 only meaningful when fitted priors exist and vary.
             assert_a1_priors_precondition(priors_frame)
         if play_counts is not None and not cfg.garbage_time_filter:
-            # Running A5 (filter off) — require that filter-on would differ.
+            # A5 ablation (filter off): turning the filter off must change the
+            # play set. Identical on/off counts mean garbage_time flags are
+            # absent on staged plays — refuse a silent no-op delta.
             assert_a5_garbage_time_precondition(
                 n_plays_gt_on=play_counts[0], n_plays_gt_off=play_counts[1]
             )
