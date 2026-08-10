@@ -145,8 +145,7 @@ class PromotionLedger:
         entry = LedgerEntry(
             year=y,
             attempt_index=int(attempt_index),
-            created_at=created_at
-            or datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            created_at=created_at or datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
             candidate_version=int(candidate_version),
             champion_version=champion_version,
             alpha_base=float(alpha_base),

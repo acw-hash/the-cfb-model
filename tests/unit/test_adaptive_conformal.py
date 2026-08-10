@@ -32,9 +32,7 @@ def _calib_frame(*, n_per_season: int = 200, seed: int = 11) -> pd.DataFrame:
                 "realized_margin": y,
             }
             for q in (0.05, 0.10, 0.25, 0.50, 0.75, 0.90, 0.95):
-                row[quantile_column("margin", q)] = float(
-                    stats.norm.ppf(q, loc=mu, scale=12)
-                )
+                row[quantile_column("margin", q)] = float(stats.norm.ppf(q, loc=mu, scale=12))
             rows.append(row)
             gid += 1
     return pd.DataFrame(rows)

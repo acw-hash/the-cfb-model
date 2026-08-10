@@ -307,9 +307,7 @@ def audit_prophecy_features(
         checked += 1
         corr = float(np.corrcoef(values[ok], y[ok])[0, 1])
         if np.isfinite(corr) and abs(corr) >= float(threshold):
-            findings.append(
-                ProphecyFinding(feature=col, correlation=corr, n=int(ok.sum()))
-            )
+            findings.append(ProphecyFinding(feature=col, correlation=corr, n=int(ok.sum())))
     return ProphecyAuditResult(
         findings=tuple(findings),
         n_features_checked=checked,

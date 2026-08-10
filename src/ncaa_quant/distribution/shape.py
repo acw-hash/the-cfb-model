@@ -288,9 +288,7 @@ def win_equals_cover_at_zero(
             "path": "mc",
         }
 
-    if kernel is not None and not isinstance(
-        kernel, (KeyNumberKernel, ConditionalKeyNumberKernel)
-    ):
+    if kernel is not None and not isinstance(kernel, (KeyNumberKernel, ConditionalKeyNumberKernel)):
         msg = "kernel must be a KeyNumberKernel, ConditionalKeyNumberKernel, or None"
         raise TypeError(msg)
 

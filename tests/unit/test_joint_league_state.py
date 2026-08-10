@@ -6,7 +6,6 @@ from datetime import UTC, datetime, timedelta
 
 import numpy as np
 import pandas as pd
-import pytest
 
 from ncaa_quant.ratings.league_state import LeagueState
 from ncaa_quant.ratings.state_space import (
@@ -37,9 +36,9 @@ def _toy_schedule(*, n_teams: int = 8, n_weeks: int = 6, seed: int = 3) -> pd.Da
             h, a = order[i], order[i + 1]
             home_epa = off[h] - defense[a] + 0.02 + true_env + rng.normal(0, 0.04)
             away_epa = off[a] - defense[h] + true_env + rng.normal(0, 0.04)
-            margin = 80.0 * (
-                (off[h] - defense[a]) - (off[a] - defense[h]) + 0.02
-            ) + rng.normal(0, 10)
+            margin = 80.0 * ((off[h] - defense[a]) - (off[a] - defense[h]) + 0.02) + rng.normal(
+                0, 10
+            )
             rows.append(
                 {
                     "game_id": gid,
@@ -120,10 +119,16 @@ def test_filter_shift_invariance_end_to_end() -> None:
         return out
 
     baseline = run_filter(
-        obs, config=cfg, record_weekly=False, preseason_states=_priors(0.0)  # type: ignore[arg-type]
+        obs,
+        config=cfg,
+        record_weekly=False,
+        preseason_states=_priors(0.0),  # type: ignore[arg-type]
     )
     shifted = run_filter(
-        obs, config=cfg, record_weekly=False, preseason_states=_priors(0.2)  # type: ignore[arg-type]
+        obs,
+        config=cfg,
+        record_weekly=False,
+        preseason_states=_priors(0.2),  # type: ignore[arg-type]
     )
 
     for tid in range(8):

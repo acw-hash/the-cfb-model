@@ -17,13 +17,13 @@ from ncaa_quant.evaluation.backtest_runner import (
     run_backtest,
     walkforward_config_from_mapping,
 )
-from ncaa_quant.evaluation.production_stack import (
-    assert_feature_signature,
-    build_production_stack,
-)
 from ncaa_quant.evaluation.leakage import (
     assert_no_prophecy_features,
     audit_prophecy_features,
+)
+from ncaa_quant.evaluation.production_stack import (
+    assert_feature_signature,
+    build_production_stack,
 )
 from ncaa_quant.evaluation.walkforward import (
     WalkForwardConfig,

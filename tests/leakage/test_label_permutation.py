@@ -73,9 +73,7 @@ def test_permutation_actually_moves_labels() -> None:
     labels = _labels()
     permuted = permute_labels_within_week(labels, seed=2)
 
-    moved = (
-        labels["realized_margin"].to_numpy() != permuted["realized_margin"].to_numpy()
-    ).sum()
+    moved = (labels["realized_margin"].to_numpy() != permuted["realized_margin"].to_numpy()).sum()
     assert moved > 0.5 * len(labels)
 
 
@@ -84,12 +82,8 @@ def test_margin_and_total_move_together() -> None:
     labels = _labels()
     permuted = permute_labels_within_week(labels, seed=3)
 
-    original_pairs = set(
-        zip(labels["realized_margin"], labels["realized_total"], strict=True)
-    )
-    for margin, total in zip(
-        permuted["realized_margin"], permuted["realized_total"], strict=True
-    ):
+    original_pairs = set(zip(labels["realized_margin"], labels["realized_total"], strict=True))
+    for margin, total in zip(permuted["realized_margin"], permuted["realized_total"], strict=True):
         assert (margin, total) in original_pairs
 
 
@@ -161,9 +155,7 @@ def test_a_leaking_model_is_caught() -> None:
 
     # Predictions that are the labels plus a whisper of noise: a leak.
     leaked = y_eval + np.random.default_rng(12).normal(scale=0.5, size=y_eval.size)
-    result = evaluate_label_permutation(
-        y_eval, leaked, train_mean_label=train_mean, seed=12
-    )
+    result = evaluate_label_permutation(y_eval, leaked, train_mean_label=train_mean, seed=12)
 
     assert result.beats_chance
     assert not result.passed
@@ -284,9 +276,7 @@ def test_prophecy_audit_ignores_constant_and_bookkeeping_columns() -> None:
 
 def test_prophecy_audit_can_target_the_total() -> None:
     labels = _labels()
-    poisoned = plant_prophecy_feature(
-        _features(labels), labels, label_column="realized_total"
-    )
+    poisoned = plant_prophecy_feature(_features(labels), labels, label_column="realized_total")
 
     assert audit_prophecy_features(poisoned, labels, label_column="realized_total").findings
     # ...and the same column is innocent with respect to the margin.

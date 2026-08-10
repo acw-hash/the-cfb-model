@@ -179,9 +179,7 @@ def fit_key_number_kernel(
             "min_bucket_n": min_bucket_n,
             "n_buckets": len(bucket_list),
             "n_buckets_fit": sum(1 for _, _, k in bucket_list if k is not None),
-            "bucket_ns": {
-                f"[{lo},{hi})": (0 if k is None else k.n) for lo, hi, k in bucket_list
-            },
+            "bucket_ns": {f"[{lo},{hi})": (0 if k is None else k.n) for lo, hi, k in bucket_list},
         },
     )
 

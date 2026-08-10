@@ -1272,7 +1272,6 @@ def run_filter(
             }
         )
 
-
     history = pd.DataFrame(history_rows)
     if record_weekly and not history.empty:
         weekly = (

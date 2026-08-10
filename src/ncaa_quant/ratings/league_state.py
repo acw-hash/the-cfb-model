@@ -130,9 +130,7 @@ class LeagueState:
             [float(hfa.mean[0]), float(config.scoring_env_prior_mean)],
             dtype=float,
         )
-        cov = np.diag(
-            [float(hfa.cov[0, 0]), float(config.scoring_env_prior_var)]
-        ).astype(float)
+        cov = np.diag([float(hfa.cov[0, 0]), float(config.scoring_env_prior_var)]).astype(float)
         return cls(config=config, team_ids=[], mean=mean, cov=cov)
 
     def has_team(self, tid: str) -> bool:

@@ -111,9 +111,7 @@ def test_validation_detects_pooled_failure_on_planted_world() -> None:
         total = 0.0
         for row in report.rows:  # type: ignore[attr-defined]
             for key in report.key_margins:  # type: ignore[attr-defined]
-                total += abs(
-                    float(row["empirical"][key]) - float(row["kernel"][key])
-                )
+                total += abs(float(row["empirical"][key]) - float(row["kernel"][key]))
         return total
 
     assert l1(cond_val) < l1(pooled_val)
