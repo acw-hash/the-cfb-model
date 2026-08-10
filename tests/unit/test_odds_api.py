@@ -1479,6 +1479,116 @@ def test_sam_houston_state_match_requires_schedule_presence(
     hit = match_odds_events_to_cfbd(events, schedule, ingested_at=kick)
     assert hit.iloc[0]["match_status"] == "matched"
     assert int(hit.iloc[0]["game_id"]) == 401299999
+    assert bool(hit.iloc[0]["swap_detected"]) is False
+
+
+def test_home_away_swap_matches_within_tolerance_sets_swap_detected() -> None:
+    """Unordered-pair fallback matches bowl/neutral flips; does not widen ±36h."""
+    kick = datetime(2024, 1, 1, 1, 0, tzinfo=UTC)
+    schedule = pd.DataFrame(
+        [
+            _schedule_row(
+                game_id=401520999,
+                season=2023,
+                home="LSU",
+                away="USC",
+                start=kick,
+            )
+        ]
+    )
+    # Odds lists home/away flipped vs CFBD (common on neutral sites).
+    ev = OddsEventRef(
+        odds_event_id="usc-lsu-swap",
+        game_key=make_game_key(2023, "USC", "LSU", kick.date()),
+        season=2023,
+        home_team="USC",
+        away_team="LSU",
+        kickoff=kick + timedelta(hours=3),
+    )
+    out = match_odds_events_to_cfbd([ev], schedule, ingested_at=kick)
+    assert out.iloc[0]["match_status"] == "matched"
+    assert int(out.iloc[0]["game_id"]) == 401520999
+    assert bool(out.iloc[0]["swap_detected"]) is True
+    assert float(out.iloc[0]["kickoff_delta_hours"]) == 3.0
+
+    # Outside existing tolerance → still unmatched (do not widen).
+    far = OddsEventRef(
+        odds_event_id="usc-lsu-far",
+        game_key=make_game_key(2023, "USC", "LSU", kick.date()),
+        season=2023,
+        home_team="USC",
+        away_team="LSU",
+        kickoff=kick + timedelta(hours=40),
+    )
+    miss = match_odds_events_to_cfbd([far], schedule, ingested_at=kick)
+    assert miss.iloc[0]["match_status"] == "unmatched"
+    assert bool(miss.iloc[0]["swap_detected"]) is False
+
+
+def test_ordered_match_preferred_over_swap() -> None:
+    """Ordered pair wins; swap fallback is not consulted when ordered hits."""
+    kick = datetime(2024, 9, 7, 19, 0, tzinfo=UTC)
+    schedule = pd.DataFrame(
+        [
+            _schedule_row(
+                game_id=1,
+                season=2024,
+                home="Michigan",
+                away="Texas",
+                start=kick,
+            ),
+            _schedule_row(
+                game_id=2,
+                season=2024,
+                home="Texas",
+                away="Michigan",
+                start=kick + timedelta(hours=1),
+            ),
+        ]
+    )
+    ev = OddsEventRef(
+        odds_event_id="ordered-first",
+        game_key=make_game_key(2024, "Michigan", "Texas", kick.date()),
+        season=2024,
+        home_team="Michigan",
+        away_team="Texas",
+        kickoff=kick,
+    )
+    out = match_odds_events_to_cfbd([ev], schedule, ingested_at=kick)
+    assert int(out.iloc[0]["game_id"]) == 1
+    assert bool(out.iloc[0]["swap_detected"]) is False
+
+
+def test_write_odds_cfbd_crosswalk_drops_swap_detected(tmp_path: Path) -> None:
+    """swap_detected is matcher-only; strict schema rejects it on persist."""
+    kick = datetime(2024, 9, 7, 19, 0, tzinfo=UTC)
+    schedule = pd.DataFrame(
+        [
+            _schedule_row(
+                game_id=99,
+                season=2024,
+                home="A",
+                away="B",
+                start=kick,
+            )
+        ]
+    )
+    ev = OddsEventRef(
+        odds_event_id="swap-write",
+        game_key="2024:B:A:2024-09-07",
+        season=2024,
+        home_team="B",
+        away_team="A",
+        kickoff=kick,
+    )
+    matched = match_odds_events_to_cfbd([ev], schedule, ingested_at=kick)
+    assert bool(matched.iloc[0]["swap_detected"]) is True
+    with ParquetStore(tmp_path / "staged") as store:
+        n = write_odds_cfbd_crosswalk(store, matched)
+        assert n == 1
+        saved = store.read("odds_cfbd_game_crosswalk", filters={"season": 2024})
+    assert "swap_detected" not in saved.columns
+    assert int(saved.iloc[0]["game_id"]) == 99
 
 
 def test_preview_crosswalk_game_key_regression_flags_remap(

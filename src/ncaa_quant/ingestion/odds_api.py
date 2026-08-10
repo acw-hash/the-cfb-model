@@ -35,7 +35,9 @@ project. Canonical school names come from ``configs/team_names.yaml`` via
 
 **Canonical game identity (AUDIT-6).** CFBD's numeric ``game_id`` is the only
 identity of record. Odds API events are matched via normalized team pair +
-kickoff within ±36h and persisted in ``odds_cfbd_game_crosswalk``. Ambiguous
+kickoff within ±36h and persisted in ``odds_cfbd_game_crosswalk``. Ordered
+home/away is tried first; if it misses, the unordered (swapped) pair is tried
+within the same ±36h window and recorded with ``swap_detected=True``. Ambiguous
 matches are quarantined (``game_id`` null) — never guessed. The derived
 ``game_key`` is matcher input only. A one-day postpone keeps one CFBD id
 because a prior matched ``odds_event_id`` is reused across commence-time shifts.
@@ -1013,6 +1015,35 @@ def load_cfbd_schedule(
     return pd.concat(frames, ignore_index=True)
 
 
+def _schedule_within_tolerance(
+    schedule: pd.DataFrame,
+    *,
+    season: int,
+    home_team: str,
+    away_team: str,
+    kickoff: datetime,
+    tolerance: timedelta,
+) -> pd.DataFrame:
+    """Return schedule rows for an ordered pair whose kickoff is within ``tolerance``."""
+    if schedule.empty:
+        return schedule.iloc[0:0].copy()
+    cands = schedule[
+        (schedule["season"] == season)
+        & (schedule["home_team"] == home_team)
+        & (schedule["away_team"] == away_team)
+    ]
+    if cands.empty:
+        return cands.copy()
+    delta_vals: list[float] = []
+    for ts in cands["start_date"]:
+        cfbd_kick = to_utc(pd.Timestamp(ts).to_pydatetime())
+        delta_vals.append(abs((kickoff - cfbd_kick).total_seconds()) / 3600.0)
+    deltas = pd.Series(delta_vals, index=cands.index)
+    within = cands.loc[deltas <= tolerance.total_seconds() / 3600.0].copy()
+    within["_delta"] = deltas.loc[within.index]
+    return within
+
+
 def match_odds_events_to_cfbd(
     events: Sequence[OddsEventRef],
     schedule: pd.DataFrame,
@@ -1024,9 +1055,16 @@ def match_odds_events_to_cfbd(
 ) -> pd.DataFrame:
     """Match Odds events to CFBD ``game_id`` via team pair + kickoff ±tolerance.
 
-    Prior ``matched`` rows for the same ``odds_event_id`` are reused so a
-    one-day postpone keeps a single canonical key. Ambiguous windows are
-    ``quarantined`` with null ``game_id`` — never guessed.
+    Ordered home/away is required first. When that misses, the unordered
+    (home↔away swapped) pair is tried inside the same kickoff tolerance;
+    successes set ``swap_detected=True``. Prior ``matched`` rows for the same
+    ``odds_event_id`` are reused so a one-day postpone keeps a single canonical
+    key. Ambiguous windows are ``quarantined`` with null ``game_id`` — never
+    guessed.
+
+    ``swap_detected`` is matcher output for audit/tests. It is not part of
+    ``OddsCfbdGameCrosswalkSchema`` (strict); :func:`write_odds_cfbd_crosswalk`
+    drops it before validate/write.
     """
     ingested = to_utc(ingested_at)
     prior_ids: dict[str, int] = {}
@@ -1040,6 +1078,7 @@ def match_odds_events_to_cfbd(
         game_id: int | None = None
         status = "unmatched"
         delta_hours: float | None = None
+        swap_detected = False
 
         if ev.odds_event_id in prior_ids:
             game_id = prior_ids[ev.odds_event_id]
@@ -1049,31 +1088,44 @@ def match_odds_events_to_cfbd(
                 if not hit.empty:
                     cfbd_kick = to_utc(pd.Timestamp(hit.iloc[0]["start_date"]).to_pydatetime())
                     delta_hours = abs((ev.kickoff - cfbd_kick).total_seconds()) / 3600.0
+                    swap_detected = (
+                        str(hit.iloc[0]["home_team"]) == ev.away_team
+                        and str(hit.iloc[0]["away_team"]) == ev.home_team
+                    )
         else:
-            if schedule.empty:
-                cands = schedule
+            ordered = _schedule_within_tolerance(
+                schedule,
+                season=ev.season,
+                home_team=ev.home_team,
+                away_team=ev.away_team,
+                kickoff=ev.kickoff,
+                tolerance=tolerance,
+            )
+            if len(ordered) == 1:
+                game_id = int(ordered.iloc[0]["game_id"])
+                status = "matched"
+                delta_hours = float(ordered.iloc[0]["_delta"])
+                swap_detected = False
+            elif len(ordered) > 1:
+                status = "quarantined"
+                delta_hours = float(ordered["_delta"].min())
             else:
-                cands = schedule[
-                    (schedule["season"] == ev.season)
-                    & (schedule["home_team"] == ev.home_team)
-                    & (schedule["away_team"] == ev.away_team)
-                ]
-            if not cands.empty:
-                kick = ev.kickoff
-                delta_vals: list[float] = []
-                for ts in cands["start_date"]:
-                    cfbd_kick = to_utc(pd.Timestamp(ts).to_pydatetime())
-                    delta_vals.append(abs((kick - cfbd_kick).total_seconds()) / 3600.0)
-                deltas = pd.Series(delta_vals, index=cands.index)
-                within = cands.loc[deltas <= tolerance.total_seconds() / 3600.0].copy()
-                within["_delta"] = deltas.loc[within.index]
-                if len(within) == 1:
-                    game_id = int(within.iloc[0]["game_id"])
+                swapped = _schedule_within_tolerance(
+                    schedule,
+                    season=ev.season,
+                    home_team=ev.away_team,
+                    away_team=ev.home_team,
+                    kickoff=ev.kickoff,
+                    tolerance=tolerance,
+                )
+                if len(swapped) == 1:
+                    game_id = int(swapped.iloc[0]["game_id"])
                     status = "matched"
-                    delta_hours = float(within.iloc[0]["_delta"])
-                elif len(within) > 1:
+                    delta_hours = float(swapped.iloc[0]["_delta"])
+                    swap_detected = True
+                elif len(swapped) > 1:
                     status = "quarantined"
-                    delta_hours = float(within["_delta"].min())
+                    delta_hours = float(swapped["_delta"].min())
 
         rows.append(
             {
@@ -1086,6 +1138,7 @@ def match_odds_events_to_cfbd(
                 "kickoff": ev.kickoff,
                 "kickoff_delta_hours": delta_hours,
                 "match_status": status,
+                "swap_detected": swap_detected,
                 "source_version": source_version,
                 # Knowable-at is match time, not future kickoff (PIT / schema).
                 "event_time": ingested,
@@ -1105,6 +1158,7 @@ def match_odds_events_to_cfbd(
                 "kickoff",
                 "kickoff_delta_hours",
                 "match_status",
+                "swap_detected",
                 "source_version",
                 "event_time",
                 "ingested_at",
@@ -1114,6 +1168,7 @@ def match_odds_events_to_cfbd(
     # Keep nullable int dtype when every game_id is null (unmatched season).
     out["game_id"] = out["game_id"].astype("Int64")
     out["season"] = out["season"].astype("int32")
+    out["swap_detected"] = out["swap_detected"].astype(bool)
     return out
 
 
@@ -1125,26 +1180,45 @@ def resolve_event_game_ids(crosswalk: pd.DataFrame) -> dict[str, int]:
     return {str(row.odds_event_id): int(row.game_id) for row in matched.itertuples(index=False)}
 
 
+_CROSSWALK_PERSIST_COLS: Final[tuple[str, ...]] = (
+    "odds_event_id",
+    "game_id",
+    "game_key",
+    "season",
+    "home_team",
+    "away_team",
+    "kickoff",
+    "kickoff_delta_hours",
+    "match_status",
+    "source_version",
+    "event_time",
+    "ingested_at",
+)
+
+
 def write_odds_cfbd_crosswalk(store: ParquetStore, df: pd.DataFrame) -> int:
     """Upsert crosswalk rows by ``odds_event_id`` within each season partition.
 
-    Returns the number of rows written across partitions (post-upsert counts).
+    Matcher-only columns (e.g. ``swap_detected``) are dropped before validate —
+    they are not in ``OddsCfbdGameCrosswalkSchema`` (strict). Returns the number
+    of rows written across partitions (post-upsert counts).
     """
     if df.empty:
         return 0
     written = 0
     for season, part in df.groupby("season", sort=True):
         season_i = int(season)
+        persist = part.loc[:, [c for c in _CROSSWALK_PERSIST_COLS if c in part.columns]].copy()
         existing = store.read(
             "odds_cfbd_game_crosswalk",
             filters={"season": season_i},
         )
         if not existing.empty:
-            ids = set(part["odds_event_id"].astype(str))
+            ids = set(persist["odds_event_id"].astype(str))
             kept = existing[~existing["odds_event_id"].astype(str).isin(ids)]
-            combined = pd.concat([kept, part], ignore_index=True)
+            combined = pd.concat([kept, persist], ignore_index=True)
         else:
-            combined = part
+            combined = persist
         store.write_partition(
             "odds_cfbd_game_crosswalk",
             combined,
