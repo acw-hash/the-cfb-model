@@ -1401,6 +1401,266 @@ def test_crosswalk_write_and_load_schedule(
         assert saved.iloc[0]["match_status"] == "matched"
 
 
+def test_bare_odds_fbs_aliases_map_to_cfbd_schools(team_map: dict[str, str]) -> None:
+    """Odds bare strings from 5b-verify unmatched list → CFBD ``teams.school``."""
+    assert normalize_team_name("Appalachian State", team_map) == "App State"
+    assert normalize_team_name("UMass", team_map) == "Massachusetts"
+    assert normalize_team_name("UMASS Minutemen", team_map) == "Massachusetts"
+    assert normalize_team_name("UMass Minutemen", team_map) == "Massachusetts"
+    assert normalize_team_name("Southern Mississippi", team_map) == "Southern Miss"
+    assert normalize_team_name("Southern Miss Golden Eagles", team_map) == "Southern Miss"
+    assert normalize_team_name("Sam Houston State", team_map) == "Sam Houston"
+    assert normalize_team_name("Sam Houston Bearkats", team_map) == "Sam Houston"
+
+
+def test_team_name_map_targets_resolve_against_staged_cfbd() -> None:
+    """Every ``odds_api`` map TARGET must exist in staged CFBD ``teams.school``.
+
+    Makes alias-direction bugs (target is an Odds string, not a CFBD school)
+    impossible to reintroduce unnoticed when staged CFBD teams are present.
+    """
+    staged = Path("data/staged/teams")
+    if not staged.is_dir():
+        pytest.skip("staged CFBD teams not present")
+    team_map = load_team_name_map(Path("configs/team_names.yaml"))
+    schools: set[str] = set()
+    with ParquetStore(Path("data/staged")) as store:
+        for season_dir in sorted(staged.glob("season=*")):
+            try:
+                season = int(season_dir.name.split("=", 1)[1])
+            except ValueError:
+                continue
+            teams = store.read("teams", filters={"season": season})
+            if teams.empty:
+                continue
+            schools |= set(teams["school"].astype(str))
+    assert schools, "staged teams present but school set empty"
+    missing = sorted({tgt for tgt in team_map.values() if tgt not in schools})
+    assert missing == [], f"map targets missing from CFBD teams.school: {missing}"
+
+
+def test_sam_houston_state_match_requires_schedule_presence(
+    tmp_path: Path,
+    team_map: dict[str, str],
+) -> None:
+    """Sam Houston State alias must not invent matches without a CFBD schedule row.
+
+    FCS years (pre-2023) stay gated by schedule presence + ±36h kickoff tolerance;
+    the alias alone is insufficient.
+    """
+    assert normalize_team_name("Sam Houston State", team_map) == "Sam Houston"
+    kick = datetime(2021, 9, 4, 19, 0, tzinfo=UTC)
+    events = [
+        OddsEventRef(
+            odds_event_id="sam-houston-fcs",
+            game_key=make_game_key(2021, "Sam Houston", "Texas", kick.date()),
+            season=2021,
+            home_team="Texas",
+            away_team="Sam Houston",
+            kickoff=kick,
+        )
+    ]
+    empty = pd.DataFrame(columns=["game_id", "season", "home_team", "away_team", "start_date"])
+    out = match_odds_events_to_cfbd(events, empty, ingested_at=kick)
+    assert out.iloc[0]["match_status"] == "unmatched"
+    assert pd.isna(out.iloc[0]["game_id"])
+
+    schedule = pd.DataFrame(
+        [
+            {
+                "game_id": 401299999,
+                "season": 2021,
+                "home_team": "Texas",
+                "away_team": "Sam Houston",
+                "start_date": kick,
+            }
+        ]
+    )
+    hit = match_odds_events_to_cfbd(events, schedule, ingested_at=kick)
+    assert hit.iloc[0]["match_status"] == "matched"
+    assert int(hit.iloc[0]["game_id"]) == 401299999
+
+
+def test_preview_crosswalk_game_key_regression_flags_remap(
+    tmp_path: Path,
+    team_map: dict[str, str],
+) -> None:
+    from ncaa_quant.ingestion.odds_api import preview_crosswalk_game_key_regression
+
+    kick = datetime(2024, 9, 7, 19, 0, tzinfo=UTC)
+    staged = tmp_path / "staged"
+    with ParquetStore(staged) as store:
+        store.write_partition(
+            "odds_cfbd_game_crosswalk",
+            pd.DataFrame(
+                [
+                    {
+                        "odds_event_id": "e1",
+                        "game_id": 1,
+                        "game_key": "2024:UMass:Michigan:2024-09-07",
+                        "season": 2024,
+                        "home_team": "Michigan",
+                        "away_team": "UMass",
+                        "kickoff": kick,
+                        "kickoff_delta_hours": 0.0,
+                        "match_status": "matched",
+                        "source_version": "test",
+                        "event_time": kick,
+                        "ingested_at": kick,
+                    }
+                ]
+            ),
+            {"season": 2024},
+        )
+        failures = preview_crosswalk_game_key_regression(store, [2024], team_map)
+    assert len(failures) == 1
+    assert failures[0].old_game_key.startswith("2024:UMass:")
+    assert "Massachusetts" in failures[0].new_game_key
+
+
+def test_replay_historical_from_archives_zero_api(
+    tmp_path: Path,
+    team_map: dict[str, str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Archive-only replay rewrites historical rows without creating an HTTP client."""
+    from ncaa_quant.ingestion import odds_api as odds_mod
+    from ncaa_quant.ingestion.odds_api import (
+        archive_historical_response,
+        replay_historical_from_archives,
+    )
+
+    staged = tmp_path / "staged"
+    raw = tmp_path / "raw_hist"
+    kick = datetime(2024, 9, 7, 19, 0, tzinfo=UTC)
+    req = datetime(2024, 9, 7, 18, 55, tzinfo=UTC)
+    returned = datetime(2024, 9, 7, 18, 50, tzinfo=UTC)
+
+    games = pd.DataFrame(
+        [
+            {
+                "game_id": 401628331,
+                "season": 2024,
+                "week": 1,
+                "season_type": "regular",
+                "start_date": kick,
+                "home_team_id": 1,
+                "away_team_id": 2,
+                "home_points": None,
+                "away_points": None,
+                "neutral_site": False,
+                "conference_game": False,
+                "venue_id": None,
+                "completed": False,
+                "event_time_estimated": True,
+                "source_version": "test",
+                "event_time": kick,
+                "ingested_at": kick,
+            }
+        ]
+    )
+    teams = pd.DataFrame(
+        [
+            {
+                "team_id": 1,
+                "season": 2024,
+                "school": "Michigan",
+                "conference": "Big Ten",
+                "abbreviation": "MICH",
+                "classification": "fbs",
+                "source_version": "test",
+                "event_time": kick,
+                "ingested_at": kick,
+            },
+            {
+                "team_id": 2,
+                "season": 2024,
+                "school": "Texas",
+                "conference": "SEC",
+                "abbreviation": "TEX",
+                "classification": "fbs",
+                "source_version": "test",
+                "event_time": kick,
+                "ingested_at": kick,
+            },
+        ]
+    )
+
+    with ParquetStore(staged) as store:
+        store.write_partition("games", games, {"season": 2024, "week": 1})
+        store.write_partition("teams", teams, {"season": 2024})
+        # Seed a wrong-key historical row that wipe+replay must replace.
+        bad = normalize_odds_payload(
+            [
+                {
+                    **SAMPLE_PAYLOAD[0],
+                    "home_team": "Appalachian State",
+                    "away_team": "Texas Longhorns",
+                    "id": "wrong-key-evt",
+                }
+            ],
+            captured_at=returned,
+            ingested_at=returned,
+            team_map=team_map,
+            snapshot_source="historical",
+            decision_point="slot_close",
+            event_time=returned,
+        )
+        bad["season"] = 2024
+        bad["week"] = 1
+        write_odds_snapshots(store, bad)
+
+    envelope = _historical_envelope(
+        SAMPLE_PAYLOAD,
+        timestamp=returned.strftime("%Y-%m-%dT%H:%M:%SZ"),
+    )
+    archive_historical_response(
+        raw,
+        req,
+        returned,
+        json.dumps(envelope).encode("utf-8"),
+    )
+
+    base = load_config()
+    cfg = AppConfig(
+        seed=base.seed,
+        log_level=base.log_level,
+        paths=base.paths.model_copy(
+            update={"staged_dir": str(staged), "raw_dir": str(tmp_path / "raw")}
+        ),
+        data=base.data.model_copy(
+            update={
+                "odds_historical_decision_points": ["slot_close"],
+            }
+        ),
+        ratings=base.ratings,
+        betting=base.betting,
+        pipeline=base.pipeline,
+    )
+
+    def _boom(*_a: object, **_k: object) -> None:
+        raise AssertionError("HTTP client must not be constructed during archive replay")
+
+    monkeypatch.setattr(odds_mod, "OddsAPIClient", _boom)
+
+    result = replay_historical_from_archives(
+        [2024],
+        config=cfg,
+        raw_root=raw,
+        staged_root=staged,
+        team_map=team_map,
+    )
+    assert result.archives_replayed == 1
+    assert result.rows_written >= 1
+    with ParquetStore(staged) as store:
+        odds = store.read("odds_snapshots", filters={"season": 2024, "week": 1})
+        hist = odds[odds["snapshot_source"] == "historical"]
+        assert not hist.empty
+        assert (hist["game_key"] == "2024:Michigan:Texas:2024-09-07").all()
+        cw = store.read("odds_cfbd_game_crosswalk", filters={"season": 2024})
+        assert (cw["match_status"] == "matched").all()
+
+
 @pytest.mark.live
 def test_live_odds_ingest_once_writes_raw_and_parquet() -> None:
     """Live network smoke; excluded from CI / default ``make test`` via -m 'not live'."""

@@ -93,9 +93,12 @@ from ncaa_quant.utils.timeutils import season_of, to_utc, week_of
 # Re-export team helpers for callers that imported them from this module.
 __all__ = (
     "CalibrationError",
+    "CrosswalkRegressionFailure",
+    "HistoricalBackfillResult",
     "HistoricalBudgetCeilingError",
     "HistoricalOddsResponse",
     "HistoricalPlan",
+    "HistoricalReplayResult",
     "HistoricalUnit",
     "OddsAPIClient",
     "OddsAPIError",
@@ -120,7 +123,9 @@ __all__ = (
     "normalize_team_name",
     "parse_historical_envelope",
     "plan_historical_units",
+    "preview_crosswalk_game_key_regression",
     "reconcile_cfbd_close_vs_slot_close",
+    "replay_historical_from_archives",
     "resolve_event_game_ids",
     "run_historical_backfill",
     "run_odds_ingest",
@@ -302,6 +307,30 @@ class HistoricalBackfillResult:
     rows_quarantined: int = 0
     calibration_last: int | None = None
     raw_paths: list[Path] = field(default_factory=list)
+
+
+@dataclass(frozen=True)
+class CrosswalkRegressionFailure:
+    """A previously-matched Odds event whose game_key would change on rematch."""
+
+    odds_event_id: str
+    season: int
+    old_game_key: str
+    new_game_key: str
+
+
+@dataclass
+class HistoricalReplayResult:
+    """Summary of a zero-API archive replay (name-map / crosswalk repair)."""
+
+    seasons: list[int] = field(default_factory=list)
+    archives_replayed: int = 0
+    rows_written: int = 0
+    rows_quarantined: int = 0
+    row_counts_before: dict[int, int] = field(default_factory=dict)
+    row_counts_after: dict[int, int] = field(default_factory=dict)
+    prior_matched: int = 0
+    regression_failures: list[CrosswalkRegressionFailure] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
@@ -2087,3 +2116,234 @@ def coverage_report(
                 mean_books = float(hist["n_books_available"].mean())
                 lines.append(f"  {season} mean n_books_available={mean_books:.2f}")
     return lines
+
+
+def preview_crosswalk_game_key_regression(
+    store: ParquetStore,
+    seasons: Sequence[int],
+    team_map: Mapping[str, str],
+) -> list[CrosswalkRegressionFailure]:
+    """Return previously-matched events whose ``game_key`` would change under ``team_map``.
+
+    Re-normalizes stored crosswalk home/away through ``team_map`` and compares the
+    derived matcher key. Does not write. Used as a pre-flight gate before archive
+    replay so a name-map patch cannot silently re-key settled matches.
+    """
+    failures: list[CrosswalkRegressionFailure] = []
+    for season in seasons:
+        cw = store.read("odds_cfbd_game_crosswalk", filters={"season": int(season)})
+        if cw.empty:
+            continue
+        matched = cw[(cw["match_status"] == "matched") & cw["game_id"].notna()]
+        for row in matched.itertuples(index=False):
+            home = normalize_team_name(str(row.home_team), team_map)
+            away = normalize_team_name(str(row.away_team), team_map)
+            kick = to_utc(pd.Timestamp(row.kickoff).to_pydatetime())
+            new_key = make_game_key(int(row.season), home, away, kick.date())
+            old_key = str(row.game_key)
+            if new_key != old_key:
+                failures.append(
+                    CrosswalkRegressionFailure(
+                        odds_event_id=str(row.odds_event_id),
+                        season=int(row.season),
+                        old_game_key=old_key,
+                        new_game_key=new_key,
+                    )
+                )
+    return failures
+
+
+def _wipe_historical_odds_partitions(store: ParquetStore, seasons: Sequence[int]) -> None:
+    """Drop historical ``odds_snapshots`` rows for ``seasons``; keep live rows."""
+    root = store.root / "odds_snapshots"
+    if not root.is_dir():
+        return
+    for season in seasons:
+        season_dir = root / f"season={int(season)}"
+        if not season_dir.is_dir():
+            continue
+        for week_dir in sorted(season_dir.glob("week=*")):
+            try:
+                week = int(week_dir.name.split("=", 1)[1])
+            except ValueError:
+                continue
+            df = store.read(
+                "odds_snapshots",
+                filters={"season": int(season), "week": week},
+            )
+            if df.empty:
+                continue
+            live = df[df["snapshot_source"] == "live"]
+            part_path = week_dir / _QUARANTINE_PART
+            if live.empty:
+                part_path.unlink(missing_ok=True)
+                continue
+            store.write_partition(
+                "odds_snapshots",
+                live,
+                {"season": int(season), "week": week},
+                mode="overwrite",
+            )
+
+
+def _wipe_crosswalk_partitions(store: ParquetStore, seasons: Sequence[int]) -> None:
+    """Remove ``odds_cfbd_game_crosswalk`` season partitions so replay rebuilds them."""
+    root = store.root / "odds_cfbd_game_crosswalk"
+    if not root.is_dir():
+        return
+    for season in seasons:
+        part = root / f"season={int(season)}" / _QUARANTINE_PART
+        part.unlink(missing_ok=True)
+
+
+def _wipe_odds_quarantine_seasons(staged_root: Path, seasons: Sequence[int]) -> None:
+    """Remove ingest quarantine sidecars for ``seasons`` before archive replay."""
+    root = Path(staged_root) / _ODDS_QUARANTINE_TABLE
+    if not root.is_dir():
+        return
+    season_set = {int(s) for s in seasons}
+    for season_dir in sorted(root.glob("season=*")):
+        try:
+            season = int(season_dir.name.split("=", 1)[1])
+        except ValueError:
+            continue
+        if season not in season_set:
+            continue
+        for week_dir in season_dir.glob("week=*"):
+            (week_dir / _QUARANTINE_PART).unlink(missing_ok=True)
+
+
+def replay_historical_from_archives(
+    seasons: Sequence[int],
+    *,
+    config: AppConfig | None = None,
+    raw_root: Path | str | None = None,
+    staged_root: Path | str | None = None,
+    team_map: Mapping[str, str] | None = None,
+    allow_game_key_regression: bool = False,
+) -> HistoricalReplayResult:
+    """Re-normalize historical odds + re-resolve crosswalk from raw archives only.
+
+    Zero API spend: walks ``plan_historical_units`` request times, loads each
+    slot's on-disk archive (or empty-slot marker), and re-stages. Historical
+    ``odds_snapshots`` rows for ``seasons`` are wiped first (live rows kept);
+    crosswalk and ingest-quarantine partitions for those seasons are rebuilt.
+
+    Raises ``RuntimeError`` if a required archive is missing (would imply an API
+    call) or if previously-matched events would change ``game_key`` unless
+    ``allow_game_key_regression`` is true.
+    """
+    cfg = config or load_config()
+    log = get_logger(__name__)
+    raw_dir = (
+        Path(raw_root) if raw_root is not None else Path(cfg.paths.raw_dir) / "odds_api_historical"
+    )
+    staged_dir = Path(staged_root) if staged_root is not None else Path(cfg.paths.staged_dir)
+    names = (
+        dict(team_map)
+        if team_map is not None
+        else load_team_name_map(Path(cfg.data.team_names_path))
+    )
+    season_list = [int(s) for s in seasons]
+    result = HistoricalReplayResult(seasons=list(season_list))
+
+    with ParquetStore(staged_dir) as store:
+        for season in season_list:
+            odds = store.read("odds_snapshots", filters={"season": season})
+            hist_n = 0 if odds.empty else int((odds["snapshot_source"] == "historical").sum())
+            result.row_counts_before[season] = hist_n
+
+        regressions = preview_crosswalk_game_key_regression(store, season_list, names)
+        result.prior_matched = 0
+        for season in season_list:
+            cw = store.read("odds_cfbd_game_crosswalk", filters={"season": season})
+            if cw.empty:
+                continue
+            result.prior_matched += int(
+                ((cw["match_status"] == "matched") & cw["game_id"].notna()).sum()
+            )
+        if regressions and not allow_game_key_regression:
+            result.regression_failures = list(regressions)
+            msg = (
+                "STOP: previously-matched crosswalk events would change game_key "
+                f"({len(regressions)} events). Refusing replay."
+            )
+            raise RuntimeError(msg)
+
+        plan = plan_historical_units(store, season_list, config=cfg)
+        # Preflight: every non-empty request must have an archive on disk.
+        missing: list[str] = []
+        for unit in plan.units:
+            for req_time in unit.request_times:
+                if _is_empty_historical_slot(raw_dir, req_time):
+                    continue
+                if _find_historical_slot_archive(raw_dir, req_time) is None:
+                    missing.append(
+                        f"{unit.season}_w{unit.week}_{unit.decision_point}_"
+                        f"{to_utc(req_time).isoformat()}"
+                    )
+        if missing:
+            sample = ", ".join(missing[:10])
+            msg = (
+                "STOP: archive missing for replay (would require API spend). "
+                f"missing={len(missing)} sample=[{sample}]"
+            )
+            raise RuntimeError(msg)
+
+        _wipe_historical_odds_partitions(store, season_list)
+        _wipe_crosswalk_partitions(store, season_list)
+        _wipe_odds_quarantine_seasons(staged_dir, season_list)
+        log.info(
+            "historical_replay_wiped",
+            seasons=season_list,
+            prior_matched=result.prior_matched,
+        )
+
+        for unit in plan.units:
+            for req_time in unit.request_times:
+                if _is_empty_historical_slot(raw_dir, req_time):
+                    continue
+                archive_path = _find_historical_slot_archive(raw_dir, req_time)
+                if archive_path is None:  # pragma: no cover — guarded above
+                    msg = f"archive disappeared during replay: {req_time.isoformat()}"
+                    raise RuntimeError(msg)
+                envelope = parse_historical_envelope(
+                    archive_path.read_bytes(),
+                    requested_at=req_time,
+                )
+                added, quarantined = _stage_historical_envelope(
+                    store,
+                    envelope,
+                    team_map=names,
+                    decision_point=unit.decision_point,
+                    raw_path=archive_path,
+                )
+                result.archives_replayed += 1
+                result.rows_written += added
+                result.rows_quarantined += quarantined
+                log.info(
+                    "historical_replay_slot",
+                    season=unit.season,
+                    week=unit.week,
+                    decision_point=unit.decision_point,
+                    requested_at=req_time.isoformat(),
+                    returned_at=envelope.timestamp.isoformat(),
+                    rows=added,
+                    rows_quarantined=quarantined,
+                    raw_path=str(archive_path),
+                )
+
+        # Post-replay regression: previously-matched keys must still match.
+        post = preview_crosswalk_game_key_regression(store, season_list, names)
+        # preview compares stored keys to remapped names — after successful
+        # rewrite stored keys already use the new map, so post should be empty.
+        # Also verify prior event ids remain matched with same game_key via
+        # caller-held snapshot; here we only flag internal inconsistency.
+        result.regression_failures = list(post)
+
+        for season in season_list:
+            odds = store.read("odds_snapshots", filters={"season": season})
+            hist_n = 0 if odds.empty else int((odds["snapshot_source"] == "historical").sum())
+            result.row_counts_after[season] = hist_n
+
+    return result
