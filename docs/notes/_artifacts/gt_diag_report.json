@@ -1,0 +1,872 @@
+﻿{
+  "verdict_hint": "WORLD_A",
+  "thresholds": {
+    "design_section": "DESIGN \u00a74.2: exclude wp > 0.98 or < 0.02; Connelly fallback",
+    "code_WP_GT_LOW": 0.02,
+    "code_WP_GT_HIGH": 0.98,
+    "config_garbage_wp_low": 0.02,
+    "config_garbage_wp_high": 0.98,
+    "config_wired_into_apply_garbage_time": false,
+    "note": "apply_garbage_time hardcodes WP_GT_LOW/HIGH module constants; DataConfig.garbage_wp_* is unused by the filter today",
+    "connelly_margin_by_period": {
+      "1": 28,
+      "2": 24,
+      "3": 21,
+      "4": 16
+    }
+  },
+  "call_path": {
+    "a5_measure": "cli backtest run \u2192 build_observations_from_staged(plays=staged) \u2192 apply_garbage_time(plays) if 'garbage_time' not in columns \u2192 n_on = (~garbage_time).sum(), n_off = len(plays)",
+    "filter_act": "build_observations_from_staged \u2192 build_game_observations_from_plays(..., drop_garbage=...) \u2192 filter_garbage_time(plays) \u2192 apply_garbage_time if column absent \u2192 drop garbage_time==True",
+    "same_stage": "Both measure and filter operate on the same staged plays DataFrame loaded from data/staged/plays/. Not a measurement-stage mismatch."
+  },
+  "per_season": {
+    "2014": {
+      "inventory": {
+        "n_plays": 158315,
+        "columns": [
+          "defense_id",
+          "distance",
+          "down",
+          "drive_id",
+          "epa",
+          "event_time",
+          "game_id",
+          "ingested_at",
+          "offense_id",
+          "period",
+          "play_id",
+          "play_type",
+          "scoring",
+          "season",
+          "source_version",
+          "success",
+          "week",
+          "wp",
+          "yards_gained",
+          "yards_to_goal"
+        ],
+        "gt_input_presence": {
+          "garbage_time": false,
+          "wp": true,
+          "wp_before": false,
+          "wp_after": false,
+          "score_margin": false,
+          "offense_score": false,
+          "defense_score": false,
+          "clock": false,
+          "period": true
+        },
+        "null_rates": {
+          "wp": 1.0,
+          "wp_before": null,
+          "epa": 0.22281527334744022,
+          "period": 0.0
+        },
+        "staged_garbage_time": {
+          "present": false
+        }
+      },
+      "a5": {
+        "n_on": 158315,
+        "n_off": 158315,
+        "n_on_lt_n_off": false,
+        "n_garbage_true_after_apply": 0,
+        "n_garbage_true_if_wp_aliased_to_wp_before": 0,
+        "n_after_filter_garbage_time": 158315,
+        "apply_looks_for_wp_col_default": "wp_before",
+        "staged_has_wp_not_wp_before": true
+      }
+    },
+    "2015": {
+      "inventory": {
+        "n_plays": 160180,
+        "columns": [
+          "defense_id",
+          "distance",
+          "down",
+          "drive_id",
+          "epa",
+          "event_time",
+          "game_id",
+          "ingested_at",
+          "offense_id",
+          "period",
+          "play_id",
+          "play_type",
+          "scoring",
+          "season",
+          "source_version",
+          "success",
+          "week",
+          "wp",
+          "yards_gained",
+          "yards_to_goal"
+        ],
+        "gt_input_presence": {
+          "garbage_time": false,
+          "wp": true,
+          "wp_before": false,
+          "wp_after": false,
+          "score_margin": false,
+          "offense_score": false,
+          "defense_score": false,
+          "clock": false,
+          "period": true
+        },
+        "null_rates": {
+          "wp": 1.0,
+          "wp_before": null,
+          "epa": 0.22371706829816457,
+          "period": 0.0
+        },
+        "staged_garbage_time": {
+          "present": false
+        }
+      },
+      "a5": {
+        "n_on": 160180,
+        "n_off": 160180,
+        "n_on_lt_n_off": false,
+        "n_garbage_true_after_apply": 0,
+        "n_garbage_true_if_wp_aliased_to_wp_before": 0,
+        "n_after_filter_garbage_time": 160180,
+        "apply_looks_for_wp_col_default": "wp_before",
+        "staged_has_wp_not_wp_before": true
+      }
+    },
+    "2016": {
+      "inventory": {
+        "n_plays": 158518,
+        "columns": [
+          "defense_id",
+          "distance",
+          "down",
+          "drive_id",
+          "epa",
+          "event_time",
+          "game_id",
+          "ingested_at",
+          "offense_id",
+          "period",
+          "play_id",
+          "play_type",
+          "scoring",
+          "season",
+          "source_version",
+          "success",
+          "week",
+          "wp",
+          "yards_gained",
+          "yards_to_goal"
+        ],
+        "gt_input_presence": {
+          "garbage_time": false,
+          "wp": true,
+          "wp_before": false,
+          "wp_after": false,
+          "score_margin": false,
+          "offense_score": false,
+          "defense_score": false,
+          "clock": false,
+          "period": true
+        },
+        "null_rates": {
+          "wp": 1.0,
+          "wp_before": null,
+          "epa": 0.22251100821357828,
+          "period": 0.0
+        },
+        "staged_garbage_time": {
+          "present": false
+        }
+      },
+      "a5": {
+        "n_on": 158518,
+        "n_off": 158518,
+        "n_on_lt_n_off": false,
+        "n_garbage_true_after_apply": 0,
+        "n_garbage_true_if_wp_aliased_to_wp_before": 0,
+        "n_after_filter_garbage_time": 158518,
+        "apply_looks_for_wp_col_default": "wp_before",
+        "staged_has_wp_not_wp_before": true
+      }
+    },
+    "2017": {
+      "inventory": {
+        "n_plays": 158574,
+        "columns": [
+          "defense_id",
+          "distance",
+          "down",
+          "drive_id",
+          "epa",
+          "event_time",
+          "game_id",
+          "ingested_at",
+          "offense_id",
+          "period",
+          "play_id",
+          "play_type",
+          "scoring",
+          "season",
+          "source_version",
+          "success",
+          "week",
+          "wp",
+          "yards_gained",
+          "yards_to_goal"
+        ],
+        "gt_input_presence": {
+          "garbage_time": false,
+          "wp": true,
+          "wp_before": false,
+          "wp_after": false,
+          "score_margin": false,
+          "offense_score": false,
+          "defense_score": false,
+          "clock": false,
+          "period": true
+        },
+        "null_rates": {
+          "wp": 1.0,
+          "wp_before": null,
+          "epa": 0.22544048835244113,
+          "period": 0.0
+        },
+        "staged_garbage_time": {
+          "present": false
+        }
+      },
+      "a5": {
+        "n_on": 158574,
+        "n_off": 158574,
+        "n_on_lt_n_off": false,
+        "n_garbage_true_after_apply": 0,
+        "n_garbage_true_if_wp_aliased_to_wp_before": 0,
+        "n_after_filter_garbage_time": 158574,
+        "apply_looks_for_wp_col_default": "wp_before",
+        "staged_has_wp_not_wp_before": true
+      }
+    },
+    "2018": {
+      "inventory": {
+        "n_plays": 160512,
+        "columns": [
+          "defense_id",
+          "distance",
+          "down",
+          "drive_id",
+          "epa",
+          "event_time",
+          "game_id",
+          "ingested_at",
+          "offense_id",
+          "period",
+          "play_id",
+          "play_type",
+          "scoring",
+          "season",
+          "source_version",
+          "success",
+          "week",
+          "wp",
+          "yards_gained",
+          "yards_to_goal"
+        ],
+        "gt_input_presence": {
+          "garbage_time": false,
+          "wp": true,
+          "wp_before": false,
+          "wp_after": false,
+          "score_margin": false,
+          "offense_score": false,
+          "defense_score": false,
+          "clock": false,
+          "period": true
+        },
+        "null_rates": {
+          "wp": 1.0,
+          "wp_before": null,
+          "epa": 0.22314219497607657,
+          "period": 0.0
+        },
+        "staged_garbage_time": {
+          "present": false
+        }
+      },
+      "a5": {
+        "n_on": 160512,
+        "n_off": 160512,
+        "n_on_lt_n_off": false,
+        "n_garbage_true_after_apply": 0,
+        "n_garbage_true_if_wp_aliased_to_wp_before": 0,
+        "n_after_filter_garbage_time": 160512,
+        "apply_looks_for_wp_col_default": "wp_before",
+        "staged_has_wp_not_wp_before": true
+      }
+    },
+    "2019": {
+      "inventory": {
+        "n_plays": 159915,
+        "columns": [
+          "defense_id",
+          "distance",
+          "down",
+          "drive_id",
+          "epa",
+          "event_time",
+          "game_id",
+          "ingested_at",
+          "offense_id",
+          "period",
+          "play_id",
+          "play_type",
+          "scoring",
+          "season",
+          "source_version",
+          "success",
+          "week",
+          "wp",
+          "yards_gained",
+          "yards_to_goal"
+        ],
+        "gt_input_presence": {
+          "garbage_time": false,
+          "wp": true,
+          "wp_before": false,
+          "wp_after": false,
+          "score_margin": false,
+          "offense_score": false,
+          "defense_score": false,
+          "clock": false,
+          "period": true
+        },
+        "null_rates": {
+          "wp": 1.0,
+          "wp_before": null,
+          "epa": 0.22512584810680675,
+          "period": 0.0
+        },
+        "staged_garbage_time": {
+          "present": false
+        }
+      },
+      "a5": {
+        "n_on": 159915,
+        "n_off": 159915,
+        "n_on_lt_n_off": false,
+        "n_garbage_true_after_apply": 0,
+        "n_garbage_true_if_wp_aliased_to_wp_before": 0,
+        "n_after_filter_garbage_time": 159915,
+        "apply_looks_for_wp_col_default": "wp_before",
+        "staged_has_wp_not_wp_before": true
+      }
+    },
+    "2020": {
+      "inventory": {
+        "n_plays": 102809,
+        "columns": [
+          "defense_id",
+          "distance",
+          "down",
+          "drive_id",
+          "epa",
+          "event_time",
+          "game_id",
+          "ingested_at",
+          "offense_id",
+          "period",
+          "play_id",
+          "play_type",
+          "scoring",
+          "season",
+          "source_version",
+          "success",
+          "week",
+          "wp",
+          "yards_gained",
+          "yards_to_goal"
+        ],
+        "gt_input_presence": {
+          "garbage_time": false,
+          "wp": true,
+          "wp_before": false,
+          "wp_after": false,
+          "score_margin": false,
+          "offense_score": false,
+          "defense_score": false,
+          "clock": false,
+          "period": true
+        },
+        "null_rates": {
+          "wp": 1.0,
+          "wp_before": null,
+          "epa": 0.2329854390179848,
+          "period": 0.0
+        },
+        "staged_garbage_time": {
+          "present": false
+        }
+      },
+      "a5": {
+        "n_on": 102809,
+        "n_off": 102809,
+        "n_on_lt_n_off": false,
+        "n_garbage_true_after_apply": 0,
+        "n_garbage_true_if_wp_aliased_to_wp_before": 0,
+        "n_after_filter_garbage_time": 102809,
+        "apply_looks_for_wp_col_default": "wp_before",
+        "staged_has_wp_not_wp_before": true
+      }
+    },
+    "2021": {
+      "inventory": {
+        "n_plays": 158634,
+        "columns": [
+          "defense_id",
+          "distance",
+          "down",
+          "drive_id",
+          "epa",
+          "event_time",
+          "game_id",
+          "ingested_at",
+          "offense_id",
+          "period",
+          "play_id",
+          "play_type",
+          "scoring",
+          "season",
+          "source_version",
+          "success",
+          "week",
+          "wp",
+          "yards_gained",
+          "yards_to_goal"
+        ],
+        "gt_input_presence": {
+          "garbage_time": false,
+          "wp": true,
+          "wp_before": false,
+          "wp_after": false,
+          "score_margin": false,
+          "offense_score": false,
+          "defense_score": false,
+          "clock": false,
+          "period": true
+        },
+        "null_rates": {
+          "wp": 1.0,
+          "wp_before": null,
+          "epa": 0.24443687986182028,
+          "period": 0.0
+        },
+        "staged_garbage_time": {
+          "present": false
+        }
+      },
+      "a5": {
+        "n_on": 158634,
+        "n_off": 158634,
+        "n_on_lt_n_off": false,
+        "n_garbage_true_after_apply": 0,
+        "n_garbage_true_if_wp_aliased_to_wp_before": 0,
+        "n_after_filter_garbage_time": 158634,
+        "apply_looks_for_wp_col_default": "wp_before",
+        "staged_has_wp_not_wp_before": true
+      }
+    },
+    "2022": {
+      "inventory": {
+        "n_plays": 160327,
+        "columns": [
+          "defense_id",
+          "distance",
+          "down",
+          "drive_id",
+          "epa",
+          "event_time",
+          "game_id",
+          "ingested_at",
+          "offense_id",
+          "period",
+          "play_id",
+          "play_type",
+          "scoring",
+          "season",
+          "source_version",
+          "success",
+          "week",
+          "wp",
+          "yards_gained",
+          "yards_to_goal"
+        ],
+        "gt_input_presence": {
+          "garbage_time": false,
+          "wp": true,
+          "wp_before": false,
+          "wp_after": false,
+          "score_margin": false,
+          "offense_score": false,
+          "defense_score": false,
+          "clock": false,
+          "period": true
+        },
+        "null_rates": {
+          "wp": 1.0,
+          "wp_before": null,
+          "epa": 0.2450741297473289,
+          "period": 0.0
+        },
+        "staged_garbage_time": {
+          "present": false
+        }
+      },
+      "a5": {
+        "n_on": 160327,
+        "n_off": 160327,
+        "n_on_lt_n_off": false,
+        "n_garbage_true_after_apply": 0,
+        "n_garbage_true_if_wp_aliased_to_wp_before": 0,
+        "n_after_filter_garbage_time": 160327,
+        "apply_looks_for_wp_col_default": "wp_before",
+        "staged_has_wp_not_wp_before": true
+      }
+    },
+    "2023": {
+      "inventory": {
+        "n_plays": 159011,
+        "columns": [
+          "defense_id",
+          "distance",
+          "down",
+          "drive_id",
+          "epa",
+          "event_time",
+          "game_id",
+          "ingested_at",
+          "offense_id",
+          "period",
+          "play_id",
+          "play_type",
+          "scoring",
+          "season",
+          "source_version",
+          "success",
+          "week",
+          "wp",
+          "yards_gained",
+          "yards_to_goal"
+        ],
+        "gt_input_presence": {
+          "garbage_time": false,
+          "wp": true,
+          "wp_before": false,
+          "wp_after": false,
+          "score_margin": false,
+          "offense_score": false,
+          "defense_score": false,
+          "clock": false,
+          "period": true
+        },
+        "null_rates": {
+          "wp": 1.0,
+          "wp_before": null,
+          "epa": 0.2480960436699348,
+          "period": 0.0
+        },
+        "staged_garbage_time": {
+          "present": false
+        }
+      },
+      "a5": {
+        "n_on": 159011,
+        "n_off": 159011,
+        "n_on_lt_n_off": false,
+        "n_garbage_true_after_apply": 0,
+        "n_garbage_true_if_wp_aliased_to_wp_before": 0,
+        "n_after_filter_garbage_time": 159011,
+        "apply_looks_for_wp_col_default": "wp_before",
+        "staged_has_wp_not_wp_before": true
+      }
+    },
+    "2024": {
+      "inventory": {
+        "n_plays": 162726,
+        "columns": [
+          "defense_id",
+          "distance",
+          "down",
+          "drive_id",
+          "epa",
+          "event_time",
+          "game_id",
+          "ingested_at",
+          "offense_id",
+          "period",
+          "play_id",
+          "play_type",
+          "scoring",
+          "season",
+          "source_version",
+          "success",
+          "week",
+          "wp",
+          "yards_gained",
+          "yards_to_goal"
+        ],
+        "gt_input_presence": {
+          "garbage_time": false,
+          "wp": true,
+          "wp_before": false,
+          "wp_after": false,
+          "score_margin": false,
+          "offense_score": false,
+          "defense_score": false,
+          "clock": false,
+          "period": true
+        },
+        "null_rates": {
+          "wp": 1.0,
+          "wp_before": null,
+          "epa": 0.26078192790334676,
+          "period": 0.0
+        },
+        "staged_garbage_time": {
+          "present": false
+        }
+      },
+      "a5": {
+        "n_on": 162726,
+        "n_off": 162726,
+        "n_on_lt_n_off": false,
+        "n_garbage_true_after_apply": 0,
+        "n_garbage_true_if_wp_aliased_to_wp_before": 0,
+        "n_after_filter_garbage_time": 162726,
+        "apply_looks_for_wp_col_default": "wp_before",
+        "staged_has_wp_not_wp_before": true
+      }
+    },
+    "2025": {
+      "inventory": {
+        "n_plays": 166057,
+        "columns": [
+          "defense_id",
+          "distance",
+          "down",
+          "drive_id",
+          "epa",
+          "event_time",
+          "game_id",
+          "ingested_at",
+          "offense_id",
+          "period",
+          "play_id",
+          "play_type",
+          "scoring",
+          "season",
+          "source_version",
+          "success",
+          "week",
+          "wp",
+          "yards_gained",
+          "yards_to_goal"
+        ],
+        "gt_input_presence": {
+          "garbage_time": false,
+          "wp": true,
+          "wp_before": false,
+          "wp_after": false,
+          "score_margin": false,
+          "offense_score": false,
+          "defense_score": false,
+          "clock": false,
+          "period": true
+        },
+        "null_rates": {
+          "wp": 1.0,
+          "wp_before": null,
+          "epa": 0.24615041822988493,
+          "period": 0.0
+        },
+        "staged_garbage_time": {
+          "present": false
+        }
+      },
+      "a5": {
+        "n_on": 166057,
+        "n_off": 166057,
+        "n_on_lt_n_off": false,
+        "n_garbage_true_after_apply": 0,
+        "n_garbage_true_if_wp_aliased_to_wp_before": 0,
+        "n_after_filter_garbage_time": 166057,
+        "apply_looks_for_wp_col_default": "wp_before",
+        "staged_has_wp_not_wp_before": true
+      }
+    }
+  },
+  "blowout_q4_handpicks_2023": [
+    {
+      "season": 2023,
+      "game_id": 401523992,
+      "final_margin": 74.0,
+      "period": 4,
+      "play_id": 401523992104999903,
+      "wp": null,
+      "has_score_margin_col": false,
+      "garbage_time_decision": false,
+      "garbage_time_if_wp_aliased": false,
+      "gt_rule": "connelly_fallback",
+      "gt_fallback_used": true
+    },
+    {
+      "season": 2023,
+      "game_id": 401525822,
+      "final_margin": 73.0,
+      "period": 4,
+      "play_id": 401525822104998902,
+      "wp": null,
+      "has_score_margin_col": false,
+      "garbage_time_decision": false,
+      "garbage_time_if_wp_aliased": false,
+      "gt_rule": "connelly_fallback",
+      "gt_fallback_used": true
+    },
+    {
+      "season": 2023,
+      "game_id": 401531438,
+      "final_margin": 69.0,
+      "period": 4,
+      "play_id": 401531438104999902,
+      "wp": null,
+      "has_score_margin_col": false,
+      "garbage_time_decision": false,
+      "garbage_time_if_wp_aliased": false,
+      "gt_rule": "connelly_fallback",
+      "gt_fallback_used": true
+    },
+    {
+      "season": 2023,
+      "game_id": 401532398,
+      "final_margin": 68.0,
+      "period": 4,
+      "play_id": 401532398104999903,
+      "wp": null,
+      "has_score_margin_col": false,
+      "garbage_time_decision": false,
+      "garbage_time_if_wp_aliased": false,
+      "gt_rule": "connelly_fallback",
+      "gt_fallback_used": true
+    },
+    {
+      "season": 2023,
+      "game_id": 401520168,
+      "final_margin": 66.0,
+      "period": 4,
+      "play_id": 401520168104999903,
+      "wp": null,
+      "has_score_margin_col": false,
+      "garbage_time_decision": false,
+      "garbage_time_if_wp_aliased": false,
+      "gt_rule": "connelly_fallback",
+      "gt_fallback_used": true
+    },
+    {
+      "season": 2023,
+      "game_id": 401525466,
+      "final_margin": 65.0,
+      "period": 4,
+      "play_id": 401525466104999903,
+      "wp": null,
+      "has_score_margin_col": false,
+      "garbage_time_decision": false,
+      "garbage_time_if_wp_aliased": false,
+      "gt_rule": "connelly_fallback",
+      "gt_fallback_used": true
+    },
+    {
+      "season": 2023,
+      "game_id": 401520322,
+      "final_margin": 63.0,
+      "period": 4,
+      "play_id": 401520322104999903,
+      "wp": null,
+      "has_score_margin_col": false,
+      "garbage_time_decision": false,
+      "garbage_time_if_wp_aliased": false,
+      "gt_rule": "connelly_fallback",
+      "gt_fallback_used": true
+    },
+    {
+      "season": 2023,
+      "game_id": 401520199,
+      "final_margin": 62.0,
+      "period": 4,
+      "play_id": 401520199104999902,
+      "wp": null,
+      "has_score_margin_col": false,
+      "garbage_time_decision": false,
+      "garbage_time_if_wp_aliased": false,
+      "gt_rule": "connelly_fallback",
+      "gt_fallback_used": true
+    },
+    {
+      "season": 2023,
+      "game_id": 401520339,
+      "final_margin": 62.0,
+      "period": 4,
+      "play_id": 401520339104999903,
+      "wp": null,
+      "has_score_margin_col": false,
+      "garbage_time_decision": false,
+      "garbage_time_if_wp_aliased": false,
+      "gt_rule": "connelly_fallback",
+      "gt_fallback_used": true
+    },
+    {
+      "season": 2023,
+      "game_id": 401551773,
+      "final_margin": 60.0,
+      "period": 4,
+      "play_id": 401551773104998702,
+      "wp": null,
+      "has_score_margin_col": false,
+      "garbage_time_decision": false,
+      "garbage_time_if_wp_aliased": false,
+      "gt_rule": "connelly_fallback",
+      "gt_fallback_used": true
+    }
+  ],
+  "raw_connelly_sanity_2023": {
+    "available": true,
+    "season": 2023,
+    "n_plays": 356101,
+    "n_garbage": 59101,
+    "garbage_frac": 0.1659669588122471,
+    "n_fallback": 356101,
+    "wp_before_nonnull": 0,
+    "note": "normalize_epa_plays from raw JSON (scores+clock present; WP still null)"
+  },
+  "raw_plays_archive_counts": {
+    "2014": 17,
+    "2015": 16,
+    "2016": 16,
+    "2017": 16,
+    "2018": 16,
+    "2019": 16,
+    "2020": 17,
+    "2021": 16,
+    "2022": 16,
+    "2023": 35,
+    "2024": 17,
+    "2025": 17
+  },
+  "intended_gt_output_landing": {
+    "task": "Task 8 (features/epa.py), not Task 9/13",
+    "persisted_to_staged": false,
+    "runtime_path": "normalize_epa_plays / apply_garbage_time produce in-memory garbage_time; staged PlaysSchema never includes the flag or offenseScore/defenseScore/clock",
+    "task8_acceptance": "ran load_season_plays_from_cfbd_raw on 2023 raw only",
+    "task10_note": "efficiency builders used CFBD raw plays for 2023 materialization"
+  }
+}
