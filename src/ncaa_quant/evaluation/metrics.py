@@ -1177,6 +1177,119 @@ def attach_metric_cis(
     return out
 
 
+@dataclass(frozen=True)
+class BasisMetricRecord:
+    """One metric scored on a single, explicit season basis.
+
+    MAE/CRPS need no closing lines and may span all prediction seasons; ATS
+    needs line-backed rows and must never be pooled with null-line seasons.
+    There is no pooled render path — callers cite each record separately.
+    """
+
+    metric: str
+    value: float
+    seasons: tuple[int, ...]
+    n: int
+    basis: str
+    """Human label for the row filter, e.g. ``all_seasons`` or ``line_backed``."""
+
+
+def report_a2_components_by_basis(
+    predictions: pd.DataFrame,
+    *,
+    margin_col: str = "pred_margin",
+    realized_margin_col: str = "realized_margin",
+    sigma_col: str = "sigma_m",
+    ats_prob_col: str = "p_ats_home",
+    spread_close_col: str = "spread_close",
+    season_col: str = "season",
+) -> tuple[BasisMetricRecord, ...]:
+    """Emit A2 (and any ablation) MAE / CRPS / ATS as separate basis records.
+
+    Returns one record per component. MAE and CRPS share the all-season finite
+    prediction basis; ATS is restricted to rows with a finite closing spread.
+    A pooled single-number render path does not exist.
+    """
+    if predictions.empty:
+        return ()
+    if season_col not in predictions.columns:
+        raise MetricsError(f"report_a2_components_by_basis: missing {season_col!r}")
+
+    work = predictions.copy()
+    records: list[BasisMetricRecord] = []
+
+    # Continuous metrics: all seasons with finite margin prediction + outcome.
+    need_m = {margin_col, realized_margin_col, season_col}
+    if need_m.issubset(work.columns):
+        m = work[margin_col].notna() & work[realized_margin_col].notna()
+        cont = work.loc[m]
+        seasons_all = tuple(sorted({int(s) for s in cont[season_col].tolist()}))
+        n_all = int(len(cont))
+        if n_all > 0:
+            y = cont[realized_margin_col].to_numpy(dtype=float)
+            mu = cont[margin_col].to_numpy(dtype=float)
+            records.append(
+                BasisMetricRecord(
+                    metric="mae_margin",
+                    value=mae(y, mu),
+                    seasons=seasons_all,
+                    n=n_all,
+                    basis="all_seasons",
+                )
+            )
+            if sigma_col in cont.columns and cont[sigma_col].notna().any():
+                sig = cont[sigma_col].to_numpy(dtype=float)
+                ok = np.isfinite(sig) & (sig > 0)
+                if int(ok.sum()) > 0:
+                    seasons_crps = tuple(
+                        sorted({int(s) for s in cont.loc[ok, season_col].tolist()})
+                    )
+                    records.append(
+                        BasisMetricRecord(
+                            metric="crps_margin",
+                            value=crps_gaussian(y[ok], mu[ok], sig[ok]),
+                            seasons=seasons_crps,
+                            n=int(ok.sum()),
+                            basis="all_seasons",
+                        )
+                    )
+
+    # ATS: only line-backed seasons / rows.
+    if (
+        ats_prob_col in work.columns
+        and spread_close_col in work.columns
+        and realized_margin_col in work.columns
+    ):
+        line = work[spread_close_col].notna() & work[ats_prob_col].notna()
+        ats = work.loc[line]
+        if not ats.empty:
+            # Home covers when realized_margin + spread_close > 0 (push → exclude).
+            cover = ats[realized_margin_col].to_numpy(dtype=float) + ats[spread_close_col].to_numpy(
+                dtype=float
+            )
+            decided = np.isfinite(cover) & (cover != 0.0)
+            ats = ats.loc[decided]
+            if not ats.empty:
+                y_ats = (
+                    ats[realized_margin_col].to_numpy(dtype=float)
+                    + ats[spread_close_col].to_numpy(dtype=float)
+                    > 0.0
+                ).astype(float)
+                p_ats = ats[ats_prob_col].to_numpy(dtype=float)
+                seasons_line = tuple(sorted({int(s) for s in ats[season_col].tolist()}))
+                records.append(
+                    BasisMetricRecord(
+                        metric="ats_accuracy",
+                        value=binary_accuracy(p_ats, y_ats),
+                        seasons=seasons_line,
+                        n=int(len(ats)),
+                        basis="line_backed",
+                    )
+                )
+
+    return tuple(records)
+
+
 def reliability_bins(
     probs: np.ndarray,
     outcomes: np.ndarray,

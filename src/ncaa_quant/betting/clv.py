@@ -167,6 +167,14 @@ class RecommendationRecord:
     n_books_available: int = 0
     """Books quoting at bet time; Task 21 stratifies shopping value by this."""
 
+    bet_line_source_row_id: str | None = None
+    """Stable id of the snapshot / CFBD row that priced this bet at recommendation time.
+
+    Required for settlement: :func:`settle` refuses CLV when this or the close
+    ``source_row_id`` is missing, and raises when the two resolve to the same row
+    (§7.2 item 7 / Task 23-FIX P0-2).
+    """
+
 
 @dataclass(frozen=True, slots=True)
 class ClosingQuote:
@@ -442,6 +450,29 @@ def compute_line_shopping_capture(
 # ---------------------------------------------------------------------------
 
 
+def _require_distinct_line_sources(
+    recommendation: RecommendationRecord,
+    close: ClosingQuote,
+) -> tuple[str, str]:
+    """Return ``(bet_id, close_id)`` or raise — never skip the §7.2 item 7 guard."""
+    bet_id = recommendation.bet_line_source_row_id
+    close_id = close.source_row_id
+    if bet_id is None or str(bet_id).strip() == "":
+        raise ClvError(
+            f"recommendation {recommendation.recommendation_id!r} is missing "
+            "bet_line_source_row_id; refusing to settle CLV without the source-row guard"
+        )
+    if close_id is None or str(close_id).strip() == "":
+        raise ClvError(
+            f"close for recommendation {recommendation.recommendation_id!r} is missing "
+            "source_row_id; refusing to settle CLV without the source-row guard"
+        )
+    bet_s = str(bet_id)
+    close_s = str(close_id)
+    assert_distinct_line_sources(bet_source_row_id=bet_s, close_source_row_id=close_s)
+    return bet_s, close_s
+
+
 def settle(
     recommendation: RecommendationRecord,
     *,
@@ -455,6 +486,10 @@ def settle(
     Prefers the close from the book that priced the bet. Falls back to consensus
     only when that book has no close, and marks the row so it stays out of
     headline aggregates.
+
+    Every settlement threads bet-time and close ``source_row_id`` values into
+    :func:`assert_distinct_line_sources` (and :func:`compute_clv` on
+    ``same_line`` rows). Missing either id raises — the guard is never skipped.
     """
     rec = recommendation
     if same_book_close is not None:
@@ -473,11 +508,25 @@ def settle(
             f"no close available for recommendation {rec.recommendation_id!r}; cannot settle CLV"
         )
 
+    bet_id, close_id = _require_distinct_line_sources(rec, close)
+
     clv_method, p_close, units = translate_close_to_bet_line(
         rec, close, model_cover_prob=model_cover_prob, method=method
     )
-    p_bet = fair_prob_on_side(rec.bet_side_american, rec.bet_other_american, method=method)
-    clv = float(p_close - p_bet) if clv_method in PROBABILITY_VALUED_METHODS else float("nan")
+    if clv_method == "same_line":
+        # Thread IDs through compute_clv so the primitive and settle() share one guard.
+        p_bet, p_close, clv = compute_clv(
+            rec.bet_side_american,
+            rec.bet_other_american,
+            close.side_american,
+            close.other_american,
+            method=method,
+            bet_line_source_row_id=bet_id,
+            close_line_source_row_id=close_id,
+        )
+    else:
+        p_bet = fair_prob_on_side(rec.bet_side_american, rec.bet_other_american, method=method)
+        clv = float(p_close - p_bet) if clv_method in PROBABILITY_VALUED_METHODS else float("nan")
 
     return SettledBet(
         recommendation=rec,
@@ -499,6 +548,7 @@ def settle_recommendation(
     close_side_american: float,
     close_other_american: float,
     *,
+    close_source_row_id: str,
     method: DevigMethod = DEFAULT_DEVIG_METHOD,
 ) -> SettledBet:
     """Settle against a same-book close quoted at the ticket's line.
@@ -506,6 +556,8 @@ def settle_recommendation(
     Convenience wrapper for moneylines and unmoved lines; anything involving a
     moved spread or total must go through :func:`settle` with a
     :class:`ClosingQuote` so the line is translated.
+
+    ``close_source_row_id`` is required so the source-row guard cannot be skipped.
     """
     return settle(
         recommendation,
@@ -514,6 +566,7 @@ def settle_recommendation(
             other_american=float(close_other_american),
             book=recommendation.book,
             line=recommendation.bet_line,
+            source_row_id=str(close_source_row_id),
         ),
         method=method,
     )
@@ -634,12 +687,10 @@ def settle_week(
         elif isinstance(raw, ClosingQuote):
             same_book = raw
         else:
-            side_am, other_am = raw
-            same_book = ClosingQuote(
-                side_american=float(side_am),
-                other_american=float(other_am),
-                book=rec.book,
-                line=rec.bet_line,
+            raise ClvError(
+                f"settle_week close for {rec.recommendation_id!r} must be a ClosingQuote "
+                "with source_row_id; bare (side, other) tuples cannot thread the CLV "
+                "source-row guard"
             )
 
         fallback = None if consensus_closes is None else consensus_closes.get(rec.recommendation_id)

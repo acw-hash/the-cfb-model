@@ -67,9 +67,22 @@ def _spread_rec(**overrides: object) -> RecommendationRecord:
         "book": "pinnacle",
         "market": "spread",
         "bet_line": -6.5,
+        "bet_line_source_row_id": "snap:bet:g1:-6.5",
     }
     base.update(overrides)
     return RecommendationRecord(**base)  # type: ignore[arg-type]
+
+
+def _close(**overrides: object) -> ClosingQuote:
+    base: dict[str, object] = {
+        "side_american": -110,
+        "other_american": -110,
+        "book": "pinnacle",
+        "line": -6.5,
+        "source_row_id": "snap:close:g1:-6.5",
+    }
+    base.update(overrides)
+    return ClosingQuote(**base)  # type: ignore[arg-type]
 
 
 # ---------------------------------------------------------------------------
@@ -118,7 +131,7 @@ def test_moved_line_translation_differs_from_naive_price_only_clv() -> None:
     7: 0.5 * P(margin == 7) = 0.5 * 0.08 = 0.04.
     """
     rec = _spread_rec()
-    close = ClosingQuote(side_american=-110, other_american=-110, book="pinnacle", line=-7.0)
+    close = _close(line=-7.0)
 
     _p_bet_naive, _p_close_naive, naive_clv = compute_clv(-110, -110, -110, -110)
     assert naive_clv == pytest.approx(0.0)
@@ -141,7 +154,7 @@ def test_moved_line_translation_differs_from_naive_price_only_clv() -> None:
 def test_translation_sign_flips_when_the_line_moves_against_us() -> None:
     """We hold -7 and the book closes -6.5: later bettors got the better number."""
     rec = _spread_rec(bet_line=-7.0)
-    close = ClosingQuote(side_american=-110, other_american=-110, book="pinnacle", line=-6.5)
+    close = _close(line=-6.5)
 
     bet = settle(rec, same_book_close=close, model_cover_prob=spread_cover_prob_fn(MARGIN_PMF))
 
@@ -152,14 +165,7 @@ def test_translation_sign_flips_when_the_line_moves_against_us() -> None:
 def test_alt_line_price_takes_priority_over_the_model(caplog: pytest.LogCaptureFixture) -> None:
     """A real quote at the ticket line beats inferring the shift from the model."""
     rec = _spread_rec()
-    close = ClosingQuote(
-        side_american=-110,
-        other_american=-110,
-        book="pinnacle",
-        line=-7.0,
-        alt_side_american=-125,
-        alt_other_american=105,
-    )
+    close = _close(line=-7.0, alt_side_american=-125, alt_other_american=105)
 
     bet = settle(rec, same_book_close=close, model_cover_prob=spread_cover_prob_fn(MARGIN_PMF))
 
@@ -171,7 +177,7 @@ def test_alt_line_price_takes_priority_over_the_model(caplog: pytest.LogCaptureF
 def test_line_units_when_no_translation_is_possible() -> None:
     """Without an alt line or a model, points are the only honest unit."""
     rec = _spread_rec()
-    close = ClosingQuote(side_american=-110, other_american=-110, book="pinnacle", line=-7.0)
+    close = _close(line=-7.0)
 
     bet = settle(rec, same_book_close=close)
 
@@ -183,7 +189,7 @@ def test_line_units_when_no_translation_is_possible() -> None:
 
 def test_unmoved_line_settles_as_same_line() -> None:
     rec = _spread_rec()
-    close = ClosingQuote(side_american=-130, other_american=110, book="pinnacle", line=-6.5)
+    close = _close(side_american=-130, other_american=110, line=-6.5)
 
     bet = settle(rec, same_book_close=close)
 
@@ -207,8 +213,9 @@ def test_totals_translate_on_the_over_and_under_sides() -> None:
         market="total",
         bet_line=48.0,
         total_side="over",
+        bet_line_source_row_id="snap:bet:g1:total:48",
     )
-    close = ClosingQuote(side_american=-110, other_american=-110, book="pinnacle", line=52.0)
+    close = _close(line=52.0, source_row_id="snap:close:g1:total:52")
 
     bet = settle(
         over, same_book_close=close, model_cover_prob=total_cover_prob_fn(TOTAL_PMF, "over")
@@ -239,7 +246,7 @@ def test_line_units_sign_conventions() -> None:
 def test_translation_refuses_to_leave_the_unit_interval() -> None:
     """A model that disagrees violently with the close must not fake a probability."""
     rec = _spread_rec(bet_line=-6.5)
-    close = ClosingQuote(side_american=-110, other_american=-110, book="pinnacle", line=40.0)
+    close = _close(line=40.0)
 
     with pytest.raises(ClvError, match=r"left \[0, 1\]"):
         settle(rec, same_book_close=close, model_cover_prob=lambda line: 1.0 if line < 0 else 0.0)
@@ -252,7 +259,7 @@ def test_translation_refuses_to_leave_the_unit_interval() -> None:
 
 def test_same_book_settlement_requires_the_same_book() -> None:
     rec = _spread_rec()
-    close = ClosingQuote(side_american=-110, other_american=-110, book="draftkings", line=-6.5)
+    close = _close(book="draftkings", line=-6.5)
 
     with pytest.raises(ClvError, match="matching books"):
         settle(rec, same_book_close=close)
@@ -260,7 +267,13 @@ def test_same_book_settlement_requires_the_same_book() -> None:
 
 def test_missing_same_book_close_falls_back_and_is_flagged() -> None:
     rec = _spread_rec()
-    consensus = ClosingQuote(side_american=-130, other_american=110, line=-6.5)
+    consensus = _close(
+        side_american=-130,
+        other_american=110,
+        line=-6.5,
+        book="",
+        source_row_id="snap:consensus:g1",
+    )
 
     bet = settle(rec, consensus_close=consensus)
 
@@ -288,7 +301,7 @@ def test_line_shopping_capture_measures_the_books_disagreement_with_consensus() 
         consensus_side_american=-110,
         consensus_other_american=-110,
     )
-    close = ClosingQuote(side_american=-110, other_american=-110, book="pinnacle", line=-6.5)
+    close = _close(line=-6.5)
 
     capture = compute_line_shopping_capture(rec)
     bet = settle(rec, same_book_close=close)
@@ -317,10 +330,14 @@ def test_consensus_settlement_credits_a_skill_free_bet_and_same_book_does_not() 
         consensus_other_american=-110,
     )
     # Our book closes exactly where we bet: no movement, so no value.
-    same_book_close = ClosingQuote(
-        side_american=-105, other_american=-115, book="pinnacle", line=-6.5
+    same_book_close = _close(side_american=-105, other_american=-115, line=-6.5)
+    consensus_close = _close(
+        side_american=-110,
+        other_american=-110,
+        line=-6.5,
+        book="",
+        source_row_id="snap:consensus:g1",
     )
-    consensus_close = ClosingQuote(side_american=-110, other_american=-110, line=-6.5)
 
     truth = settle(rec, same_book_close=same_book_close)
     biased = settle(rec, consensus_close=consensus_close)
@@ -345,15 +362,19 @@ def test_line_shopping_capture_is_nan_without_a_consensus_price() -> None:
 
 
 def test_summary_never_pools_same_book_with_fallback_or_line_units() -> None:
-    same_line_close = ClosingQuote(
-        side_american=-130, other_american=110, book="pinnacle", line=-6.5
-    )
-    moved_close = ClosingQuote(side_american=-110, other_american=-110, book="pinnacle", line=-7.0)
+    same_line_close = _close(side_american=-130, other_american=110, line=-6.5)
+    moved_close = _close(line=-7.0, source_row_id="snap:close:g1:-7")
 
     head = settle(_spread_rec(recommendation_id="head"), same_book_close=same_line_close)
     fallback = settle(
         _spread_rec(recommendation_id="fb"),
-        consensus_close=ClosingQuote(side_american=-150, other_american=130, line=-6.5),
+        consensus_close=_close(
+            side_american=-150,
+            other_american=130,
+            line=-6.5,
+            book="",
+            source_row_id="snap:consensus:fb",
+        ),
     )
     units = settle(_spread_rec(recommendation_id="units"), same_book_close=moved_close)
 
@@ -378,15 +399,18 @@ def test_settle_week_routes_same_book_fallback_and_model_translation() -> None:
     settled, report = settle_week(
         [moved, unmoved, orphan],
         {
-            "moved": ClosingQuote(
-                side_american=-110, other_american=-110, book="pinnacle", line=-7.0
+            "moved": _close(line=-7.0, source_row_id="snap:close:moved"),
+            "unmoved": _close(
+                side_american=-130,
+                other_american=110,
+                line=-6.5,
+                source_row_id="snap:close:unmoved",
             ),
-            "unmoved": (-130, 110),
         },
         season=2024,
         week=5,
         consensus_closes={
-            "orphan": ClosingQuote(side_american=-110, other_american=-110, line=-6.5)
+            "orphan": _close(line=-6.5, book="", source_row_id="snap:consensus:orphan")
         },
         model_cover_probs={"moved": spread_cover_prob_fn(MARGIN_PMF)},
     )
@@ -404,3 +428,39 @@ def test_settle_week_skips_recommendations_with_no_close_at_all() -> None:
 
     assert settled == []
     assert report.n_bets == 0
+
+
+# ---------------------------------------------------------------------------
+# Source-row guard on settle() (Task 23-FIX-CLOSE P0-2)
+# ---------------------------------------------------------------------------
+
+
+def test_settle_raises_on_same_source_row() -> None:
+    """End-to-end: settle() must refuse when bet and close share one source row."""
+    rec = _spread_rec(bet_line_source_row_id="cfbd:2019:g1:close")
+    close = _close(side_american=-130, other_american=110, source_row_id="cfbd:2019:g1:close")
+    with pytest.raises(ClvError, match="same source row"):
+        settle(rec, same_book_close=close)
+
+
+def test_settle_passes_with_distinct_source_rows() -> None:
+    rec = _spread_rec(bet_line_source_row_id="snap:bet:g1")
+    close = _close(side_american=-130, other_american=110, source_row_id="snap:close:g1")
+    bet = settle(rec, same_book_close=close)
+    assert bet.clv > 0.0
+    assert rec.bet_line_source_row_id == "snap:bet:g1"
+    assert close.source_row_id == "snap:close:g1"
+
+
+def test_settle_raises_when_bet_source_row_missing() -> None:
+    rec = _spread_rec(bet_line_source_row_id=None)
+    close = _close()
+    with pytest.raises(ClvError, match="bet_line_source_row_id"):
+        settle(rec, same_book_close=close)
+
+
+def test_settle_raises_when_close_source_row_missing() -> None:
+    rec = _spread_rec()
+    close = _close(source_row_id=None)
+    with pytest.raises(ClvError, match="source_row_id"):
+        settle(rec, same_book_close=close)

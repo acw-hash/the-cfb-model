@@ -791,10 +791,12 @@ class ProductionEnsemblePredictor:
     """Mapping-layer predictor with §2.3/§2.6 distributional assembly + calibration.
 
     At each ``fit()`` (retrain gate): time-ordered OOF μ → σ heads → ensemble σ →
-    ρ / key-number kernel → CQR → isotonic per market on OOF raw probs only.
+    ρ / key-number kernel → CQR → distributional PIT maps on the OOF margin and
+    total predictive CDFs (AUDIT-4 / ADR 0011; not per-market isotonic).
 
     At ``predict()``: emit μ, heteroskedastic σ, quantiles, conformal intervals,
-    MC market probs, and calibrated probs. Never substitutes a constant σ.
+    MC market probs, and PIT-recalibrated derived market probs. Never substitutes
+    a constant σ. ``models/calibrate.py`` remains diagnostics-only.
     """
 
     config: WalkForwardConfig

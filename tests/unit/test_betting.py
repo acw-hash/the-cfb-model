@@ -364,6 +364,8 @@ def test_clv_line_moved_against_us() -> None:
 
 
 def test_weekly_settlement_job() -> None:
+    from ncaa_quant.betting.clv import ClosingQuote
+
     rec = RecommendationRecord(
         recommendation_id="r1",
         game_id="g1",
@@ -374,10 +376,17 @@ def test_weekly_settlement_job() -> None:
         bet_other_american=-110,
         recommended_at=datetime(2024, 10, 1, tzinfo=UTC),
         close_definition="odds_api_consensus",
+        bet_line_source_row_id="snap:bet:r1",
     )
     settled, report = settle_week(
         [rec],
-        {"r1": (-130, 110)},
+        {
+            "r1": ClosingQuote(
+                side_american=-130,
+                other_american=110,
+                source_row_id="snap:close:r1",
+            )
+        },
         season=2024,
         week=5,
     )
@@ -388,7 +397,7 @@ def test_weekly_settlement_job() -> None:
     assert report.pct_positive == pytest.approx(1.0)
     assert report.close_definition == "odds_api_consensus"
 
-    one = settle_recommendation(rec, -130, 110)
+    one = settle_recommendation(rec, -130, 110, close_source_row_id="snap:close:r1")
     assert one.clv == pytest.approx(settled[0].clv)
 
 
@@ -479,6 +488,7 @@ def test_settle_week_skips_missing_and_wrong_week() -> None:
         bet_other_american=-110,
         recommended_at=datetime(2024, 10, 1, tzinfo=UTC),
         close_definition="odds_api_consensus",
+        bet_line_source_row_id="snap:bet:r1",
     )
     rec_other_week = RecommendationRecord(
         recommendation_id="r2",
@@ -490,6 +500,7 @@ def test_settle_week_skips_missing_and_wrong_week() -> None:
         bet_other_american=-110,
         recommended_at=datetime(2024, 10, 8, tzinfo=UTC),
         close_definition="odds_api_consensus",
+        bet_line_source_row_id="snap:bet:r2",
     )
     settled, report = settle_week(
         [rec_ok, rec_other_week],

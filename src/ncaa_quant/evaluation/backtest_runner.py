@@ -111,6 +111,61 @@ class BacktestRunnerError(WalkForwardError):
     """Invalid backtest config or resume state."""
 
 
+def build_recommendation_record(
+    *,
+    recommendation_id: str,
+    game_id: str,
+    season: int,
+    week: int,
+    side: str,
+    bet_side_american: float,
+    bet_other_american: float,
+    recommended_at: Any,
+    close_definition: str,
+    bet_line_source_row_id: str,
+    book: str = "",
+    market: str = "moneyline",
+    bet_line: float | None = None,
+    total_side: str | None = None,
+    consensus_side_american: float | None = None,
+    consensus_other_american: float | None = None,
+    n_books_available: int = 0,
+) -> Any:
+    """Build a :class:`~ncaa_quant.betting.clv.RecommendationRecord` with line provenance.
+
+    ``bet_line_source_row_id`` must identify the snapshot / CFBD row that priced
+    the bet at recommendation time. Settlement (:func:`~ncaa_quant.betting.clv.settle`)
+    raises when this id is missing or equals the close ``source_row_id``.
+    """
+    from ncaa_quant.betting.clv import RecommendationRecord
+
+    rid = str(bet_line_source_row_id).strip()
+    if not rid:
+        raise BacktestRunnerError(
+            "bet_line_source_row_id is required; refusing to build a recommendation "
+            "that cannot thread the CLV source-row guard"
+        )
+    return RecommendationRecord(
+        recommendation_id=str(recommendation_id),
+        game_id=str(game_id),
+        season=int(season),
+        week=int(week),
+        side=str(side),
+        bet_side_american=float(bet_side_american),
+        bet_other_american=float(bet_other_american),
+        recommended_at=recommended_at,
+        close_definition=close_definition,  # type: ignore[arg-type]
+        book=str(book),
+        market=market,  # type: ignore[arg-type]
+        bet_line=None if bet_line is None else float(bet_line),
+        total_side=total_side,  # type: ignore[arg-type]
+        consensus_side_american=consensus_side_american,
+        consensus_other_american=consensus_other_american,
+        n_books_available=int(n_books_available),
+        bet_line_source_row_id=rid,
+    )
+
+
 @dataclass(frozen=True)
 class BacktestPlan:
     """Dry-run bill for one named backtest config."""

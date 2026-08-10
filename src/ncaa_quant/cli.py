@@ -517,6 +517,122 @@ def predict() -> None:
     _not_wired("predict")
 
 
+# Task 15 fitted-prior artifacts (same seam the acceptance harness writes).
+_DEFAULT_PRIORS_CACHE = Path("data/tmp/priors_acceptance_15/week1_priors.parquet")
+_DEFAULT_PRIORS_WEIGHTS = Path("data/tmp/priors_acceptance_15/summary.json")
+_DEFAULT_FILTER_HISTORY = Path("data/tmp/state_space_acceptance_14/history.parquet")
+
+
+def load_fitted_priors_frame_for_backtest(
+    staged_root: Path,
+    seasons: tuple[int, ...] | list[int],
+    *,
+    priors_path: Path | None = None,
+    weights_path: Path | None = None,
+    history_path: Path | None = None,
+) -> pd.DataFrame | None:
+    """Load the Task 15 fitted ``priors_frame`` for ``backtest run`` injection.
+
+    Preference order:
+    1. Explicit ``priors_path`` parquet (must carry team/season/dim/prior_mean).
+    2. Acceptance-cache ``week1_priors.parquet``.
+    3. Rebuild from staged prior-family tables + fitted weights in ``summary.json``
+       (and Task 14 filter history when present).
+
+    Returns ``None`` only when no artifact and no rebuild inputs exist — A1's
+    precondition then fails loud rather than silently using league-mean.
+    """
+    season_list = [int(s) for s in seasons]
+    if not season_list:
+        return None
+
+    path = priors_path if priors_path is not None else _DEFAULT_PRIORS_CACHE
+    if path.is_file():
+        frame = pd.read_parquet(path)
+        if frame.empty:
+            return None
+        if "season" in frame.columns:
+            frame = frame.loc[frame["season"].isin(season_list)].copy()
+        return frame if not frame.empty else None
+
+    wpath = weights_path if weights_path is not None else _DEFAULT_PRIORS_WEIGHTS
+    if not wpath.is_file():
+        return None
+
+    import json
+
+    from ncaa_quant.data.storage import ParquetStore
+    from ncaa_quant.features.builders.roster import build_roster_frame
+    from ncaa_quant.ratings.priors import (
+        FittedPriorWeights,
+        build_preseason_priors_frame,
+    )
+
+    payload = json.loads(wpath.read_text(encoding="utf-8"))
+    fitted_by_dim: dict[str, FittedPriorWeights] = {}
+    for dim in ("off_epa", "def_epa", "st_value", "pace"):
+        block = payload.get(dim)
+        if not isinstance(block, dict) or "weights" not in block:
+            continue
+        fitted_by_dim[dim] = FittedPriorWeights(
+            dim=dim,
+            weights={str(k): float(v) for k, v in dict(block["weights"]).items()},
+            std_errors={
+                str(k): float(v) if v is not None else 0.0
+                for k, v in dict(block.get("std_errors") or {}).items()
+            },
+            r_squared=float(block.get("in_sample_r2") or 0.0),
+            n_obs=int(block.get("n_obs") or 0),
+            seasons_train=tuple(int(s) for s in (block.get("seasons_train") or [])),
+            intercept=float(block.get("intercept") or 0.0),
+            intercept_se=float(block.get("intercept_se") or 0.0),
+        )
+    if not fitted_by_dim:
+        return None
+
+    store = ParquetStore(staged_root)
+    # Need S-1 for last-posterior lookup when history is present.
+    load_seasons = sorted(set(season_list) | {min(season_list) - 1})
+
+    def _read_table(name: str) -> pd.DataFrame:
+        frames: list[pd.DataFrame] = []
+        for season in load_seasons:
+            for p in store._matching_paths(name, {"season": int(season)}):  # noqa: SLF001
+                frames.append(pd.read_parquet(p))
+        return pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
+
+    teams = _read_table("teams")
+    if teams.empty:
+        return None
+    roster = build_roster_frame(
+        teams=teams,
+        returning=_read_table("returning_production"),
+        talent=_read_table("talent"),
+        recruiting=_read_table("recruiting"),
+        portal=_read_table("portal"),
+        coaches=_read_table("coaches"),
+        seasons=load_seasons,
+    )
+    hpath = history_path if history_path is not None else _DEFAULT_FILTER_HISTORY
+    history = pd.read_parquet(hpath) if hpath.is_file() else pd.DataFrame()
+
+    frames: list[pd.DataFrame] = []
+    for season in season_list:
+        pf = build_preseason_priors_frame(
+            history=history,
+            roster=roster,
+            teams=teams,
+            season=int(season),
+            fitted_by_dim=fitted_by_dim,
+            dims=tuple(fitted_by_dim.keys()),
+        )
+        if not pf.empty:
+            frames.append(pf)
+    if not frames:
+        return None
+    return pd.concat(frames, ignore_index=True)
+
+
 @backtest_app.command("plan")
 def backtest_plan(
     config: str = typer.Option(..., "--config", help="Ablation/run config name or path."),
@@ -554,6 +670,11 @@ def backtest_run(
     tracking_uri: str = typer.Option("file:./mlruns", "--tracking-uri"),
     label: str = typer.Option("", "--label", help="Optional run label (e.g. WIRING PROOF)."),
     stack: str = typer.Option("fundamental", "--stack", help="fundamental | market_aware"),
+    priors_path: str = typer.Option(
+        "",
+        "--priors-path",
+        help="Fitted priors parquet (Task 15 seam). Default: acceptance cache if present.",
+    ),
 ) -> None:
     """Execute one named walk-forward backtest end to end (resumable)."""
     configure_logging()
@@ -607,12 +728,20 @@ def backtest_run(
     )
     play_counts = (n_on, n_off) if n_off > 0 else None
 
+    # Task 15 seam: inject fitted priors so A1's precondition sees a real frame.
+    priors_frame = load_fitted_priors_frame_for_backtest(
+        staged_path,
+        cfg.all_replay_seasons(),
+        priors_path=Path(priors_path) if priors_path else None,
+    )
+
     result = run_backtest(
         config,
         games=games,
         snapshots=None,
         cfbd_lines=cfbd_lines,
         observations=obs,
+        priors_frame=priors_frame,
         play_counts=play_counts,
         output_root=output_path,
         force=force,

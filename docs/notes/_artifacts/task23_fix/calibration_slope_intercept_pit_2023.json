@@ -1,0 +1,23 @@
+{
+  "source": "data/backtests/task23_fix_smoke/wiring_proof_2023/full/predictions.parquet",
+  "path": "ProductionEnsemblePredictor PIT + CQR (AUDIT-4); Cox diagnostics via calibrate.py metrics helpers",
+  "held_out_season": 2023,
+  "n": 910,
+  "ml_cox": {
+    "slope_before": 0.633626538728194,
+    "intercept_before": 0.5204722315345781,
+    "n_before": 910,
+    "slope_after": 0.11426535372996416,
+    "intercept_after": 0.5861192622200029,
+    "n_after": 910
+  },
+  "margin_pit": {
+    "n": 910,
+    "ks_raw": 0.22551122088742503,
+    "ks_after_map_fit_on_prefix": 0.07136499496973592,
+    "map_kind": "isotonic",
+    "map_n_oof_prefix": 637,
+    "ks_before_fit": 0.29474199011819424,
+    "ks_after_fit_in_sample": 0.003924646781789831
+  }
+}
