@@ -1090,7 +1090,13 @@ class WalkForwardHarness:
         retrain_epoch = 0
         if not revealed_labels.empty:
             seed_feats = _features_for_labels(revealed_labels)
-            self._retrain(seed_feats, revealed_labels, retrain_epoch=retrain_epoch)
+            self._retrain(
+                seed_feats,
+                revealed_labels,
+                retrain_epoch=retrain_epoch,
+                season=0,
+                week=0,
+            )
             retrain_events.append(
                 {
                     "season": None,
@@ -1116,6 +1122,8 @@ class WalkForwardHarness:
                 _features_for_labels(revealed_labels),
                 revealed_labels,
                 retrain_epoch=retrain_epoch,
+                season=int(season),
+                week=0,
             )
             retrain_events.append(
                 {
@@ -1137,6 +1145,8 @@ class WalkForwardHarness:
                         _features_for_labels(revealed_labels),
                         revealed_labels,
                         retrain_epoch=retrain_epoch,
+                        season=int(season),
+                        week=int(week),
                     )
                     retrain_events.append(
                         {
@@ -1196,6 +1206,8 @@ class WalkForwardHarness:
                                 _features_for_labels(revealed_labels),
                                 revealed_labels,
                                 retrain_epoch=retrain_epoch,
+                                season=int(season),
+                                week=int(week),
                             )
                             retrain_events.append(
                                 {
@@ -1396,8 +1408,15 @@ class WalkForwardHarness:
         labels: pd.DataFrame,
         *,
         retrain_epoch: int,
+        season: int | None = None,
+        week: int | None = None,
     ) -> None:
         del retrain_epoch
+        # Point-in-time expected-possessions refit (DESIGN §4.5 / Task 11).
+        # Never loads a globally-fitted live artifact inside the walk-forward.
+        fit_poss = getattr(self.feature_provider, "fit_possessions_at_retrain", None)
+        if callable(fit_poss) and season is not None and week is not None:
+            fit_poss(int(season), int(week))
         self.predictor.fit(features, labels)
 
 

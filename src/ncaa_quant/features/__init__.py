@@ -30,6 +30,13 @@ from ncaa_quant.features.pit_audit import (
     assert_partition_pit_clean,
     audit_partition,
 )
+from ncaa_quant.features.possessions import (
+    DEFAULT_LIVE_EXPECTED_POSSESSIONS_PATH,
+    LIVE_EXPECTED_POSSESSIONS_CONFIG_KEY,
+    PossessionsFitError,
+    fit_expected_possessions_at_retrain,
+    load_live_expected_possessions,
+)
 from ncaa_quant.features.registry import (
     DependencyCycleError,
     FeatureRegistry,
@@ -41,6 +48,7 @@ from ncaa_quant.features.registry import (
 
 __all__ = [
     "CONNELLY_MARGIN_BY_PERIOD",
+    "DEFAULT_LIVE_EXPECTED_POSSESSIONS_PATH",
     "DEFAULT_WEIGHTING",
     "SUCCESS_FRAC_BY_DOWN",
     "DependencyCycleError",
@@ -48,11 +56,13 @@ __all__ = [
     "FeatureBuilder",
     "FeatureRegistry",
     "FeatureSpec",
+    "LIVE_EXPECTED_POSSESSIONS_CONFIG_KEY",
     "MaterializeError",
     "MaterializeResult",
     "PartitionRef",
     "PitAuditError",
     "PitAuditResult",
+    "PossessionsFitError",
     "RegistryError",
     "UniformWeighting",
     "aggregate_efficiency",
@@ -62,8 +72,10 @@ __all__ = [
     "dvc_add_partition",
     "duckdb_asof_join",
     "filter_garbage_time",
+    "fit_expected_possessions_at_retrain",
     "garbage_time_summary",
     "is_successful_play",
+    "load_live_expected_possessions",
     "load_registry",
     "load_season_plays_from_cfbd_raw",
     "materialize_partition",

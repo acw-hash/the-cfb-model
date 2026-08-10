@@ -35,6 +35,7 @@ from ncaa_quant.features.builders.situational import (
     tz_crossed_signed,
 )
 from ncaa_quant.features.builders.tempo import (
+    EXPECTED_POSSESSIONS_FEATURE_NAMES,
     ExpectedPossessionsArtifact,
     ExpectedPossessionsFeatureBuilder,
     TempoConfig,
@@ -50,6 +51,7 @@ __all__ = [
     "PORTAL_ERA_START",
     "EfficiencyConfig",
     "EfficiencyFeatureBuilder",
+    "EXPECTED_POSSESSIONS_FEATURE_NAMES",
     "ExpectedPossessionsArtifact",
     "ExpectedPossessionsFeatureBuilder",
     "RosterConfig",

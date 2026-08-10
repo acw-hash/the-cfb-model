@@ -86,12 +86,13 @@ _TEMPO_FEATURE_RE = re.compile(
 )
 
 _EXPECTED_POSSESSIONS_NAME: Final[str] = "expected_possessions"
-_EXP_POS_FEATURES: Final[tuple[str, ...]] = (
+EXPECTED_POSSESSIONS_FEATURE_NAMES: Final[tuple[str, ...]] = (
     "home_pace",
     "away_pace",
     "home_pass_rate",
     "away_pass_rate",
 )
+_EXP_POS_FEATURES: Final[tuple[str, ...]] = EXPECTED_POSSESSIONS_FEATURE_NAMES
 
 
 @dataclass(frozen=True, slots=True)

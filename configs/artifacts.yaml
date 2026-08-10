@@ -1,0 +1,12 @@
+# Production / live artifact locations (non-tmp).
+#
+# expected_possessions_live is the LIVE-inference artifact only. Walk-forward
+# backtests refit expected_possessions point-in-time at each retrain gate and
+# must never load this file.
+#
+# filter_history is the GT-active Stage-1 history used by the priors rebuild
+# fallback. The Task 14 cache under data/tmp/state_space_acceptance_14/ is
+# SUPERSEDED and must not appear here.
+artifacts:
+  expected_possessions_live: data/artifacts/expected_possessions/live.json
+  filter_history: data/artifacts/state_space/filter_history.parquet

@@ -61,6 +61,11 @@ from ncaa_quant.evaluation.walkforward import (
     WalkForwardError,
     resolve_lines_for_games,
 )
+from ncaa_quant.features.builders.tempo import ExpectedPossessionsArtifact
+from ncaa_quant.features.possessions import (
+    EXPECTED_POSSESSIONS_FEATURE_NAMES,
+    fit_expected_possessions_at_retrain,
+)
 from ncaa_quant.models.conformal import CQRResult, conformalize_intervals, fit_cqr
 from ncaa_quant.models.ensemble import (
     EnsembleError,
@@ -315,14 +320,52 @@ class StateSpaceRatingEngine:
 
 @dataclass
 class ProductionFeatureProvider:
-    """As-of game features from rating state + optional market columns."""
+    """As-of game features from rating state + expected possessions + market.
+
+    ``possessions_training`` carries GT-filtered pace inputs (DESIGN §4.5 key
+    totals feature). Walk-forward refits the regression at each retrain gate on
+    strictly-prior rows via :meth:`fit_possessions_at_retrain` — the live
+    globally-fitted artifact is never loaded here.
+    """
 
     config: WalkForwardConfig
     snapshots: pd.DataFrame | None = None
     cfbd_lines: pd.DataFrame | None = None
+    possessions_training: pd.DataFrame | None = None
     _expected_feature_names: tuple[str, ...] | None = field(default=None, init=False, repr=False)
     _n_plays_with_gt: int = field(default=0, init=False, repr=False)
     _n_plays_without_gt: int = field(default=0, init=False, repr=False)
+    _possessions_artifacts: dict[tuple[int, int], ExpectedPossessionsArtifact] = field(
+        default_factory=dict, init=False, repr=False
+    )
+    _possessions_by_game: dict[int, dict[str, float]] = field(
+        default_factory=dict, init=False, repr=False
+    )
+
+    def __post_init__(self) -> None:
+        self._index_possessions_training()
+
+    def _index_possessions_training(self) -> None:
+        self._possessions_by_game = {}
+        frame = self.possessions_training
+        if frame is None or frame.empty:
+            return
+        for r in frame.itertuples(index=False):
+            gid = int(r.game_id)
+            feats: dict[str, float] = {}
+            ok = True
+            for name in EXPECTED_POSSESSIONS_FEATURE_NAMES:
+                try:
+                    val = float(getattr(r, name))
+                except (TypeError, ValueError, AttributeError):
+                    ok = False
+                    break
+                if val != val:  # NaN
+                    ok = False
+                    break
+                feats[name] = val
+            if ok:
+                self._possessions_by_game[gid] = feats
 
     def set_play_counts(self, *, with_gt_filter: int, without_gt_filter: int) -> None:
         """Record play counts for A5 mechanism assertions."""
@@ -335,6 +378,32 @@ class ProductionFeatureProvider:
         if self.config.garbage_time_filter:
             return self._n_plays_with_gt
         return self._n_plays_without_gt
+
+    @property
+    def possessions_artifacts(self) -> Mapping[tuple[int, int], ExpectedPossessionsArtifact]:
+        """Retrain-bound → fitted possessions artifact (walk-forward only)."""
+        return dict(self._possessions_artifacts)
+
+    def fit_possessions_at_retrain(
+        self, season: int, week: int
+    ) -> ExpectedPossessionsArtifact | None:
+        """Refit expected possessions on games strictly prior to ``(season, week)``."""
+        training = self.possessions_training
+        if training is None or training.empty:
+            return None
+        artifact = fit_expected_possessions_at_retrain(training, season=int(season), week=int(week))
+        if artifact is not None:
+            self._possessions_artifacts[(int(season), int(week))] = artifact
+        return artifact
+
+    def _artifact_for_week(self, season: int, week: int) -> ExpectedPossessionsArtifact | None:
+        """Latest artifact whose retrain bound is ``<= (season, week)``."""
+        if not self._possessions_artifacts:
+            return None
+        eligible = [key for key in self._possessions_artifacts if key <= (int(season), int(week))]
+        if not eligible:
+            return None
+        return self._possessions_artifacts[max(eligible)]
 
     def compute_game_features(
         self,
@@ -361,6 +430,14 @@ class ProductionFeatureProvider:
             row["rating_uncertainty"] = float(rating_state.get(f"{hid}:sd_off_epa", 1.0)) + float(
                 rating_state.get(f"{aid}:sd_off_epa", 1.0)
             )
+            season = int(getattr(g, "season", 0) or 0)
+            week = int(getattr(g, "week", 0) or 0)
+            artifact = self._artifact_for_week(season, week)
+            pace = self._possessions_by_game.get(int(g.game_id))
+            if artifact is None or pace is None:
+                row["expected_possessions"] = float("nan")
+            else:
+                row["expected_possessions"] = float(artifact.predict_row(pace))
             rows.append(row)
 
         frame = pd.DataFrame(rows)
@@ -1636,6 +1713,7 @@ def build_production_stack(
     priors_frame: pd.DataFrame | None = None,
     snapshots: pd.DataFrame | None = None,
     cfbd_lines: pd.DataFrame | None = None,
+    possessions_training: pd.DataFrame | None = None,
     fbs_team_ids: set[Any] | None = None,
     play_counts: tuple[int, int] | None = None,
     n_mc_draws: int | None = None,
@@ -1686,6 +1764,7 @@ def build_production_stack(
         config=cfg,
         snapshots=snapshots,
         cfbd_lines=cfbd_lines,
+        possessions_training=possessions_training,
     )
     if play_counts is not None:
         provider.set_play_counts(with_gt_filter=play_counts[0], without_gt_filter=play_counts[1])

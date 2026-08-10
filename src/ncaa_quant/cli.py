@@ -520,7 +520,91 @@ def predict() -> None:
 # Task 15 fitted-prior artifacts (same seam the acceptance harness writes).
 _DEFAULT_PRIORS_CACHE = Path("data/tmp/priors_acceptance_15/week1_priors.parquet")
 _DEFAULT_PRIORS_WEIGHTS = Path("data/tmp/priors_acceptance_15/summary.json")
-_DEFAULT_FILTER_HISTORY = Path("data/tmp/state_space_acceptance_14/history.parquet")
+_ARTIFACTS_CONFIG = Path("configs/artifacts.yaml")
+_SUPERSEDED_FILTER_HISTORY_MARKERS: tuple[str, ...] = (
+    "state_space_acceptance_14",
+    "data/tmp/state_space_acceptance_14",
+)
+
+
+def load_artifact_paths(config_path: Path | None = None) -> dict[str, Path]:
+    """Load non-tmp artifact paths from ``configs/artifacts.yaml``."""
+    from omegaconf import OmegaConf
+
+    path = config_path if config_path is not None else _ARTIFACTS_CONFIG
+    if not path.is_file():
+        return {
+            "expected_possessions_live": Path("data/artifacts/expected_possessions/live.json"),
+            "filter_history": Path("data/artifacts/state_space/filter_history.parquet"),
+        }
+    raw = OmegaConf.to_container(OmegaConf.load(path), resolve=True)
+    block = raw.get("artifacts", raw) if isinstance(raw, dict) else {}
+    if not isinstance(block, dict):
+        msg = f"artifacts config must be a mapping: {path}"
+        raise TypeError(msg)
+    return {
+        "expected_possessions_live": Path(
+            str(
+                block.get(
+                    "expected_possessions_live", "data/artifacts/expected_possessions/live.json"
+                )
+            )
+        ),
+        "filter_history": Path(
+            str(block.get("filter_history", "data/artifacts/state_space/filter_history.parquet"))
+        ),
+    }
+
+
+def resolve_filter_history_path(path: Path | str | None = None) -> Path:
+    """Resolve filter-history path; refuse SUPERSEDED Task 14 cache locations."""
+    resolved = load_artifact_paths()["filter_history"] if path is None else Path(path)
+    normalized = str(resolved).replace("\\", "/")
+    for marker in _SUPERSEDED_FILTER_HISTORY_MARKERS:
+        if marker in normalized:
+            msg = (
+                f"SUPERSEDED filter-history path is not reachable from production config: "
+                f"{resolved}. Use configs/artifacts.yaml → artifacts.filter_history "
+                f"(GT-active promoted copy under data/artifacts/)."
+            )
+            raise ValueError(msg)
+    if "data/tmp/" in normalized or normalized.startswith("data/tmp"):
+        msg = f"production filter_history must not live under data/tmp/: {resolved}"
+        raise ValueError(msg)
+    return resolved
+
+
+def load_staged_odds_snapshots(
+    staged_root: Path | str,
+    seasons: tuple[int, ...] | list[int],
+) -> pd.DataFrame | None:
+    """Load staged ``odds_snapshots`` for ``seasons``, excluding lockbox 2025.
+
+    Raises when any requested season is the lockbox, or when loaded rows include
+    lockbox season (assert, not assume).
+    """
+    from ncaa_quant.data.storage import ParquetStore
+    from ncaa_quant.evaluation.lockbox import LOCKBOX_SEASON, assert_lockbox_excluded
+
+    season_list = [int(s) for s in seasons]
+    assert_lockbox_excluded(season_list, context="backtest odds_snapshots load")
+    store = ParquetStore(staged_root)
+    frames: list[pd.DataFrame] = []
+    for season in season_list:
+        for path in store._matching_paths("odds_snapshots", {"season": int(season)}):  # noqa: SLF001
+            frames.append(pd.read_parquet(path))
+    if not frames:
+        return None
+    snapshots = pd.concat(frames, ignore_index=True)
+    if "season" in snapshots.columns:
+        lockbox_rows = snapshots.loc[snapshots["season"].astype(int) == LOCKBOX_SEASON]
+        if not lockbox_rows.empty:
+            msg = (
+                f"odds_snapshots load included lockbox season {LOCKBOX_SEASON} "
+                f"({len(lockbox_rows)} rows); refuse unconditionally"
+            )
+            raise AssertionError(msg)
+    return snapshots
 
 
 def load_fitted_priors_frame_for_backtest(
@@ -537,7 +621,7 @@ def load_fitted_priors_frame_for_backtest(
     1. Explicit ``priors_path`` parquet (must carry team/season/dim/prior_mean).
     2. Acceptance-cache ``week1_priors.parquet``.
     3. Rebuild from staged prior-family tables + fitted weights in ``summary.json``
-       (and Task 14 filter history when present).
+       (and GT-active filter history when present).
 
     Returns ``None`` only when no artifact and no rebuild inputs exist — A1's
     precondition then fails loud rather than silently using league-mean.
@@ -613,7 +697,7 @@ def load_fitted_priors_frame_for_backtest(
         coaches=_read_table("coaches"),
         seasons=load_seasons,
     )
-    hpath = history_path if history_path is not None else _DEFAULT_FILTER_HISTORY
+    hpath = resolve_filter_history_path(history_path)
     history = pd.read_parquet(hpath) if hpath.is_file() else pd.DataFrame()
 
     frames: list[pd.DataFrame] = []
@@ -685,7 +769,12 @@ def backtest_run(
         run_backtest,
         walkforward_config_from_mapping,
     )
-    from ncaa_quant.evaluation.production_stack import build_observations_from_staged
+    from ncaa_quant.evaluation.lockbox import assert_lockbox_excluded
+    from ncaa_quant.evaluation.production_stack import (
+        build_observations_from_staged,
+        build_production_stack,
+    )
+    from ncaa_quant.features.possessions import build_possessions_training_from_staged
 
     staged_path = Path(staged_dir)
     output_path = Path(output_root)
@@ -700,26 +789,37 @@ def backtest_run(
         typer.echo(str(exc))
         raise typer.Exit(code=2) from exc
 
-    games = load_staged_games(staged_path, cfg.all_replay_seasons())
+    replay_seasons = cfg.all_replay_seasons()
+    assert_lockbox_excluded(replay_seasons, context=f"backtest run --config {config}")
+
+    games = load_staged_games(staged_path, replay_seasons)
     if games.empty:
-        typer.echo(f"No staged games for seasons {cfg.all_replay_seasons()} under {staged_path}")
+        typer.echo(f"No staged games for seasons {replay_seasons} under {staged_path}")
         raise typer.Exit(code=1)
 
     store = ParquetStore(staged_path)
     advanced_frames: list[pd.DataFrame] = []
     plays_frames: list[pd.DataFrame] = []
     lines_frames: list[pd.DataFrame] = []
-    for season in cfg.all_replay_seasons():
+    teams_frames: list[pd.DataFrame] = []
+    drives_frames: list[pd.DataFrame] = []
+    for season in replay_seasons:
         for path in store._matching_paths("advanced_box", {"season": int(season)}):  # noqa: SLF001
             advanced_frames.append(pd.read_parquet(path))
         for path in store._matching_paths("plays", {"season": int(season)}):  # noqa: SLF001
             plays_frames.append(pd.read_parquet(path))
         for path in store._matching_paths("lines_historical", {"season": int(season)}):  # noqa: SLF001
             lines_frames.append(pd.read_parquet(path))
+        for path in store._matching_paths("teams", {"season": int(season)}):  # noqa: SLF001
+            teams_frames.append(pd.read_parquet(path))
+        for path in store._matching_paths("drives", {"season": int(season)}):  # noqa: SLF001
+            drives_frames.append(pd.read_parquet(path))
 
     advanced = pd.concat(advanced_frames, ignore_index=True) if advanced_frames else None
     plays = pd.concat(plays_frames, ignore_index=True) if plays_frames else None
     cfbd_lines = pd.concat(lines_frames, ignore_index=True) if lines_frames else None
+    teams = pd.concat(teams_frames, ignore_index=True) if teams_frames else pd.DataFrame()
+    drives = pd.concat(drives_frames, ignore_index=True) if drives_frames else pd.DataFrame()
     obs, n_on, n_off = build_observations_from_staged(
         plays=plays,
         games=games,
@@ -728,17 +828,48 @@ def backtest_run(
     )
     play_counts = (n_on, n_off) if n_off > 0 else None
 
+    # Snapshot ladder for ≥2021; lockbox 2025 excluded unconditionally.
+    snapshots = load_staged_odds_snapshots(staged_path, replay_seasons)
+
     # Task 15 seam: inject fitted priors so A1's precondition sees a real frame.
     priors_frame = load_fitted_priors_frame_for_backtest(
         staged_path,
-        cfg.all_replay_seasons(),
+        replay_seasons,
         priors_path=Path(priors_path) if priors_path else None,
+    )
+
+    # Point-in-time possessions training (GT-filtered pace inputs). Walk-forward
+    # refits at each retrain; the live artifact under configs/artifacts.yaml is
+    # never loaded here.
+    possessions_training = (
+        build_possessions_training_from_staged(
+            plays=plays if plays is not None else pd.DataFrame(),
+            games=games,
+            teams=teams,
+            drives=drives,
+            garbage_time_filter=cfg.garbage_time_filter,
+        )
+        if plays is not None and not plays.empty and not drives.empty
+        else None
+    )
+
+    production = build_production_stack(
+        cfg,
+        kind=stack,  # type: ignore[arg-type]
+        observations=obs,
+        priors_frame=priors_frame,
+        snapshots=snapshots,
+        cfbd_lines=cfbd_lines,
+        possessions_training=possessions_training,
+        play_counts=play_counts,
+        enforce_ablation_preconditions=bool(payload.get("enforce_ablation_preconditions", True)),
     )
 
     result = run_backtest(
         config,
         games=games,
-        snapshots=None,
+        stack=production,
+        snapshots=snapshots,
         cfbd_lines=cfbd_lines,
         observations=obs,
         priors_frame=priors_frame,
