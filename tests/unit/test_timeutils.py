@@ -102,6 +102,18 @@ def test_decision_point_dst_transition_week_offsets_differ() -> None:
     assert (after - before).total_seconds() == 7 * 24 * 3600 + 3600
 
 
+def test_decision_point_saturday_0600_et_edt() -> None:
+    """Before November fall-back: Saturday 06:00 ET is EDT (UTC-4)."""
+    utc = resolve_decision_point("saturday_0600_et", date(2024, 11, 2))
+    assert utc == datetime(2024, 11, 2, 10, 0, tzinfo=UTC)
+
+
+def test_decision_point_saturday_0600_et_est_after_november_fallback() -> None:
+    """After November fall-back: Saturday 06:00 ET is EST (UTC-5)."""
+    utc = resolve_decision_point("saturday_0600_et", date(2024, 11, 9))
+    assert utc == datetime(2024, 11, 9, 11, 0, tzinfo=UTC)
+
+
 def test_unknown_decision_point_raises() -> None:
     with pytest.raises(UnknownDecisionPointError, match="slot_close"):
         resolve_decision_point("slot_close", date(2024, 11, 5))

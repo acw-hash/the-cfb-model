@@ -4,15 +4,16 @@ Captures unbackfillable live odds and credit-metered historical snapshots.
 Every response is archived verbatim *before* parsing so a parser failure never
 loses the payload.
 
-**Decision-point schedule (Task 5B v1).** Pre-registered in
-``configs/data.yaml`` as ``odds_historical_decision_points``. v1 pulls only:
+**Decision-point schedule (Task 5B).** Pre-registered in
+``configs/data.yaml`` as ``odds_historical_decision_points``. Current schedule:
 
 - ``tuesday_0600_et`` — one request per CFB week at Tuesday 06:00 America/New_York
+- ``saturday_0600_et`` — one request per CFB week at Saturday 06:00 America/New_York
+  (DESIGN §9.8 / ADR 0002 daily-refresh point; ADR 0009)
 - ``slot_close`` — one request per distinct kickoff slot at slot minus 5 minutes
 
-DESIGN §9.8 lists additional production decision points (Thu/Sat 06:00 ET,
-T−6h, T−1h). Those are intentionally deferred for budget; adding or removing a
-decision point later invalidates backtest comparability with earlier runs.
+DESIGN §9.8 also lists Thu 06:00 ET, T−6h, and T−1h. Those remain deferred.
+Changing this schedule later invalidates backtest comparability with earlier runs.
 
 **event_time discipline (historical).** The historical endpoint returns the
 live odds schema wrapped in an envelope with ``timestamp`` /
@@ -38,6 +39,20 @@ kickoff within ±36h and persisted in ``odds_cfbd_game_crosswalk``. Ambiguous
 matches are quarantined (``game_id`` null) — never guessed. The derived
 ``game_key`` is matcher input only. A one-day postpone keeps one CFBD id
 because a prior matched ``odds_event_id`` is reused across commence-time shifts.
+
+**Ingest-time line quarantine (ADR 0010).** Out-of-bounds book lines
+(``|spread| < 70``, totals in ``[20, 100]`` — same as
+``OddsSnapshotsSchema.line_sanity``) are split before write: good rows stage to
+``odds_snapshots``; bad rows append to the ``odds_snapshots_quarantine`` sidecar.
+This is row-level salvage at ingest, distinct from Task 7's post-hoc partition
+quarantine.
+
+**Historical resume.** Archive presence alone does not complete a slot. Skip the
+API only when the archive exists *and* staged rows are present for that slot's
+returned ``event_time`` (matched on ``decision_point`` +
+``snapshot_source='historical'``), or an explicit empty-slot marker was written
+after a successful parse of an empty envelope. Otherwise replay parse-and-write
+from the archive at zero credits.
 """
 
 from __future__ import annotations
@@ -45,6 +60,8 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import os
+import uuid
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
@@ -54,6 +71,8 @@ from zoneinfo import ZoneInfo
 
 import httpx
 import pandas as pd  # type: ignore[import-untyped]
+import pyarrow as pa  # type: ignore[import-untyped]
+import pyarrow.parquet as pq  # type: ignore[import-untyped]
 from tenacity import (
     retry,
     retry_if_exception,
@@ -106,6 +125,8 @@ __all__ = (
     "run_historical_backfill",
     "run_odds_ingest",
     "run_odds_raw_capture",
+    "saturday_0600_et_for_week",
+    "split_odds_by_line_sanity",
     "tuesday_0600_et_for_week",
     "write_odds_cfbd_crosswalk",
     "write_odds_snapshots",
@@ -165,7 +186,13 @@ _ODDS_COLUMNS: Final[tuple[str, ...]] = (
     "ingested_at",
 )
 
-DecisionPoint = Literal["tuesday_0600_et", "slot_close"]
+# Ingest-time row quarantine sidecar (ADR 0010). Not in SCHEMA_REGISTRY.
+_ODDS_QUARANTINE_TABLE: Final[str] = "odds_snapshots_quarantine"
+_QUARANTINE_PART: Final[str] = "part.parquet"
+# Marker written after a successful parse of an empty historical envelope.
+_EMPTY_SLOT_DIR: Final[str] = "_empty_slots"
+
+DecisionPoint = Literal["tuesday_0600_et", "saturday_0600_et", "slot_close"]
 BudgetKind = Literal["live", "historical"]
 
 
@@ -272,6 +299,7 @@ class HistoricalBackfillResult:
     requests_made: int = 0
     credits_spent: int = 0
     rows_written: int = 0
+    rows_quarantined: int = 0
     calibration_last: int | None = None
     raw_paths: list[Path] = field(default_factory=list)
 
@@ -381,15 +409,62 @@ def archive_historical_response(
     return path
 
 
-def _historical_slot_archive_exists(raw_root: Path, requested_at: datetime) -> bool:
-    """True if any archive for this requested timestamp already exists."""
+def _request_stamp(requested_at: datetime) -> str:
+    return to_utc(requested_at).strftime("%Y%m%dT%H%M%S%fZ")
+
+
+def _find_historical_slot_archive(raw_root: Path, requested_at: datetime) -> Path | None:
+    """Return the archive path for ``requested_at``, if any."""
     requested = to_utc(requested_at)
     day = requested.date().isoformat()
-    req_stamp = requested.strftime("%Y%m%dT%H%M%S%fZ")
+    req_stamp = _request_stamp(requested)
     directory = raw_root / day
     if not directory.is_dir():
+        return None
+    matches = sorted(p for p in directory.glob("*.json") if p.name.startswith(f"{req_stamp}_"))
+    return matches[0] if matches else None
+
+
+def _empty_slot_marker_path(raw_root: Path, requested_at: datetime) -> Path:
+    return raw_root / _EMPTY_SLOT_DIR / f"{_request_stamp(requested_at)}.done"
+
+
+def _is_empty_historical_slot(raw_root: Path, requested_at: datetime) -> bool:
+    """True when an empty-envelope marker exists for this request timestamp."""
+    return _empty_slot_marker_path(raw_root, requested_at).is_file()
+
+
+def _mark_empty_historical_slot(raw_root: Path, requested_at: datetime) -> Path:
+    """Record that an empty historical envelope was successfully parsed."""
+    path = _empty_slot_marker_path(raw_root, requested_at)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("empty\n", encoding="utf-8")
+    return path
+
+
+def _staged_has_historical_slot(
+    store: ParquetStore,
+    *,
+    season: int,
+    week: int,
+    decision_point: str,
+    event_time: datetime,
+) -> bool:
+    """True if staged historical rows exist for this returned event_time + DP."""
+    existing = store.read(
+        "odds_snapshots",
+        filters={"season": int(season), "week": int(week)},
+    )
+    if existing.empty:
         return False
-    return any(p.name.startswith(f"{req_stamp}_") for p in directory.glob("*.json"))
+    target = pd.Timestamp(to_utc(event_time))
+    et = pd.to_datetime(existing["event_time"], utc=True)
+    mask = (
+        (existing["snapshot_source"] == "historical")
+        & (existing["decision_point"] == decision_point)
+        & (et == target)
+    )
+    return bool(mask.any())
 
 
 def _progress_path(raw_root: Path, season: int, week: int, decision_point: str) -> Path:
@@ -412,7 +487,11 @@ def mark_unit_complete(
     week: int,
     decision_point: str,
 ) -> Path:
-    """Write the resumability marker for a completed unit."""
+    """Write the resumability marker for a completed unit.
+
+    Call only after every ``request_time`` in the unit has a successful
+    parse-and-write (including zero-credit archive replays).
+    """
     path = _progress_path(raw_root, season, week, decision_point)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("ok\n", encoding="utf-8")
@@ -1135,14 +1214,135 @@ def _ensure_odds_metadata_columns(df: pd.DataFrame) -> pd.DataFrame:
     return work
 
 
-def write_odds_snapshots(store: ParquetStore, df: pd.DataFrame) -> int:
-    """Append ``df`` into ``odds_snapshots`` partitions with minute-level dedupe.
+def split_odds_by_line_sanity(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Split rows by ``OddsSnapshotsSchema.line_sanity`` bounds (DESIGN §8).
 
-    Returns the number of new rows actually added across all partitions.
+    Bounds: ``|spread| < 70``, totals in ``[20, 100]``. Bad rows gain a
+    ``quarantine_reason`` of ``spread_out_of_bounds`` or ``total_out_of_bounds``.
+    Never drops rows — callers must stage good rows and quarantine bad ones.
     """
     if df.empty:
+        empty = df.copy()
+        return empty, empty
+    work = df.copy()
+    line = pd.to_numeric(work["line"], errors="coerce")
+    spread_bad = line.notna() & (work["market"] == "spread") & ~((line > -70.0) & (line < 70.0))
+    total_bad = line.notna() & (work["market"] == "total") & ~((line >= 20.0) & (line <= 100.0))
+    bad_mask = spread_bad | total_bad
+    good = work.loc[~bad_mask].copy().reset_index(drop=True)
+    bad = work.loc[bad_mask].copy()
+    if bad.empty:
+        return good, bad.reset_index(drop=True)
+    reason = pd.Series("total_out_of_bounds", index=work.index, dtype="object")
+    reason.loc[spread_bad] = "spread_out_of_bounds"
+    bad["quarantine_reason"] = reason.loc[bad_mask].to_numpy()
+    return good, bad.reset_index(drop=True)
+
+
+def _atomic_write_parquet(df: pd.DataFrame, path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.parent / f".{_QUARANTINE_PART}.tmp.{uuid.uuid4().hex}"
+    try:
+        table = pa.Table.from_pandas(df, preserve_index=False)
+        pq.write_table(table, tmp, compression="snappy")
+        os.replace(tmp, path)
+    finally:
+        if tmp.exists():
+            tmp.unlink(missing_ok=True)
+
+
+def append_odds_snapshots_quarantine(
+    staged_root: Path | str,
+    bad: pd.DataFrame,
+    *,
+    raw_archive_path: Path | str | None = None,
+    requested_at: datetime | None = None,
+) -> int:
+    """Append out-of-bounds snapshot rows to the ingest quarantine sidecar.
+
+    Layout::
+
+        {staged}/odds_snapshots_quarantine/season={Y}/week={W}/part.parquet
+
+    Adds ``quarantine_reason`` (required on ``bad``), ``raw_archive_path``,
+    and ``requested_at``. Returned ``event_time`` and ``decision_point`` stay on
+    the snapshot columns. Dedupes on ``snapshot_id``. Returns new rows added.
+    """
+    if bad.empty:
         return 0
-    frame = dedupe_snapshots(_ensure_odds_metadata_columns(df))
+    if "quarantine_reason" not in bad.columns:
+        msg = "quarantine frame requires quarantine_reason"
+        raise ValueError(msg)
+
+    root = Path(staged_root)
+    work = bad.copy()
+    work["raw_archive_path"] = None if raw_archive_path is None else str(raw_archive_path)
+    work["requested_at"] = pd.NaT if requested_at is None else pd.Timestamp(to_utc(requested_at))
+    added = 0
+    for (season, week), part in work.groupby(["season", "week"], sort=True):
+        season_i = int(season)
+        week_i = int(week)
+        path = (
+            root
+            / _ODDS_QUARANTINE_TABLE
+            / f"season={season_i}"
+            / f"week={week_i}"
+            / _QUARANTINE_PART
+        )
+        existing = pd.read_parquet(path) if path.exists() else pd.DataFrame()
+        before = len(existing)
+        combined = pd.concat([existing, part], ignore_index=True) if before else part
+        if "snapshot_id" in combined.columns:
+            combined = combined.drop_duplicates(subset=["snapshot_id"], keep="first")
+        _atomic_write_parquet(combined, path)
+        added += len(combined) - before
+    return added
+
+
+def write_odds_snapshots(
+    store: ParquetStore,
+    df: pd.DataFrame,
+    *,
+    raw_archive_path: Path | str | None = None,
+    requested_at: datetime | None = None,
+) -> tuple[int, int]:
+    """Append ``df`` into ``odds_snapshots`` partitions with minute-level dedupe.
+
+    Out-of-bounds lines (same bounds as ``OddsSnapshotsSchema.line_sanity``) are
+    split to ``odds_snapshots_quarantine`` before the pandera-validated write so
+    staged ``odds_snapshots`` stays §8-clean. Never drops a bad row silently.
+
+    Returns ``(rows_written, rows_quarantined)`` — new good rows staged and new
+    quarantine sidecar rows appended.
+    """
+    log = get_logger(__name__)
+    if df.empty:
+        return 0, 0
+    good, bad = split_odds_by_line_sanity(df)
+    n_q = 0
+    if not bad.empty:
+        n_q = append_odds_snapshots_quarantine(
+            store.root,
+            bad,
+            raw_archive_path=raw_archive_path,
+            requested_at=requested_at,
+        )
+        sample_cols = [
+            c
+            for c in ("book", "market", "side", "line", "price", "quarantine_reason")
+            if c in bad.columns
+        ]
+        sample = bad.head(5)[sample_cols]
+        log.warning(
+            "odds_line_sanity_quarantined",
+            n_quarantined=n_q,
+            n_bad_input=len(bad),
+            raw_archive_path=None if raw_archive_path is None else str(raw_archive_path),
+            sample=sample.to_dict(orient="records"),
+        )
+    if good.empty:
+        return 0, n_q
+    frame = dedupe_snapshots(_ensure_odds_metadata_columns(good))
     written = 0
     grouped = frame.groupby(["season", "week"], sort=True)
     for (season, week), part in grouped:
@@ -1167,7 +1367,7 @@ def write_odds_snapshots(store: ParquetStore, df: pd.DataFrame) -> int:
             mode="overwrite",
         )
         written += len(combined) - before
-    return written
+    return written, n_q
 
 
 def backfill_live_odds_metadata(store: ParquetStore) -> int:
@@ -1240,6 +1440,18 @@ def tuesday_0600_et_for_week(season: int, week: int) -> datetime:
     return to_utc(tuesday_et)
 
 
+def saturday_0600_et_for_week(season: int, week: int) -> datetime:
+    """Saturday 06:00 America/New_York for the given CFB week, as UTC.
+
+    DESIGN §9.8 / ADR 0002 daily-refresh decision point. ZoneInfo handles DST.
+    """
+    from ncaa_quant.utils.timeutils import resolve_decision_point
+
+    monday_utc = _week_monday_utc(season, week)
+    saturday_date = monday_utc.date() + timedelta(days=5)
+    return resolve_decision_point("saturday_0600_et", saturday_date)
+
+
 def plan_historical_units(
     store: ParquetStore,
     seasons: Sequence[int],
@@ -1266,6 +1478,8 @@ def plan_historical_units(
                 reqs: tuple[datetime, ...]
                 if dp == "tuesday_0600_et":
                     reqs = (tuesday_0600_et_for_week(int(season), week),)
+                elif dp == "saturday_0600_et":
+                    reqs = (saturday_0600_et_for_week(int(season), week),)
                 elif dp == "slot_close":
                     kicks = [
                         to_utc(pd.Timestamp(ts).to_pydatetime())
@@ -1441,7 +1655,11 @@ def run_odds_ingest(
                 decision_point=None,
                 event_time=captured,
             )
-            added = write_odds_snapshots(store, frame)
+            added, _quarantined = write_odds_snapshots(
+                store,
+                frame,
+                raw_archive_path=raw.raw_path,
+            )
         return OddsIngestResult(
             raw_path=raw.raw_path,
             rows_written=added,
@@ -1528,13 +1746,63 @@ def run_historical_backfill(
                     continue
 
                 for req_time in unit.request_times:
-                    if not force and _historical_slot_archive_exists(raw_dir, req_time):
-                        log.info(
-                            "historical_slot_skipped",
+                    archive_path = (
+                        None if force else _find_historical_slot_archive(raw_dir, req_time)
+                    )
+                    if archive_path is not None:
+                        if _is_empty_historical_slot(raw_dir, req_time):
+                            log.info(
+                                "historical_slot_skipped",
+                                season=unit.season,
+                                week=unit.week,
+                                decision_point=unit.decision_point,
+                                requested_at=req_time.isoformat(),
+                                reason="empty_slot_marker",
+                            )
+                            continue
+                        envelope = parse_historical_envelope(
+                            archive_path.read_bytes(),
+                            requested_at=req_time,
+                        )
+                        if _staged_has_historical_slot(
+                            store,
                             season=unit.season,
                             week=unit.week,
                             decision_point=unit.decision_point,
-                            requested_at=req_time.isoformat(),
+                            event_time=envelope.timestamp,
+                        ):
+                            log.info(
+                                "historical_slot_skipped",
+                                season=unit.season,
+                                week=unit.week,
+                                decision_point=unit.decision_point,
+                                requested_at=req_time.isoformat(),
+                                returned_at=envelope.timestamp.isoformat(),
+                                reason="staged_rows_present",
+                            )
+                            continue
+                        # Archive exists but staged is empty → zero-credit replay.
+                        added, quarantined = _stage_historical_envelope(
+                            store,
+                            envelope,
+                            team_map=names,
+                            decision_point=unit.decision_point,
+                            raw_path=archive_path,
+                        )
+                        if not envelope.data:
+                            _mark_empty_historical_slot(raw_dir, req_time)
+                        result.rows_written += added
+                        result.rows_quarantined += quarantined
+                        log.info(
+                            "historical_slot_replayed",
+                            season=unit.season,
+                            week=unit.week,
+                            decision_point=unit.decision_point,
+                            requested_at=envelope.requested_at.isoformat(),
+                            returned_at=envelope.timestamp.isoformat(),
+                            rows=added,
+                            rows_quarantined=quarantined,
+                            raw_path=str(archive_path),
                         )
                         continue
 
@@ -1569,20 +1837,17 @@ def run_historical_backfill(
                     result.raw_paths.append(raw_path)
                     result.requests_made += 1
 
-                    ingested = datetime.now(tz=UTC)
-                    # CRITICAL: event_time = returned timestamp, not request date.
-                    frame = _enrich_frame_via_crosswalk(
+                    added, quarantined = _stage_historical_envelope(
                         store,
-                        envelope.data,
-                        names,
-                        captured_at=envelope.timestamp,
-                        ingested_at=ingested,
-                        snapshot_source="historical",
+                        envelope,
+                        team_map=names,
                         decision_point=unit.decision_point,
-                        event_time=envelope.timestamp,
+                        raw_path=raw_path,
                     )
-                    added = write_odds_snapshots(store, frame)
+                    if not envelope.data:
+                        _mark_empty_historical_slot(raw_dir, req_time)
                     result.rows_written += added
+                    result.rows_quarantined += quarantined
                     result.credits_spent = odds_client.credits_spent
                     log.info(
                         "historical_slot_complete",
@@ -1592,6 +1857,7 @@ def run_historical_backfill(
                         requested_at=envelope.requested_at.isoformat(),
                         returned_at=envelope.timestamp.isoformat(),
                         rows=added,
+                        rows_quarantined=quarantined,
                         credits_spent=result.credits_spent,
                         remaining=odds_client.remaining_requests,
                     )
@@ -1609,6 +1875,38 @@ def run_historical_backfill(
     finally:
         if owns_client:
             odds_client.close()
+
+
+def _stage_historical_envelope(
+    store: ParquetStore,
+    envelope: HistoricalOddsResponse,
+    *,
+    team_map: Mapping[str, str],
+    decision_point: str,
+    raw_path: Path,
+) -> tuple[int, int]:
+    """Normalize → quarantine-split → stage one historical envelope.
+
+    ``event_time`` is the envelope's returned ``timestamp``, never the request.
+    Returns ``(rows_written, rows_quarantined)``.
+    """
+    ingested = datetime.now(tz=UTC)
+    frame = _enrich_frame_via_crosswalk(
+        store,
+        envelope.data,
+        team_map,
+        captured_at=envelope.timestamp,
+        ingested_at=ingested,
+        snapshot_source="historical",
+        decision_point=decision_point,
+        event_time=envelope.timestamp,
+    )
+    return write_odds_snapshots(
+        store,
+        frame,
+        raw_archive_path=raw_path,
+        requested_at=envelope.requested_at,
+    )
 
 
 def _game_keys_from_games(store: ParquetStore, seasons: Sequence[int]) -> pd.DataFrame:

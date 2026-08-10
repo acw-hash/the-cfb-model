@@ -37,6 +37,8 @@ from ncaa_quant.ingestion.odds_api import (
     run_historical_backfill,
     run_odds_ingest,
     run_odds_raw_capture,
+    saturday_0600_et_for_week,
+    split_odds_by_line_sanity,
     tuesday_0600_et_for_week,
     within_asof_tolerance,
     write_odds_cfbd_crosswalk,
@@ -436,11 +438,13 @@ def test_write_twice_same_minute_no_duplicate_rows(
         team_map=team_map,
     )
     with ParquetStore(tmp_path / "staged") as store:
-        n1 = write_odds_snapshots(store, df)
-        n2 = write_odds_snapshots(store, df)
+        n1, q1 = write_odds_snapshots(store, df)
+        n2, q2 = write_odds_snapshots(store, df)
         all_rows = store.read("odds_snapshots")
     assert n1 == len(df)
+    assert q1 == 0
     assert n2 == 0
+    assert q2 == 0
     assert len(all_rows) == len(df)
 
 
@@ -540,12 +544,15 @@ def test_estimator_arithmetic(tmp_path: Path) -> None:
             {"season": 2024, "week": 1},
         )
         plan, lines = estimate_historical_credits(store, [2024], config=cfg)
-    assert plan.total_requests == 3
+    # tue + sat + 2 distinct slot_close kicks
+    assert plan.total_requests == 4
     assert plan.credits_per_call == 30
-    assert plan.total_credits == 90
+    assert plan.total_credits == 120
+    assert plan.ceiling == 60000
     assert plan.requests_by_season_dp[(2024, "tuesday_0600_et")] == 1
+    assert plan.requests_by_season_dp[(2024, "saturday_0600_et")] == 1
     assert plan.requests_by_season_dp[(2024, "slot_close")] == 2
-    assert "total_credits=90" in "\n".join(lines)
+    assert "total_credits=120" in "\n".join(lines)
 
 
 def test_tuesday_0600_et_is_tuesday_morning() -> None:
@@ -556,6 +563,40 @@ def test_tuesday_0600_et_is_tuesday_morning() -> None:
     assert et.weekday() == 1
     assert et.hour == 6
     assert et.minute == 0
+
+
+def test_saturday_0600_et_is_saturday_morning() -> None:
+    from zoneinfo import ZoneInfo
+
+    ts = saturday_0600_et_for_week(2024, 1)
+    et = ts.astimezone(ZoneInfo("America/New_York"))
+    assert et.weekday() == 5
+    assert et.hour == 6
+    assert et.minute == 0
+
+
+def test_saturday_0600_et_dst_fall_back() -> None:
+    """Across Nov EST↔EDT boundary, Sat 06:00 ET shifts UTC by +1h."""
+    # 2024 week containing Oct 29 (EDT) vs week containing Nov 5 (EST).
+    # Labor Day 2024 = Sep 2 → week 9 Monday = Oct 28; week 10 Monday = Nov 4.
+    before = saturday_0600_et_for_week(2024, 9)
+    after = saturday_0600_et_for_week(2024, 10)
+    assert before == datetime(2024, 11, 2, 10, 0, tzinfo=UTC)  # EDT UTC-4
+    assert after == datetime(2024, 11, 9, 11, 0, tzinfo=UTC)  # EST UTC-5
+    assert (after - before).total_seconds() == 7 * 24 * 3600 + 3600
+
+
+def test_unknown_decision_point_in_plan_raises(tmp_path: Path) -> None:
+    staged = tmp_path / "staged"
+    kick = datetime(2024, 9, 7, 19, 0, tzinfo=UTC)
+    with ParquetStore(staged) as store:
+        store.write_partition("games", _games_rows(kick), {"season": 2024, "week": 1})
+        with pytest.raises(ValueError, match="Unknown decision point"):
+            plan_historical_units(
+                store,
+                [2024],
+                decision_points=["thursday_0600_et"],
+            )
 
 
 def test_historical_resumability_skips_completed(
@@ -633,6 +674,7 @@ def test_historical_crash_mid_slot_does_not_rebill(
     tmp_path: Path,
     team_map: dict[str, str],
 ) -> None:
+    """Archived-but-unstaged slot replays from disk at zero credits."""
     staged = tmp_path / "staged"
     raw = tmp_path / "raw_hist"
     kick_a = datetime(2024, 9, 7, 16, 0, tzinfo=UTC)
@@ -647,29 +689,27 @@ def test_historical_crash_mid_slot_does_not_rebill(
     unit = plan.units[0]
     assert len(unit.request_times) == 2
 
-    first_req = unit.request_times[0]
-    archive_historical_response(
-        raw,
-        first_req,
-        first_req - timedelta(minutes=5),
-        json.dumps(_historical_envelope(SAMPLE_PAYLOAD)).encode(),
-    )
+    # Both slots archived (as after a mid-unit crash); neither staged yet.
+    for req in unit.request_times:
+        returned = req - timedelta(minutes=5)
+        archive_historical_response(
+            raw,
+            req,
+            returned,
+            json.dumps(
+                _historical_envelope(
+                    SAMPLE_PAYLOAD,
+                    timestamp=returned.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                )
+            ).encode(),
+        )
     assert not is_unit_complete(raw, 2024, 1, "slot_close")
 
     calls = {"n": 0}
 
     def handler(request: httpx.Request) -> httpx.Response:
         calls["n"] += 1
-        return httpx.Response(
-            200,
-            content=json.dumps(
-                _historical_envelope(
-                    SAMPLE_PAYLOAD,
-                    timestamp="2024-09-07T19:55:00Z",
-                )
-            ).encode(),
-            headers={"x-requests-remaining": "5000", "x-requests-last": "30"},
-        )
+        raise AssertionError("archived slots must not hit the API")
 
     transport = httpx.MockTransport(handler)
     client = OddsAPIClient(
@@ -683,7 +723,8 @@ def test_historical_crash_mid_slot_does_not_rebill(
         transport=transport,
     )
     mark_unit_complete(raw, 2024, 1, "tuesday_0600_et")
-    run_historical_backfill(
+    mark_unit_complete(raw, 2024, 1, "saturday_0600_et")
+    result = run_historical_backfill(
         seasons=[2024],
         config=load_config(),
         api_key="test-key",
@@ -694,8 +735,126 @@ def test_historical_crash_mid_slot_does_not_rebill(
         skip_calibration=True,
         backfill_live_meta=False,
     )
-    assert calls["n"] == 1
+    assert calls["n"] == 0
+    assert result.requests_made == 0
+    assert result.rows_written > 0
     assert is_unit_complete(raw, 2024, 1, "slot_close")
+    with ParquetStore(staged) as store:
+        odds = store.read("odds_snapshots", filters={"season": 2024, "week": 1})
+    assert not odds.empty
+    assert (odds["snapshot_source"] == "historical").all()
+    assert (odds["decision_point"] == "slot_close").all()
+
+
+def test_line_sanity_quarantine_split_does_not_raise(
+    tmp_path: Path,
+    team_map: dict[str, str],
+) -> None:
+    """Bad book lines land in the sidecar; good rows stage; write does not raise."""
+    captured = datetime(2024, 9, 7, 19, 55, tzinfo=UTC)
+    payload = [
+        {
+            "id": "evt_good",
+            "sport_key": "americanfootball_ncaaf",
+            "commence_time": "2024-09-07T19:00:00Z",
+            "home_team": "Michigan Wolverines",
+            "away_team": "Texas Longhorns",
+            "bookmakers": [
+                {
+                    "key": "draftkings",
+                    "title": "DraftKings",
+                    "markets": [
+                        {
+                            "key": "spreads",
+                            "outcomes": [
+                                {"name": "Michigan Wolverines", "price": -110, "point": -3.5},
+                                {"name": "Texas Longhorns", "price": -110, "point": 3.5},
+                            ],
+                        },
+                        {
+                            "key": "totals",
+                            "outcomes": [
+                                {"name": "Over", "price": -105, "point": 48.5},
+                                {"name": "Under", "price": -115, "point": 48.5},
+                            ],
+                        },
+                    ],
+                },
+                {
+                    "key": "williamhill_us",
+                    "title": "William Hill",
+                    "markets": [
+                        {
+                            "key": "spreads",
+                            "outcomes": [
+                                {"name": "Michigan Wolverines", "price": -1667, "point": -600.0},
+                                {"name": "Texas Longhorns", "price": -100000, "point": 600.0},
+                            ],
+                        }
+                    ],
+                },
+                {
+                    "key": "fanduel",
+                    "title": "FanDuel",
+                    "markets": [
+                        {
+                            "key": "totals",
+                            "outcomes": [
+                                {"name": "Over", "price": -1667, "point": 17.5},
+                                {"name": "Under", "price": 750, "point": 17.5},
+                            ],
+                        }
+                    ],
+                },
+            ],
+        }
+    ]
+    df = normalize_odds_payload(
+        payload,
+        captured_at=captured,
+        ingested_at=captured,
+        team_map=team_map,
+        snapshot_source="historical",
+        decision_point="slot_close",
+        event_time=captured,
+    )
+    good, bad = split_odds_by_line_sanity(df)
+    assert len(bad) == 4
+    assert set(bad["quarantine_reason"]) == {
+        "spread_out_of_bounds",
+        "total_out_of_bounds",
+    }
+    assert len(good) == 4
+
+    staged = tmp_path / "staged"
+    raw_path = tmp_path / "raw" / "archive.json"
+    raw_path.parent.mkdir(parents=True)
+    raw_path.write_text("{}", encoding="utf-8")
+    with ParquetStore(staged) as store:
+        written, quarantined = write_odds_snapshots(
+            store,
+            df,
+            raw_archive_path=raw_path,
+            requested_at=captured,
+        )
+        odds = store.read("odds_snapshots")
+    assert written == 4
+    assert quarantined == 4
+    assert len(odds) == 4
+    assert (odds["book"] == "draftkings").all()
+
+    q_path = staged / "odds_snapshots_quarantine" / "season=2024" / "week=1" / "part.parquet"
+    assert q_path.is_file()
+    qdf = pd.read_parquet(q_path)
+    assert len(qdf) == 4
+    assert set(qdf["quarantine_reason"]) == {
+        "spread_out_of_bounds",
+        "total_out_of_bounds",
+    }
+    assert (qdf["raw_archive_path"] == str(raw_path)).all()
+    assert qdf["requested_at"].notna().all()
+    assert (pd.to_datetime(qdf["event_time"], utc=True) == pd.Timestamp(captured)).all()
+    assert (qdf["decision_point"] == "slot_close").all()
 
 
 def test_calibration_gate_mismatch_aborts(

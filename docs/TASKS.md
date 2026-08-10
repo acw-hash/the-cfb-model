@@ -357,13 +357,23 @@ fixtures, envelope parsing, dedupe against live rows covering the same moment,
 DST-transition decision-point resolution via zoneinfo (early November fixtures).
 
 Acceptance:
-- `--estimate` for 2021-2025 prints a credit figure BEFORE any spend. Show me that
-  number and WAIT for my explicit go-ahead before running the real backfill.
-- Calibration gate passes: x-requests-last == 30 on the single probe call.
-- Post-backfill: snapshot coverage % per season per decision point; the
+- [MET] `--estimate` for 2021-2025 prints a credit figure BEFORE any spend.
+  Evidence: locked pre-spend estimate **56,400** (`docs/notes/05b.md` § Pre-spend
+  unlock / Calibration gate); explicit go-ahead then resume backfill
+  (`docs/notes/05b.md` § Authorized resume; `docs/notes/phase3.md`).
+- [MET] Calibration gate passes: x-requests-last == 30 on the single probe call.
+  Evidence: `docs/notes/05b.md` § Calibration gate — `x-requests-last=30`,
+  remaining 99,988 → 99,958.
+- [MET] Post-backfill: snapshot coverage % per season per decision point; the
   n_books_available trajectory by season (it will rise — quantify it); the
   CFBD-close reconciliation distribution; total credits spent.
-- make lint typecheck test pass
+  Evidence: `docs/notes/05b.md` § Post-backfill acceptance report + § Acceptance
+  close-out (coverage tables; n_books 2.938→3.188; reconcile uncorrected and
+  post-kickoff-excluded; **56,400** spent exact; remaining **43,579**;
+  quarantine 434; two as-of exceptions; backup/restore). Raw tee:
+  `docs/notes/05b-postbackfill-report.out.txt`.
+- [MET] make lint typecheck test pass.
+  Evidence: re-verified at Task 5B docs close-out (see `docs/notes/05b.md`).
 
 docs/notes/05b.md
 ```

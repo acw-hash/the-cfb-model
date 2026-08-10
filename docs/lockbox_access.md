@@ -4,10 +4,26 @@ Season **2025** is the lockbox (§7.2 item 9). It is excluded from all developme
 HPO, ablation, and promotion evaluations. It may be read **at most once per
 calendar year** for a confirmatory report only.
 
-Every read must append a row below. Enforcement is code-level, not conventional:
-`src/ncaa_quant/evaluation/lockbox.py` raises `LockboxViolation` from
-`WalkForwardConfig.validate_ablations`, so a run touching 2025 fails before it
-spends compute unless `lockbox_confirmatory_read=True` is set explicitly.
+## Ingest hygiene vs evaluative metrics (amended 2026-08-09)
+
+**Permitted** for the lockbox season without logging a confirmatory read:
+partition existence, progress-marker / unit-complete counts, and ingest
+quarantine row counts (book garbage sidecars). These are operational hygiene
+for credit-spend and write integrity, not model or betting judgment.
+
+**Prohibited** without an explicit confirmatory-read log row: coverage %,
+`n_books_available` trajectories, CFBD↔Odds reconcile distributions, and any
+model or betting output (predictions, edges, CLV, walk-forward metrics).
+
+Task 5B post-backfill quarantine-by-season counts (including 2025 = 104 of 434)
+are **PASS** under this amended rule. See `docs/notes/05b.md` § lockbox
+resolution.
+
+Every confirmatory *evaluative* read must append a row below. Enforcement is
+code-level, not conventional: `src/ncaa_quant/evaluation/lockbox.py` raises
+`LockboxViolation` from `WalkForwardConfig.validate_ablations`, so a run
+touching 2025 fails before it spends compute unless
+`lockbox_confirmatory_read=True` is set explicitly.
 
 **2025 is not a virgin holdout.** The D7 diagnostic read it before the lockbox
 designation existed. That read is logged below because the log has to reflect

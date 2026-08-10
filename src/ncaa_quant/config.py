@@ -61,10 +61,14 @@ class DataConfig(BaseModel):
     # Historical odds backfill (Task 5B). Changing decision points invalidates
     # backtest comparability with earlier runs.
     odds_historical_decision_points: list[str] = Field(
-        default_factory=lambda: ["tuesday_0600_et", "slot_close"]
+        default_factory=lambda: [
+            "tuesday_0600_et",
+            "saturday_0600_et",
+            "slot_close",
+        ]
     )
     odds_historical_credits_per_call: int = 30
-    odds_historical_credit_ceiling: int = 20000
+    odds_historical_credit_ceiling: int = 60000
     odds_asof_tolerance_minutes_pre_2022_09: int = 10
     odds_asof_tolerance_minutes_post_2022_09: int = 5
     team_names_path: str = "configs/team_names.yaml"

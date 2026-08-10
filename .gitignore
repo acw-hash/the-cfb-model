@@ -67,3 +67,6 @@ Thumbs.db
 
 # Notebooks checkpoints
 .ipynb_checkpoints/
+
+# Large local run logs (referenced from docs/notes/05b.md)
+docs/notes/05b-backfill-run.log

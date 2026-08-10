@@ -36,13 +36,14 @@ data:
   # comparability with earlier runs (DESIGN §9.8).
   odds_historical_decision_points:
     - tuesday_0600_et
+    - saturday_0600_et
     - slot_close
   # Cost = 10 × markets × regions → 30 at our live markets/regions config.
   odds_historical_credits_per_call: 30
-  # Refuse historical spend above this without --force. Equals the monthly plan
-  # quota (DESIGN §3.2: 20,000 credits/mo). Prior 16,000 was a stale headroom
-  # guard that understated available budget.
-  odds_historical_credit_ceiling: 20000
+  # Refuse historical spend above this without --force. Sized for the upgraded
+  # ~100k/cycle plan: covers v1+Sat (~56.4k) with resume/calibration headroom;
+  # deliberately below full cycle quota so the guard still refuses unplanned DPs.
+  odds_historical_credit_ceiling: 60000
   # As-of fallback tolerance by snapshot era (DESIGN §3.4).
   odds_asof_tolerance_minutes_pre_2022_09: 10
   odds_asof_tolerance_minutes_post_2022_09: 5
