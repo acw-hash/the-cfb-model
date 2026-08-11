@@ -1,18 +1,21 @@
-# Task 23 eight-run set for `backtest plan --config task23_run_set`.
-# Per-run seasons: full walk-forward 2019–2024 (2020 continuity) except A6
-# which is snapshot-regime 2021–2024 only (§7.2 / historical-odds change set).
-# 2025 excluded 2026-08-07: it is the lockbox season (§7.2 item 9), and
-# WalkForwardConfig.validate_ablations now refuses a config that reads it.
-run_set: task23
+# Task 23 eight-run set — REDUCED ensemble (ADR 0013).
+# Composition (not §5.2-complete):
+#   margin: LGBM μ + ElasticNet μ → NNLS stack
+#   total: single-LGBM stub (no diversity stack)
+#   quantile: margin only; MC + epistemic active
+# Every run_id carries _reduced_v1. ensemble_scope: REDUCED_PER_ADR_0013.
+# 2025 lockbox excluded (§7.2 item 9).
+run_set: task23_reduced_v1
 description: >
-  Eight Task 23 runs — fundamental + market-aware full systems and A1–A6.
-  Plan reports per-run and total wall clock from the measured week-unit model.
+  Eight Task 23 runs on the REDUCED ensemble (ADR 0013). Not a full §5.2 system.
+ensemble_scope: REDUCED_PER_ADR_0013
 
 runs:
   - name: fundamental_full
     stack: fundamental
-    run_id: task23_fundamental
+    run_id: task23_fundamental_reduced_v1
     ablation_id: full
+    ensemble_scope: REDUCED_PER_ADR_0013
     walkforward:
       test_seasons: [2019, 2021, 2022, 2023, 2024]
       continuity_seasons: [2020]
@@ -24,14 +27,15 @@ runs:
       garbage_time_filter: true
       market_feature_source: snapshots
       seed: 42
-      model_version: production-v0
-      run_id: task23_fundamental
+      model_version: production-v0_reduced_v1
+      run_id: task23_fundamental_reduced_v1
       ablation_id: full
 
   - name: market_aware_full
     stack: market_aware
-    run_id: task23_market_aware
+    run_id: task23_market_aware_reduced_v1
     ablation_id: full
+    ensemble_scope: REDUCED_PER_ADR_0013
     walkforward:
       test_seasons: [2019, 2021, 2022, 2023, 2024]
       continuity_seasons: [2020]
@@ -43,14 +47,15 @@ runs:
       garbage_time_filter: true
       market_feature_source: snapshots
       seed: 42
-      model_version: production-v0
-      run_id: task23_market_aware
+      model_version: production-v0_reduced_v1
+      run_id: task23_market_aware_reduced_v1
       ablation_id: full
 
   - name: A1_priors_off
     stack: fundamental
-    run_id: task23_a1
+    run_id: task23_a1_reduced_v1
     ablation_id: A1_league_mean
+    ensemble_scope: REDUCED_PER_ADR_0013
     walkforward:
       test_seasons: [2019, 2021, 2022, 2023, 2024]
       continuity_seasons: [2020]
@@ -62,14 +67,15 @@ runs:
       garbage_time_filter: true
       market_feature_source: snapshots
       seed: 42
-      model_version: production-v0
-      run_id: task23_a1
+      model_version: production-v0_reduced_v1
+      run_id: task23_a1_reduced_v1
       ablation_id: A1_league_mean
 
   - name: A2_rating_updates_frozen
     stack: fundamental
-    run_id: task23_a2
+    run_id: task23_a2_reduced_v1
     ablation_id: A2_frozen_after_week_1
+    ensemble_scope: REDUCED_PER_ADR_0013
     walkforward:
       test_seasons: [2019, 2021, 2022, 2023, 2024]
       continuity_seasons: [2020]
@@ -81,14 +87,15 @@ runs:
       garbage_time_filter: true
       market_feature_source: snapshots
       seed: 42
-      model_version: production-v0
-      run_id: task23_a2
+      model_version: production-v0_reduced_v1
+      run_id: task23_a2_reduced_v1
       ablation_id: A2_frozen_after_week_1
 
   - name: A3_market_features_off
     stack: market_aware
-    run_id: task23_a3
+    run_id: task23_a3_reduced_v1
     ablation_id: A3_market_off
+    ensemble_scope: REDUCED_PER_ADR_0013
     walkforward:
       test_seasons: [2019, 2021, 2022, 2023, 2024]
       continuity_seasons: [2020]
@@ -100,14 +107,15 @@ runs:
       garbage_time_filter: true
       market_feature_source: snapshots
       seed: 42
-      model_version: production-v0
-      run_id: task23_a3
+      model_version: production-v0_reduced_v1
+      run_id: task23_a3_reduced_v1
       ablation_id: A3_market_off
 
   - name: A4_single_lgbm
     stack: fundamental
-    run_id: task23_a4
+    run_id: task23_a4_reduced_v1
     ablation_id: A4_single_lgbm
+    ensemble_scope: REDUCED_PER_ADR_0013
     walkforward:
       test_seasons: [2019, 2021, 2022, 2023, 2024]
       continuity_seasons: [2020]
@@ -119,14 +127,15 @@ runs:
       garbage_time_filter: true
       market_feature_source: snapshots
       seed: 42
-      model_version: production-v0
-      run_id: task23_a4
+      model_version: production-v0_reduced_v1
+      run_id: task23_a4_reduced_v1
       ablation_id: A4_single_lgbm
 
   - name: A5_garbage_time_filter_off
     stack: fundamental
-    run_id: task23_a5
+    run_id: task23_a5_reduced_v1
     ablation_id: A5_gt_off
+    ensemble_scope: REDUCED_PER_ADR_0013
     walkforward:
       test_seasons: [2019, 2021, 2022, 2023, 2024]
       continuity_seasons: [2020]
@@ -138,16 +147,16 @@ runs:
       garbage_time_filter: false
       market_feature_source: snapshots
       seed: 42
-      model_version: production-v0
-      run_id: task23_a5
+      model_version: production-v0_reduced_v1
+      run_id: task23_a5_reduced_v1
       ablation_id: A5_gt_off
 
   - name: A6_cfbd_open_close
     stack: market_aware
-    run_id: task23_a6
+    run_id: task23_a6_reduced_v1
     ablation_id: A6_cfbd_open_close
+    ensemble_scope: REDUCED_PER_ADR_0013
     walkforward:
-      # Snapshot-regime seasons only — not a clean multiple of the others.
       test_seasons: [2021, 2022, 2023, 2024]
       continuity_seasons: []
       retrain_weeks: [5, 10]
@@ -158,6 +167,6 @@ runs:
       garbage_time_filter: true
       market_feature_source: cfbd_open_close
       seed: 42
-      model_version: production-v0
-      run_id: task23_a6
+      model_version: production-v0_reduced_v1
+      run_id: task23_a6_reduced_v1
       ablation_id: A6_cfbd_open_close
