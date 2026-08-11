@@ -496,11 +496,14 @@ def resolve_lines_for_games(
 
     Bet-time / as-of (``closing=False``):
       Snapshot-backed seasons (``>= 2021``): Odds snapshots only — CFBD never
-      enters the feature information set. CFBD-only seasons (``< 2021``):
-      median CFBD open (else close).
+      enters the feature information set. Per-game feature ``as_of`` is the
+      latest configured decision point strictly before kickoff and
+      ``<=`` the harness week decision (MKT-ASOF-FIX). Eligible snaps must
+      satisfy ``event_time <= feature_as_of`` **and** ``event_time < kickoff``.
+      CFBD-only seasons (``< 2021``): median CFBD open (else close).
 
     Closing lines for evaluation (``closing=True``):
-      Prefer Odds snapshot at/before kickoff when present; if unresolved,
+      Last Odds snapshot **strictly before kickoff** (§2.7); if unresolved,
       fall back to median CFBD ``line_type=close``. Closing lines are
       evaluation-only (ATS/OU@close, encompassing, CLV) — never features.
 
@@ -508,6 +511,8 @@ def resolve_lines_for_games(
     school name (5b-patch2 name-based semantics), then median across books.
     Aggregating both sides is forbidden (ATS-GRADE-FIX).
     """
+    from ncaa_quant.features.market_lines import feature_as_of_for_game
+
     assert_tz_aware(as_of)
     as_of_utc = to_utc(as_of)
     rows: list[dict[str, Any]] = []
@@ -516,28 +521,49 @@ def resolve_lines_for_games(
 
     for row in games.itertuples(index=False):
         season = int(row.season)
+        week = int(getattr(row, "week", 0) or 0)
         game_id = int(row.game_id)
         kickoff = to_utc(pd.Timestamp(row.event_time).to_pydatetime())
-        bound = kickoff if closing else as_of_utc
         home_side = _home_side_from_game_row(row)
         if season >= SNAPSHOT_BACKED_FROM_SEASON:
-            resolved = _resolve_from_snapshots(
-                snap,
-                game_id=game_id,
-                game_key=str(getattr(row, "game_key", "") or ""),
-                bound=bound,
-                config=config,
-                home_side=home_side,
-            )
-            # Evaluation closes: fill gaps from CFBD so ATS/encompassing are
-            # not starved when Odds snapshots were never ingested. Bet-time
-            # as-of paths keep the null (no CFBD leak into features).
-            if closing and (
-                resolved["line_source"] == "null" or not np.isfinite(float(resolved["spread"]))
-            ):
-                cfbd = _resolve_from_cfbd(lines, game_id=game_id, closing=True)
-                if cfbd["line_source"] != "null" and np.isfinite(float(cfbd["spread"])):
-                    resolved = {**cfbd, "line_source": "cfbd_close_eval"}
+            if closing:
+                resolved = _resolve_from_snapshots(
+                    snap,
+                    game_id=game_id,
+                    game_key=str(getattr(row, "game_key", "") or ""),
+                    bound=kickoff,
+                    config=config,
+                    home_side=home_side,
+                    as_of_inclusive=False,
+                    kickoff_exclusive=kickoff,
+                )
+                # Evaluation closes: fill gaps from CFBD so ATS/encompassing are
+                # not starved when Odds snapshots were never ingested. Bet-time
+                # as-of paths keep the null (no CFBD leak into features).
+                if resolved["line_source"] == "null" or not np.isfinite(float(resolved["spread"])):
+                    cfbd = _resolve_from_cfbd(lines, game_id=game_id, closing=True)
+                    if cfbd["line_source"] != "null" and np.isfinite(float(cfbd["spread"])):
+                        resolved = {**cfbd, "line_source": "cfbd_close_eval"}
+            else:
+                feature_as_of = feature_as_of_for_game(
+                    kickoff,
+                    as_of_utc,
+                    season=season,
+                    week=week,
+                )
+                if feature_as_of is None:
+                    resolved = dict(_LINE_RESOLVE_EMPTY)
+                else:
+                    resolved = _resolve_from_snapshots(
+                        snap,
+                        game_id=game_id,
+                        game_key=str(getattr(row, "game_key", "") or ""),
+                        bound=feature_as_of,
+                        config=config,
+                        home_side=home_side,
+                        as_of_inclusive=True,
+                        kickoff_exclusive=kickoff,
+                    )
         else:
             resolved = _resolve_from_cfbd(lines, game_id=game_id, closing=closing)
         rows.append({"game_id": game_id, **resolved})
@@ -576,8 +602,16 @@ def _resolve_from_snapshots(
     bound: datetime,
     config: WalkForwardConfig,
     home_side: str | None = None,
+    as_of_inclusive: bool = False,
+    kickoff_exclusive: datetime | None = None,
 ) -> dict[str, Any]:
-    """Resolve snapshot lines; spreads are CFBD-home-side only (ATS-GRADE-FIX)."""
+    """Resolve snapshot lines; spreads are CFBD-home-side only (ATS-GRADE-FIX).
+
+    Time bounds (hard constraints, not conventions):
+    - ``event_time < bound`` by default; ``<= bound`` when ``as_of_inclusive``
+      (feature ladder per MKT-ASOF-FIX).
+    - When ``kickoff_exclusive`` is set, also ``event_time < kickoff``.
+    """
     from ncaa_quant.features.market_lines import median_home_spread, median_total_line
 
     empty = dict(_LINE_RESOLVE_EMPTY)
@@ -597,7 +631,10 @@ def _resolve_from_snapshots(
         return empty
     work = base.copy()
     work["event_time"] = pd.to_datetime(work["event_time"], utc=True)
-    mask = work["event_time"] < pd.Timestamp(bound)
+    bound_ts = pd.Timestamp(bound)
+    mask = work["event_time"] <= bound_ts if as_of_inclusive else work["event_time"] < bound_ts
+    if kickoff_exclusive is not None:
+        mask = mask & (work["event_time"] < pd.Timestamp(kickoff_exclusive))
     eligible = work.loc[mask]
     if eligible.empty:
         return empty
@@ -605,11 +642,8 @@ def _resolve_from_snapshots(
     # Prefer exact decision_point when present; else latest before bound.
     tol = timedelta(minutes=_snapshot_tolerance_minutes(bound, config))
     latest_ts = eligible["event_time"].max()
-    if latest_ts < pd.Timestamp(bound) - tol:
-        # Outside tolerance — still take nearest earlier (logged as fallback).
-        source = "odds_api_snapshot_fallback"
-    else:
-        source = "odds_api_snapshot"
+    # Outside tolerance — still take nearest earlier (logged as fallback).
+    source = "odds_api_snapshot_fallback" if latest_ts < bound_ts - tol else "odds_api_snapshot"
 
     window = eligible.loc[eligible["event_time"] == latest_ts]
     n_books = int(window["book"].nunique()) if "book" in window.columns else 0

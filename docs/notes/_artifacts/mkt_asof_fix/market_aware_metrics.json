@@ -1,0 +1,79 @@
+{
+  "vintage": "RERUN_V2_MKT_ASOF_FIX",
+  "guard_disposition": "INSIDE_BAND_PUBLISHED",
+  "force_publish": false,
+  "audit_artifact": "docs/notes/_artifacts/mkt_asof_fix/market_feature_audit.json",
+  "market_aware": [
+    {
+      "regime": "cfbd_2019",
+      "n": 743,
+      "ats": 0.47510094212651416,
+      "logloss_model": 0.9607643600692336,
+      "mae_margin": 15.11474948611816,
+      "crps_margin": 11.082463910284485,
+      "bootstrap_lo": 0.44532025945069426,
+      "bootstrap_hi": 0.5084058623449379
+    },
+    {
+      "regime": "snapshots_2021_2024",
+      "n": 3491,
+      "ats": 0.5224863935835005,
+      "logloss_model": 1.0617079502697533,
+      "mae_margin": 11.717788023757716,
+      "crps_margin": 8.503663583386691,
+      "bootstrap_lo": 0.5088064585406452,
+      "bootstrap_hi": 0.5367457557903483
+    }
+  ],
+  "A3_within_vintage": [
+    {
+      "regime": "cfbd_2019",
+      "n": 743,
+      "ats": 0.5074024226110363,
+      "logloss_model": 0.9495782929038945,
+      "mae_margin": 17.842475453385465,
+      "crps_margin": 13.039586788822806,
+      "bootstrap_lo": 0.4814183762794489,
+      "bootstrap_hi": 0.540056134723336
+    },
+    {
+      "regime": "snapshots_2021_2024",
+      "n": 3491,
+      "ats": 0.5221999427098253,
+      "logloss_model": 0.8197919611611213,
+      "mae_margin": 14.214953147582452,
+      "crps_margin": 10.179704247629257,
+      "bootstrap_lo": 0.5031512901163403,
+      "bootstrap_hi": 0.5423224560665872
+    }
+  ],
+  "wall_clock_sec": 2934.1,
+  "comparison": {
+    "cfbd_2019": {
+      "mkt_ats": 0.47510094212651416,
+      "a3_ats": 0.5074024226110363,
+      "delta_pp": -3.2301480484522136,
+      "mkt_n": 743,
+      "a3_n": 743,
+      "mkt_ll": 0.9607643600692336,
+      "a3_ll": 0.9495782929038945,
+      "band": [
+        0.44497033713147105,
+        0.555029662868529
+      ]
+    },
+    "snapshots_2021_2024": {
+      "mkt_ats": 0.5224863935835005,
+      "a3_ats": 0.5221999427098253,
+      "delta_pp": 0.02864508736751814,
+      "mkt_n": 3491,
+      "a3_n": 3491,
+      "mkt_ll": 1.0617079502697533,
+      "a3_ll": 0.8197919611611213,
+      "band": [
+        0.4746127105470253,
+        0.5253872894529747
+      ]
+    }
+  }
+}

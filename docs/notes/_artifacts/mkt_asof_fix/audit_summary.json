@@ -1,0 +1,13 @@
+{
+  "audit_verdict": "CLEAN",
+  "n_leaks": 0,
+  "n_week_points": 20,
+  "n_feature_rows": 4736,
+  "prophecy": {
+    "passed": true,
+    "detail": "no prophecy features among 4 checked",
+    "n_features_checked": 4,
+    "n_findings": 0
+  },
+  "artifact": "docs/notes/_artifacts/mkt_asof_fix/market_feature_audit.json"
+}

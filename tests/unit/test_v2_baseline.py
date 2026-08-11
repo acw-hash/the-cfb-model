@@ -314,8 +314,8 @@ def test_audit_post_decision_snap_excluded_from_features() -> None:
     assert hit[0]["grade_source_row_id"] == "post"
 
 
-def test_audit_flags_post_kickoff_feature_as_leak() -> None:
-    """When as_of > kickoff, a post-kickoff feature snap is a LEAK."""
+def test_audit_post_kickoff_snap_excluded_when_as_of_after_kickoff() -> None:
+    """MKT-ASOF-FIX: post-kickoff snaps are excluded even when week as_of is after kickoff."""
     cfg = WalkForwardConfig(seed=42)
     # Build one week where kickoff is BEFORE as_of (production misalignment case).
     as_of = pd.Timestamp(week_decision_as_of(2023, 5, cfg))
@@ -376,7 +376,7 @@ def test_audit_flags_post_kickoff_feature_as_leak() -> None:
         week_points=pts,
         market_features=("mkt_spread",),
     )
-    assert result["verdict"] == "LEAK"
+    assert result["verdict"] == "CLEAN"
     hit = [r for r in result["rows"] if r["game_id"] == 9999 and r["feature"] == "mkt_spread"]
-    assert hit and hit[0]["leak"] is True
-    assert hit[0]["leak_reason"] == "feature_event_time_at_or_after_kickoff"
+    assert hit and hit[0]["leak"] is False
+    assert hit[0]["feature_source_row_id"] is None

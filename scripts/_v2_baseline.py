@@ -367,11 +367,18 @@ def _snapshot_event_time_for_row(
     game_id: int,
     bound: pd.Timestamp,
 ) -> pd.Timestamp | None:
-    """Best-effort resolution timestamp for a ladder result."""
+    """Resolution timestamp for a ladder result.
+
+    When the ladder returned no ``source_row_id`` (null line), do **not** invent
+    an event_time from other snapshots for the game — that false-attributed
+    post-kickoff rows after MKT-ASOF-FIX correctly nulls the feature.
+    """
     if snapshots.empty or "event_time" not in snapshots.columns:
         return None
     work = snapshots
-    if source_row_id and "snapshot_id" in work.columns:
+    if not source_row_id:
+        return None
+    if "snapshot_id" in work.columns:
         hit = work.loc[work["snapshot_id"].astype(str) == str(source_row_id)]
         if not hit.empty:
             return pd.Timestamp(pd.to_datetime(hit["event_time"], utc=True).max())
