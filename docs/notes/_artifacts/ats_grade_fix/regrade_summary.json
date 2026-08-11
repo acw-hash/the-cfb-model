@@ -1,0 +1,360 @@
+{
+  "grade_version": "v2",
+  "runs": {
+    "task23_fundamental_reduced_v1": {
+      "regimes": [
+        {
+          "regime": "cfbd_2019",
+          "n": 743,
+          "ats": 0.5127860026917901,
+          "logloss_model": 0.94587771981285,
+          "logloss_market": 0.6931471805599453,
+          "bootstrap_lo": 0.48261798487723534,
+          "bootstrap_hi": 0.5434567017338788,
+          "naive_lo": 0.4768457071967381,
+          "naive_hi": 0.548726298186842,
+          "spread_abs_median": 10.5,
+          "pct_near0": 0.005242463958060288
+        },
+        {
+          "regime": "snapshots_2021_2024",
+          "n": 3496,
+          "ats": 0.5068649885583524,
+          "logloss_model": 0.9236307916386916,
+          "logloss_market": 0.6931471805599453,
+          "bootstrap_lo": 0.4871103059059096,
+          "bootstrap_hi": 0.5271340813640069,
+          "naive_lo": 0.4902923581700688,
+          "naive_hi": 0.523437618946636,
+          "spread_abs_median": 12.625,
+          "pct_near0": 0.0027677830058123443
+        }
+      ],
+      "basis": [
+        {
+          "metric": "mae_margin",
+          "value": 14.847593037714498,
+          "n": 4375,
+          "basis": "all_seasons",
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ]
+        },
+        {
+          "metric": "crps_margin",
+          "value": 10.678467762813412,
+          "n": 4375,
+          "basis": "all_seasons",
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ]
+        },
+        {
+          "metric": "ats_accuracy",
+          "value": 0.5079028072658646,
+          "n": 4239,
+          "basis": "line_backed",
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ]
+        }
+      ]
+    },
+    "task23_a1_reduced_v1": {
+      "regimes": [
+        {
+          "regime": "cfbd_2019",
+          "n": 743,
+          "ats": 0.5020188425302826,
+          "logloss_model": 0.9680858188202001,
+          "logloss_market": 0.6931471805599453,
+          "bootstrap_lo": 0.47931154897765094,
+          "bootstrap_hi": 0.5285123416429824,
+          "naive_lo": 0.46606708315828055,
+          "naive_hi": 0.5379706019022846,
+          "spread_abs_median": 10.5,
+          "pct_near0": 0.005242463958060288
+        },
+        {
+          "regime": "snapshots_2021_2024",
+          "n": 3496,
+          "ats": 0.5045766590389016,
+          "logloss_model": 0.9240974307419606,
+          "logloss_market": 0.6931471805599453,
+          "bootstrap_lo": 0.4865001683926917,
+          "bootstrap_hi": 0.5232590581951153,
+          "naive_lo": 0.4880031606918879,
+          "naive_hi": 0.5211501573859153,
+          "spread_abs_median": 12.625,
+          "pct_near0": 0.0027677830058123443
+        }
+      ],
+      "basis": [
+        {
+          "metric": "mae_margin",
+          "value": 14.8046599066664,
+          "n": 4375,
+          "basis": "all_seasons",
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ]
+        },
+        {
+          "metric": "crps_margin",
+          "value": 10.632151113683861,
+          "n": 4375,
+          "basis": "all_seasons",
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ]
+        },
+        {
+          "metric": "ats_accuracy",
+          "value": 0.5041283321538098,
+          "n": 4239,
+          "basis": "line_backed",
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ]
+        }
+      ]
+    },
+    "task23_a2_reduced_v1": {
+      "regimes": [
+        {
+          "regime": "cfbd_2019",
+          "n": 743,
+          "ats": 0.4697173620457604,
+          "logloss_model": 1.040823514154421,
+          "logloss_market": 0.6931471805599453,
+          "bootstrap_lo": 0.4424886312237364,
+          "bootstrap_hi": 0.49394587897640674,
+          "naive_lo": 0.43383130899888755,
+          "naive_hi": 0.5056034150926333,
+          "spread_abs_median": 10.5,
+          "pct_near0": 0.005242463958060288
+        },
+        {
+          "regime": "snapshots_2021_2024",
+          "n": 3496,
+          "ats": 0.5040045766590389,
+          "logloss_model": 0.9325101367932301,
+          "logloss_market": 0.6931471805599453,
+          "bootstrap_lo": 0.4911216296617541,
+          "bootstrap_hi": 0.5151846179493228,
+          "naive_lo": 0.4874309155748237,
+          "naive_hi": 0.5205782377432541,
+          "spread_abs_median": 12.625,
+          "pct_near0": 0.0027677830058123443
+        }
+      ],
+      "basis": [
+        {
+          "metric": "mae_margin",
+          "value": 16.446781586709157,
+          "n": 4375,
+          "basis": "all_seasons",
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ]
+        },
+        {
+          "metric": "crps_margin",
+          "value": 11.873512557927995,
+          "n": 4375,
+          "basis": "all_seasons",
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ]
+        },
+        {
+          "metric": "ats_accuracy",
+          "value": 0.4979948100967209,
+          "n": 4239,
+          "basis": "line_backed",
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ]
+        }
+      ]
+    },
+    "task23_a4_reduced_v1": {
+      "regimes": [
+        {
+          "regime": "cfbd_2019",
+          "n": 743,
+          "ats": 0.5114401076716016,
+          "logloss_model": 0.8830475541189948,
+          "logloss_market": 0.6931471805599453,
+          "bootstrap_lo": 0.4619712668534572,
+          "bootstrap_hi": 0.5546492301362149,
+          "naive_lo": 0.47549746699516826,
+          "naive_hi": 0.547382748348035,
+          "spread_abs_median": 10.5,
+          "pct_near0": 0.005242463958060288
+        },
+        {
+          "regime": "snapshots_2021_2024",
+          "n": 3496,
+          "ats": 0.5071510297482837,
+          "logloss_model": 0.9005753049527999,
+          "logloss_market": 0.6931471805599453,
+          "bootstrap_lo": 0.4831803998711187,
+          "bootstrap_hi": 0.5352777539468648,
+          "naive_lo": 0.49057853227019393,
+          "naive_hi": 0.5237235272263735,
+          "spread_abs_median": 12.625,
+          "pct_near0": 0.0027677830058123443
+        }
+      ],
+      "basis": [
+        {
+          "metric": "mae_margin",
+          "value": 14.147926238083935,
+          "n": 4375,
+          "basis": "all_seasons",
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ]
+        },
+        {
+          "metric": "crps_margin",
+          "value": 10.138106696369462,
+          "n": 4375,
+          "basis": "all_seasons",
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ]
+        },
+        {
+          "metric": "ats_accuracy",
+          "value": 0.5079028072658646,
+          "n": 4239,
+          "basis": "line_backed",
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ]
+        }
+      ]
+    },
+    "task23_a5_reduced_v1": {
+      "regimes": [
+        {
+          "regime": "cfbd_2019",
+          "n": 743,
+          "ats": 0.4993270524899058,
+          "logloss_model": 0.9233622202684845,
+          "logloss_market": 0.6931471805599453,
+          "bootstrap_lo": 0.45399321266968323,
+          "bootstrap_hi": 0.5438364258798196,
+          "naive_lo": 0.46337503261772894,
+          "naive_hi": 0.5352790723620826,
+          "spread_abs_median": 10.5,
+          "pct_near0": 0.005242463958060288
+        },
+        {
+          "regime": "snapshots_2021_2024",
+          "n": 3496,
+          "ats": 0.5062929061784897,
+          "logloss_model": 0.9131090452341564,
+          "logloss_market": 0.6931471805599453,
+          "bootstrap_lo": 0.4815672858880859,
+          "bootstrap_hi": 0.5307398653450988,
+          "naive_lo": 0.48972002624741534,
+          "naive_hi": 0.5228657861095639,
+          "spread_abs_median": 12.625,
+          "pct_near0": 0.0027677830058123443
+        }
+      ],
+      "basis": [
+        {
+          "metric": "mae_margin",
+          "value": 14.388758251079429,
+          "n": 4375,
+          "basis": "all_seasons",
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ]
+        },
+        {
+          "metric": "crps_margin",
+          "value": 10.34970454817843,
+          "n": 4375,
+          "basis": "all_seasons",
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ]
+        },
+        {
+          "metric": "ats_accuracy",
+          "value": 0.5050719509318236,
+          "n": 4239,
+          "basis": "line_backed",
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ]
+        }
+      ]
+    }
+  }
+}

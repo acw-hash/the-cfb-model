@@ -53,6 +53,9 @@ import numpy as np
 import pandas as pd  # type: ignore[import-untyped]
 import yaml  # type: ignore[import-untyped]
 
+from ncaa_quant.evaluation.metrics import (
+    assert_prediction_ats_plausible,
+)
 from ncaa_quant.evaluation.production_stack import (
     ProductionStack,
     StackKind,
@@ -652,6 +655,9 @@ def run_backtest(
                 min_train_games=cfg.min_train_games,
                 raise_on_fail=True,
             )
+        # ATS-GRADE-FIX: refuse to finalize a run whose ATS vs close is
+        # impossible under the fair-coin band (two-sided).
+        assert_prediction_ats_plausible(predictions)
         for (season, week), chunk in predictions.groupby(["season", "week"], sort=True):
             key = _unit_key(cfg.run_id, int(season), int(week))
             shard = week_dir / f"season={int(season)}_week={int(week)}.parquet"
@@ -773,7 +779,12 @@ def _read_or_build_manifest(
 
 
 def load_staged_games(staged_root: Path | str, seasons: Sequence[int]) -> pd.DataFrame:
-    """Load staged games partitions for ``seasons``."""
+    """Load staged games partitions for ``seasons``.
+
+    Attaches ``home_team`` / ``away_team`` school names from staged ``teams``
+    so the snapshot line ladder can match Odds ``side`` by CFBD home name
+    (ATS-GRADE-FIX / 5b-patch2).
+    """
     from ncaa_quant.data.storage import ParquetStore
 
     store = ParquetStore(staged_root)
@@ -787,4 +798,48 @@ def load_staged_games(staged_root: Path | str, seasons: Sequence[int]) -> pd.Dat
     games = pd.concat(frames, ignore_index=True)
     if "event_time" not in games.columns and "start_date" in games.columns:
         games["event_time"] = pd.to_datetime(games["start_date"], utc=True)
-    return games
+    return _attach_team_school_names(games, staged_root, seasons)
+
+
+def _attach_team_school_names(
+    games: pd.DataFrame,
+    staged_root: Path | str,
+    seasons: Sequence[int],
+) -> pd.DataFrame:
+    """Map ``home_team_id`` / ``away_team_id`` → school names when teams exist."""
+    if games.empty or "home_team_id" not in games.columns:
+        return games
+    if "home_team" in games.columns and games["home_team"].notna().any():
+        return games
+    from ncaa_quant.data.storage import ParquetStore
+
+    store = ParquetStore(staged_root)
+    tframes: list[pd.DataFrame] = []
+    for season in seasons:
+        paths = store._matching_paths("teams", {"season": int(season)})  # noqa: SLF001
+        for path in paths:
+            part = pd.read_parquet(path)
+            for col in ("season", "team_id"):
+                if col in part.columns:
+                    part[col] = pd.to_numeric(part[col], errors="coerce")
+            tframes.append(part)
+    if not tframes:
+        return games
+    teams = pd.concat(tframes, ignore_index=True)
+    if "school" not in teams.columns or "team_id" not in teams.columns:
+        return games
+    # Latest season wins for a given team_id.
+    teams = teams.sort_values("season")
+    name_map = {
+        int(r.team_id): str(r.school)
+        for r in teams.itertuples(index=False)
+        if pd.notna(r.team_id) and pd.notna(r.school)
+    }
+    out = games.copy()
+    out["home_team"] = out["home_team_id"].map(
+        lambda x: name_map.get(int(x)) if pd.notna(x) else None
+    )
+    out["away_team"] = out["away_team_id"].map(
+        lambda x: name_map.get(int(x)) if pd.notna(x) else None
+    )
+    return out

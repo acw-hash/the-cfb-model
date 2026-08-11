@@ -229,6 +229,117 @@ def ats_home_outcomes(
     return out
 
 
+#: Two-sided z for ATS-vs-close plausibility (ATS-GRADE-FIX / diag spec).
+ATS_PLAUSIBILITY_Z: float = 3.0
+
+
+class AtsPlausibilityError(RuntimeError):
+    """PIPELINE ERROR — ATS vs close is outside the coin-flip band."""
+
+
+def ats_plausibility_band(
+    n: int,
+    *,
+    z: float = ATS_PLAUSIBILITY_Z,
+) -> tuple[float, float]:
+    """Return ``(lo, hi)`` for fair-coin ATS accuracy: ``0.5 ± z·√(0.25/n)``."""
+    if n <= 0:
+        return float("nan"), float("nan")
+    se = float(np.sqrt(0.25 / float(n)))
+    half = float(z) * se
+    return 0.5 - half, 0.5 + half
+
+
+def assert_ats_vs_close_plausible(
+    rate: float,
+    n: int,
+    *,
+    regime: str,
+    z: float = ATS_PLAUSIBILITY_Z,
+    line_source_mix: Mapping[str, int] | None = None,
+    pct_abs_spread_lt_0_5: float | None = None,
+) -> None:
+    """Fail the run when ATS accuracy is impossible under a fair-coin null.
+
+    Two-sided: implausibly **good** rates also fail. Does **not** assert the
+    §1.6 skill floor (51.5%) — only that the published rate is possible.
+    """
+    if n <= 0 or not np.isfinite(rate):
+        return
+    lo, hi = ats_plausibility_band(n, z=z)
+    if lo <= float(rate) <= hi:
+        return
+    mix = dict(line_source_mix) if line_source_mix else {}
+    near0 = (
+        f"{100.0 * float(pct_abs_spread_lt_0_5):.1f}%"
+        if pct_abs_spread_lt_0_5 is not None and np.isfinite(pct_abs_spread_lt_0_5)
+        else "n/a"
+    )
+    msg = (
+        f"PIPELINE ERROR: ATS vs close outside fair-coin band for regime={regime!r}: "
+        f"rate={100.0 * float(rate):.2f}% n={n} band=[{100.0 * lo:.2f}%, {100.0 * hi:.2f}%] "
+        f"(z={z}). line_source_mix={mix} pct_|spread_close|<0.5={near0}. "
+        "Refuse to publish — treat as a grading/pipeline failure, not a model finding."
+    )
+    raise AtsPlausibilityError(msg)
+
+
+def assert_prediction_ats_plausible(
+    predictions: pd.DataFrame,
+    *,
+    z: float = ATS_PLAUSIBILITY_Z,
+    snapshot_from_season: int = 2021,
+) -> None:
+    """Apply :func:`assert_ats_vs_close_plausible` per line-source regime.
+
+    Regimes are never pooled: CFBD-only seasons (``season < snapshot_from_season``)
+    vs snapshot-backed seasons. Hard-pick uses ``p_ats_home >= 0.5`` vs
+    :func:`ats_home_outcomes`.
+    """
+    if predictions.empty:
+        return
+    frame = predictions
+    if "exclude_from_headline" in frame.columns:
+        frame = frame.loc[~frame["exclude_from_headline"].fillna(False).astype(bool)]
+    if frame.empty:
+        return
+    if not {"p_ats_home", "spread_close", "realized_margin", "season"} <= set(frame.columns):
+        return
+
+    def _check(sub: pd.DataFrame, regime: str) -> None:
+        if sub.empty:
+            return
+        y = ats_home_outcomes(
+            sub["realized_margin"].to_numpy(dtype=float),
+            sub["spread_close"].to_numpy(dtype=float),
+        )
+        p = sub["p_ats_home"].to_numpy(dtype=float)
+        mask = np.isfinite(y) & np.isfinite(p)
+        if not np.any(mask):
+            return
+        hits = (p[mask] >= 0.5).astype(float) == y[mask]
+        rate = float(np.mean(hits))
+        n = int(mask.sum())
+        mix: dict[str, int] = {}
+        if "line_source_close" in sub.columns:
+            mix = {str(k): int(v) for k, v in sub["line_source_close"].value_counts().items()}
+        sp = pd.to_numeric(sub.loc[mask, "spread_close"], errors="coerce")
+        pct_near0 = float((sp.abs() < 0.5).mean()) if len(sp) else None
+        assert_ats_vs_close_plausible(
+            rate,
+            n,
+            regime=regime,
+            z=z,
+            line_source_mix=mix,
+            pct_abs_spread_lt_0_5=pct_near0,
+        )
+
+    cfbd = frame.loc[frame["season"].astype(int) < int(snapshot_from_season)]
+    snap = frame.loc[frame["season"].astype(int) >= int(snapshot_from_season)]
+    _check(cfbd, f"cfbd_pre_{snapshot_from_season}")
+    _check(snap, f"snapshots_{snapshot_from_season}_plus")
+
+
 def ou_over_outcomes(
     realized_total: np.ndarray,
     total_close: np.ndarray,

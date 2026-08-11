@@ -14,6 +14,11 @@ from ncaa_quant.features.epa import (
     load_season_plays_from_cfbd_raw,
     normalize_epa_plays,
 )
+from ncaa_quant.features.market_lines import (
+    filter_home_side_spreads,
+    median_home_spread,
+    median_total_line,
+)
 from ncaa_quant.features.materialize import (
     MaterializeError,
     MaterializeResult,
@@ -72,6 +77,7 @@ __all__ = [
     "dvc_add_partition",
     "duckdb_asof_join",
     "filter_garbage_time",
+    "filter_home_side_spreads",
     "fit_expected_possessions_at_retrain",
     "garbage_time_summary",
     "is_successful_play",
@@ -80,6 +86,8 @@ __all__ = [
     "load_season_plays_from_cfbd_raw",
     "materialize_partition",
     "materialize_registry",
+    "median_home_spread",
+    "median_total_line",
     "normalize_epa_plays",
     "read_partition",
     "resolve_build_order",

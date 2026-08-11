@@ -1,5 +1,14 @@
 # TASK 23-RERUN-R1 — Eight-run set on REDUCED ensemble
 
+> **CONTAMINATION NOTICE (2026-08-11, ATS-GRADE-FIX):** All **v1 snapshot-regime
+> ATS** and **ATS log-loss** numbers in this memo are **INVALID** — grading used
+> `median(line)` over both Odds spread sides (~0 closes). Do **not** cite without
+> the `CONTAMINATED_v1` label. Superseded snapshot ATS / log-loss / A2 ATS deltas /
+> market-aware snapshot ATS (**32.7%**) / A3 “market features hurt margin” finding /
+> A6 **36.5%** → see **`docs/notes/ats-grade-fix.md`** (**REGRADED_V2** /
+> **RERUN_V2**). MAE, CRPS, weekly MAE curve, A2 MAE (+1.60), OU@close, and SU
+> numbers in this file are **untouched**.
+
 **Date:** 2026-08-11  
 **Status:** **COMPLETE** — all eight runs executed.  
 **ensemble_scope:** `REDUCED_PER_ADR_0013`  

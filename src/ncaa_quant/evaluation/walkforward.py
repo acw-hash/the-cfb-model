@@ -472,6 +472,17 @@ def _snapshot_tolerance_minutes(as_of: datetime, config: WalkForwardConfig) -> i
     return config.snapshot_tolerance_minutes_post_2022_09
 
 
+_LINE_RESOLVE_EMPTY: dict[str, Any] = {
+    "spread": float("nan"),
+    "total": float("nan"),
+    "line_source": "null",
+    "n_books": 0,
+    "book": None,
+    "side": None,
+    "source_row_id": None,
+}
+
+
 def resolve_lines_for_games(
     games: pd.DataFrame,
     as_of: datetime,
@@ -492,6 +503,10 @@ def resolve_lines_for_games(
       Prefer Odds snapshot at/before kickoff when present; if unresolved,
       fall back to median CFBD ``line_type=close``. Closing lines are
       evaluation-only (ATS/OU@close, encompassing, CLV) — never features.
+
+    Snapshot spreads are **home-perspective**: filter ``side`` to the CFBD home
+    school name (5b-patch2 name-based semantics), then median across books.
+    Aggregating both sides is forbidden (ATS-GRADE-FIX).
     """
     assert_tz_aware(as_of)
     as_of_utc = to_utc(as_of)
@@ -504,6 +519,7 @@ def resolve_lines_for_games(
         game_id = int(row.game_id)
         kickoff = to_utc(pd.Timestamp(row.event_time).to_pydatetime())
         bound = kickoff if closing else as_of_utc
+        home_side = _home_side_from_game_row(row)
         if season >= SNAPSHOT_BACKED_FROM_SEASON:
             resolved = _resolve_from_snapshots(
                 snap,
@@ -511,6 +527,7 @@ def resolve_lines_for_games(
                 game_key=str(getattr(row, "game_key", "") or ""),
                 bound=bound,
                 config=config,
+                home_side=home_side,
             )
             # Evaluation closes: fill gaps from CFBD so ATS/encompassing are
             # not starved when Odds snapshots were never ingested. Bet-time
@@ -534,9 +551,21 @@ def resolve_lines_for_games(
                 "total",
                 "line_source",
                 "n_books",
+                "book",
+                "side",
+                "source_row_id",
             ]
         )
     )
+
+
+def _home_side_from_game_row(row: Any) -> str | None:
+    """CFBD home school name for side-relative Odds matching."""
+    home = getattr(row, "home_team", None)
+    if home is None or (isinstance(home, float) and np.isnan(home)):
+        return None
+    text = str(home).strip()
+    return text or None
 
 
 def _resolve_from_snapshots(
@@ -546,27 +575,29 @@ def _resolve_from_snapshots(
     game_key: str,
     bound: datetime,
     config: WalkForwardConfig,
+    home_side: str | None = None,
 ) -> dict[str, Any]:
-    empty = {
-        "spread": float("nan"),
-        "total": float("nan"),
-        "line_source": "null",
-        "n_books": 0,
-    }
+    """Resolve snapshot lines; spreads are CFBD-home-side only (ATS-GRADE-FIX)."""
+    from ncaa_quant.features.market_lines import median_home_spread, median_total_line
+
+    empty = dict(_LINE_RESOLVE_EMPTY)
     if snapshots.empty:
         return empty
-    work = snapshots.copy()
-    if "event_time" not in work.columns:
+    if "event_time" not in snapshots.columns:
         return empty
-    work["event_time"] = pd.to_datetime(work["event_time"], utc=True)
-    mask = work["event_time"] < pd.Timestamp(bound)
-    if "game_id" in work.columns:
-        id_mask = work["game_id"].notna() & (work["game_id"].astype("Int64") == game_id)
-        mask = mask & id_mask
-    elif game_key and "game_key" in work.columns:
-        mask = mask & (work["game_key"] == game_key)
+    # Filter before copy — full-frame copy per game was pathologically slow.
+    if "game_id" in snapshots.columns:
+        id_mask = snapshots["game_id"].notna() & (snapshots["game_id"].astype("Int64") == game_id)
+        base = snapshots.loc[id_mask]
+    elif game_key and "game_key" in snapshots.columns:
+        base = snapshots.loc[snapshots["game_key"] == game_key]
     else:
         return empty
+    if base.empty:
+        return empty
+    work = base.copy()
+    work["event_time"] = pd.to_datetime(work["event_time"], utc=True)
+    mask = work["event_time"] < pd.Timestamp(bound)
     eligible = work.loc[mask]
     if eligible.empty:
         return empty
@@ -587,18 +618,39 @@ def _resolve_from_snapshots(
 
     spread = float("nan")
     total = float("nan")
+    book: str | None = None
+    side: str | None = None
+    source_row_id: str | None = None
     if "market" in window.columns and "line" in window.columns:
-        spreads = window.loc[window["market"] == "spread", "line"].dropna()
-        totals = window.loc[window["market"] == "total", "line"].dropna()
-        if not spreads.empty:
-            spread = float(spreads.median())
-        if not totals.empty:
-            total = float(totals.median())
+        spread_rows = window.loc[window["market"] == "spread"]
+        total_rows = window.loc[window["market"] == "total"]
+        if not spread_rows.empty:
+            if home_side:
+                spread, meta = median_home_spread(spread_rows, home_side)
+                book = meta.get("book")
+                side = meta.get("side")
+                source_row_id = meta.get("source_row_id")
+                if meta.get("n_books"):
+                    n_books = int(meta["n_books"])
+            elif "side" not in spread_rows.columns:
+                # Legacy single-sided frames (tests): no paired ±S rows.
+                lines = spread_rows["line"].dropna()
+                if not lines.empty:
+                    spread = float(lines.median())
+            else:
+                # Side column present but CFBD home name missing — refuse the
+                # all-sides median (the ATS-GRADE bug). Leave spread null.
+                spread = float("nan")
+        if not total_rows.empty:
+            total = median_total_line(total_rows)
     return {
         "spread": spread,
         "total": total,
         "line_source": source,
         "n_books": n_books,
+        "book": book,
+        "side": side,
+        "source_row_id": source_row_id,
     }
 
 
@@ -608,12 +660,7 @@ def _resolve_from_cfbd(
     game_id: int,
     closing: bool,
 ) -> dict[str, Any]:
-    empty = {
-        "spread": float("nan"),
-        "total": float("nan"),
-        "line_source": "null",
-        "n_books": 0,
-    }
+    empty = dict(_LINE_RESOLVE_EMPTY)
     if lines.empty or "game_id" not in lines.columns:
         return empty
     sub = lines.loc[lines["game_id"] == game_id]
@@ -638,11 +685,22 @@ def _resolve_from_cfbd(
         else float("nan")
     )
     source = f"cfbd_{preferred}"
+    book = None
+    if "book" in typed.columns and typed["book"].notna().any():
+        book = str(typed["book"].dropna().iloc[0])
+        if np.isfinite(spread) and "spread" in typed.columns:
+            sp = typed["spread"].to_numpy(dtype=float)
+            matched = typed.loc[np.isfinite(sp) & np.isclose(sp, float(spread))]
+            if not matched.empty and pd.notna(matched.iloc[0]["book"]):
+                book = str(matched.iloc[0]["book"])
     return {
         "spread": spread,
         "total": total,
         "line_source": source,
         "n_books": n_books,
+        "book": book,
+        "side": "home",  # CFBD spreads are already home-perspective
+        "source_row_id": None,
     }
 
 
