@@ -1,9 +1,10 @@
 # TASK ATS-GRADE-FIX — Snapshot line ladder repair + v2 grades
 
 **Date:** 2026-08-11  
-**Status:** FIX LANDED — ladder + guard + regrade **COMPLETE**; v2 reruns **IN FLIGHT**.  
+**Status:** **COMPLETE** — ladder + guard + REGRADED_V2 + RERUN_V2 (A3/A6 published;
+market-aware refused by guard).  
 **Diagnosis:** `docs/notes/ats-grade-diag.md`  
-**Git:** (this commit)
+**Git:** `7ea3cea` (fix) + follow-up memo/artifacts.
 
 ---
 
@@ -82,20 +83,93 @@ v1’s “A4 beats ensemble on snapshot ATS (+3.8 pp)” was a **grading artifac
 ## STEP 5 — RERUN_V2 (market-aware, A3, A6)
 
 **Configs:** `configs/ablations/task23_*_reduced_v2.yaml`  
-**Driver:** `scripts/_ats_v2_rerun.ps1` (sequential; wall clocks →
-`docs/notes/_artifacts/ats_grade_fix/v2_wall_clocks.json`).
+**Driver:** `scripts/_ats_v2_rerun.ps1`  
+**Artifacts:** `docs/notes/_artifacts/ats_grade_fix/v2_wall_clocks.json`,
+`rerun_v2_summary.json`.
 
 | Run | Features | Grading ladder | Status |
 |---|---|---|---|
-| `task23_market_aware_reduced_v2` | snapshot `mkt_spread` (fixed) | fixed snapshot ladder | **RUNNING** |
-| `task23_a3_reduced_v2` | market off | fixed snapshot ladder | pending |
-| `task23_a6_reduced_v2` | CFBD open/close | fixed snapshot ladder (same as all v2) | pending |
+| `task23_market_aware_reduced_v2` | snapshot `mkt_spread` (fixed) | fixed snapshot ladder | **FAILED guard** — no parquet |
+| `task23_a3_reduced_v2` | market off | fixed snapshot ladder | **published** |
+| `task23_a6_reduced_v2` | CFBD open/close | fixed snapshot ladder (same as all v2) | **published** |
 
 A6: `market_feature_source=cfbd_open_close` affects **features only**; grading
-always used the snapshot close ladder (now fixed). v1 **36.5%** was not
-“ATS vs CFBD close.”
+always used the snapshot close ladder (now fixed). CONTAMINATED_v1 **36.5%** was
+not “ATS vs CFBD close.”
 
-*(Wall-clock table appended when reruns complete.)*
+### Wall clocks (actuals — estimator recalibration)
+
+| config | wall_clock_sec | ~min |
+|---|---:|---:|
+| task23_market_aware_full_reduced_v2 | 2963.3 | 49.4 |
+| task23_A3_market_features_off_reduced_v2 | 2347.6 | 39.1 |
+| task23_A6_cfbd_open_close_reduced_v2 | 1592.9 | 26.5 |
+| **total (sequential)** | **6903.8** | **115.1** |
+
+v1 reduced runs were ~65–115 min each; these v2 wall clocks are **lower** on the
+same machine/window (~26–49 min). Use these actuals for future reduced-scope
+estimates, not the Task 23 plan’s ~90 s figure.
+
+### market-aware full (RERUN_V2) — guard refusal
+
+`AtsPlausibilityError` on **GOOD** side (two-sided guard working as designed):
+
+```text
+regime='snapshots_2021_plus': rate=52.71% n=3491
+band=[47.46%, 52.54%] (z=3.0)
+line_source_mix={'odds_api_snapshot_fallback': 2697, 'cfbd_close_eval': 495,
+                 'odds_api_snapshot': 404, 'null': 17}
+pct_|spread_close|<0.5=0.3%
+```
+
+Predictions **not published** (memo write blocked). Rate above is from the
+exception only — do not treat as a graded table. Ladder diagnostics look healthy
+(`pct_near0=0.3%`); this is a fair-coin-band trip, not the old ~0-close bug.
+
+Driver note: first pass of `_ats_v2_rerun.ps1` did not check `$LASTEXITCODE`, so
+A3/A6 continued after market-aware failed. Script now exits on non-zero.
+
+### A3 market-off (RERUN_V2) — published
+
+| Regime | ATS | n | log-loss (model / mkt) | MAE margin | 95% bootstrap CI |
+|---|---:|---:|---|---:|---|
+| CFBD 2019 | **50.7%** | 743 | 0.950 / 0.693 | 17.84 | [48.0%, 53.7%] |
+| Snapshots 2021–24 | **52.2%** | 3491 | 0.820 / 0.693 | 14.21 | [50.3%, 54.2%] |
+
+Just inside the plausibility band (upper 52.54%). Vs fundamental REGRADED_V2
+snapshot ATS **50.7%**: A3 is **+1.5 pp** on the same fixed ladder.
+
+**Revised A3 framing:** CONTAMINATED_v1’s “market features hurt” (A3 +6.9 pp ATS
+vs market-aware) is **dead**. Market-aware’s unpublished 52.71% vs A3’s 52.2%
+would reverse the sign if published; MAE comparison needs a published
+market-aware table (blocked by guard).
+
+### A6 CFBD open/close features (RERUN_V2) — published
+
+| Source | ATS vs **fixed snapshot** close | n | 95% bootstrap CI | MAE margin |
+|---|---:|---:|---|---:|
+| A6 (RERUN_V2) | **51.9%** | 3369 | [50.9%, 53.0%] | 14.94 |
+| CONTAMINATED_v1 (do not cite) | 36.5% | — | — | — |
+
+Grading ladder identical to other RERUN_V2 runs; only features differ. v1
+**36.5%** was grading contamination, not “CFBD features destroy ATS.”
+
+---
+
+## Corrected headline table (vintage-labeled)
+
+| Stack | Vintage | Snapshot ATS 2021–24 | Notes |
+|---|---|---:|---|
+| fundamental | REGRADED_V2 | **50.7%** (n=3496) | predictions unchanged; closes fixed |
+| A1 | REGRADED_V2 | (see regrade_summary.json) | regrade only |
+| A2 | REGRADED_V2 | **50.4%** (n=3496) | Δ vs fund ≈ −0.3 pp (not −3.4) |
+| A4 | REGRADED_V2 | **50.7%** (n=3496) | tied with fund (v1 +3.8 pp was noise) |
+| A5 | REGRADED_V2 | (see regrade_summary.json) | regrade only |
+| market-aware | RERUN_V2 | **unpublished** (52.71% tripped guard) | features re-run |
+| A3 market off | RERUN_V2 | **52.2%** (n=3491) | features re-run |
+| A6 | RERUN_V2 | **51.9%** (n=3369) | features re-run |
+
+Never mix unlabeled v1 snapshot ATS with these rows.
 
 ---
 
@@ -111,4 +185,4 @@ always used the snapshot close ladder (now fixed). v1 **36.5%** was not
 
 ## `make lint typecheck test`
 
-Run at commit time (see session footer).
+`make lint typecheck test` — **743 passed** at fix commit (`7ea3cea`).

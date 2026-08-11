@@ -222,6 +222,17 @@ No hyperparameters tuned against these numbers.
 
 Plan estimate (~90 s/run) understated MC+epistemic cost (~88 min/run).
 
+### ATS-GRADE-FIX RERUN_V2 actuals (2026-08-11)
+
+| run_id / config | wall_clock_sec | outcome |
+|---|---:|---|
+| task23_market_aware_full_reduced_v2 | 2963.3 | FAILED AtsPlausibilityError (52.71% > band) |
+| task23_A3_market_features_off_reduced_v2 | 2347.6 | published |
+| task23_A6_cfbd_open_close_reduced_v2 | 1592.9 | published |
+
+See `docs/notes/ats-grade-fix.md` and
+`docs/notes/_artifacts/ats_grade_fix/v2_wall_clocks.json`.
+
 ---
 
 ## `make lint typecheck test`

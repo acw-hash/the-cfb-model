@@ -14,6 +14,10 @@ foreach ($r in $runs) {
   $t0 = Get-Date
   Write-Host "=== START $($r.cfg) $($t0.ToString('o')) ==="
   uv run ncaa-quant backtest run --config $($r.cfg) --stack $($r.stack) --label "ensemble_scope=REDUCED_PER_ADR_0013;grade_fix=v2"
+  if ($LASTEXITCODE -ne 0) {
+    Write-Error "backtest failed for $($r.cfg) exit=$LASTEXITCODE"
+    exit $LASTEXITCODE
+  }
   $elapsed = (Get-Date) - $t0
   $sec = [math]::Round($elapsed.TotalSeconds, 1)
   Write-Host "=== DONE $($r.cfg) wall_clock_sec=$sec ==="
