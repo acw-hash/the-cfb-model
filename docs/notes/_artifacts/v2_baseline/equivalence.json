@@ -1,0 +1,50 @@
+{
+  "comparison": {
+    "n_fund": 4944,
+    "n_a3": 4944,
+    "n_both": 4944,
+    "only_fund": 0,
+    "only_a3": 0,
+    "n_cell_disagreements": 0,
+    "columns": {
+      "pred_margin": {
+        "n_disagree": 0,
+        "max_abs_delta": 0.0,
+        "atol": 1e-09
+      },
+      "sigma_m": {
+        "n_disagree": 0,
+        "max_abs_delta": 0.0,
+        "atol": 1e-09
+      },
+      "p_ats_home": {
+        "n_disagree": 0,
+        "max_abs_delta": 0.0,
+        "atol": 1e-09
+      },
+      "spread_close": {
+        "n_disagree": 0,
+        "max_abs_delta": 0.0,
+        "atol": 1e-09
+      },
+      "spread_asof": {
+        "n_disagree": 0,
+        "max_abs_delta": 0.0,
+        "atol": 1e-09
+      }
+    },
+    "coincident": true,
+    "verdict": "EQUIVALENT"
+  },
+  "config_diffs": [
+    "EXPECTED stack: fund='fundamental' a3='market_aware'"
+  ],
+  "within_vintage_6d": {
+    "fund_snapshot_ats": 0.5221999427098253,
+    "a3_snapshot_ats": 0.5221999427098253,
+    "delta_pp": 0.0,
+    "note": "within-vintage A3 \u2212 fundamental_v2 (both RERUN_V2 codepath); readout +1.5pp mixed REGRADED_V2 fund with RERUN_V2 A3"
+  },
+  "verdict": "EQUIVALENT",
+  "finding": "A3 ~ fundamental_v2; readout +1.5pp was cross-vintage drift (REGRADED_V2 fund vs RERUN_V2 A3)"
+}

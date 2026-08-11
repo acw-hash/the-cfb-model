@@ -1,0 +1,31 @@
+{
+  "vintage": "RERUN_V2",
+  "ensemble_scope": "REDUCED_PER_ADR_0013",
+  "run_id": "task23_fundamental_reduced_v2",
+  "n_predictions": 4944,
+  "n_headline": 4376,
+  "regimes": [
+    {
+      "regime": "cfbd_2019",
+      "n": 743,
+      "ats": 0.5074024226110363,
+      "logloss_model": 0.9495782929038945,
+      "logloss_market": 0.6931471805599453,
+      "mae_margin": 17.842475453385465,
+      "crps_margin": 13.039586788822806,
+      "bootstrap_lo": 0.4814183762794489,
+      "bootstrap_hi": 0.540056134723336
+    },
+    {
+      "regime": "snapshots_2021_2024",
+      "n": 3491,
+      "ats": 0.5221999427098253,
+      "logloss_model": 0.8197919611611213,
+      "logloss_market": 0.6931471805599453,
+      "mae_margin": 14.214953147582452,
+      "crps_margin": 10.179704247629257,
+      "bootstrap_lo": 0.5031512901163403,
+      "bootstrap_hi": 0.5423224560665872
+    }
+  ]
+}
