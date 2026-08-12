@@ -1,0 +1,30 @@
+[
+  {
+    "run": "fundamental_v2",
+    "path": "data\\backtests\\task23_fundamental_reduced_v2\\full\\predictions.parquet",
+    "n_scored": 4376,
+    "n_low_sd_blocks": 0,
+    "low_sd_blocks": []
+  },
+  {
+    "run": "A3_v2",
+    "path": "data\\backtests\\task23_a3_reduced_v2\\A3_market_off\\predictions.parquet",
+    "n_scored": 4376,
+    "n_low_sd_blocks": 0,
+    "low_sd_blocks": []
+  },
+  {
+    "run": "A6_v2",
+    "path": "data\\backtests\\task23_a6_reduced_v2\\A6_cfbd_open_close\\predictions.parquet",
+    "n_scored": 3486,
+    "n_low_sd_blocks": 0,
+    "low_sd_blocks": []
+  },
+  {
+    "run": "SLOT_CLOSE",
+    "path": "data\\backtests\\task23_market_aware_reduced_v2_slot_close\\full\\predictions.parquet",
+    "n_scored": 4376,
+    "n_low_sd_blocks": 0,
+    "low_sd_blocks": []
+  }
+]

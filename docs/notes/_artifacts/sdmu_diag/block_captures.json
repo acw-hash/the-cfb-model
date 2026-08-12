@@ -1,0 +1,1834 @@
+{
+  "2019_2": {
+    "enet_meta": {
+      "credible_all": false,
+      "error": null,
+      "fallback_constant_2p5": true,
+      "selected_features": [
+        "rating_uncertainty",
+        "off_epa_diff",
+        "rating_diff_off_epa",
+        "home_pace",
+        "away_off_epa",
+        "away_def_epa",
+        "pace_diff",
+        "home_def_epa",
+        "away_pace",
+        "def_epa_diff",
+        "rating_diff_def_epa",
+        "home_off_epa"
+      ]
+    },
+    "enet_raw": {
+      "constant": true,
+      "max_val": 2.5,
+      "min_val": 2.5,
+      "n": 74,
+      "sd": 0.0,
+      "stage": "enet_raw"
+    },
+    "epistemic_meta": {
+      "mean_stage1_var_m": 7.888609052210118e-29,
+      "n_draws": 50
+    },
+    "epistemic_mix": {
+      "constant": true,
+      "max_val": 11.815999999999992,
+      "min_val": 11.815999999999992,
+      "n": 74,
+      "sd": 0.0,
+      "stage": "epistemic_mix"
+    },
+    "feature_inventory": {
+      "all_null_columns": [
+        "expected_possessions",
+        "mkt_spread",
+        "mkt_total"
+      ],
+      "columns": [
+        {
+          "column": "home_off_epa",
+          "constant": false,
+          "n_finite": 74,
+          "null_share": 0.0
+        },
+        {
+          "column": "away_off_epa",
+          "constant": false,
+          "n_finite": 74,
+          "null_share": 0.0
+        },
+        {
+          "column": "off_epa_diff",
+          "constant": false,
+          "n_finite": 74,
+          "null_share": 0.0
+        },
+        {
+          "column": "rating_diff_off_epa",
+          "constant": false,
+          "n_finite": 74,
+          "null_share": 0.0
+        },
+        {
+          "column": "home_def_epa",
+          "constant": false,
+          "n_finite": 74,
+          "null_share": 0.0
+        },
+        {
+          "column": "away_def_epa",
+          "constant": false,
+          "n_finite": 74,
+          "null_share": 0.0
+        },
+        {
+          "column": "def_epa_diff",
+          "constant": false,
+          "n_finite": 74,
+          "null_share": 0.0
+        },
+        {
+          "column": "rating_diff_def_epa",
+          "constant": false,
+          "n_finite": 74,
+          "null_share": 0.0
+        },
+        {
+          "column": "home_st_value",
+          "constant": true,
+          "n_finite": 74,
+          "null_share": 0.0
+        },
+        {
+          "column": "away_st_value",
+          "constant": true,
+          "n_finite": 74,
+          "null_share": 0.0
+        },
+        {
+          "column": "st_value_diff",
+          "constant": true,
+          "n_finite": 74,
+          "null_share": 0.0
+        },
+        {
+          "column": "home_pace",
+          "constant": false,
+          "n_finite": 74,
+          "null_share": 0.0
+        },
+        {
+          "column": "away_pace",
+          "constant": false,
+          "n_finite": 74,
+          "null_share": 0.0
+        },
+        {
+          "column": "pace_diff",
+          "constant": false,
+          "n_finite": 74,
+          "null_share": 0.0
+        },
+        {
+          "column": "rating_uncertainty",
+          "constant": false,
+          "n_finite": 74,
+          "null_share": 0.0
+        },
+        {
+          "column": "expected_possessions",
+          "constant": false,
+          "n_finite": 0,
+          "null_share": 1.0
+        },
+        {
+          "column": "mkt_spread",
+          "constant": false,
+          "n_finite": 0,
+          "null_share": 1.0
+        },
+        {
+          "column": "mkt_total",
+          "constant": false,
+          "n_finite": 0,
+          "null_share": 1.0
+        },
+        {
+          "column": "mkt_n_books",
+          "constant": true,
+          "n_finite": 74,
+          "null_share": 0.0
+        },
+        {
+          "column": "mkt_is_missing",
+          "constant": true,
+          "n_finite": 74,
+          "null_share": 0.0
+        }
+      ],
+      "constant_columns": [
+        "home_st_value",
+        "away_st_value",
+        "st_value_diff",
+        "mkt_n_books",
+        "mkt_is_missing"
+      ],
+      "market_columns": {
+        "mkt_is_missing": {
+          "column": "mkt_is_missing",
+          "constant": true,
+          "n_finite": 74,
+          "null_share": 0.0
+        },
+        "mkt_n_books": {
+          "column": "mkt_n_books",
+          "constant": true,
+          "n_finite": 74,
+          "null_share": 0.0
+        },
+        "mkt_spread": {
+          "column": "mkt_spread",
+          "constant": false,
+          "n_finite": 0,
+          "null_share": 1.0
+        },
+        "mkt_total": {
+          "column": "mkt_total",
+          "constant": false,
+          "n_finite": 0,
+          "null_share": 1.0
+        }
+      },
+      "n_columns": 20,
+      "n_rows": 74
+    },
+    "final_mu": {
+      "constant": true,
+      "max_val": 11.815999999999992,
+      "min_val": 11.815999999999992,
+      "n": 74,
+      "sd": 0.0,
+      "stage": "final_mu"
+    },
+    "lgbm_raw": {
+      "constant": false,
+      "max_val": 11.816,
+      "min_val": 11.816,
+      "n": 74,
+      "sd": 1.7763568394002505e-15,
+      "stage": "lgbm_raw"
+    },
+    "nnls_stack": {
+      "constant": false,
+      "max_val": 11.816,
+      "min_val": 11.816,
+      "n": 74,
+      "sd": 1.7763568394002505e-15,
+      "stage": "nnls_stack"
+    },
+    "nnls_weights": {
+      "enet_mu_margin": 0.0,
+      "lgbm_mu_margin": 1.0
+    }
+  },
+  "2019_3": {
+    "enet_meta": {
+      "credible_all": false,
+      "error": null,
+      "fallback_constant_2p5": true,
+      "selected_features": [
+        "rating_uncertainty",
+        "off_epa_diff",
+        "rating_diff_off_epa",
+        "home_pace",
+        "away_off_epa",
+        "away_def_epa",
+        "pace_diff",
+        "home_def_epa",
+        "away_pace",
+        "def_epa_diff",
+        "rating_diff_def_epa",
+        "home_off_epa"
+      ]
+    },
+    "enet_raw": {
+      "constant": true,
+      "max_val": 2.5,
+      "min_val": 2.5,
+      "n": 68,
+      "sd": 0.0,
+      "stage": "enet_raw"
+    },
+    "epistemic_meta": {
+      "mean_stage1_var_m": 7.888609052210118e-29,
+      "n_draws": 50
+    },
+    "epistemic_mix": {
+      "constant": true,
+      "max_val": 11.815999999999992,
+      "min_val": 11.815999999999992,
+      "n": 68,
+      "sd": 0.0,
+      "stage": "epistemic_mix"
+    },
+    "feature_inventory": {
+      "all_null_columns": [
+        "expected_possessions",
+        "mkt_spread",
+        "mkt_total"
+      ],
+      "columns": [
+        {
+          "column": "home_off_epa",
+          "constant": false,
+          "n_finite": 68,
+          "null_share": 0.0
+        },
+        {
+          "column": "away_off_epa",
+          "constant": false,
+          "n_finite": 68,
+          "null_share": 0.0
+        },
+        {
+          "column": "off_epa_diff",
+          "constant": false,
+          "n_finite": 68,
+          "null_share": 0.0
+        },
+        {
+          "column": "rating_diff_off_epa",
+          "constant": false,
+          "n_finite": 68,
+          "null_share": 0.0
+        },
+        {
+          "column": "home_def_epa",
+          "constant": false,
+          "n_finite": 68,
+          "null_share": 0.0
+        },
+        {
+          "column": "away_def_epa",
+          "constant": false,
+          "n_finite": 68,
+          "null_share": 0.0
+        },
+        {
+          "column": "def_epa_diff",
+          "constant": false,
+          "n_finite": 68,
+          "null_share": 0.0
+        },
+        {
+          "column": "rating_diff_def_epa",
+          "constant": false,
+          "n_finite": 68,
+          "null_share": 0.0
+        },
+        {
+          "column": "home_st_value",
+          "constant": true,
+          "n_finite": 68,
+          "null_share": 0.0
+        },
+        {
+          "column": "away_st_value",
+          "constant": true,
+          "n_finite": 68,
+          "null_share": 0.0
+        },
+        {
+          "column": "st_value_diff",
+          "constant": true,
+          "n_finite": 68,
+          "null_share": 0.0
+        },
+        {
+          "column": "home_pace",
+          "constant": false,
+          "n_finite": 68,
+          "null_share": 0.0
+        },
+        {
+          "column": "away_pace",
+          "constant": false,
+          "n_finite": 68,
+          "null_share": 0.0
+        },
+        {
+          "column": "pace_diff",
+          "constant": false,
+          "n_finite": 68,
+          "null_share": 0.0
+        },
+        {
+          "column": "rating_uncertainty",
+          "constant": false,
+          "n_finite": 68,
+          "null_share": 0.0
+        },
+        {
+          "column": "expected_possessions",
+          "constant": false,
+          "n_finite": 0,
+          "null_share": 1.0
+        },
+        {
+          "column": "mkt_spread",
+          "constant": false,
+          "n_finite": 0,
+          "null_share": 1.0
+        },
+        {
+          "column": "mkt_total",
+          "constant": false,
+          "n_finite": 0,
+          "null_share": 1.0
+        },
+        {
+          "column": "mkt_n_books",
+          "constant": true,
+          "n_finite": 68,
+          "null_share": 0.0
+        },
+        {
+          "column": "mkt_is_missing",
+          "constant": true,
+          "n_finite": 68,
+          "null_share": 0.0
+        }
+      ],
+      "constant_columns": [
+        "home_st_value",
+        "away_st_value",
+        "st_value_diff",
+        "mkt_n_books",
+        "mkt_is_missing"
+      ],
+      "market_columns": {
+        "mkt_is_missing": {
+          "column": "mkt_is_missing",
+          "constant": true,
+          "n_finite": 68,
+          "null_share": 0.0
+        },
+        "mkt_n_books": {
+          "column": "mkt_n_books",
+          "constant": true,
+          "n_finite": 68,
+          "null_share": 0.0
+        },
+        "mkt_spread": {
+          "column": "mkt_spread",
+          "constant": false,
+          "n_finite": 0,
+          "null_share": 1.0
+        },
+        "mkt_total": {
+          "column": "mkt_total",
+          "constant": false,
+          "n_finite": 0,
+          "null_share": 1.0
+        }
+      },
+      "n_columns": 20,
+      "n_rows": 68
+    },
+    "final_mu": {
+      "constant": true,
+      "max_val": 11.815999999999992,
+      "min_val": 11.815999999999992,
+      "n": 68,
+      "sd": 0.0,
+      "stage": "final_mu"
+    },
+    "lgbm_raw": {
+      "constant": false,
+      "max_val": 11.816,
+      "min_val": 11.816,
+      "n": 68,
+      "sd": 1.7763568394002505e-15,
+      "stage": "lgbm_raw"
+    },
+    "nnls_stack": {
+      "constant": false,
+      "max_val": 11.816,
+      "min_val": 11.816,
+      "n": 68,
+      "sd": 1.7763568394002505e-15,
+      "stage": "nnls_stack"
+    },
+    "nnls_weights": {
+      "enet_mu_margin": 0.0,
+      "lgbm_mu_margin": 1.0
+    }
+  },
+  "2019_4": {
+    "enet_meta": {
+      "credible_all": false,
+      "error": null,
+      "fallback_constant_2p5": true,
+      "selected_features": [
+        "rating_uncertainty",
+        "off_epa_diff",
+        "rating_diff_off_epa",
+        "home_pace",
+        "away_off_epa",
+        "away_def_epa",
+        "pace_diff",
+        "home_def_epa",
+        "away_pace",
+        "def_epa_diff",
+        "rating_diff_def_epa",
+        "home_off_epa"
+      ]
+    },
+    "enet_raw": {
+      "constant": true,
+      "max_val": 2.5,
+      "min_val": 2.5,
+      "n": 58,
+      "sd": 0.0,
+      "stage": "enet_raw"
+    },
+    "epistemic_mix": {
+      "constant": true,
+      "n": 58,
+      "note": "skipped mix; stack already constant",
+      "sd": 0.0
+    },
+    "feature_inventory": {
+      "all_null_columns": [
+        "expected_possessions",
+        "mkt_spread",
+        "mkt_total"
+      ],
+      "columns": [
+        {
+          "column": "home_off_epa",
+          "constant": false,
+          "n_finite": 58,
+          "null_share": 0.0
+        },
+        {
+          "column": "away_off_epa",
+          "constant": false,
+          "n_finite": 58,
+          "null_share": 0.0
+        },
+        {
+          "column": "off_epa_diff",
+          "constant": false,
+          "n_finite": 58,
+          "null_share": 0.0
+        },
+        {
+          "column": "rating_diff_off_epa",
+          "constant": false,
+          "n_finite": 58,
+          "null_share": 0.0
+        },
+        {
+          "column": "home_def_epa",
+          "constant": false,
+          "n_finite": 58,
+          "null_share": 0.0
+        },
+        {
+          "column": "away_def_epa",
+          "constant": false,
+          "n_finite": 58,
+          "null_share": 0.0
+        },
+        {
+          "column": "def_epa_diff",
+          "constant": false,
+          "n_finite": 58,
+          "null_share": 0.0
+        },
+        {
+          "column": "rating_diff_def_epa",
+          "constant": false,
+          "n_finite": 58,
+          "null_share": 0.0
+        },
+        {
+          "column": "home_st_value",
+          "constant": true,
+          "n_finite": 58,
+          "null_share": 0.0
+        },
+        {
+          "column": "away_st_value",
+          "constant": true,
+          "n_finite": 58,
+          "null_share": 0.0
+        },
+        {
+          "column": "st_value_diff",
+          "constant": true,
+          "n_finite": 58,
+          "null_share": 0.0
+        },
+        {
+          "column": "home_pace",
+          "constant": false,
+          "n_finite": 58,
+          "null_share": 0.0
+        },
+        {
+          "column": "away_pace",
+          "constant": false,
+          "n_finite": 58,
+          "null_share": 0.0
+        },
+        {
+          "column": "pace_diff",
+          "constant": false,
+          "n_finite": 58,
+          "null_share": 0.0
+        },
+        {
+          "column": "rating_uncertainty",
+          "constant": false,
+          "n_finite": 58,
+          "null_share": 0.0
+        },
+        {
+          "column": "expected_possessions",
+          "constant": false,
+          "n_finite": 0,
+          "null_share": 1.0
+        },
+        {
+          "column": "mkt_spread",
+          "constant": false,
+          "n_finite": 0,
+          "null_share": 1.0
+        },
+        {
+          "column": "mkt_total",
+          "constant": false,
+          "n_finite": 0,
+          "null_share": 1.0
+        },
+        {
+          "column": "mkt_n_books",
+          "constant": true,
+          "n_finite": 58,
+          "null_share": 0.0
+        },
+        {
+          "column": "mkt_is_missing",
+          "constant": true,
+          "n_finite": 58,
+          "null_share": 0.0
+        }
+      ],
+      "constant_columns": [
+        "home_st_value",
+        "away_st_value",
+        "st_value_diff",
+        "mkt_n_books",
+        "mkt_is_missing"
+      ],
+      "market_columns": {
+        "mkt_is_missing": {
+          "column": "mkt_is_missing",
+          "constant": true,
+          "n_finite": 58,
+          "null_share": 0.0
+        },
+        "mkt_n_books": {
+          "column": "mkt_n_books",
+          "constant": true,
+          "n_finite": 58,
+          "null_share": 0.0
+        },
+        "mkt_spread": {
+          "column": "mkt_spread",
+          "constant": false,
+          "n_finite": 0,
+          "null_share": 1.0
+        },
+        "mkt_total": {
+          "column": "mkt_total",
+          "constant": false,
+          "n_finite": 0,
+          "null_share": 1.0
+        }
+      },
+      "n_columns": 20,
+      "n_rows": 58
+    },
+    "final_mu": {
+      "constant": true,
+      "max_val": 11.815999999999992,
+      "min_val": 11.815999999999992,
+      "n": 58,
+      "sd": 0.0,
+      "stage": "final_mu"
+    },
+    "lgbm_raw": {
+      "constant": true,
+      "max_val": 11.816,
+      "min_val": 11.816,
+      "n": 58,
+      "sd": 0.0,
+      "stage": "lgbm_raw"
+    },
+    "nnls_stack": {
+      "constant": true,
+      "max_val": 11.816,
+      "min_val": 11.816,
+      "n": 58,
+      "sd": 0.0,
+      "stage": "nnls_stack"
+    },
+    "nnls_weights": {
+      "enet_mu_margin": 0.0,
+      "lgbm_mu_margin": 1.0
+    }
+  },
+  "2023_1": {
+    "enet_meta": {
+      "credible_all": true,
+      "error": "This ElasticNet instance is not fitted yet. Call 'fit' with appropriate arguments before using this estimator.",
+      "fallback_constant_2p5": true,
+      "selected_features": [
+        "mkt_spread",
+        "off_epa_diff",
+        "rating_diff_off_epa",
+        "def_epa_diff",
+        "rating_diff_def_epa",
+        "away_off_epa",
+        "away_def_epa",
+        "home_off_epa",
+        "home_def_epa",
+        "rating_uncertainty",
+        "mkt_is_missing",
+        "mkt_n_books",
+        "mkt_total",
+        "pace_diff",
+        "away_pace",
+        "home_pace"
+      ]
+    },
+    "enet_raw": {
+      "constant": true,
+      "max_val": 2.5,
+      "min_val": 2.5,
+      "n": 136,
+      "sd": 0.0,
+      "stage": "enet_raw"
+    },
+    "epistemic_mix": {
+      "constant": true,
+      "n": 136,
+      "note": "skipped mix; stack already constant",
+      "sd": 0.0
+    },
+    "feature_inventory": {
+      "all_null_columns": [
+        "expected_possessions"
+      ],
+      "columns": [
+        {
+          "column": "home_off_epa",
+          "constant": false,
+          "n_finite": 136,
+          "null_share": 0.0
+        },
+        {
+          "column": "away_off_epa",
+          "constant": false,
+          "n_finite": 136,
+          "null_share": 0.0
+        },
+        {
+          "column": "off_epa_diff",
+          "constant": false,
+          "n_finite": 136,
+          "null_share": 0.0
+        },
+        {
+          "column": "rating_diff_off_epa",
+          "constant": false,
+          "n_finite": 136,
+          "null_share": 0.0
+        },
+        {
+          "column": "home_def_epa",
+          "constant": false,
+          "n_finite": 136,
+          "null_share": 0.0
+        },
+        {
+          "column": "away_def_epa",
+          "constant": false,
+          "n_finite": 136,
+          "null_share": 0.0
+        },
+        {
+          "column": "def_epa_diff",
+          "constant": false,
+          "n_finite": 136,
+          "null_share": 0.0
+        },
+        {
+          "column": "rating_diff_def_epa",
+          "constant": false,
+          "n_finite": 136,
+          "null_share": 0.0
+        },
+        {
+          "column": "home_st_value",
+          "constant": true,
+          "n_finite": 136,
+          "null_share": 0.0
+        },
+        {
+          "column": "away_st_value",
+          "constant": true,
+          "n_finite": 136,
+          "null_share": 0.0
+        },
+        {
+          "column": "st_value_diff",
+          "constant": true,
+          "n_finite": 136,
+          "null_share": 0.0
+        },
+        {
+          "column": "home_pace",
+          "constant": false,
+          "n_finite": 136,
+          "null_share": 0.0
+        },
+        {
+          "column": "away_pace",
+          "constant": false,
+          "n_finite": 136,
+          "null_share": 0.0
+        },
+        {
+          "column": "pace_diff",
+          "constant": false,
+          "n_finite": 136,
+          "null_share": 0.0
+        },
+        {
+          "column": "rating_uncertainty",
+          "constant": false,
+          "n_finite": 136,
+          "null_share": 0.0
+        },
+        {
+          "column": "expected_possessions",
+          "constant": false,
+          "n_finite": 0,
+          "null_share": 1.0
+        },
+        {
+          "column": "mkt_spread",
+          "constant": false,
+          "n_finite": 52,
+          "null_share": 0.6176470588235294
+        },
+        {
+          "column": "mkt_total",
+          "constant": false,
+          "n_finite": 52,
+          "null_share": 0.6176470588235294
+        },
+        {
+          "column": "mkt_n_books",
+          "constant": false,
+          "n_finite": 136,
+          "null_share": 0.0
+        },
+        {
+          "column": "mkt_is_missing",
+          "constant": false,
+          "n_finite": 136,
+          "null_share": 0.0
+        }
+      ],
+      "constant_columns": [
+        "home_st_value",
+        "away_st_value",
+        "st_value_diff"
+      ],
+      "market_columns": {
+        "mkt_is_missing": {
+          "column": "mkt_is_missing",
+          "constant": false,
+          "n_finite": 136,
+          "null_share": 0.0
+        },
+        "mkt_n_books": {
+          "column": "mkt_n_books",
+          "constant": false,
+          "n_finite": 136,
+          "null_share": 0.0
+        },
+        "mkt_spread": {
+          "column": "mkt_spread",
+          "constant": false,
+          "n_finite": 52,
+          "null_share": 0.6176470588235294
+        },
+        "mkt_total": {
+          "column": "mkt_total",
+          "constant": false,
+          "n_finite": 52,
+          "null_share": 0.6176470588235294
+        }
+      },
+      "n_columns": 20,
+      "n_rows": 136
+    },
+    "final_mu": {
+      "constant": true,
+      "max_val": 2.5,
+      "min_val": 2.5,
+      "n": 136,
+      "sd": 0.0,
+      "stage": "final_mu"
+    },
+    "lgbm_raw": {
+      "constant": false,
+      "max_val": 43.79038971432485,
+      "min_val": -21.412249895385983,
+      "n": 136,
+      "sd": 16.0613484733152,
+      "stage": "lgbm_raw"
+    },
+    "nnls_stack": {
+      "constant": true,
+      "max_val": 2.5,
+      "min_val": 2.5,
+      "n": 136,
+      "sd": 0.0,
+      "stage": "nnls_stack"
+    },
+    "nnls_weights": {
+      "enet_mu_margin": 1.0,
+      "lgbm_mu_margin": 0.0
+    }
+  },
+  "2023_2": {
+    "enet_meta": {
+      "credible_all": true,
+      "error": "This ElasticNet instance is not fitted yet. Call 'fit' with appropriate arguments before using this estimator.",
+      "fallback_constant_2p5": true,
+      "selected_features": [
+        "mkt_spread",
+        "off_epa_diff",
+        "rating_diff_off_epa",
+        "def_epa_diff",
+        "rating_diff_def_epa",
+        "away_off_epa",
+        "away_def_epa",
+        "home_off_epa",
+        "home_def_epa",
+        "rating_uncertainty",
+        "mkt_is_missing",
+        "mkt_n_books",
+        "mkt_total",
+        "pace_diff",
+        "away_pace",
+        "home_pace"
+      ]
+    },
+    "enet_raw": {
+      "constant": true,
+      "max_val": 2.5,
+      "min_val": 2.5,
+      "n": 85,
+      "sd": 0.0,
+      "stage": "enet_raw"
+    },
+    "epistemic_mix": {
+      "constant": true,
+      "n": 85,
+      "note": "skipped mix; stack already constant",
+      "sd": 0.0
+    },
+    "feature_inventory": {
+      "all_null_columns": [
+        "expected_possessions"
+      ],
+      "columns": [
+        {
+          "column": "home_off_epa",
+          "constant": false,
+          "n_finite": 85,
+          "null_share": 0.0
+        },
+        {
+          "column": "away_off_epa",
+          "constant": false,
+          "n_finite": 85,
+          "null_share": 0.0
+        },
+        {
+          "column": "off_epa_diff",
+          "constant": false,
+          "n_finite": 85,
+          "null_share": 0.0
+        },
+        {
+          "column": "rating_diff_off_epa",
+          "constant": false,
+          "n_finite": 85,
+          "null_share": 0.0
+        },
+        {
+          "column": "home_def_epa",
+          "constant": false,
+          "n_finite": 85,
+          "null_share": 0.0
+        },
+        {
+          "column": "away_def_epa",
+          "constant": false,
+          "n_finite": 85,
+          "null_share": 0.0
+        },
+        {
+          "column": "def_epa_diff",
+          "constant": false,
+          "n_finite": 85,
+          "null_share": 0.0
+        },
+        {
+          "column": "rating_diff_def_epa",
+          "constant": false,
+          "n_finite": 85,
+          "null_share": 0.0
+        },
+        {
+          "column": "home_st_value",
+          "constant": true,
+          "n_finite": 85,
+          "null_share": 0.0
+        },
+        {
+          "column": "away_st_value",
+          "constant": true,
+          "n_finite": 85,
+          "null_share": 0.0
+        },
+        {
+          "column": "st_value_diff",
+          "constant": true,
+          "n_finite": 85,
+          "null_share": 0.0
+        },
+        {
+          "column": "home_pace",
+          "constant": false,
+          "n_finite": 85,
+          "null_share": 0.0
+        },
+        {
+          "column": "away_pace",
+          "constant": false,
+          "n_finite": 85,
+          "null_share": 0.0
+        },
+        {
+          "column": "pace_diff",
+          "constant": false,
+          "n_finite": 85,
+          "null_share": 0.0
+        },
+        {
+          "column": "rating_uncertainty",
+          "constant": false,
+          "n_finite": 85,
+          "null_share": 0.0
+        },
+        {
+          "column": "expected_possessions",
+          "constant": false,
+          "n_finite": 0,
+          "null_share": 1.0
+        },
+        {
+          "column": "mkt_spread",
+          "constant": false,
+          "n_finite": 44,
+          "null_share": 0.4823529411764706
+        },
+        {
+          "column": "mkt_total",
+          "constant": false,
+          "n_finite": 44,
+          "null_share": 0.4823529411764706
+        },
+        {
+          "column": "mkt_n_books",
+          "constant": false,
+          "n_finite": 85,
+          "null_share": 0.0
+        },
+        {
+          "column": "mkt_is_missing",
+          "constant": false,
+          "n_finite": 85,
+          "null_share": 0.0
+        }
+      ],
+      "constant_columns": [
+        "home_st_value",
+        "away_st_value",
+        "st_value_diff"
+      ],
+      "market_columns": {
+        "mkt_is_missing": {
+          "column": "mkt_is_missing",
+          "constant": false,
+          "n_finite": 85,
+          "null_share": 0.0
+        },
+        "mkt_n_books": {
+          "column": "mkt_n_books",
+          "constant": false,
+          "n_finite": 85,
+          "null_share": 0.0
+        },
+        "mkt_spread": {
+          "column": "mkt_spread",
+          "constant": false,
+          "n_finite": 44,
+          "null_share": 0.4823529411764706
+        },
+        "mkt_total": {
+          "column": "mkt_total",
+          "constant": false,
+          "n_finite": 44,
+          "null_share": 0.4823529411764706
+        }
+      },
+      "n_columns": 20,
+      "n_rows": 85
+    },
+    "final_mu": {
+      "constant": true,
+      "max_val": 2.5,
+      "min_val": 2.5,
+      "n": 85,
+      "sd": 0.0,
+      "stage": "final_mu"
+    },
+    "lgbm_raw": {
+      "constant": false,
+      "max_val": 43.37107588173546,
+      "min_val": -19.054676496460676,
+      "n": 85,
+      "sd": 17.152036752021147,
+      "stage": "lgbm_raw"
+    },
+    "nnls_stack": {
+      "constant": true,
+      "max_val": 2.5,
+      "min_val": 2.5,
+      "n": 85,
+      "sd": 0.0,
+      "stage": "nnls_stack"
+    },
+    "nnls_weights": {
+      "enet_mu_margin": 1.0,
+      "lgbm_mu_margin": 0.0
+    }
+  },
+  "2023_3": {
+    "enet_meta": {
+      "credible_all": true,
+      "error": "This ElasticNet instance is not fitted yet. Call 'fit' with appropriate arguments before using this estimator.",
+      "fallback_constant_2p5": true,
+      "selected_features": [
+        "mkt_spread",
+        "off_epa_diff",
+        "rating_diff_off_epa",
+        "def_epa_diff",
+        "rating_diff_def_epa",
+        "away_off_epa",
+        "away_def_epa",
+        "home_off_epa",
+        "home_def_epa",
+        "rating_uncertainty",
+        "mkt_is_missing",
+        "mkt_n_books",
+        "mkt_total",
+        "pace_diff",
+        "away_pace",
+        "home_pace"
+      ]
+    },
+    "enet_raw": {
+      "constant": true,
+      "max_val": 2.5,
+      "min_val": 2.5,
+      "n": 75,
+      "sd": 0.0,
+      "stage": "enet_raw"
+    },
+    "epistemic_mix": {
+      "constant": true,
+      "n": 75,
+      "note": "skipped mix; stack already constant",
+      "sd": 0.0
+    },
+    "feature_inventory": {
+      "all_null_columns": [
+        "expected_possessions"
+      ],
+      "columns": [
+        {
+          "column": "home_off_epa",
+          "constant": false,
+          "n_finite": 75,
+          "null_share": 0.0
+        },
+        {
+          "column": "away_off_epa",
+          "constant": false,
+          "n_finite": 75,
+          "null_share": 0.0
+        },
+        {
+          "column": "off_epa_diff",
+          "constant": false,
+          "n_finite": 75,
+          "null_share": 0.0
+        },
+        {
+          "column": "rating_diff_off_epa",
+          "constant": false,
+          "n_finite": 75,
+          "null_share": 0.0
+        },
+        {
+          "column": "home_def_epa",
+          "constant": false,
+          "n_finite": 75,
+          "null_share": 0.0
+        },
+        {
+          "column": "away_def_epa",
+          "constant": false,
+          "n_finite": 75,
+          "null_share": 0.0
+        },
+        {
+          "column": "def_epa_diff",
+          "constant": false,
+          "n_finite": 75,
+          "null_share": 0.0
+        },
+        {
+          "column": "rating_diff_def_epa",
+          "constant": false,
+          "n_finite": 75,
+          "null_share": 0.0
+        },
+        {
+          "column": "home_st_value",
+          "constant": true,
+          "n_finite": 75,
+          "null_share": 0.0
+        },
+        {
+          "column": "away_st_value",
+          "constant": true,
+          "n_finite": 75,
+          "null_share": 0.0
+        },
+        {
+          "column": "st_value_diff",
+          "constant": true,
+          "n_finite": 75,
+          "null_share": 0.0
+        },
+        {
+          "column": "home_pace",
+          "constant": false,
+          "n_finite": 75,
+          "null_share": 0.0
+        },
+        {
+          "column": "away_pace",
+          "constant": false,
+          "n_finite": 75,
+          "null_share": 0.0
+        },
+        {
+          "column": "pace_diff",
+          "constant": false,
+          "n_finite": 75,
+          "null_share": 0.0
+        },
+        {
+          "column": "rating_uncertainty",
+          "constant": false,
+          "n_finite": 75,
+          "null_share": 0.0
+        },
+        {
+          "column": "expected_possessions",
+          "constant": false,
+          "n_finite": 0,
+          "null_share": 1.0
+        },
+        {
+          "column": "mkt_spread",
+          "constant": false,
+          "n_finite": 54,
+          "null_share": 0.28
+        },
+        {
+          "column": "mkt_total",
+          "constant": false,
+          "n_finite": 54,
+          "null_share": 0.28
+        },
+        {
+          "column": "mkt_n_books",
+          "constant": false,
+          "n_finite": 75,
+          "null_share": 0.0
+        },
+        {
+          "column": "mkt_is_missing",
+          "constant": false,
+          "n_finite": 75,
+          "null_share": 0.0
+        }
+      ],
+      "constant_columns": [
+        "home_st_value",
+        "away_st_value",
+        "st_value_diff"
+      ],
+      "market_columns": {
+        "mkt_is_missing": {
+          "column": "mkt_is_missing",
+          "constant": false,
+          "n_finite": 75,
+          "null_share": 0.0
+        },
+        "mkt_n_books": {
+          "column": "mkt_n_books",
+          "constant": false,
+          "n_finite": 75,
+          "null_share": 0.0
+        },
+        "mkt_spread": {
+          "column": "mkt_spread",
+          "constant": false,
+          "n_finite": 54,
+          "null_share": 0.28
+        },
+        "mkt_total": {
+          "column": "mkt_total",
+          "constant": false,
+          "n_finite": 54,
+          "null_share": 0.28
+        }
+      },
+      "n_columns": 20,
+      "n_rows": 75
+    },
+    "final_mu": {
+      "constant": true,
+      "max_val": 2.5,
+      "min_val": 2.5,
+      "n": 75,
+      "sd": 0.0,
+      "stage": "final_mu"
+    },
+    "lgbm_raw": {
+      "constant": false,
+      "max_val": 43.63247858396082,
+      "min_val": -25.940326667442132,
+      "n": 75,
+      "sd": 16.38745401285952,
+      "stage": "lgbm_raw"
+    },
+    "nnls_stack": {
+      "constant": true,
+      "max_val": 2.5,
+      "min_val": 2.5,
+      "n": 75,
+      "sd": 0.0,
+      "stage": "nnls_stack"
+    },
+    "nnls_weights": {
+      "enet_mu_margin": 1.0,
+      "lgbm_mu_margin": 0.0
+    }
+  },
+  "2023_4": {
+    "enet_meta": {
+      "credible_all": true,
+      "error": "This ElasticNet instance is not fitted yet. Call 'fit' with appropriate arguments before using this estimator.",
+      "fallback_constant_2p5": true,
+      "selected_features": [
+        "mkt_spread",
+        "off_epa_diff",
+        "rating_diff_off_epa",
+        "def_epa_diff",
+        "rating_diff_def_epa",
+        "away_off_epa",
+        "away_def_epa",
+        "home_off_epa",
+        "home_def_epa",
+        "rating_uncertainty",
+        "mkt_is_missing",
+        "mkt_n_books",
+        "mkt_total",
+        "pace_diff",
+        "away_pace",
+        "home_pace"
+      ]
+    },
+    "enet_raw": {
+      "constant": true,
+      "max_val": 2.5,
+      "min_val": 2.5,
+      "n": 67,
+      "sd": 0.0,
+      "stage": "enet_raw"
+    },
+    "epistemic_mix": {
+      "constant": true,
+      "n": 67,
+      "note": "skipped mix; stack already constant",
+      "sd": 0.0
+    },
+    "feature_inventory": {
+      "all_null_columns": [
+        "expected_possessions"
+      ],
+      "columns": [
+        {
+          "column": "home_off_epa",
+          "constant": false,
+          "n_finite": 67,
+          "null_share": 0.0
+        },
+        {
+          "column": "away_off_epa",
+          "constant": false,
+          "n_finite": 67,
+          "null_share": 0.0
+        },
+        {
+          "column": "off_epa_diff",
+          "constant": false,
+          "n_finite": 67,
+          "null_share": 0.0
+        },
+        {
+          "column": "rating_diff_off_epa",
+          "constant": false,
+          "n_finite": 67,
+          "null_share": 0.0
+        },
+        {
+          "column": "home_def_epa",
+          "constant": false,
+          "n_finite": 67,
+          "null_share": 0.0
+        },
+        {
+          "column": "away_def_epa",
+          "constant": false,
+          "n_finite": 67,
+          "null_share": 0.0
+        },
+        {
+          "column": "def_epa_diff",
+          "constant": false,
+          "n_finite": 67,
+          "null_share": 0.0
+        },
+        {
+          "column": "rating_diff_def_epa",
+          "constant": false,
+          "n_finite": 67,
+          "null_share": 0.0
+        },
+        {
+          "column": "home_st_value",
+          "constant": true,
+          "n_finite": 67,
+          "null_share": 0.0
+        },
+        {
+          "column": "away_st_value",
+          "constant": true,
+          "n_finite": 67,
+          "null_share": 0.0
+        },
+        {
+          "column": "st_value_diff",
+          "constant": true,
+          "n_finite": 67,
+          "null_share": 0.0
+        },
+        {
+          "column": "home_pace",
+          "constant": false,
+          "n_finite": 67,
+          "null_share": 0.0
+        },
+        {
+          "column": "away_pace",
+          "constant": false,
+          "n_finite": 67,
+          "null_share": 0.0
+        },
+        {
+          "column": "pace_diff",
+          "constant": false,
+          "n_finite": 67,
+          "null_share": 0.0
+        },
+        {
+          "column": "rating_uncertainty",
+          "constant": false,
+          "n_finite": 67,
+          "null_share": 0.0
+        },
+        {
+          "column": "expected_possessions",
+          "constant": false,
+          "n_finite": 0,
+          "null_share": 1.0
+        },
+        {
+          "column": "mkt_spread",
+          "constant": false,
+          "n_finite": 63,
+          "null_share": 0.05970149253731343
+        },
+        {
+          "column": "mkt_total",
+          "constant": false,
+          "n_finite": 63,
+          "null_share": 0.05970149253731343
+        },
+        {
+          "column": "mkt_n_books",
+          "constant": false,
+          "n_finite": 67,
+          "null_share": 0.0
+        },
+        {
+          "column": "mkt_is_missing",
+          "constant": false,
+          "n_finite": 67,
+          "null_share": 0.0
+        }
+      ],
+      "constant_columns": [
+        "home_st_value",
+        "away_st_value",
+        "st_value_diff"
+      ],
+      "market_columns": {
+        "mkt_is_missing": {
+          "column": "mkt_is_missing",
+          "constant": false,
+          "n_finite": 67,
+          "null_share": 0.0
+        },
+        "mkt_n_books": {
+          "column": "mkt_n_books",
+          "constant": false,
+          "n_finite": 67,
+          "null_share": 0.0
+        },
+        "mkt_spread": {
+          "column": "mkt_spread",
+          "constant": false,
+          "n_finite": 63,
+          "null_share": 0.05970149253731343
+        },
+        "mkt_total": {
+          "column": "mkt_total",
+          "constant": false,
+          "n_finite": 63,
+          "null_share": 0.05970149253731343
+        }
+      },
+      "n_columns": 20,
+      "n_rows": 67
+    },
+    "final_mu": {
+      "constant": true,
+      "max_val": 2.5,
+      "min_val": 2.5,
+      "n": 67,
+      "sd": 0.0,
+      "stage": "final_mu"
+    },
+    "lgbm_raw": {
+      "constant": false,
+      "max_val": 42.999064461171095,
+      "min_val": -20.63047315093262,
+      "n": 67,
+      "sd": 13.087154197803361,
+      "stage": "lgbm_raw"
+    },
+    "nnls_stack": {
+      "constant": true,
+      "max_val": 2.5,
+      "min_val": 2.5,
+      "n": 67,
+      "sd": 0.0,
+      "stage": "nnls_stack"
+    },
+    "nnls_weights": {
+      "enet_mu_margin": 1.0,
+      "lgbm_mu_margin": 0.0
+    }
+  },
+  "2023_5": {
+    "enet_meta": {
+      "credible_all": true,
+      "error": "This ElasticNet instance is not fitted yet. Call 'fit' with appropriate arguments before using this estimator.",
+      "fallback_constant_2p5": true,
+      "selected_features": [
+        "mkt_spread",
+        "off_epa_diff",
+        "rating_diff_off_epa",
+        "def_epa_diff",
+        "rating_diff_def_epa",
+        "away_off_epa",
+        "home_off_epa",
+        "away_def_epa",
+        "home_def_epa",
+        "rating_uncertainty",
+        "mkt_is_missing",
+        "mkt_n_books",
+        "mkt_total",
+        "away_pace",
+        "pace_diff",
+        "home_pace"
+      ]
+    },
+    "enet_raw": {
+      "constant": true,
+      "max_val": 2.5,
+      "min_val": 2.5,
+      "n": 59,
+      "sd": 0.0,
+      "stage": "enet_raw"
+    },
+    "epistemic_meta": {
+      "mean_stage1_var_m": 0.024906511498447373,
+      "n_draws": 50
+    },
+    "epistemic_mix": {
+      "constant": false,
+      "max_val": 7.220075116885136,
+      "min_val": -0.6751819115546003,
+      "n": 59,
+      "sd": 1.5749732571943273,
+      "stage": "epistemic_mix"
+    },
+    "feature_inventory": {
+      "all_null_columns": [],
+      "columns": [
+        {
+          "column": "home_off_epa",
+          "constant": false,
+          "n_finite": 59,
+          "null_share": 0.0
+        },
+        {
+          "column": "away_off_epa",
+          "constant": false,
+          "n_finite": 59,
+          "null_share": 0.0
+        },
+        {
+          "column": "off_epa_diff",
+          "constant": false,
+          "n_finite": 59,
+          "null_share": 0.0
+        },
+        {
+          "column": "rating_diff_off_epa",
+          "constant": false,
+          "n_finite": 59,
+          "null_share": 0.0
+        },
+        {
+          "column": "home_def_epa",
+          "constant": false,
+          "n_finite": 59,
+          "null_share": 0.0
+        },
+        {
+          "column": "away_def_epa",
+          "constant": false,
+          "n_finite": 59,
+          "null_share": 0.0
+        },
+        {
+          "column": "def_epa_diff",
+          "constant": false,
+          "n_finite": 59,
+          "null_share": 0.0
+        },
+        {
+          "column": "rating_diff_def_epa",
+          "constant": false,
+          "n_finite": 59,
+          "null_share": 0.0
+        },
+        {
+          "column": "home_st_value",
+          "constant": true,
+          "n_finite": 59,
+          "null_share": 0.0
+        },
+        {
+          "column": "away_st_value",
+          "constant": true,
+          "n_finite": 59,
+          "null_share": 0.0
+        },
+        {
+          "column": "st_value_diff",
+          "constant": true,
+          "n_finite": 59,
+          "null_share": 0.0
+        },
+        {
+          "column": "home_pace",
+          "constant": false,
+          "n_finite": 59,
+          "null_share": 0.0
+        },
+        {
+          "column": "away_pace",
+          "constant": false,
+          "n_finite": 59,
+          "null_share": 0.0
+        },
+        {
+          "column": "pace_diff",
+          "constant": false,
+          "n_finite": 59,
+          "null_share": 0.0
+        },
+        {
+          "column": "rating_uncertainty",
+          "constant": false,
+          "n_finite": 59,
+          "null_share": 0.0
+        },
+        {
+          "column": "expected_possessions",
+          "constant": false,
+          "n_finite": 56,
+          "null_share": 0.05084745762711865
+        },
+        {
+          "column": "mkt_spread",
+          "constant": false,
+          "n_finite": 56,
+          "null_share": 0.05084745762711865
+        },
+        {
+          "column": "mkt_total",
+          "constant": false,
+          "n_finite": 56,
+          "null_share": 0.05084745762711865
+        },
+        {
+          "column": "mkt_n_books",
+          "constant": false,
+          "n_finite": 59,
+          "null_share": 0.0
+        },
+        {
+          "column": "mkt_is_missing",
+          "constant": false,
+          "n_finite": 59,
+          "null_share": 0.0
+        }
+      ],
+      "constant_columns": [
+        "home_st_value",
+        "away_st_value",
+        "st_value_diff"
+      ],
+      "market_columns": {
+        "mkt_is_missing": {
+          "column": "mkt_is_missing",
+          "constant": false,
+          "n_finite": 59,
+          "null_share": 0.0
+        },
+        "mkt_n_books": {
+          "column": "mkt_n_books",
+          "constant": false,
+          "n_finite": 59,
+          "null_share": 0.0
+        },
+        "mkt_spread": {
+          "column": "mkt_spread",
+          "constant": false,
+          "n_finite": 56,
+          "null_share": 0.05084745762711865
+        },
+        "mkt_total": {
+          "column": "mkt_total",
+          "constant": false,
+          "n_finite": 56,
+          "null_share": 0.05084745762711865
+        }
+      },
+      "n_columns": 20,
+      "n_rows": 59
+    },
+    "final_mu": {
+      "constant": false,
+      "max_val": 7.220075116885136,
+      "min_val": -0.6751819115546003,
+      "n": 59,
+      "sd": 1.5749732571943273,
+      "stage": "final_mu"
+    },
+    "lgbm_raw": {
+      "constant": false,
+      "max_val": 38.394695757277276,
+      "min_val": -22.018674219612933,
+      "n": 59,
+      "sd": 12.5155147696525,
+      "stage": "lgbm_raw"
+    },
+    "nnls_stack": {
+      "constant": false,
+      "max_val": 7.098066051427023,
+      "min_val": -0.6408117878348261,
+      "n": 59,
+      "sd": 1.6032219347284917,
+      "stage": "nnls_stack"
+    },
+    "nnls_weights": {
+      "enet_mu_margin": 0.8719012390432418,
+      "lgbm_mu_margin": 0.12809876095675815
+    }
+  }
+}

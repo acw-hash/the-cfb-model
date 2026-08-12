@@ -1,0 +1,204 @@
+{
+  "wall_clock_sec": 5027.83993529994,
+  "gate_passed": false,
+  "gate_failures": [
+    "SD(mu)=0 in 7 (season, week) block(s): [(2019, 2), (2019, 3), (2019, 4), (2023, 1), (2023, 2), (2023, 3), (2023, 4)]"
+  ],
+  "zero_sd_blocks": [
+    [
+      2019,
+      2
+    ],
+    [
+      2019,
+      3
+    ],
+    [
+      2019,
+      4
+    ],
+    [
+      2023,
+      1
+    ],
+    [
+      2023,
+      2
+    ],
+    [
+      2023,
+      3
+    ],
+    [
+      2023,
+      4
+    ]
+  ],
+  "block_sds": [
+    {
+      "season": 2019,
+      "week": 1,
+      "n_games": 0,
+      "sd_mu": NaN,
+      "n_train_games": null,
+      "status": "CONTROL"
+    },
+    {
+      "season": 2019,
+      "week": 2,
+      "n_games": 74,
+      "sd_mu": 0.0,
+      "n_train_games": 125,
+      "status": "FAIL"
+    },
+    {
+      "season": 2019,
+      "week": 3,
+      "n_games": 68,
+      "sd_mu": 0.0,
+      "n_train_games": 199,
+      "status": "FAIL"
+    },
+    {
+      "season": 2019,
+      "week": 4,
+      "n_games": 58,
+      "sd_mu": 0.0,
+      "n_train_games": 267,
+      "status": "FAIL"
+    },
+    {
+      "season": 2023,
+      "week": 1,
+      "n_games": 136,
+      "sd_mu": 0.0,
+      "n_train_games": 3239,
+      "status": "FAIL"
+    },
+    {
+      "season": 2023,
+      "week": 2,
+      "n_games": 85,
+      "sd_mu": 0.0,
+      "n_train_games": 3375,
+      "status": "FAIL"
+    },
+    {
+      "season": 2023,
+      "week": 3,
+      "n_games": 75,
+      "sd_mu": 0.0,
+      "n_train_games": 3460,
+      "status": "FAIL"
+    },
+    {
+      "season": 2023,
+      "week": 4,
+      "n_games": 67,
+      "sd_mu": 0.0,
+      "n_train_games": 3535,
+      "status": "FAIL"
+    },
+    {
+      "season": 2023,
+      "week": 5,
+      "n_games": 59,
+      "sd_mu": 1.5749732571943273,
+      "n_train_games": 3602,
+      "status": "CONTROL"
+    }
+  ],
+  "retrain_events": [
+    {
+      "season": 2019,
+      "week": 0,
+      "retrain_epoch": 1,
+      "n": 0
+    },
+    {
+      "season": 2019,
+      "week": 1,
+      "retrain_epoch": 2,
+      "n": 125,
+      "reason": "cold_start_catchup"
+    },
+    {
+      "season": 2019,
+      "week": 5,
+      "retrain_epoch": 3,
+      "n": 325
+    },
+    {
+      "season": 2019,
+      "week": 10,
+      "retrain_epoch": 4,
+      "n": 598
+    },
+    {
+      "season": 2020,
+      "week": 0,
+      "retrain_epoch": 5,
+      "n": 888
+    },
+    {
+      "season": 2020,
+      "week": 5,
+      "retrain_epoch": 6,
+      "n": 993
+    },
+    {
+      "season": 2020,
+      "week": 10,
+      "retrain_epoch": 7,
+      "n": 1172
+    },
+    {
+      "season": 2021,
+      "week": 0,
+      "retrain_epoch": 8,
+      "n": 1456
+    },
+    {
+      "season": 2021,
+      "week": 5,
+      "retrain_epoch": 9,
+      "n": 1805
+    },
+    {
+      "season": 2021,
+      "week": 10,
+      "retrain_epoch": 10,
+      "n": 2076
+    },
+    {
+      "season": 2022,
+      "week": 0,
+      "retrain_epoch": 11,
+      "n": 2343
+    },
+    {
+      "season": 2022,
+      "week": 5,
+      "retrain_epoch": 12,
+      "n": 2699
+    },
+    {
+      "season": 2022,
+      "week": 10,
+      "retrain_epoch": 13,
+      "n": 2973
+    },
+    {
+      "season": 2023,
+      "week": 0,
+      "retrain_epoch": 14,
+      "n": 3239
+    },
+    {
+      "season": 2023,
+      "week": 5,
+      "retrain_epoch": 15,
+      "n": 3602
+    }
+  ]
+}

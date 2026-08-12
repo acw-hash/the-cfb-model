@@ -1,0 +1,33 @@
+{
+  "task": "SDMU-DIAG",
+  "failing_blocks": [
+    [2019, 2],
+    [2019, 3],
+    [2019, 4],
+    [2023, 1],
+    [2023, 2],
+    [2023, 3],
+    [2023, 4]
+  ],
+  "control_blocks": [
+    [2019, 1],
+    [2023, 5]
+  ],
+  "mechanisms": {
+    "2019_w2_w4": {
+      "constant_stage": "lgbm_raw",
+      "nnls_weights": {"lgbm_mu_margin": 1.0, "enet_mu_margin": 0.0},
+      "final_mu_constant_value": 11.816,
+      "note": "2019 w1 has zero prediction rows (cold-start vacuous pass)"
+    },
+    "2023_w1_w4": {
+      "constant_stage": "nnls_stack_via_enet_fallback",
+      "lgbm_varies": true,
+      "nnls_weights": {"lgbm_mu_margin": 0.0, "enet_mu_margin": 1.0},
+      "final_mu_constant_value": 2.5,
+      "enet_error": "ElasticNet instance is not fitted yet",
+      "cleared_at": [2023, 5],
+      "week5_nnls_weights": {"lgbm_mu_margin": 0.128, "enet_mu_margin": 0.872}
+    }
+  }
+}
