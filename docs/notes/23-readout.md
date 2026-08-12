@@ -305,3 +305,50 @@ for either product; they do not gate Task 24.
 - Never mix unlabeled CONTAMINATED_v1 snapshot ATS with REGRADED_V2 / RERUN_V2.
 - Regimes never pooled; lockbox 2025 excluded; no lockbox read.
 - No hyperparameter, threshold, or feature “quick fix” proposed.
+
+---
+
+## ADDENDUM — 23-READOUT-ADDENDUM (2026-08-11) — **STOP**
+
+**Status:** STOP. Campaign close **not written**. The planned five-point
+addendum (final market-features finding, §1.6 scorecard, verdict, ledger,
+measurement-layer close) is **blocked**.
+
+**Check** (`scripts/_readout_addendum_check.py`): market-aware 2019
+equivalence on `task23_market_aware_reduced_v2_tue` —
+**RERUN_V2_WEEK_ALIGN / REDUCED_PER_ADR_0013 / FEATURE_TIME=TUESDAY_DECISION**.
+
+| | |
+|---|---|
+| 2019 prediction rows | 763 (ATS-eligible n=743) |
+| 2019 Odds snapshot rows | **0** |
+| `mkt_*` null + `mkt_is_missing` | 6 |
+| violations (non-null `mkt_*`) | **757** |
+| `line_source` | **`cfbd_close` × 757**, `null` × 6 |
+| `market_provenance` | mislabeled **`snapshots` × 757** |
+
+**This is a 2019 feature-source violation.** Snapshot-source Tuesday features
+resolved to CFBD **close** (not open; not null) and were relabeled
+`provenance=snapshots`. Artifact:
+`docs/notes/_artifacts/readout_addendum/STOP.md` +
+`2019_mkt_equivalence.json`.
+
+**Refused claim:** 45.63% [42.9%, 48.6%] vs fundamental REGRADED_V2 51.3%
+(n=743) is **not** licensed as fit-path variance from feature-column presence
+(NaN-aware splits). That mechanism is **noise only if every 2019 `mkt_*` is
+null + is_missing**. Here 2019 market-aware actually saw the CFBD close as a
+feature — a different information set (and a Tuesday PIT defect).
+
+**Unchanged and still in force** (not re-litigated by this STOP): snapshot
+2021–2024 Tuesday market-aware vs A3 (−0.80 pp ATS, +0.11 MAE,
+FEATURE_TIME=TUESDAY_DECISION); SLOT_CLOSE ceiling ~2.6 MAE / ~0.8 pp ATS;
+§1.6 ATS and log-loss misses on the corrected snapshot tables; verdict
+**NOT CURRENTLY FIT TO BET**; predictions product unblocked. 2019
+market-aware ATS/LL/MAE from the Tuesday run are **not** a clean
+market-features increment until the snapshot-source 2019 path is null +
+`is_missing`.
+
+**Successor (separate session):** stop CFBD from entering
+`market_feature_source=snapshots` features for 2019; do not relabel close as
+snapshots; re-run this check; then resume campaign close. Guard band not
+widened. Lockbox not read.

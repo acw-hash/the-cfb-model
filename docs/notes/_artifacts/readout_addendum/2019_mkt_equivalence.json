@@ -1,0 +1,345 @@
+{
+  "vintage": "RERUN_V2_WEEK_ALIGN",
+  "ensemble_scope": "REDUCED_PER_ADR_0013",
+  "feature_time": "TUESDAY_DECISION",
+  "run_id": "task23_market_aware_reduced_v2_tue",
+  "predictions_path": "data/backtests/task23_market_aware_reduced_v2_tue/full/predictions.parquet",
+  "n_2019_prediction_rows": 763,
+  "n_ats_2019_readout": 743,
+  "n_2019_odds_snapshot_rows": 0,
+  "pred_mkt_columns_on_parquet": [],
+  "market_feature_cols_checked": [
+    "mkt_spread",
+    "mkt_total",
+    "mkt_n_books",
+    "mkt_is_missing",
+    "market_provenance"
+  ],
+  "n_mkt_spread_null": 6,
+  "n_mkt_total_null": 6,
+  "n_mkt_is_missing": 6,
+  "n_mkt_n_books_zero_or_null": 6,
+  "provenance_counts": {
+    "snapshots": 757,
+    "null": 6
+  },
+  "line_source_counts": {
+    "cfbd_close": 757,
+    "null": 6
+  },
+  "mechanism_if_violation": "resolve_lines_for_games(closing=False) uses CFBD open/close for season<2021 even when market_feature_source=snapshots; ProductionFeatureProvider then labels non-null provenance as 'snapshots'.",
+  "n_violations": 757,
+  "violation_sample": [
+    {
+      "game_id": 401110773,
+      "week": 2,
+      "bad_columns": [
+        "mkt_spread",
+        "mkt_total",
+        "mkt_is_missing"
+      ],
+      "mkt_spread": -54.75,
+      "mkt_total": 65.0,
+      "mkt_n_books": 4,
+      "mkt_is_missing": 0.0,
+      "market_provenance": "snapshots",
+      "line_source": "cfbd_close"
+    },
+    {
+      "game_id": 401110774,
+      "week": 2,
+      "bad_columns": [
+        "mkt_spread",
+        "mkt_total",
+        "mkt_is_missing"
+      ],
+      "mkt_spread": -16.5,
+      "mkt_total": 51.5,
+      "mkt_n_books": 4,
+      "mkt_is_missing": 0.0,
+      "market_provenance": "snapshots",
+      "line_source": "cfbd_close"
+    },
+    {
+      "game_id": 401110775,
+      "week": 2,
+      "bad_columns": [
+        "mkt_spread",
+        "mkt_total",
+        "mkt_is_missing"
+      ],
+      "mkt_spread": -44.5,
+      "mkt_total": 59.5,
+      "mkt_n_books": 1,
+      "mkt_is_missing": 0.0,
+      "market_provenance": "snapshots",
+      "line_source": "cfbd_close"
+    },
+    {
+      "game_id": 401110776,
+      "week": 2,
+      "bad_columns": [
+        "mkt_spread",
+        "mkt_total",
+        "mkt_is_missing"
+      ],
+      "mkt_spread": -49.5,
+      "mkt_total": 61.5,
+      "mkt_n_books": 1,
+      "mkt_is_missing": 0.0,
+      "market_provenance": "snapshots",
+      "line_source": "cfbd_close"
+    },
+    {
+      "game_id": 401110777,
+      "week": 2,
+      "bad_columns": [
+        "mkt_spread",
+        "mkt_total",
+        "mkt_is_missing"
+      ],
+      "mkt_spread": -15.5,
+      "mkt_total": 52.0,
+      "mkt_n_books": 4,
+      "mkt_is_missing": 0.0,
+      "market_provenance": "snapshots",
+      "line_source": "cfbd_close"
+    },
+    {
+      "game_id": 401110778,
+      "week": 2,
+      "bad_columns": [
+        "mkt_spread",
+        "mkt_total",
+        "mkt_is_missing"
+      ],
+      "mkt_spread": 6.5,
+      "mkt_total": 57.5,
+      "mkt_n_books": 4,
+      "mkt_is_missing": 0.0,
+      "market_provenance": "snapshots",
+      "line_source": "cfbd_close"
+    },
+    {
+      "game_id": 401110779,
+      "week": 2,
+      "bad_columns": [
+        "mkt_spread",
+        "mkt_total",
+        "mkt_is_missing"
+      ],
+      "mkt_spread": -5.25,
+      "mkt_total": 50.5,
+      "mkt_n_books": 4,
+      "mkt_is_missing": 0.0,
+      "market_provenance": "snapshots",
+      "line_source": "cfbd_close"
+    },
+    {
+      "game_id": 401110780,
+      "week": 2,
+      "bad_columns": [
+        "mkt_spread",
+        "mkt_total",
+        "mkt_is_missing"
+      ],
+      "mkt_spread": -16.25,
+      "mkt_total": 50.5,
+      "mkt_n_books": 4,
+      "mkt_is_missing": 0.0,
+      "market_provenance": "snapshots",
+      "line_source": "cfbd_close"
+    },
+    {
+      "game_id": 401110781,
+      "week": 2,
+      "bad_columns": [
+        "mkt_spread",
+        "mkt_total",
+        "mkt_is_missing"
+      ],
+      "mkt_spread": -13.5,
+      "mkt_total": 62.75,
+      "mkt_n_books": 4,
+      "mkt_is_missing": 0.0,
+      "market_provenance": "snapshots",
+      "line_source": "cfbd_close"
+    },
+    {
+      "game_id": 401110782,
+      "week": 2,
+      "bad_columns": [
+        "mkt_spread",
+        "mkt_total",
+        "mkt_is_missing"
+      ],
+      "mkt_spread": -36.5,
+      "mkt_total": 42.5,
+      "mkt_n_books": 1,
+      "mkt_is_missing": 0.0,
+      "market_provenance": "snapshots",
+      "line_source": "cfbd_close"
+    },
+    {
+      "game_id": 401110783,
+      "week": 2,
+      "bad_columns": [
+        "mkt_spread",
+        "mkt_total",
+        "mkt_is_missing"
+      ],
+      "mkt_spread": -3.25,
+      "mkt_total": 52.0,
+      "mkt_n_books": 4,
+      "mkt_is_missing": 0.0,
+      "market_provenance": "snapshots",
+      "line_source": "cfbd_close"
+    },
+    {
+      "game_id": 401110784,
+      "week": 2,
+      "bad_columns": [
+        "mkt_spread",
+        "mkt_total",
+        "mkt_is_missing"
+      ],
+      "mkt_spread": -16.25,
+      "mkt_total": 62.25,
+      "mkt_n_books": 4,
+      "mkt_is_missing": 0.0,
+      "market_provenance": "snapshots",
+      "line_source": "cfbd_close"
+    },
+    {
+      "game_id": 401110785,
+      "week": 2,
+      "bad_columns": [
+        "mkt_spread",
+        "mkt_total",
+        "mkt_is_missing"
+      ],
+      "mkt_spread": -7.0,
+      "mkt_total": 55.5,
+      "mkt_n_books": 4,
+      "mkt_is_missing": 0.0,
+      "market_provenance": "snapshots",
+      "line_source": "cfbd_close"
+    },
+    {
+      "game_id": 401112074,
+      "week": 2,
+      "bad_columns": [
+        "mkt_spread",
+        "mkt_total",
+        "mkt_is_missing"
+      ],
+      "mkt_spread": -25.0,
+      "mkt_total": 58.5,
+      "mkt_n_books": 4,
+      "mkt_is_missing": 0.0,
+      "market_provenance": "snapshots",
+      "line_source": "cfbd_close"
+    },
+    {
+      "game_id": 401112097,
+      "week": 2,
+      "bad_columns": [
+        "mkt_spread",
+        "mkt_total",
+        "mkt_is_missing"
+      ],
+      "mkt_spread": -7.0,
+      "mkt_total": 54.0,
+      "mkt_n_books": 4,
+      "mkt_is_missing": 0.0,
+      "market_provenance": "snapshots",
+      "line_source": "cfbd_close"
+    },
+    {
+      "game_id": 401112107,
+      "week": 2,
+      "bad_columns": [
+        "mkt_spread",
+        "mkt_total",
+        "mkt_is_missing"
+      ],
+      "mkt_spread": -25.0,
+      "mkt_total": 57.5,
+      "mkt_n_books": 4,
+      "mkt_is_missing": 0.0,
+      "market_provenance": "snapshots",
+      "line_source": "cfbd_close"
+    },
+    {
+      "game_id": 401112115,
+      "week": 2,
+      "bad_columns": [
+        "mkt_spread",
+        "mkt_total",
+        "mkt_is_missing"
+      ],
+      "mkt_spread": -46.5,
+      "mkt_total": 76.5,
+      "mkt_n_books": 1,
+      "mkt_is_missing": 0.0,
+      "market_provenance": "snapshots",
+      "line_source": "cfbd_close"
+    },
+    {
+      "game_id": 401112123,
+      "week": 2,
+      "bad_columns": [
+        "mkt_spread",
+        "mkt_total",
+        "mkt_is_missing"
+      ],
+      "mkt_spread": -42.0,
+      "mkt_total": 64.5,
+      "mkt_n_books": 1,
+      "mkt_is_missing": 0.0,
+      "market_provenance": "snapshots",
+      "line_source": "cfbd_close"
+    },
+    {
+      "game_id": 401112140,
+      "week": 2,
+      "bad_columns": [
+        "mkt_spread",
+        "mkt_total",
+        "mkt_is_missing"
+      ],
+      "mkt_spread": -34.75,
+      "mkt_total": 64.0,
+      "mkt_n_books": 4,
+      "mkt_is_missing": 0.0,
+      "market_provenance": "snapshots",
+      "line_source": "cfbd_close"
+    },
+    {
+      "game_id": 401112146,
+      "week": 2,
+      "bad_columns": [
+        "mkt_spread",
+        "mkt_total",
+        "mkt_is_missing"
+      ],
+      "mkt_spread": 21.0,
+      "mkt_total": 59.0,
+      "mkt_n_books": 4,
+      "mkt_is_missing": 0.0,
+      "market_provenance": "snapshots",
+      "line_source": "cfbd_close"
+    }
+  ],
+  "ok": false,
+  "disposition": "STOP_2019_FEATURE_SOURCE_VIOLATION",
+  "noise_claim_licensed": false,
+  "divergence_if_ok": {
+    "market_aware_2019_ats": "45.63%",
+    "market_aware_2019_ci": "[42.9%, 48.6%]",
+    "fundamental_regraded_v2_2019_ats": "51.3%",
+    "n": 743,
+    "mechanism": "fit-path variance from feature-column presence (NaN-aware splits)",
+    "label": "noise \u2014 not a finding"
+  }
+}
