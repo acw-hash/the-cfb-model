@@ -67,30 +67,51 @@ def test_feature_as_of_falls_back_when_week_decision_after_kickoff() -> None:
 
 
 def test_post_kickoff_snap_excluded_when_week_as_of_after_kickoff() -> None:
-    """Reproduce STOP enabling condition; post-kickoff snap must not resolve."""
+    """Week-0 exception (kick before week Tuesday): post-kickoff snap must not resolve."""
     cfg = WalkForwardConfig()
-    week_ao = week_decision_as_of(2021, 2, cfg)
-    kick = datetime(2021, 9, 11, 19, 30, tzinfo=UTC)
+    # Friday Week-0 kick; modal week Tuesday is the following Tuesday (Sat slate).
+    kick = datetime(2021, 8, 28, 20, 50, tzinfo=UTC)
+    sat_slate = datetime(2021, 9, 4, 19, 0, tzinfo=UTC)
+    week_ao = datetime(2021, 8, 31, 10, 0, tzinfo=UTC)  # Tue 06:00 EDT
     assert kick < week_ao
-    flagged_et = datetime(2021, 9, 11, 19, 55, tzinfo=UTC)
-    pre_kick = datetime(2021, 9, 11, 19, 25, tzinfo=UTC)
+    flagged_et = kick + timedelta(minutes=25)
+    pre_kick = kick - timedelta(minutes=5)
     games = pd.DataFrame(
         [
             {
-                "game_id": 401282809,
-                "game_key": "k401282809",
+                "game_id": 401282714,
+                "game_key": "k401282714",
                 "season": 2021,
-                "week": 2,
+                "week": 1,
                 "event_time": kick,
                 "home_team": "Home U",
                 "away_team": "Away U",
-            }
+            },
+            # Dominate the modal Monday so week Tuesday falls after the Week-0 kick.
+            {
+                "game_id": 401282715,
+                "game_key": "k401282715",
+                "season": 2021,
+                "week": 1,
+                "event_time": sat_slate,
+                "home_team": "Home U",
+                "away_team": "Away U",
+            },
+            {
+                "game_id": 401282716,
+                "game_key": "k401282716",
+                "season": 2021,
+                "week": 1,
+                "event_time": sat_slate + timedelta(hours=3),
+                "home_team": "Home U",
+                "away_team": "Away U",
+            },
         ]
     )
     snaps = pd.DataFrame(
         [
             {
-                "game_id": 401282809,
+                "game_id": 401282714,
                 "book": "dk",
                 "market": "spread",
                 "side": "Home U",
@@ -99,7 +120,7 @@ def test_post_kickoff_snap_excluded_when_week_as_of_after_kickoff() -> None:
                 "snapshot_id": "pre-ok",
             },
             {
-                "game_id": 401282809,
+                "game_id": 401282714,
                 "book": "dk",
                 "market": "total",
                 "side": "over",
@@ -108,22 +129,22 @@ def test_post_kickoff_snap_excluded_when_week_as_of_after_kickoff() -> None:
                 "snapshot_id": "pre-ok-t",
             },
             {
-                "game_id": 401282809,
+                "game_id": 401282714,
                 "book": "dk",
                 "market": "spread",
                 "side": "Home U",
                 "line": -3.0,
                 "event_time": flagged_et,
-                "snapshot_id": "d4f417860685715403d2026699ffd7b1",
+                "snapshot_id": "post-kick-bad",
             },
             {
-                "game_id": 401282809,
+                "game_id": 401282714,
                 "book": "dk",
                 "market": "total",
                 "side": "over",
                 "line": 60.0,
                 "event_time": flagged_et,
-                "snapshot_id": "d4f417860685715403d2026699ffd7b1",
+                "snapshot_id": "post-kick-bad",
             },
         ]
     )
@@ -135,8 +156,8 @@ def test_post_kickoff_snap_excluded_when_week_as_of_after_kickoff() -> None:
         config=cfg,
         closing=False,
     )
-    row = resolved.iloc[0]
-    assert row["source_row_id"] != "d4f417860685715403d2026699ffd7b1"
+    row = resolved.loc[resolved["game_id"] == 401282714].iloc[0]
+    assert row["source_row_id"] != "post-kick-bad"
     assert row["source_row_id"] == "pre-ok"
     assert row["spread"] == pytest.approx(-7.0)
 
@@ -144,6 +165,8 @@ def test_post_kickoff_snap_excluded_when_week_as_of_after_kickoff() -> None:
 def test_stop_ten_leaked_rows_never_resolve_to_flagged_snapshots() -> None:
     """Acceptance: STOP's ten leaks resolve to null or an earlier point, never flagged rows."""
     cfg = WalkForwardConfig()
+    # Labor-Day week_as_of is after kickoff; calendar alignment + kickoff guard
+    # must still refuse the flagged post-kickoff snapshot_ids.
     week_ao = week_decision_as_of(2021, 2, cfg)
     # Three STOP games; kickoffs before flagged feature_et (and before week as_of).
     game_meta = {
@@ -174,8 +197,8 @@ def test_stop_ten_leaked_rows_never_resolve_to_flagged_snapshots() -> None:
                 "away_team": "Away U",
             }
         )
-        # Only the flagged post-kickoff snap (and an earlier pre-kick option).
-        pre = kick - timedelta(minutes=5)
+        # Flagged post-kickoff snap plus a Tuesday-era earlier snap.
+        tue_era = datetime(2021, 9, 7, 10, 0, tzinfo=UTC)
         snap_rows.extend(
             [
                 {
@@ -184,7 +207,7 @@ def test_stop_ten_leaked_rows_never_resolve_to_flagged_snapshots() -> None:
                     "market": "spread",
                     "side": "Home U",
                     "line": -6.5,
-                    "event_time": pre,
+                    "event_time": tue_era,
                     "snapshot_id": f"earlier-{gid}",
                 },
                 {
@@ -193,7 +216,7 @@ def test_stop_ten_leaked_rows_never_resolve_to_flagged_snapshots() -> None:
                     "market": "total",
                     "side": "over",
                     "line": 48.0,
-                    "event_time": pre,
+                    "event_time": tue_era,
                     "snapshot_id": f"earlier-{gid}-t",
                 },
                 {

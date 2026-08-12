@@ -1,0 +1,55 @@
+{
+  "seasons": [
+    2021,
+    2022,
+    2023,
+    2024
+  ],
+  "n_games": 3613,
+  "totals": {
+    "tuesday": 3586,
+    "saturday": 0,
+    "slot_close": 27,
+    "null": 0,
+    "other": 0,
+    "pct_slot_close": 0.747
+  },
+  "by_season": {
+    "2021": {
+      "n_games": 887,
+      "tuesday": 882,
+      "saturday": 0,
+      "slot_close": 5,
+      "null": 0,
+      "other": 0,
+      "pct_slot_close": 0.564
+    },
+    "2022": {
+      "n_games": 896,
+      "tuesday": 885,
+      "saturday": 0,
+      "slot_close": 11,
+      "null": 0,
+      "other": 0,
+      "pct_slot_close": 1.228
+    },
+    "2023": {
+      "n_games": 910,
+      "tuesday": 903,
+      "saturday": 0,
+      "slot_close": 7,
+      "null": 0,
+      "other": 0,
+      "pct_slot_close": 0.769
+    },
+    "2024": {
+      "n_games": 920,
+      "tuesday": 916,
+      "saturday": 0,
+      "slot_close": 4,
+      "null": 0,
+      "other": 0,
+      "pct_slot_close": 0.435
+    }
+  }
+}

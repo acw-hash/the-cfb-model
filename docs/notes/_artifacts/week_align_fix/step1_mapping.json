@@ -1,0 +1,740 @@
+{
+  "seasons": [
+    2021,
+    2022,
+    2023,
+    2024
+  ],
+  "n_games": 3613,
+  "n_ok_tuesday_before_kickoff": 3586,
+  "n_violations": 27,
+  "violations": [
+    {
+      "season": 2021,
+      "week": 1,
+      "game_id": 401286187,
+      "home_team": "Fresno State",
+      "away_team": "UConn",
+      "kickoff": "2021-08-28T21:30:00+00:00",
+      "tuesday_0600_et": "2021-08-31T10:00:00+00:00",
+      "saturday_0600_et": "2021-09-04T10:00:00+00:00",
+      "resolved_decision_point": "slot_close"
+    },
+    {
+      "season": 2021,
+      "week": 1,
+      "game_id": 401309833,
+      "home_team": "UCLA",
+      "away_team": "Hawai'i",
+      "kickoff": "2021-08-28T23:00:00+00:00",
+      "tuesday_0600_et": "2021-08-31T10:00:00+00:00",
+      "saturday_0600_et": "2021-09-04T10:00:00+00:00",
+      "resolved_decision_point": "slot_close"
+    },
+    {
+      "season": 2021,
+      "week": 1,
+      "game_id": 401310693,
+      "home_team": "San Jos\u00e9 State",
+      "away_team": "Southern Utah",
+      "kickoff": "2021-08-29T05:30:00+00:00",
+      "tuesday_0600_et": "2021-08-31T10:00:00+00:00",
+      "saturday_0600_et": "2021-09-04T10:00:00+00:00",
+      "resolved_decision_point": "slot_close"
+    },
+    {
+      "season": 2021,
+      "week": 1,
+      "game_id": 401282714,
+      "home_team": "Illinois",
+      "away_team": "Nebraska",
+      "kickoff": "2021-08-28T20:50:00+00:00",
+      "tuesday_0600_et": "2021-08-31T10:00:00+00:00",
+      "saturday_0600_et": "2021-09-04T10:00:00+00:00",
+      "resolved_decision_point": "slot_close"
+    },
+    {
+      "season": 2021,
+      "week": 1,
+      "game_id": 401282049,
+      "home_team": "New Mexico State",
+      "away_team": "UTEP",
+      "kickoff": "2021-08-29T05:00:00+00:00",
+      "tuesday_0600_et": "2021-08-31T10:00:00+00:00",
+      "saturday_0600_et": "2021-09-04T10:00:00+00:00",
+      "resolved_decision_point": "slot_close"
+    },
+    {
+      "season": 2022,
+      "week": 1,
+      "game_id": 401405058,
+      "home_team": "Illinois",
+      "away_team": "Wyoming",
+      "kickoff": "2022-08-27T23:30:00+00:00",
+      "tuesday_0600_et": "2022-08-30T10:00:00+00:00",
+      "saturday_0600_et": "2022-09-03T10:00:00+00:00",
+      "resolved_decision_point": "slot_close"
+    },
+    {
+      "season": 2022,
+      "week": 1,
+      "game_id": 401411090,
+      "home_team": "Florida State",
+      "away_team": "Duquesne",
+      "kickoff": "2022-08-28T00:30:00+00:00",
+      "tuesday_0600_et": "2022-08-30T10:00:00+00:00",
+      "saturday_0600_et": "2022-09-03T10:00:00+00:00",
+      "resolved_decision_point": "slot_close"
+    },
+    {
+      "season": 2022,
+      "week": 1,
+      "game_id": 401426530,
+      "home_team": "Florida Atlantic",
+      "away_team": "Charlotte",
+      "kickoff": "2022-08-28T02:30:00+00:00",
+      "tuesday_0600_et": "2022-08-30T10:00:00+00:00",
+      "saturday_0600_et": "2022-09-03T10:00:00+00:00",
+      "resolved_decision_point": "slot_close"
+    },
+    {
+      "season": 2022,
+      "week": 1,
+      "game_id": 401404146,
+      "home_team": "Utah State",
+      "away_team": "UConn",
+      "kickoff": "2022-08-27T23:30:00+00:00",
+      "tuesday_0600_et": "2022-08-30T10:00:00+00:00",
+      "saturday_0600_et": "2022-09-03T10:00:00+00:00",
+      "resolved_decision_point": "slot_close"
+    },
+    {
+      "season": 2022,
+      "week": 1,
+      "game_id": 401413256,
+      "home_team": "UNLV",
+      "away_team": "Idaho State",
+      "kickoff": "2022-08-27T23:00:00+00:00",
+      "tuesday_0600_et": "2022-08-30T10:00:00+00:00",
+      "saturday_0600_et": "2022-09-03T10:00:00+00:00",
+      "resolved_decision_point": "slot_close"
+    },
+    {
+      "season": 2022,
+      "week": 1,
+      "game_id": 401409235,
+      "home_team": "New Mexico State",
+      "away_team": "Nevada",
+      "kickoff": "2022-08-28T05:30:00+00:00",
+      "tuesday_0600_et": "2022-08-30T10:00:00+00:00",
+      "saturday_0600_et": "2022-09-03T10:00:00+00:00",
+      "resolved_decision_point": "slot_close"
+    },
+    {
+      "season": 2022,
+      "week": 1,
+      "game_id": 401411091,
+      "home_team": "North Carolina",
+      "away_team": "Florida A&M",
+      "kickoff": "2022-08-28T03:45:00+00:00",
+      "tuesday_0600_et": "2022-08-30T10:00:00+00:00",
+      "saturday_0600_et": "2022-09-03T10:00:00+00:00",
+      "resolved_decision_point": "slot_close"
+    },
+    {
+      "season": 2022,
+      "week": 1,
+      "game_id": 401426532,
+      "home_team": "Western Kentucky",
+      "away_team": "Austin Peay",
+      "kickoff": "2022-08-27T19:30:00+00:00",
+      "tuesday_0600_et": "2022-08-30T10:00:00+00:00",
+      "saturday_0600_et": "2022-09-03T10:00:00+00:00",
+      "resolved_decision_point": "slot_close"
+    },
+    {
+      "season": 2022,
+      "week": 1,
+      "game_id": 401405059,
+      "home_team": "Northwestern",
+      "away_team": "Nebraska",
+      "kickoff": "2022-08-27T20:00:00+00:00",
+      "tuesday_0600_et": "2022-08-30T10:00:00+00:00",
+      "saturday_0600_et": "2022-09-03T10:00:00+00:00",
+      "resolved_decision_point": "slot_close"
+    },
+    {
+      "season": 2022,
+      "week": 1,
+      "game_id": 401426531,
+      "home_team": "UTEP",
+      "away_team": "North Texas",
+      "kickoff": "2022-08-28T04:30:00+00:00",
+      "tuesday_0600_et": "2022-08-30T10:00:00+00:00",
+      "saturday_0600_et": "2022-09-03T10:00:00+00:00",
+      "resolved_decision_point": "slot_close"
+    },
+    {
+      "season": 2022,
+      "week": 1,
+      "game_id": 401403853,
+      "home_team": "Hawai'i",
+      "away_team": "Vanderbilt",
+      "kickoff": "2022-08-28T06:00:00+00:00",
+      "tuesday_0600_et": "2022-08-30T10:00:00+00:00",
+      "saturday_0600_et": "2022-09-03T10:00:00+00:00",
+      "resolved_decision_point": "slot_close"
+    },
+    {
+      "season": 2023,
+      "week": 1,
+      "game_id": 401525434,
+      "home_team": "Notre Dame",
+      "away_team": "Navy",
+      "kickoff": "2023-08-26T23:30:00+00:00",
+      "tuesday_0600_et": "2023-08-29T10:00:00+00:00",
+      "saturday_0600_et": "2023-09-02T10:00:00+00:00",
+      "resolved_decision_point": "slot_close"
+    },
+    {
+      "season": 2023,
+      "week": 1,
+      "game_id": 401532392,
+      "home_team": "San Diego State",
+      "away_team": "Ohio",
+      "kickoff": "2023-08-27T04:00:00+00:00",
+      "tuesday_0600_et": "2023-08-29T10:00:00+00:00",
+      "saturday_0600_et": "2023-09-02T10:00:00+00:00",
+      "resolved_decision_point": "slot_close"
+    },
+    {
+      "season": 2023,
+      "week": 1,
+      "game_id": 401520145,
+      "home_team": "Jacksonville State",
+      "away_team": "UTEP",
+      "kickoff": "2023-08-27T02:30:00+00:00",
+      "tuesday_0600_et": "2023-08-29T10:00:00+00:00",
+      "saturday_0600_et": "2023-09-02T10:00:00+00:00",
+      "resolved_decision_point": "slot_close"
+    },
+    {
+      "season": 2023,
+      "week": 1,
+      "game_id": 401520146,
+      "home_team": "Louisiana Tech",
+      "away_team": "Florida International",
+      "kickoff": "2023-08-27T06:00:00+00:00",
+      "tuesday_0600_et": "2023-08-29T10:00:00+00:00",
+      "saturday_0600_et": "2023-09-02T10:00:00+00:00",
+      "resolved_decision_point": "slot_close"
+    },
+    {
+      "season": 2023,
+      "week": 1,
+      "game_id": 401523986,
+      "home_team": "USC",
+      "away_team": "San Jos\u00e9 State",
+      "kickoff": "2023-08-27T05:00:00+00:00",
+      "tuesday_0600_et": "2023-08-29T10:00:00+00:00",
+      "saturday_0600_et": "2023-09-02T10:00:00+00:00",
+      "resolved_decision_point": "slot_close"
+    },
+    {
+      "season": 2023,
+      "week": 1,
+      "game_id": 401520147,
+      "home_team": "Vanderbilt",
+      "away_team": "Hawai'i",
+      "kickoff": "2023-08-27T04:30:00+00:00",
+      "tuesday_0600_et": "2023-08-29T10:00:00+00:00",
+      "saturday_0600_et": "2023-09-02T10:00:00+00:00",
+      "resolved_decision_point": "slot_close"
+    },
+    {
+      "season": 2023,
+      "week": 1,
+      "game_id": 401525450,
+      "home_team": "New Mexico State",
+      "away_team": "Massachusetts",
+      "kickoff": "2023-08-27T04:00:00+00:00",
+      "tuesday_0600_et": "2023-08-29T10:00:00+00:00",
+      "saturday_0600_et": "2023-09-02T10:00:00+00:00",
+      "resolved_decision_point": "slot_close"
+    },
+    {
+      "season": 2024,
+      "week": 1,
+      "game_id": 401643858,
+      "home_team": "Hawai'i",
+      "away_team": "Delaware State",
+      "kickoff": "2024-08-25T07:29:00+00:00",
+      "tuesday_0600_et": "2024-08-27T10:00:00+00:00",
+      "saturday_0600_et": "2024-08-31T10:00:00+00:00",
+      "resolved_decision_point": "slot_close"
+    },
+    {
+      "season": 2024,
+      "week": 1,
+      "game_id": 401635525,
+      "home_team": "Georgia Tech",
+      "away_team": "Florida State",
+      "kickoff": "2024-08-24T19:30:00+00:00",
+      "tuesday_0600_et": "2024-08-27T10:00:00+00:00",
+      "saturday_0600_et": "2024-08-31T10:00:00+00:00",
+      "resolved_decision_point": "slot_close"
+    },
+    {
+      "season": 2024,
+      "week": 1,
+      "game_id": 401643696,
+      "home_team": "Nevada",
+      "away_team": "SMU",
+      "kickoff": "2024-08-25T03:30:00+00:00",
+      "tuesday_0600_et": "2024-08-27T10:00:00+00:00",
+      "saturday_0600_et": "2024-08-31T10:00:00+00:00",
+      "resolved_decision_point": "slot_close"
+    },
+    {
+      "season": 2024,
+      "week": 1,
+      "game_id": 401643697,
+      "home_team": "New Mexico",
+      "away_team": "Montana State",
+      "kickoff": "2024-08-24T23:30:00+00:00",
+      "tuesday_0600_et": "2024-08-27T10:00:00+00:00",
+      "saturday_0600_et": "2024-08-31T10:00:00+00:00",
+      "resolved_decision_point": "slot_close"
+    }
+  ],
+  "calendar": [
+    {
+      "season": 2021,
+      "week": 1,
+      "modal_et_monday": "2021-08-30",
+      "tuesday_0600_et": "2021-08-31T10:00:00+00:00",
+      "saturday_0600_et": "2021-09-04T10:00:00+00:00"
+    },
+    {
+      "season": 2021,
+      "week": 2,
+      "modal_et_monday": "2021-09-06",
+      "tuesday_0600_et": "2021-09-07T10:00:00+00:00",
+      "saturday_0600_et": "2021-09-11T10:00:00+00:00"
+    },
+    {
+      "season": 2021,
+      "week": 3,
+      "modal_et_monday": "2021-09-13",
+      "tuesday_0600_et": "2021-09-14T10:00:00+00:00",
+      "saturday_0600_et": "2021-09-18T10:00:00+00:00"
+    },
+    {
+      "season": 2021,
+      "week": 4,
+      "modal_et_monday": "2021-09-20",
+      "tuesday_0600_et": "2021-09-21T10:00:00+00:00",
+      "saturday_0600_et": "2021-09-25T10:00:00+00:00"
+    },
+    {
+      "season": 2021,
+      "week": 5,
+      "modal_et_monday": "2021-09-27",
+      "tuesday_0600_et": "2021-09-28T10:00:00+00:00",
+      "saturday_0600_et": "2021-10-02T10:00:00+00:00"
+    },
+    {
+      "season": 2021,
+      "week": 6,
+      "modal_et_monday": "2021-10-04",
+      "tuesday_0600_et": "2021-10-05T10:00:00+00:00",
+      "saturday_0600_et": "2021-10-09T10:00:00+00:00"
+    },
+    {
+      "season": 2021,
+      "week": 7,
+      "modal_et_monday": "2021-10-11",
+      "tuesday_0600_et": "2021-10-12T10:00:00+00:00",
+      "saturday_0600_et": "2021-10-16T10:00:00+00:00"
+    },
+    {
+      "season": 2021,
+      "week": 8,
+      "modal_et_monday": "2021-10-18",
+      "tuesday_0600_et": "2021-10-19T10:00:00+00:00",
+      "saturday_0600_et": "2021-10-23T10:00:00+00:00"
+    },
+    {
+      "season": 2021,
+      "week": 9,
+      "modal_et_monday": "2021-10-25",
+      "tuesday_0600_et": "2021-10-26T10:00:00+00:00",
+      "saturday_0600_et": "2021-10-30T10:00:00+00:00"
+    },
+    {
+      "season": 2021,
+      "week": 10,
+      "modal_et_monday": "2021-11-01",
+      "tuesday_0600_et": "2021-11-02T10:00:00+00:00",
+      "saturday_0600_et": "2021-11-06T10:00:00+00:00"
+    },
+    {
+      "season": 2021,
+      "week": 11,
+      "modal_et_monday": "2021-11-08",
+      "tuesday_0600_et": "2021-11-09T11:00:00+00:00",
+      "saturday_0600_et": "2021-11-13T11:00:00+00:00"
+    },
+    {
+      "season": 2021,
+      "week": 12,
+      "modal_et_monday": "2021-11-15",
+      "tuesday_0600_et": "2021-11-16T11:00:00+00:00",
+      "saturday_0600_et": "2021-11-20T11:00:00+00:00"
+    },
+    {
+      "season": 2021,
+      "week": 13,
+      "modal_et_monday": "2021-11-22",
+      "tuesday_0600_et": "2021-11-23T11:00:00+00:00",
+      "saturday_0600_et": "2021-11-27T11:00:00+00:00"
+    },
+    {
+      "season": 2021,
+      "week": 14,
+      "modal_et_monday": "2021-11-29",
+      "tuesday_0600_et": "2021-11-30T11:00:00+00:00",
+      "saturday_0600_et": "2021-12-04T11:00:00+00:00"
+    },
+    {
+      "season": 2021,
+      "week": 15,
+      "modal_et_monday": "2021-12-06",
+      "tuesday_0600_et": "2021-12-07T11:00:00+00:00",
+      "saturday_0600_et": "2021-12-11T11:00:00+00:00"
+    },
+    {
+      "season": 2022,
+      "week": 1,
+      "modal_et_monday": "2022-08-29",
+      "tuesday_0600_et": "2022-08-30T10:00:00+00:00",
+      "saturday_0600_et": "2022-09-03T10:00:00+00:00"
+    },
+    {
+      "season": 2022,
+      "week": 2,
+      "modal_et_monday": "2022-09-05",
+      "tuesday_0600_et": "2022-09-06T10:00:00+00:00",
+      "saturday_0600_et": "2022-09-10T10:00:00+00:00"
+    },
+    {
+      "season": 2022,
+      "week": 3,
+      "modal_et_monday": "2022-09-12",
+      "tuesday_0600_et": "2022-09-13T10:00:00+00:00",
+      "saturday_0600_et": "2022-09-17T10:00:00+00:00"
+    },
+    {
+      "season": 2022,
+      "week": 4,
+      "modal_et_monday": "2022-09-19",
+      "tuesday_0600_et": "2022-09-20T10:00:00+00:00",
+      "saturday_0600_et": "2022-09-24T10:00:00+00:00"
+    },
+    {
+      "season": 2022,
+      "week": 5,
+      "modal_et_monday": "2022-09-26",
+      "tuesday_0600_et": "2022-09-27T10:00:00+00:00",
+      "saturday_0600_et": "2022-10-01T10:00:00+00:00"
+    },
+    {
+      "season": 2022,
+      "week": 6,
+      "modal_et_monday": "2022-10-03",
+      "tuesday_0600_et": "2022-10-04T10:00:00+00:00",
+      "saturday_0600_et": "2022-10-08T10:00:00+00:00"
+    },
+    {
+      "season": 2022,
+      "week": 7,
+      "modal_et_monday": "2022-10-10",
+      "tuesday_0600_et": "2022-10-11T10:00:00+00:00",
+      "saturday_0600_et": "2022-10-15T10:00:00+00:00"
+    },
+    {
+      "season": 2022,
+      "week": 8,
+      "modal_et_monday": "2022-10-17",
+      "tuesday_0600_et": "2022-10-18T10:00:00+00:00",
+      "saturday_0600_et": "2022-10-22T10:00:00+00:00"
+    },
+    {
+      "season": 2022,
+      "week": 9,
+      "modal_et_monday": "2022-10-24",
+      "tuesday_0600_et": "2022-10-25T10:00:00+00:00",
+      "saturday_0600_et": "2022-10-29T10:00:00+00:00"
+    },
+    {
+      "season": 2022,
+      "week": 10,
+      "modal_et_monday": "2022-10-31",
+      "tuesday_0600_et": "2022-11-01T10:00:00+00:00",
+      "saturday_0600_et": "2022-11-05T10:00:00+00:00"
+    },
+    {
+      "season": 2022,
+      "week": 11,
+      "modal_et_monday": "2022-11-07",
+      "tuesday_0600_et": "2022-11-08T11:00:00+00:00",
+      "saturday_0600_et": "2022-11-12T11:00:00+00:00"
+    },
+    {
+      "season": 2022,
+      "week": 12,
+      "modal_et_monday": "2022-11-14",
+      "tuesday_0600_et": "2022-11-15T11:00:00+00:00",
+      "saturday_0600_et": "2022-11-19T11:00:00+00:00"
+    },
+    {
+      "season": 2022,
+      "week": 13,
+      "modal_et_monday": "2022-11-21",
+      "tuesday_0600_et": "2022-11-22T11:00:00+00:00",
+      "saturday_0600_et": "2022-11-26T11:00:00+00:00"
+    },
+    {
+      "season": 2022,
+      "week": 14,
+      "modal_et_monday": "2022-11-28",
+      "tuesday_0600_et": "2022-11-29T11:00:00+00:00",
+      "saturday_0600_et": "2022-12-03T11:00:00+00:00"
+    },
+    {
+      "season": 2022,
+      "week": 15,
+      "modal_et_monday": "2022-12-05",
+      "tuesday_0600_et": "2022-12-06T11:00:00+00:00",
+      "saturday_0600_et": "2022-12-10T11:00:00+00:00"
+    },
+    {
+      "season": 2023,
+      "week": 1,
+      "modal_et_monday": "2023-08-28",
+      "tuesday_0600_et": "2023-08-29T10:00:00+00:00",
+      "saturday_0600_et": "2023-09-02T10:00:00+00:00"
+    },
+    {
+      "season": 2023,
+      "week": 2,
+      "modal_et_monday": "2023-09-04",
+      "tuesday_0600_et": "2023-09-05T10:00:00+00:00",
+      "saturday_0600_et": "2023-09-09T10:00:00+00:00"
+    },
+    {
+      "season": 2023,
+      "week": 3,
+      "modal_et_monday": "2023-09-11",
+      "tuesday_0600_et": "2023-09-12T10:00:00+00:00",
+      "saturday_0600_et": "2023-09-16T10:00:00+00:00"
+    },
+    {
+      "season": 2023,
+      "week": 4,
+      "modal_et_monday": "2023-09-18",
+      "tuesday_0600_et": "2023-09-19T10:00:00+00:00",
+      "saturday_0600_et": "2023-09-23T10:00:00+00:00"
+    },
+    {
+      "season": 2023,
+      "week": 5,
+      "modal_et_monday": "2023-09-25",
+      "tuesday_0600_et": "2023-09-26T10:00:00+00:00",
+      "saturday_0600_et": "2023-09-30T10:00:00+00:00"
+    },
+    {
+      "season": 2023,
+      "week": 6,
+      "modal_et_monday": "2023-10-02",
+      "tuesday_0600_et": "2023-10-03T10:00:00+00:00",
+      "saturday_0600_et": "2023-10-07T10:00:00+00:00"
+    },
+    {
+      "season": 2023,
+      "week": 7,
+      "modal_et_monday": "2023-10-09",
+      "tuesday_0600_et": "2023-10-10T10:00:00+00:00",
+      "saturday_0600_et": "2023-10-14T10:00:00+00:00"
+    },
+    {
+      "season": 2023,
+      "week": 8,
+      "modal_et_monday": "2023-10-16",
+      "tuesday_0600_et": "2023-10-17T10:00:00+00:00",
+      "saturday_0600_et": "2023-10-21T10:00:00+00:00"
+    },
+    {
+      "season": 2023,
+      "week": 9,
+      "modal_et_monday": "2023-10-23",
+      "tuesday_0600_et": "2023-10-24T10:00:00+00:00",
+      "saturday_0600_et": "2023-10-28T10:00:00+00:00"
+    },
+    {
+      "season": 2023,
+      "week": 10,
+      "modal_et_monday": "2023-10-30",
+      "tuesday_0600_et": "2023-10-31T10:00:00+00:00",
+      "saturday_0600_et": "2023-11-04T10:00:00+00:00"
+    },
+    {
+      "season": 2023,
+      "week": 11,
+      "modal_et_monday": "2023-11-06",
+      "tuesday_0600_et": "2023-11-07T11:00:00+00:00",
+      "saturday_0600_et": "2023-11-11T11:00:00+00:00"
+    },
+    {
+      "season": 2023,
+      "week": 12,
+      "modal_et_monday": "2023-11-13",
+      "tuesday_0600_et": "2023-11-14T11:00:00+00:00",
+      "saturday_0600_et": "2023-11-18T11:00:00+00:00"
+    },
+    {
+      "season": 2023,
+      "week": 13,
+      "modal_et_monday": "2023-11-20",
+      "tuesday_0600_et": "2023-11-21T11:00:00+00:00",
+      "saturday_0600_et": "2023-11-25T11:00:00+00:00"
+    },
+    {
+      "season": 2023,
+      "week": 14,
+      "modal_et_monday": "2023-11-27",
+      "tuesday_0600_et": "2023-11-28T11:00:00+00:00",
+      "saturday_0600_et": "2023-12-02T11:00:00+00:00"
+    },
+    {
+      "season": 2023,
+      "week": 15,
+      "modal_et_monday": "2023-12-04",
+      "tuesday_0600_et": "2023-12-05T11:00:00+00:00",
+      "saturday_0600_et": "2023-12-09T11:00:00+00:00"
+    },
+    {
+      "season": 2024,
+      "week": 1,
+      "modal_et_monday": "2024-08-26",
+      "tuesday_0600_et": "2024-08-27T10:00:00+00:00",
+      "saturday_0600_et": "2024-08-31T10:00:00+00:00"
+    },
+    {
+      "season": 2024,
+      "week": 2,
+      "modal_et_monday": "2024-09-02",
+      "tuesday_0600_et": "2024-09-03T10:00:00+00:00",
+      "saturday_0600_et": "2024-09-07T10:00:00+00:00"
+    },
+    {
+      "season": 2024,
+      "week": 3,
+      "modal_et_monday": "2024-09-09",
+      "tuesday_0600_et": "2024-09-10T10:00:00+00:00",
+      "saturday_0600_et": "2024-09-14T10:00:00+00:00"
+    },
+    {
+      "season": 2024,
+      "week": 4,
+      "modal_et_monday": "2024-09-16",
+      "tuesday_0600_et": "2024-09-17T10:00:00+00:00",
+      "saturday_0600_et": "2024-09-21T10:00:00+00:00"
+    },
+    {
+      "season": 2024,
+      "week": 5,
+      "modal_et_monday": "2024-09-23",
+      "tuesday_0600_et": "2024-09-24T10:00:00+00:00",
+      "saturday_0600_et": "2024-09-28T10:00:00+00:00"
+    },
+    {
+      "season": 2024,
+      "week": 6,
+      "modal_et_monday": "2024-09-30",
+      "tuesday_0600_et": "2024-10-01T10:00:00+00:00",
+      "saturday_0600_et": "2024-10-05T10:00:00+00:00"
+    },
+    {
+      "season": 2024,
+      "week": 7,
+      "modal_et_monday": "2024-10-07",
+      "tuesday_0600_et": "2024-10-08T10:00:00+00:00",
+      "saturday_0600_et": "2024-10-12T10:00:00+00:00"
+    },
+    {
+      "season": 2024,
+      "week": 8,
+      "modal_et_monday": "2024-10-14",
+      "tuesday_0600_et": "2024-10-15T10:00:00+00:00",
+      "saturday_0600_et": "2024-10-19T10:00:00+00:00"
+    },
+    {
+      "season": 2024,
+      "week": 9,
+      "modal_et_monday": "2024-10-21",
+      "tuesday_0600_et": "2024-10-22T10:00:00+00:00",
+      "saturday_0600_et": "2024-10-26T10:00:00+00:00"
+    },
+    {
+      "season": 2024,
+      "week": 10,
+      "modal_et_monday": "2024-10-28",
+      "tuesday_0600_et": "2024-10-29T10:00:00+00:00",
+      "saturday_0600_et": "2024-11-02T10:00:00+00:00"
+    },
+    {
+      "season": 2024,
+      "week": 11,
+      "modal_et_monday": "2024-11-04",
+      "tuesday_0600_et": "2024-11-05T11:00:00+00:00",
+      "saturday_0600_et": "2024-11-09T11:00:00+00:00"
+    },
+    {
+      "season": 2024,
+      "week": 12,
+      "modal_et_monday": "2024-11-11",
+      "tuesday_0600_et": "2024-11-12T11:00:00+00:00",
+      "saturday_0600_et": "2024-11-16T11:00:00+00:00"
+    },
+    {
+      "season": 2024,
+      "week": 13,
+      "modal_et_monday": "2024-11-18",
+      "tuesday_0600_et": "2024-11-19T11:00:00+00:00",
+      "saturday_0600_et": "2024-11-23T11:00:00+00:00"
+    },
+    {
+      "season": 2024,
+      "week": 14,
+      "modal_et_monday": "2024-11-25",
+      "tuesday_0600_et": "2024-11-26T11:00:00+00:00",
+      "saturday_0600_et": "2024-11-30T11:00:00+00:00"
+    },
+    {
+      "season": 2024,
+      "week": 15,
+      "modal_et_monday": "2024-12-02",
+      "tuesday_0600_et": "2024-12-03T11:00:00+00:00",
+      "saturday_0600_et": "2024-12-07T11:00:00+00:00"
+    },
+    {
+      "season": 2024,
+      "week": 16,
+      "modal_et_monday": "2024-12-09",
+      "tuesday_0600_et": "2024-12-10T11:00:00+00:00",
+      "saturday_0600_et": "2024-12-14T11:00:00+00:00"
+    }
+  ],
+  "construction": "Per (season, CFBD week): modal America/New_York Monday among that week's kickoffs \u2192 tuesday_0600_et / saturday_0600_et via zoneinfo"
+}

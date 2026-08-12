@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime
 from pathlib import Path
 
 import numpy as np
@@ -25,13 +25,14 @@ FIXTURE = Path(__file__).resolve().parents[1] / "fixtures" / "ats_grade_diag_24.
 
 def test_both_sides_synthetic_resolves_to_home_spread_not_zero() -> None:
     """Paired ±S lines must NOT median to ~0 (the ATS-GRADE bug)."""
-    as_of = datetime(2021, 9, 7, 12, 0, tzinfo=UTC)
-    kick = as_of + timedelta(days=3)
+    # Tuesday 06:00 ET decision (kickoff-aligned calendar for this Sat slate).
+    as_of = datetime(2021, 9, 7, 10, 0, tzinfo=UTC)
+    kick = datetime(2021, 9, 11, 19, 0, tzinfo=UTC)
     games = pd.DataFrame(
         [
             {
                 "game_id": 1,
-                "game_key": "2021:Home U:Away U:2021-09-10",
+                "game_key": "2021:Home U:Away U:2021-09-11",
                 "season": 2021,
                 "week": 2,
                 "event_time": kick,
@@ -40,7 +41,7 @@ def test_both_sides_synthetic_resolves_to_home_spread_not_zero() -> None:
             }
         ]
     )
-    ts = as_of - timedelta(minutes=5)
+    ts = as_of  # eligible under inclusive feature bound at week Tuesday
     snapshots = pd.DataFrame(
         [
             {

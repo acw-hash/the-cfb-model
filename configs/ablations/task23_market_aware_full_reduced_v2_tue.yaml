@@ -1,0 +1,30 @@
+run_id: task23_market_aware_reduced_v2_tue
+ablation_id: full
+stack: market_aware
+ensemble_scope: REDUCED_PER_ADR_0013
+run_kind: backtest
+experiment_name: ncaa-quant-backtest-reduced-v2
+tracking_uri: file:./mlruns
+feature_time: TUESDAY_DECISION
+walkforward:
+  test_seasons:
+  - 2019
+  - 2021
+  - 2022
+  - 2023
+  - 2024
+  continuity_seasons:
+  - 2020
+  retrain_weeks:
+  - 5
+  - 10
+  market_features_available: true
+  preseason_priors: fitted
+  rating_updates: continual
+  mapping_layer: ensemble
+  garbage_time_filter: true
+  market_feature_source: snapshots
+  seed: 42
+  model_version: production-v0_reduced_v2
+  run_id: task23_market_aware_reduced_v2_tue
+  ablation_id: full

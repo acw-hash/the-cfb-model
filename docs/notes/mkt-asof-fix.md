@@ -91,22 +91,36 @@ for the force-publish gate).
 
 ### `market_aware_reduced_v2` re-run
 
+> **FEATURE_TIME=SLOT_CLOSE_KICK_MINUS_5M** — measures near-close information
+> ceiling, not decision-time edge; **not comparable to Tuesday-decision runs**;
+> CLV at this feature time is degenerate by construction.
+> (CFBD week labels were still Labor-Day-misaligned; MKT-ASOF-FIX fell back to
+> `slot_close` ≈ kick−5min for most snapshot games. Superseded for decision-time
+> comparisons by WEEK-ALIGN-FIX / `FEATURE_TIME=TUESDAY_DECISION` in
+> `docs/notes/week-align-fix.md`.)
+
 - Config: `task23_market_aware_full_reduced_v2`
 - Label: `mkt-asof-fix;ensemble_scope=REDUCED_PER_ADR_0013;audit=CLEAN`
 - Wall clock: ~2934 s (~48.9 min)
 - **Guard disposition: INSIDE_BAND — published** (no ADR 0014 force path)
+- Archived predictions:
+  `docs/notes/_artifacts/week_align_fix/kick5min_predictions.parquet`
+  (and `data/backtests/task23_market_aware_reduced_v2_slot_close/full/`)
 
 | Regime | ATS | n | LL (model) | MAE margin | CRPS margin | 95% bootstrap CI | band |
 |---|---:|---:|---:|---:|---:|---|---|
 | cfbd_2019 | 47.5% | 743 | 0.961 | 15.11 | 11.08 | [44.5%, 50.8%] | [44.5%, 55.5%] |
 | snapshots_2021_2024 | **52.25%** | 3491 | 1.062 | 11.72 | 8.50 | [50.9%, 53.7%] | [47.46%, 52.54%] |
 
-Snapshot ATS sits just under the fair-coin upper edge (52.54%). Predictions at
-`data/backtests/task23_market_aware_reduced_v2/full/predictions.parquet`.
+Snapshot ATS sits just under the fair-coin upper edge (52.54%). Original path
+`data/backtests/task23_market_aware_reduced_v2/full/predictions.parquet` was the
+publish target at the time; kick−5min bytes are preserved under the archive paths
+above.
 
 ### Within-vintage A3 vs market-aware (first honest comparison)
 
-Both RERUN_V2 codepath; A3 = market features off; market-aware = fixed ladder.
+Both RERUN_V2 codepath; A3 = market features off; market-aware = fixed ladder
+at **FEATURE_TIME=SLOT_CLOSE_KICK_MINUS_5M** (not Tuesday decision).
 
 | Regime | market-aware ATS | A3 ATS | Δ (aware − A3) | aware n | A3 n |
 |---|---:|---:|---:|---:|---:|
@@ -114,8 +128,9 @@ Both RERUN_V2 codepath; A3 = market features off; market-aware = fixed ladder.
 | snapshots_2021_2024 | 52.25% | 52.22% | **+0.03 pp** | 3491 | 3491 |
 
 On the snapshot regime that matters for Odds-backed features, market-aware ≈ A3
-after the leak fix (+0.03 pp). The prior unpublished exception rate (52.71%)
-was a contaminated/leaking feature path — not a graded table.
+after the leak fix (+0.03 pp) **at near-close feature time**. The prior
+unpublished exception rate (52.71%) was a contaminated/leaking feature path —
+not a graded table. For decision-time edge see WEEK-ALIGN-FIX.
 
 ---
 
@@ -130,8 +145,11 @@ was a contaminated/leaking feature path — not a graded table.
    `scripts/_v2_baseline.py` no longer invents an `event_time` when the ladder
    returns null `source_row_id` (would false-flag post-kickoff rows after the
    fix). Required for an honest CLEAN re-audit.
-3. **CFBD week vs Labor-Day week** remains a harness-level calendar debt
-   (noted in V2-BASELINE); this task only capped the market ladder.
+3. **CFBD week vs Labor-Day week** was harness-level calendar debt (noted in
+   V2-BASELINE); this task only capped the market ladder. **Repaired in
+   WEEK-ALIGN-FIX** (`docs/notes/week-align-fix.md`) — decision-time
+   comparisons must use `FEATURE_TIME=TUESDAY_DECISION`, not the kick−5min table
+   above.
 
 ---
 

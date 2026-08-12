@@ -51,7 +51,12 @@ import pandas as pd  # type: ignore[import-untyped]
 
 from ncaa_quant.evaluation.lockbox import assert_lockbox_excluded
 from ncaa_quant.utils.seeding import SeedManifest, set_global_seed
-from ncaa_quant.utils.timeutils import assert_tz_aware, to_utc
+from ncaa_quant.utils.timeutils import (
+    DECISION_POINT_TZ,
+    assert_tz_aware,
+    resolve_decision_point,
+    to_utc,
+)
 
 PreseasonPriorsMode = Literal["fitted", "league_mean"]
 RatingUpdatesMode = Literal["continual", "frozen_after_week_1"]
@@ -423,8 +428,95 @@ class RatingEngine(Protocol):
 # ---------------------------------------------------------------------------
 
 
+@dataclass(frozen=True)
+class WeekDecisionPoints:
+    """Wall-clock decision instants for one ``(season, CFBD week)``."""
+
+    tuesday_0600_et: datetime
+    saturday_0600_et: datetime
+    modal_et_monday: datetime  # date stored as UTC midnight for hashing ease
+
+
+@dataclass(frozen=True)
+class WeekDecisionCalendar:
+    """CFBD-week → Tuesday/Saturday decision points from actual kickoffs.
+
+    Construction (WEEK-ALIGN-FIX): for each ``(season, week)`` take the modal
+    America/New_York calendar-week Monday among that week's kickoffs, then
+    resolve ``tuesday_0600_et`` / ``saturday_0600_et`` via
+    :func:`resolve_decision_point` (DST-safe). This replaces Labor-Day
+    arithmetic that CFBD week labels do not follow.
+    """
+
+    _points: Mapping[tuple[int, int], WeekDecisionPoints]
+
+    @classmethod
+    def from_games(cls, games: pd.DataFrame) -> WeekDecisionCalendar:
+        """Build the calendar from a games frame with ``season``, ``week``, ``event_time``."""
+        if games.empty:
+            return cls({})
+        work = games.copy()
+        work["event_time"] = pd.to_datetime(work["event_time"], utc=True)
+        mapping: dict[tuple[int, int], WeekDecisionPoints] = {}
+        for (season, week), wg in work.groupby(["season", "week"], sort=True):
+            kicks = [to_utc(pd.Timestamp(ts).to_pydatetime()) for ts in wg["event_time"]]
+            mapping[(int(season), int(week))] = decision_points_from_kickoffs(kicks)
+        return cls(mapping)
+
+    def get(self, season: int, week: int) -> WeekDecisionPoints | None:
+        return self._points.get((int(season), int(week)))
+
+    def items(self) -> Sequence[tuple[tuple[int, int], WeekDecisionPoints]]:
+        return tuple(sorted(self._points.items()))
+
+    def tuesday(self, season: int, week: int) -> datetime | None:
+        hit = self.get(season, week)
+        return None if hit is None else hit.tuesday_0600_et
+
+    def saturday(self, season: int, week: int) -> datetime | None:
+        hit = self.get(season, week)
+        return None if hit is None else hit.saturday_0600_et
+
+
+def et_monday_of(kickoff: datetime) -> datetime:
+    """America/New_York Monday 00:00 (as UTC) of the civil week containing ``kickoff``."""
+    local = to_utc(kickoff).astimezone(DECISION_POINT_TZ).date()
+    monday = local - timedelta(days=local.weekday())
+    return datetime(monday.year, monday.month, monday.day, tzinfo=UTC)
+
+
+def modal_et_monday(kickoffs: Sequence[datetime]) -> datetime:
+    """Modal ET calendar-week Monday among ``kickoffs`` (ties → earliest Monday)."""
+    if not kickoffs:
+        msg = "kickoffs must be non-empty"
+        raise ValueError(msg)
+    counts: dict[datetime, int] = {}
+    for k in kickoffs:
+        mon = et_monday_of(k)
+        counts[mon] = counts.get(mon, 0) + 1
+    best_n = max(counts.values())
+    return min(d for d, n in counts.items() if n == best_n)
+
+
+def decision_points_from_kickoffs(kickoffs: Sequence[datetime]) -> WeekDecisionPoints:
+    """Derive tuesday/saturday 06:00 ET from a CFBD week's actual kickoffs."""
+    monday = modal_et_monday(kickoffs)
+    monday_date = monday.date()
+    tuesday = resolve_decision_point("tuesday_0600_et", monday_date + timedelta(days=1))
+    saturday = resolve_decision_point("saturday_0600_et", monday_date + timedelta(days=5))
+    return WeekDecisionPoints(
+        tuesday_0600_et=tuesday,
+        saturday_0600_et=saturday,
+        modal_et_monday=monday,
+    )
+
+
 def week1_monday_utc(season: int) -> datetime:
-    """UTC Monday 00:00 of CFB Week 1 (Labor Day Monday of ``season``)."""
+    """UTC Monday 00:00 of CFB Week 1 (Labor Day Monday of ``season``).
+
+    Fallback helper for synthetic tests when no kickoff calendar is supplied.
+    Production walk-forward uses :class:`WeekDecisionCalendar` instead.
+    """
     for day in range(1, 8):
         candidate = datetime(season, 9, day, tzinfo=UTC)
         if candidate.weekday() == 0:
@@ -433,23 +525,17 @@ def week1_monday_utc(season: int) -> datetime:
     raise RuntimeError(msg)
 
 
-def week_decision_as_of(
+def labor_day_week_decision_as_of(
     season: int,
     week: int,
     config: WalkForwardConfig,
 ) -> datetime:
-    """Decision ``as_of`` for ``(season, week)`` in UTC.
-
-    Calendar matches :func:`ncaa_quant.utils.timeutils.week_of`: Week 1's Monday
-    is Labor Day; the decision clock is ``as_of_weekday`` / hour / minute in
-    ``as_of_tz`` of that week (default Tuesday 06:00 America/New_York).
-    """
+    """Labor-Day-arithmetic decision ``as_of`` (test / no-calendar fallback)."""
     if week < 0:
         msg = f"week must be >= 0, got {week}"
         raise WalkForwardError(msg)
     monday_utc = week1_monday_utc(season) + timedelta(weeks=max(0, week) - 1)
     if week == 0:
-        # Week 0 sits in the UTC week before Week 1 Monday.
         monday_utc = week1_monday_utc(season) - timedelta(weeks=1)
     tz = ZoneInfo(config.as_of_tz)
     monday_date = monday_utc.date()
@@ -463,6 +549,49 @@ def week_decision_as_of(
         tzinfo=tz,
     ) + timedelta(days=config.as_of_weekday)
     return to_utc(local)
+
+
+def week_decision_as_of(
+    season: int,
+    week: int,
+    config: WalkForwardConfig,
+    *,
+    calendar: WeekDecisionCalendar | None = None,
+) -> datetime:
+    """Decision ``as_of`` for ``(season, week)`` in UTC.
+
+    When ``calendar`` is provided (harness / WEEK-ALIGN-FIX path), uses the
+    kickoff-derived Tuesday for that CFBD week. Otherwise falls back to
+    Labor-Day ``week_of`` arithmetic for synthetic fixtures that lack a
+    staged schedule.
+    """
+    if calendar is not None:
+        tue = calendar.tuesday(season, week)
+        if tue is not None:
+            # Honor non-default as_of clock when configured (ablation overrides).
+            if (
+                config.as_of_weekday == 1
+                and config.as_of_hour == 6
+                and config.as_of_minute == 0
+                and config.as_of_tz == "America/New_York"
+            ):
+                return tue
+            # Rebuild wall clock on the calendar week's Monday under custom clock.
+            pts = calendar.get(season, week)
+            assert pts is not None
+            monday_date = pts.modal_et_monday.date()
+            tz = ZoneInfo(config.as_of_tz)
+            local = datetime(
+                monday_date.year,
+                monday_date.month,
+                monday_date.day,
+                config.as_of_hour,
+                config.as_of_minute,
+                0,
+                tzinfo=tz,
+            ) + timedelta(days=config.as_of_weekday)
+            return to_utc(local)
+    return labor_day_week_decision_as_of(season, week, config)
 
 
 def _snapshot_tolerance_minutes(as_of: datetime, config: WalkForwardConfig) -> int:
@@ -498,9 +627,10 @@ def resolve_lines_for_games(
       Snapshot-backed seasons (``>= 2021``): Odds snapshots only — CFBD never
       enters the feature information set. Per-game feature ``as_of`` is the
       latest configured decision point strictly before kickoff and
-      ``<=`` the harness week decision (MKT-ASOF-FIX). Eligible snaps must
-      satisfy ``event_time <= feature_as_of`` **and** ``event_time < kickoff``.
-      CFBD-only seasons (``< 2021``): median CFBD open (else close).
+      ``<=`` the kickoff-aligned week decision (WEEK-ALIGN-FIX /
+      MKT-ASOF-FIX). Eligible snaps must satisfy ``event_time <= feature_as_of``
+      **and** ``event_time < kickoff``. CFBD-only seasons (``< 2021``): median
+      CFBD open (else close).
 
     Closing lines for evaluation (``closing=True``):
       Last Odds snapshot **strictly before kickoff** (§2.7); if unresolved,
@@ -518,6 +648,9 @@ def resolve_lines_for_games(
     rows: list[dict[str, Any]] = []
     snap = snapshots if snapshots is not None else pd.DataFrame()
     lines = cfbd_lines if cfbd_lines is not None else pd.DataFrame()
+    # Kickoff-derived week calendar so feature as-of tracks CFBD weeks even when
+    # the caller still passes a Labor-Day week_decision_as_of (WEEK-ALIGN-FIX).
+    week_cal = None if closing or games.empty else WeekDecisionCalendar.from_games(games)
 
     for row in games.itertuples(index=False):
         season = int(row.season)
@@ -545,11 +678,17 @@ def resolve_lines_for_games(
                     if cfbd["line_source"] != "null" and np.isfinite(float(cfbd["spread"])):
                         resolved = {**cfbd, "line_source": "cfbd_close_eval"}
             else:
+                week_ao = as_of_utc
+                if week_cal is not None:
+                    cal_tue = week_cal.tuesday(season, week)
+                    if cal_tue is not None:
+                        week_ao = week_decision_as_of(season, week, config, calendar=week_cal)
                 feature_as_of = feature_as_of_for_game(
                     kickoff,
-                    as_of_utc,
-                    season=season,
-                    week=week,
+                    week_ao,
+                    saturday_0600_et=(
+                        None if week_cal is None else week_cal.saturday(season, week)
+                    ),
                 )
                 if feature_as_of is None:
                     resolved = dict(_LINE_RESOLVE_EMPTY)
@@ -1147,6 +1286,8 @@ class WalkForwardHarness:
         work["realized_total"] = work["home_points"].astype(float) + work["away_points"].astype(
             float
         )
+        # CFBD-week → Tuesday/Saturday from kickoffs (WEEK-ALIGN-FIX).
+        week_calendar = WeekDecisionCalendar.from_games(work)
 
         prediction_rows: list[dict[str, Any]] = []
         feature_log_rows: list[dict[str, Any]] = []
@@ -1204,7 +1345,7 @@ class WalkForwardHarness:
                 continue
             weeks = sorted(int(w) for w in season_games["week"].unique())
             # Pre-Week-1 prior init: as_of just before the first week's decision.
-            first_as_of = week_decision_as_of(season, weeks[0], self.config)
+            first_as_of = week_decision_as_of(season, weeks[0], self.config, calendar=week_calendar)
             prior_as_of = first_as_of - timedelta(seconds=1)
             self.rating_engine.initialize_season(season, prior_as_of)
 
@@ -1227,7 +1368,7 @@ class WalkForwardHarness:
             )
 
             for week in weeks:
-                as_of = week_decision_as_of(season, week, self.config)
+                as_of = week_decision_as_of(season, week, self.config, calendar=week_calendar)
                 week_games = season_games.loc[season_games["week"] == week].copy()
                 week_games = week_games.sort_values("game_id", kind="mergesort")
 
