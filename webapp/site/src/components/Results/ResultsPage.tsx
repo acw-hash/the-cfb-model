@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 import type { ResultsSeason, TrackRecord } from "@/lib/artifacts/types";
 
 import { GradedGamesSection } from "./GradedGamesSection";
@@ -31,13 +29,6 @@ export function ResultsPage({
 }: ResultsPageProps): React.ReactElement {
   return (
     <article className={styles.page} data-testid="results-page">
-      <p className={styles.nav}>
-        <Link href="/">This Week</Link>
-        <span className={styles.navSep} aria-hidden="true">
-          ·
-        </span>
-        <span className={styles.navCurrent}>Results</span>
-      </p>
       <header className={styles.header}>
         <h1 className={styles.title}>Results</h1>
         <p className={styles.subtitle}>Track record</p>

@@ -1,0 +1,56 @@
+.banner {
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-secondary);
+}
+
+.inner {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.kicker {
+  margin: 0;
+  font-size: var(--type-c1-size);
+  line-height: var(--type-c1-line);
+  font-weight: var(--type-c1-weight);
+  color: var(--text-secondary);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.body {
+  margin: 0;
+  font-size: var(--type-b2-size);
+  line-height: var(--type-b2-line);
+  color: var(--text-primary);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.actions a,
+.actions button {
+  font-size: var(--type-c1-size);
+  line-height: var(--type-c1-line);
+  font-weight: var(--type-c1-weight);
+  color: var(--text-secondary);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: none;
+  font-family: inherit;
+}
+
+.actions a:hover,
+.actions button:hover {
+  color: var(--accent);
+}

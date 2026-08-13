@@ -4,32 +4,8 @@
   padding: 0 var(--space-4) var(--space-8);
 }
 
-.nav {
-  margin: var(--space-4) 0 0;
-  font-size: var(--type-c1-size);
-  line-height: var(--type-c1-line);
-}
-
-.nav a {
-  color: var(--text-secondary);
-  text-decoration: none;
-}
-
-.nav a:hover {
-  color: var(--accent);
-}
-
-.navSep {
-  margin: 0 var(--space-2);
-  color: var(--text-tertiary);
-}
-
-.navCurrent {
-  color: var(--text-primary);
-}
-
 .header {
-  margin: var(--space-4) 0 var(--space-2);
+  margin: var(--space-5) 0 var(--space-2);
 }
 
 .title {

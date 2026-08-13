@@ -190,14 +190,16 @@ Screenshots in `webapp/site/docs/screenshots/`:
 
 Capture: `tests/capture-results-screenshots.mjs` (Playwright ephemeral). **Zero console errors** on `/results` and `/gallery/results-states`.
 
-### §4.4 anti-pattern checklist
+### §4.4 Anti-pattern checklist
 
-- no default-shadcn aesthetic
-- no purple-gradient heroes
-- no emoji cards
-- no wall-of-widgets
-- no gratuitous glassmorphism
-- no filler marketing copy
+| Item | Verdict | Notes |
+|------|---------|-------|
+| no default-shadcn aesthetic | **PASS** | Hand-rolled CSS modules; text-first metric stack; no component-library chrome (`results-desktop-light.png`) |
+| no purple-gradient heroes | **PASS** | Flat `--bg-primary`; orange is fixture/stale banners only (`results-390-light.png`, `results-390-dark.png`) |
+| no emoji cards | **PASS** | No emoji in page copy or markup (`results-verdict.png`, `results-interval-miss.png`) |
+| no wall-of-widgets | **PASS** | Vertical stack: finding → tabs → metric/graded rows → scope; no dashboard tile grid (`results-desktop-light.png`) |
+| no gratuitous glassmorphism | **PASS** | Opaque surfaces, no blur (`results-ci-treatment.png`, `results-empty-live.png`) |
+| no filler marketing copy | **PASS** | Artifact labels, recorded finding, and explicit “no single accuracy number” honesty only (`results-390-light.png`) |
 
 ### Positive-evidence sentences
 
@@ -238,3 +240,9 @@ $ npm run build       # /results + gallery/results-states routes
 ```
 
 *End of W5.*
+
+---
+
+## W6-0 note (2026-08-13)
+
+§4.4 anti-pattern checklist was already in **table form** at W5 close (verdict + screenshot-cited note per item above). No backfill rewrite required. Site-wide nav, deferred in W5-0, is implemented in `docs/notes/webapp-w6.md`.

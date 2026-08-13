@@ -27,6 +27,15 @@
   max-width: 40rem;
 }
 
+.links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.links a:hover {
+  color: var(--accent);
+}
+
 .links code {
   font-size: inherit;
 }

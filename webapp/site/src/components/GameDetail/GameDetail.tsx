@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 import type { GamePrediction } from "@/lib/artifacts/types";
 import { TOTAL_INTERVAL_ABSENT_REASON } from "@/lib/game-detail/absence";
 import type { RatingPoint } from "@/lib/game-detail/ratings";
@@ -23,9 +21,6 @@ interface GameDetailProps {
 export function GameDetail({ game, homeSeries, awaySeries }: GameDetailProps): React.ReactElement {
   return (
     <article className={styles.page} data-testid="game-detail">
-      <p className={styles.back}>
-        <Link href="/">This Week</Link>
-      </p>
       <MatchupHeader
         awayTeam={game.away_team}
         homeTeam={game.home_team}

@@ -1,0 +1,52 @@
+.header {
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-primary);
+}
+
+.inner {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-4);
+}
+
+.wordmark {
+  font-size: var(--type-t3-size);
+  line-height: var(--type-t3-line);
+  font-weight: var(--type-t3-weight);
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.wordmark:hover {
+  color: var(--text-primary);
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav a {
+  font-size: var(--type-c1-size);
+  line-height: var(--type-c1-line);
+  font-weight: var(--type-c1-weight);
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.nav a:hover {
+  color: var(--accent);
+}
+
+.nav a[aria-current="page"] {
+  color: var(--text-primary);
+}

@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { SCOPE_COPY } from "@/lib/results/copy";
 
 import styles from "./ScopeSection.module.css";
@@ -10,7 +12,7 @@ export function ScopeSection(): React.ReactElement {
       <p className={styles.copy}>{SCOPE_COPY}</p>
       <p className={styles.links}>
         Methodology detail lives in the project notes (<code>docs/notes/23-readout.md</code>
-        ). About page follows in a later task.
+        ). Public summary: <Link href="/about">About</Link>.
       </p>
     </section>
   );

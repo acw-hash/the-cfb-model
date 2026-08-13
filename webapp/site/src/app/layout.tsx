@@ -1,8 +1,11 @@
 import "@/styles/tokens.css";
 import "./globals.css";
 
+import { FirstVisitDisclaimer } from "@/components/FirstVisitDisclaimer/FirstVisitDisclaimer";
 import { FixtureBanner } from "@/components/FixtureBanner/FixtureBanner";
 import { MaintenanceState } from "@/components/MaintenanceState/MaintenanceState";
+import { SiteFooter } from "@/components/SiteFooter/SiteFooter";
+import { SiteHeader } from "@/components/SiteHeader/SiteHeader";
 import { StalenessBanner } from "@/components/StalenessBanner/StalenessBanner";
 import { loadArtifact } from "@/lib/artifacts/loader";
 import { isSchemaVersionSupported } from "@/lib/artifacts/schema-version";
@@ -53,7 +56,10 @@ export default async function RootLayout({
       <body>
         {showFixtureBanner ? <FixtureBanner /> : null}
         {showStalenessBanner ? <StalenessBanner publishedAt={meta.published_at} /> : null}
+        <SiteHeader />
+        <FirstVisitDisclaimer />
         {children}
+        <SiteFooter />
       </body>
     </html>
   );

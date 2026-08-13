@@ -1,0 +1,105 @@
+.page {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 0 var(--space-4) var(--space-8);
+}
+
+.header {
+  margin: var(--space-5) 0 var(--space-4);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--type-t1-size);
+  line-height: var(--type-t1-line);
+  font-weight: var(--type-t1-weight);
+}
+
+.identity {
+  margin: var(--space-3) 0 0;
+  font-size: var(--type-b1-size);
+  line-height: var(--type-b1-line);
+  color: var(--text-primary);
+}
+
+.section {
+  margin: var(--space-6) 0 0;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.sectionTitle {
+  margin: 0 0 var(--space-3);
+  font-size: var(--type-t2-size);
+  line-height: var(--type-t2-line);
+  font-weight: var(--type-t2-weight);
+}
+
+.body {
+  margin: 0 0 var(--space-3);
+  font-size: var(--type-b1-size);
+  line-height: var(--type-b1-line);
+  color: var(--text-primary);
+}
+
+.body:last-child {
+  margin-bottom: 0;
+}
+
+.list {
+  margin: 0;
+  padding-left: var(--space-5);
+  font-size: var(--type-b1-size);
+  line-height: var(--type-b1-line);
+}
+
+.list li {
+  margin-bottom: var(--space-2);
+}
+
+.list li:last-child {
+  margin-bottom: 0;
+}
+
+.disclaimerBlock {
+  margin: 0;
+  padding: var(--space-4);
+  background: var(--bg-secondary);
+  font-size: var(--type-b1-size);
+  line-height: var(--type-b1-line);
+  color: var(--text-primary);
+}
+
+.rgBlock {
+  margin: 0;
+  font-size: var(--type-b1-size);
+  line-height: var(--type-b1-line);
+  color: var(--text-primary);
+}
+
+.rgBlock a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: var(--type-c1-weight);
+}
+
+.rgBlock a:hover {
+  text-decoration: underline;
+}
+
+.placeholder {
+  margin: var(--space-3) 0 0;
+  padding: var(--space-3);
+  border: 1px dashed var(--border-subtle);
+  font-size: var(--type-b2-size);
+  line-height: var(--type-b2-line);
+  color: var(--text-secondary);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.attribution {
+  margin: 0;
+  font-size: var(--type-b2-size);
+  line-height: var(--type-b2-line);
+  color: var(--text-secondary);
+}
