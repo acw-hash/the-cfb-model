@@ -1,0 +1,40 @@
+.section {
+  margin: var(--space-6) 0;
+}
+
+.title {
+  margin: 0 0 var(--space-3);
+  font-size: var(--type-t2-size);
+  line-height: var(--type-t2-line);
+  font-weight: var(--type-t2-weight);
+}
+
+.fixtureNote {
+  margin: 0 0 var(--space-3);
+  padding: var(--space-3);
+  background: var(--bg-secondary);
+  font-size: var(--type-b2-size);
+  line-height: var(--type-b2-line);
+  color: var(--text-primary);
+  max-width: 40rem;
+}
+
+.lockbox {
+  margin: 0 0 var(--space-4);
+  font-size: var(--type-c1-size);
+  line-height: var(--type-c1-line);
+  color: var(--text-secondary);
+  max-width: 40rem;
+}
+
+.empty {
+  margin: 0 0 var(--space-3);
+  font-size: var(--type-b1-size);
+  line-height: var(--type-b1-line);
+  color: var(--text-primary);
+  max-width: 40rem;
+}
+
+.list {
+  border-top: 1px solid var(--border-subtle);
+}

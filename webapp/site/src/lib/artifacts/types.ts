@@ -162,20 +162,25 @@ export interface TrackRecord {
   metrics: TrackRecordMetric[];
 }
 
+export type GradeStatus =
+  "graded" | "no_pre_kickoff_publish" | "game_not_final" | "postgame_missing";
+
+export interface GradedFrom {
+  refresh_kind: RefreshKind;
+  published_at: string;
+}
+
 export interface GradedGame {
   game_id: string;
   week: number;
   kickoff_utc: string;
   home_team: string;
   away_team: string;
-  home_points: number;
-  away_points: number;
-  actual_margin: number;
-  actual_total: number;
-  graded_from: {
-    refresh_kind: RefreshKind;
-    published_at: string;
-  };
+  home_points: number | null;
+  away_points: number | null;
+  actual_margin: number | null;
+  actual_total: number | null;
+  graded_from: GradedFrom | null;
   mu_margin: number | null;
   sigma_margin: number | null;
   margin_interval_lo: number | null;
@@ -193,7 +198,7 @@ export interface GradedGame {
   total_interval_hit: boolean | null;
   home_win: boolean;
   p_win_home_realized: number | null;
-  grade_status: "graded" | "no_pre_kickoff_publish" | "game_not_final" | "postgame_missing";
+  grade_status: GradeStatus;
 }
 
 export interface ResultsSeason {

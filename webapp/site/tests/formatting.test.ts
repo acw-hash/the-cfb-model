@@ -4,6 +4,7 @@ import {
   ABSENT,
   FORECAST_UNAVAILABLE,
   NOT_COMPUTED,
+  formatActualMargin,
   formatIntervalInline,
   formatIntervalParts,
   formatMargin,
@@ -102,6 +103,14 @@ describe("honest absence (§1.8)", () => {
 
   it("uses em dash for generic absence", () => {
     expect(ABSENT).toBe("\u2014");
+  });
+});
+
+describe("formatActualMargin", () => {
+  it("shows signed integers without invented decimals", () => {
+    expect(formatActualMargin(44)).toBe("+44");
+    expect(formatActualMargin(-4)).toBe("\u22124");
+    expect(formatActualMargin(0)).toBe("0");
   });
 });
 

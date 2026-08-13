@@ -45,3 +45,36 @@ export async function loadArtifact<T>(artifact: ArtifactName): Promise<T> {
 export function getArtifactSource(): { mode: "local" | "remote"; base: string } {
   return resolveArtifactBase();
 }
+
+/**
+ * Load `results_<season>.json`. Season 2025 is the lockbox — refuse to load.
+ * Missing file returns null (empty / not-yet state), not a throw.
+ */
+export async function loadResultsSeason<T>(season: number): Promise<T | null> {
+  if (season === 2025) {
+    throw new Error("Season 2025 is lockbox — results are never loaded or graded");
+  }
+  const { mode, base } = resolveArtifactBase();
+  const fileName = `results_${season}.json`;
+  if (mode === "remote") {
+    const response = await fetch(`${base}/${fileName}`, { next: { revalidate: 21600 } });
+    if (response.status === 404) {
+      return null;
+    }
+    if (!response.ok) {
+      throw new Error(`Failed to fetch ${fileName}: ${response.status}`);
+    }
+    return (await response.json()) as T;
+  }
+  const filePath = path.join(base, fileName);
+  try {
+    const raw = await fs.readFile(filePath, "utf8");
+    return JSON.parse(raw) as T;
+  } catch (err) {
+    const code = (err as NodeJS.ErrnoException).code;
+    if (code === "ENOENT") {
+      return null;
+    }
+    throw err;
+  }
+}

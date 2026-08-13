@@ -1,0 +1,49 @@
+.block {
+  margin: var(--space-6) 0;
+  padding: var(--space-5) 0;
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.kicker {
+  margin: 0 0 var(--space-2);
+  font-size: var(--type-c1-size);
+  line-height: var(--type-c1-line);
+  font-weight: var(--type-c1-weight);
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.label {
+  margin: 0 0 var(--space-4);
+  font-size: var(--type-t2-size);
+  line-height: var(--type-t2-line);
+  font-weight: var(--type-t2-weight);
+  color: var(--text-primary);
+}
+
+.lay {
+  margin: 0 0 var(--space-4);
+  font-size: var(--type-b1-size);
+  line-height: var(--type-b1-line);
+  font-weight: var(--type-b1-weight);
+  color: var(--text-primary);
+  max-width: 40rem;
+}
+
+.recorded {
+  margin: 0;
+  font-size: var(--type-b2-size);
+  line-height: var(--type-b2-line);
+  color: var(--text-secondary);
+  max-width: 40rem;
+}
+
+.recordedLabel {
+  display: block;
+  margin-bottom: var(--space-1);
+  font-size: var(--type-c2-size);
+  line-height: var(--type-c2-line);
+  color: var(--text-tertiary);
+}

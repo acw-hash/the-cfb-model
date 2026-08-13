@@ -1,0 +1,29 @@
+.section {
+  margin: var(--space-6) 0;
+}
+
+.title {
+  margin: 0 0 var(--space-3);
+  font-size: var(--type-t2-size);
+  line-height: var(--type-t2-line);
+  font-weight: var(--type-t2-weight);
+}
+
+.noAggregate {
+  margin: 0 0 var(--space-4);
+  font-size: var(--type-b2-size);
+  line-height: var(--type-b2-line);
+  color: var(--text-secondary);
+  max-width: 40rem;
+}
+
+.scope {
+  margin: 0 0 var(--space-4);
+  font-size: var(--type-c2-size);
+  line-height: var(--type-c2-line);
+  color: var(--text-tertiary);
+}
+
+.list {
+  border-top: 1px solid var(--border-subtle);
+}

@@ -1,0 +1,47 @@
+.page {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 0 var(--space-4) var(--space-8);
+}
+
+.nav {
+  margin: var(--space-4) 0 0;
+  font-size: var(--type-c1-size);
+  line-height: var(--type-c1-line);
+}
+
+.nav a {
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.nav a:hover {
+  color: var(--accent);
+}
+
+.navSep {
+  margin: 0 var(--space-2);
+  color: var(--text-tertiary);
+}
+
+.navCurrent {
+  color: var(--text-primary);
+}
+
+.header {
+  margin: var(--space-4) 0 var(--space-2);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--type-t1-size);
+  line-height: var(--type-t1-line);
+  font-weight: var(--type-t1-weight);
+}
+
+.subtitle {
+  margin: var(--space-1) 0 0;
+  font-size: var(--type-b2-size);
+  line-height: var(--type-b2-line);
+  color: var(--text-secondary);
+}

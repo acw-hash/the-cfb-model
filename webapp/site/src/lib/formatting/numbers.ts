@@ -140,6 +140,31 @@ export function formatTotalIntervalParts(
   };
 }
 
+/** Actual final margin (integer points) — sign shown, no invented decimals. */
+export function formatActualMargin(value: number | null | undefined): string | null {
+  if (value == null) {
+    return null;
+  }
+  if (value > 0) {
+    return `+${value}`;
+  }
+  if (value < 0) {
+    return `${MINUS}${Math.abs(value)}`;
+  }
+  return "0";
+}
+
+/** Actual final score pair — away–home. */
+export function formatFinalScore(
+  awayPoints: number | null | undefined,
+  homePoints: number | null | undefined,
+): string | null {
+  if (awayPoints == null || homePoints == null) {
+    return null;
+  }
+  return `${awayPoints}\u2013${homePoints}`;
+}
+
 /** §1.8 honest absence for generic nullable numbers. */
 export function renderAbsent(): string {
   return ABSENT;
