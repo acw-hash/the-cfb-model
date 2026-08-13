@@ -1,0 +1,11 @@
+.band {
+  color: var(--text-primary);
+}
+
+.unavailable {
+  color: var(--text-secondary);
+}
+
+.muted {
+  color: var(--text-tertiary);
+}

@@ -1,0 +1,14 @@
+.stamp {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.relative {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.absolute {
+  color: var(--text-tertiary);
+}

@@ -1,0 +1,10 @@
+.banner {
+  background: var(--semantic-stale);
+  color: var(--bg-primary);
+  padding: var(--space-2) var(--space-4);
+  text-align: center;
+  font-size: var(--type-c1-size);
+  line-height: var(--type-c1-line);
+  font-weight: var(--type-c1-weight);
+  letter-spacing: 0.04em;
+}

@@ -1,0 +1,11 @@
+.marker {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px var(--space-2);
+  border: 1px solid var(--semantic-revised);
+  border-radius: 999px;
+  font-size: var(--type-c1-size);
+  line-height: var(--type-c1-line);
+  font-weight: var(--type-c1-weight);
+  color: var(--semantic-revised);
+}

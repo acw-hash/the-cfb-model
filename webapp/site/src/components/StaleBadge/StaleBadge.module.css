@@ -1,0 +1,10 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--space-2);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--semantic-stale) 12%, transparent);
+  color: var(--semantic-stale);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}

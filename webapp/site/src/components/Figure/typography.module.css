@@ -1,0 +1,57 @@
+.figure {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.t1 {
+  font-size: var(--type-t1-size);
+  line-height: var(--type-t1-line);
+  font-weight: var(--type-t1-weight);
+}
+
+.t2 {
+  font-size: var(--type-t2-size);
+  line-height: var(--type-t2-line);
+  font-weight: var(--type-t2-weight);
+}
+
+.t3 {
+  font-size: var(--type-t3-size);
+  line-height: var(--type-t3-line);
+  font-weight: var(--type-t3-weight);
+}
+
+.b1 {
+  font-size: var(--type-b1-size);
+  line-height: var(--type-b1-line);
+  font-weight: var(--type-b1-weight);
+}
+
+.b2 {
+  font-size: var(--type-b2-size);
+  line-height: var(--type-b2-line);
+  font-weight: var(--type-b2-weight);
+}
+
+.n1 {
+  font-size: var(--type-n1-size);
+  line-height: var(--type-n1-line);
+  font-weight: var(--type-n1-weight);
+}
+
+.n2 {
+  font-size: var(--type-n2-size);
+  line-height: var(--type-n2-line);
+  font-weight: var(--type-n2-weight);
+}
+
+.c1 {
+  font-size: var(--type-c1-size);
+  line-height: var(--type-c1-line);
+  font-weight: var(--type-c1-weight);
+}
+
+.c2 {
+  font-size: var(--type-c2-size);
+  line-height: var(--type-c2-line);
+  font-weight: var(--type-c2-weight);
+}

@@ -1,0 +1,7 @@
+.banner {
+  background: color-mix(in srgb, var(--semantic-stale) 14%, var(--bg-primary));
+  color: var(--semantic-stale);
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid color-mix(in srgb, var(--semantic-stale) 30%, transparent);
+  text-align: center;
+}

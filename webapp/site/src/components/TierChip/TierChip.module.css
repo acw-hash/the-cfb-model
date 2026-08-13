@@ -1,0 +1,22 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--space-2);
+  border-radius: 999px;
+  font-size: var(--type-c1-size);
+  line-height: var(--type-c1-line);
+  font-weight: var(--type-c1-weight);
+  white-space: nowrap;
+}
+
+.strong,
+.clear,
+.lean {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.tossUp {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+}
