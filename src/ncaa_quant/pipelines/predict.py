@@ -205,7 +205,7 @@ def execute_predict_publish(
         try:
             from ncaa_quant.webapp.export import export_publish_artifacts
 
-            export_out = export_publish_artifacts(result, config=cfg, push=True)
+            export_out = export_publish_artifacts(result, config=cfg, push=True, notifier=n)
             result["webapp_export"] = {"ok": True, "push": export_out.get("push")}
         except Exception as exc:
             log.warning("webapp_export_failed", error=str(exc))

@@ -124,12 +124,25 @@ class WebappConfig(BaseModel):
     """Ridge public webapp export + R2 push (docs/webapp/DESIGN.md §3)."""
 
     export_enabled: bool = False
-    """When False (default until W7 deploy), predict_publish skips R2 push."""
+    """When False (default), predict_publish skips export/push.
+
+    Preview scope: set ``NCAA_QUANT_WEBAPP__EXPORT_ENABLED=true`` only on the
+    operator workstation used for private-preview publishes — never as a
+    committed default, and never on machines that should not write R2.
+    """
 
     r2_bucket: str = ""
     r2_endpoint_url: str = ""
     r2_public_base_url: str = ""
+    """Unused in private preview (server-side R2). Kept for §3.3 public-read launch."""
+
+    revalidate_url: str = ""
+    """Vercel on-demand revalidation endpoint (e.g. https://….vercel.app/api/revalidate)."""
+
     tier_state_path: str = "data/webapp/tier_state.json"
+    tier_changes_path: str = "data/webapp/tier_changes.jsonl"
+    """Per-publish tier instrumentation (JSONL; workstation-only, not pushed to R2)."""
+
     fixture_artifacts_dir: str = "webapp/fixtures"
 
 
@@ -202,6 +215,9 @@ class SecretsSettings(BaseSettings):
     r2_access_key_id: SecretStr = Field(default=SecretStr(""), validation_alias="R2_ACCESS_KEY_ID")
     r2_secret_access_key: SecretStr = Field(
         default=SecretStr(""), validation_alias="R2_SECRET_ACCESS_KEY"
+    )
+    webapp_revalidate_secret: SecretStr = Field(
+        default=SecretStr(""), validation_alias="WEBAPP_REVALIDATE_SECRET"
     )
 
 

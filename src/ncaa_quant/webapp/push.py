@@ -8,9 +8,14 @@ import time
 from collections.abc import Mapping
 from typing import Any, Protocol
 
+import httpx
 from tenacity import retry, stop_after_attempt, wait_exponential
 
 from ncaa_quant.config import AppConfig, load_config, load_secrets
+from ncaa_quant.pipelines.notifications import AlertKind, Notifier, build_notifier, notify
+from ncaa_quant.utils.logging import get_logger
+
+log = get_logger(__name__)
 
 META_FILENAME = "meta.json"
 
@@ -76,6 +81,82 @@ def _put_with_retry(
     )
 
 
+def trigger_on_demand_revalidation(
+    *,
+    url: str,
+    secret: str,
+    timeout_s: float = 15.0,
+    client: httpx.Client | None = None,
+) -> dict[str, Any]:
+    """POST the Vercel revalidation endpoint with the shared secret.
+
+    Returns a result dict. Raises on HTTP/transport failure so callers can
+    treat the hook as best-effort.
+    """
+    if not url:
+        msg = "revalidate_url is empty"
+        raise ValueError(msg)
+    if not secret:
+        msg = "WEBAPP_REVALIDATE_SECRET is empty"
+        raise ValueError(msg)
+
+    headers = {
+        "Authorization": f"Bearer {secret}",
+        "Content-Type": "application/json",
+    }
+    body = {"source": "ridge_r2_push"}
+    owns_client = client is None
+    http = client or httpx.Client(timeout=timeout_s)
+    try:
+        response = http.post(url, headers=headers, json=body)
+        payload: dict[str, Any]
+        try:
+            parsed = response.json()
+            payload = parsed if isinstance(parsed, dict) else {"body": parsed}
+        except Exception:
+            payload = {"body": response.text}
+        if response.status_code >= 400:
+            msg = f"revalidation refused: HTTP {response.status_code} {payload}"
+            raise RuntimeError(msg)
+        return {
+            "ok": True,
+            "status_code": response.status_code,
+            "response": payload,
+        }
+    finally:
+        if owns_client:
+            http.close()
+
+
+def _maybe_revalidate(
+    *,
+    config: AppConfig,
+    notifier: Notifier | None,
+    http_client: httpx.Client | None = None,
+) -> dict[str, Any] | None:
+    """Best-effort revalidation after meta.json lands. Never raises."""
+    url = (config.webapp.revalidate_url or "").strip()
+    if not url:
+        return None
+
+    secrets = load_secrets()
+    secret = secrets.webapp_revalidate_secret.get_secret_value()
+    try:
+        result = trigger_on_demand_revalidation(url=url, secret=secret, client=http_client)
+        log.info("webapp_revalidate_ok", status_code=result.get("status_code"))
+        return result
+    except Exception as exc:
+        log.warning("webapp_revalidate_failed", error=str(exc))
+        notify(
+            AlertKind.WEBAPP_EXPORT_FAILURE,
+            "Ridge on-demand revalidation failed",
+            str(exc),
+            config=config,
+            notifier=notifier,
+        )
+        return {"ok": False, "error": str(exc)}
+
+
 def push_artifacts_to_r2(
     artifacts: Mapping[str, str | bytes],
     *,
@@ -85,8 +166,16 @@ def push_artifacts_to_r2(
     schema_version: str = "1.0.0",
     config: AppConfig | None = None,
     client: S3Client | None = None,
+    notifier: Notifier | None = None,
+    http_client: httpx.Client | None = None,
+    skip_revalidation: bool = False,
 ) -> dict[str, Any]:
-    """Upload artifacts to R2; return upload audit trail."""
+    """Upload artifacts to R2; return upload audit trail.
+
+    After ``meta.json`` lands (last), triggers on-demand revalidation when
+    ``webapp.revalidate_url`` is configured. Revalidation failure is best-effort:
+    it alerts via the notifier and does not fail the push.
+    """
     cfg = config or load_config()
     secrets = load_secrets()
     bucket = cfg.webapp.r2_bucket
@@ -140,12 +229,19 @@ def push_artifacts_to_r2(
                 }
             )
 
+    # meta-last ordering: revalidation runs only after the upload loop completes.
+    n = notifier if notifier is not None else build_notifier(cfg)
+    revalidation: dict[str, Any] | None = None
+    if not skip_revalidation:
+        revalidation = _maybe_revalidate(config=cfg, notifier=n, http_client=http_client)
+
     return {
         "bucket": bucket,
         "upload_order": ordered,
         "uploads": uploads,
         "content_hashes": content_hashes,
         "meta_last": ordered[-1] == META_FILENAME if ordered else False,
+        "revalidation": revalidation,
     }
 
 

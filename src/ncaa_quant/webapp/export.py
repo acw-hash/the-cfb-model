@@ -480,6 +480,24 @@ def build_game_prediction(
     return cast(dict[str, Any], _json_safe(game))
 
 
+def append_tier_change_records(
+    records: Sequence[Mapping[str, Any]],
+    *,
+    path: Path,
+) -> None:
+    """Append per-game tier instrumentation as JSONL (workstation-only).
+
+    Not published to R2 or the site — measurement for the W1A flap-exposure
+    successor (four live 2026 publish weeks).
+    """
+    if not records:
+        return
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as handle:
+        for record in records:
+            handle.write(json.dumps(dict(record), sort_keys=True) + "\n")
+
+
 def build_week_predictions(
     *,
     season: int,
@@ -496,6 +514,8 @@ def build_week_predictions(
     tier_store: TierStateStore | None = None,
     stale_max_age_hours: float = 6.0,
     fixture: bool = False,
+    tier_changes_path: Path | None = None,
+    record_tier_changes: bool = False,
 ) -> dict[str, Any]:
     store = tier_store or TierStateStore.default_path()
     previous_tiers = store.load()
@@ -503,11 +523,13 @@ def build_week_predictions(
 
     games: list[dict[str, Any]] = []
     new_tiers: dict[str, ConvictionTier | None] = {}
+    tier_change_records: list[dict[str, Any]] = []
 
     for row in prediction_rows:
         game_id = str(_field(row, "game_id", "game_key") or "")
         schedule = schedule_by_game.get(game_id, {"game_id": game_id})
         key = _tier_state_key(season, game_id)
+        prior_tier = previous_tiers.get(key)
         game = build_game_prediction(
             row,
             schedule,
@@ -518,7 +540,7 @@ def build_week_predictions(
             vintage_label=vintage_label,
             ensemble_scope_label=ensemble_scope_label,
             feature_time_label=feature_time_label,
-            previous_tier=previous_tiers.get(key),
+            previous_tier=prior_tier,
             tier_primary=tier_primaries.get(key),
             stale_max_age_hours=stale_max_age_hours,
         )
@@ -529,7 +551,28 @@ def build_week_predictions(
         else:
             new_tiers[key] = None
 
+        basis = game.get("conviction_basis") or {}
+        tier_change_records.append(
+            {
+                "published_at": _iso_utc(published_at),
+                "season": season,
+                "week": week,
+                "refresh_kind": refresh_kind,
+                "game_id": game_id,
+                "prior_tier": prior_tier,
+                "new_tier": tier_val,
+                "hysteresis_applied": bool(basis.get("hysteresis_applied", False)),
+                "p_favored": basis.get("p_favored"),
+            }
+        )
+
     store.save(tiers=new_tiers, refresh_kind=refresh_kind)
+
+    if record_tier_changes:
+        cfg_path = tier_changes_path
+        if cfg_path is None:
+            cfg_path = Path(load_config().webapp.tier_changes_path)
+        append_tier_change_records(tier_change_records, path=cfg_path)
 
     stale = stale_context or {}
     artifact: dict[str, Any] = {
@@ -995,6 +1038,7 @@ def export_publish_artifacts(
     schedule_by_game: Mapping[str, Mapping[str, Any]] | None = None,
     filter_history: pd.DataFrame | None = None,
     push: bool = False,
+    notifier: Any | None = None,
 ) -> dict[str, Any]:
     """Build Ridge artifacts from a predict_publish result payload."""
     cfg = config or load_config()
@@ -1032,6 +1076,8 @@ def export_publish_artifacts(
         stale_context=stale_ctx,
         tier_store=TierStateStore(Path(cfg.webapp.tier_state_path)),
         stale_max_age_hours=float(cfg.pipeline.stale_odds_max_age_hours),
+        tier_changes_path=Path(cfg.webapp.tier_changes_path),
+        record_tier_changes=True,
     )
     meta = build_meta(
         season=season,
@@ -1079,7 +1125,9 @@ def export_publish_artifacts(
             season=season,
             week=week,
             refresh_kind=refresh_kind,
+            schema_version=SCHEMA_VERSION,
             config=cfg,
+            notifier=notifier,
         )
 
     return {
