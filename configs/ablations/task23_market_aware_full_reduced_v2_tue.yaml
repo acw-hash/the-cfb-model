@@ -1,3 +1,7 @@
+# MKT-2019-FIX: market_feature_source=snapshots never falls back to CFBD
+# (2019 mkt_* → null + is_missing). Close is never a feature.
+# MEMBER-HEALTH-FIX / ADR 0014: member credibility contract; ENet NaN policy
+# changes training inputs — this run must re-execute under the contract.
 run_id: task23_market_aware_reduced_v2_tue
 ablation_id: full
 stack: market_aware
@@ -24,6 +28,7 @@ walkforward:
   mapping_layer: ensemble
   garbage_time_filter: true
   market_feature_source: snapshots
+  member_fit_failure_mode: exclude
   seed: 42
   model_version: production-v0_reduced_v2
   run_id: task23_market_aware_reduced_v2_tue

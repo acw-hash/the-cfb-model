@@ -21,7 +21,9 @@ realigns columns.
 
 Market features (no dedicated builder module yet) are composed from the
 harness line ladder / CFBD frames with an explicit ``market_provenance``
-column for ablation A6.
+column for ablation A6. Provenance is stamped from the resolving
+``line_source`` at resolution (MKT-2019-FIX) — never inferred from
+non-nullness or from ``market_feature_source`` config.
 """
 
 from __future__ import annotations
@@ -62,6 +64,7 @@ from ncaa_quant.evaluation.walkforward import (
     resolve_lines_for_games,
 )
 from ncaa_quant.features.builders.tempo import ExpectedPossessionsArtifact
+from ncaa_quant.features.market_lines import provenance_from_line_source
 from ncaa_quant.features.possessions import (
     EXPECTED_POSSESSIONS_FEATURE_NAMES,
     fit_expected_possessions_at_retrain,
@@ -446,7 +449,8 @@ class ProductionFeatureProvider:
 
         if market_features:
             mkt = self._resolve_market_lines(games, as_of)
-            frame = frame.merge(mkt, on="game_id", how="left")
+            merge_cols = ["game_id", *[c for c in MARKET_FEATURE_COLS if c in mkt.columns]]
+            frame = frame.merge(mkt[merge_cols], on="game_id", how="left")
             for col in MARKET_FEATURE_COLS:
                 if col not in frame.columns:
                     frame[col] = float("nan") if col != "market_provenance" else "null"
@@ -466,6 +470,7 @@ class ProductionFeatureProvider:
             for gid in games["game_id"].astype(int):
                 cfbd = _resolve_cfbd_only_line(int(gid), self.cfbd_lines)
                 missing = 1.0 if (np.isnan(cfbd["spread"]) and np.isnan(cfbd["total"])) else 0.0
+                src = str(cfbd["line_source"])
                 out_rows.append(
                     {
                         "game_id": int(gid),
@@ -473,7 +478,8 @@ class ProductionFeatureProvider:
                         "mkt_total": cfbd["total"],
                         "mkt_n_books": cfbd["n_books"],
                         "mkt_is_missing": missing,
-                        "market_provenance": "cfbd" if cfbd["line_source"] != "null" else "null",
+                        "line_source": src,
+                        "market_provenance": provenance_from_line_source(src),
                     }
                 )
             return pd.DataFrame(out_rows)
@@ -485,13 +491,13 @@ class ProductionFeatureProvider:
             cfbd_lines=self.cfbd_lines,
             config=self.config,
             closing=False,
+            for_features=True,
         )
         for r in resolved.itertuples(index=False):
             spread = float(r.spread) if pd.notna(r.spread) else float("nan")
             total = float(r.total) if pd.notna(r.total) else float("nan")
             missing = 1.0 if (np.isnan(spread) and np.isnan(total)) else 0.0
             src = str(r.line_source)
-            provenance = "null" if src == "null" else "snapshots"
             out_rows.append(
                 {
                     "game_id": int(r.game_id),
@@ -499,7 +505,8 @@ class ProductionFeatureProvider:
                     "mkt_total": total,
                     "mkt_n_books": int(r.n_books),
                     "mkt_is_missing": missing,
-                    "market_provenance": provenance,
+                    "line_source": src,
+                    "market_provenance": provenance_from_line_source(src),
                 }
             )
         return pd.DataFrame(out_rows)
@@ -545,6 +552,51 @@ def _resolve_cfbd_only_line(
 # CFB margins beyond this are not credible as μ predictions (Task 22B-FIX:
 # ElasticNet OOD via near-constant features produced |pred|≈30k while finite).
 MAX_CREDIBLE_MARGIN_PRED: float = 80.0
+
+# ADR 0014: population SD below this on the member's own training window ⇒ degenerate.
+MEMBER_DEGENERACY_SD_EPS: float = 1e-12
+
+NULL_REASON_COLD_START: str = "cold_start_insufficient"
+NULL_REASON_NO_CREDIBLE: str = "no_credible_members"
+
+
+@dataclass(frozen=True)
+class MemberStatus:
+    """Per-member credibility record (ADR 0014); written into the run manifest."""
+
+    name: str
+    fitted: bool
+    selection_consistent: bool
+    non_degenerate: bool
+    credible: bool
+    exclude_reason: str | None = None
+    train_sd: float = float("nan")
+    n_train: int = 0
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "name": self.name,
+            "fitted": self.fitted,
+            "selection_consistent": self.selection_consistent,
+            "non_degenerate": self.non_degenerate,
+            "credible": self.credible,
+            "exclude_reason": self.exclude_reason,
+            "train_sd": self.train_sd,
+            "n_train": self.n_train,
+        }
+
+
+def _member_train_sd(values: np.ndarray) -> float:
+    v = np.asarray(values, dtype=float)
+    v = v[np.isfinite(v)]
+    if v.size < 2:
+        return 0.0
+    return float(np.std(v, ddof=0))
+
+
+def _is_non_degenerate(values: np.ndarray, *, eps: float = MEMBER_DEGENERACY_SD_EPS) -> bool:
+    return _member_train_sd(values) > float(eps)
+
 
 # Minimum OOF rows before fitting σ / calibration / CQR layers.
 _MIN_OOF_ROWS: int = 8
@@ -607,12 +659,24 @@ def validate_prediction_distribution(predictions: pd.DataFrame) -> None:
     on the full scored table **or** within any ``(season, week)`` block with
     ≥8 finite values. Point μ is gated by :func:`assert_prediction_quality_gate`
     (D2). Also catches the Task 23 fixed-σ Φ((μ±line)/c) path.
+
+    ADR 0014: intentional null rows (``null_reason`` set) are ungradable and
+    excluded — honest cold-start gaps must not trip D4.
     """
     if predictions.empty:
         return
     frame = predictions
     if "exclude_from_headline" in frame.columns:
         frame = frame.loc[~frame["exclude_from_headline"].fillna(False).astype(bool)]
+    if "null_reason" in frame.columns:
+        reasons = frame["null_reason"]
+        intentional = (
+            reasons.notna()
+            & reasons.astype(str).str.len().gt(0)
+            & (reasons.astype(str) != "nan")
+            & (reasons.astype(str) != "None")
+        )
+        frame = frame.loc[~intentional]
     if len(frame) < 2:
         return
 
@@ -898,6 +962,8 @@ class ProductionEnsemblePredictor:
     _fitted: bool = field(default=False, init=False, repr=False)
     _nnls_fold_reports: list[dict[str, Any]] = field(default_factory=list, init=False, repr=False)
     _nnls_fallback: str | None = field(default=None, init=False, repr=False)
+    _member_status: list[MemberStatus] = field(default_factory=list, init=False, repr=False)
+    _null_reason: str | None = field(default=None, init=False, repr=False)
     _calibration: DistributionalCalibrationBundle | None = field(
         default=None, init=False, repr=False
     )
@@ -910,8 +976,8 @@ class ProductionEnsemblePredictor:
 
     @property
     def is_fitted(self) -> bool:
-        """True when margin μ is fit and Level-1 weights are set."""
-        return bool(self.margin_head.is_fitted and self._ensemble is not None)
+        """True after a completed fit() — including zero-credible null blocks (ADR 0014)."""
+        return bool(self._fitted)
 
     @property
     def nnls_fallback(self) -> str | None:
@@ -924,12 +990,24 @@ class ProductionEnsemblePredictor:
         return list(self._nnls_fold_reports)
 
     @property
+    def member_status(self) -> list[MemberStatus]:
+        """Latest fit's per-member credibility records (ADR 0014)."""
+        return list(self._member_status)
+
+    @property
+    def null_reason(self) -> str | None:
+        """When set, predict emits null μ with this reason (no constant fill)."""
+        return self._null_reason
+
+    @property
     def ensemble_weights(self) -> dict[str, float]:
         """Current margin stack weights (A4 mechanism surface)."""
         if self._ensemble is not None and self._ensemble.margin is not None:
             return self._ensemble.margin.as_dict()
         if self.config.mapping_layer == "single_lgbm":
             return {"lgbm_mu_margin": 1.0}
+        if self._null_reason is not None:
+            return {}
         msg = "ensemble weights requested before NNLS fit"
         raise EnsembleError(msg)
 
@@ -946,34 +1024,219 @@ class ProductionEnsemblePredictor:
         sample_weight: pd.Series | None = None,
     ) -> None:
         del sample_weight
+        self._member_status = []
+        self._null_reason = None
         if labels.empty or features.empty:
             # Leave heads unfitted — predict must raise NotFittedError.
             self._fitted = False
             self._ensemble = None
             self._nnls_fallback = None
             return
-        self.margin_head.fit(features, labels)
+
+        mode = str(getattr(self.config, "member_fit_failure_mode", "exclude"))
+        # --- LGBM margin (required primary member) ---
+        try:
+            self.margin_head.fit(features, labels)
+        except Exception as exc:
+            if mode == "raise":
+                raise
+            self._member_status.append(
+                MemberStatus(
+                    name="lgbm_mu_margin",
+                    fitted=False,
+                    selection_consistent=True,
+                    non_degenerate=False,
+                    credible=False,
+                    exclude_reason=f"fit_exception:{type(exc).__name__}",
+                )
+            )
+            self._fitted = False
+            self._ensemble = None
+            self._null_reason = NULL_REASON_NO_CREDIBLE
+            return
         if not self.margin_head.is_fitted:
             self._fitted = False
             self._ensemble = None
+            self._null_reason = NULL_REASON_NO_CREDIBLE
+            self._member_status.append(
+                MemberStatus(
+                    name="lgbm_mu_margin",
+                    fitted=False,
+                    selection_consistent=True,
+                    non_degenerate=False,
+                    credible=False,
+                    exclude_reason="fit_incomplete",
+                )
+            )
             return
-        with contextlib.suppress(Exception):
-            self.enet_margin.fit(features, labels)
+
+        lgbm_status = self._assess_member_credibility(
+            name="lgbm_mu_margin",
+            head=self.margin_head,
+            features=features,
+            pred_col="pred_margin",
+        )
+        self._member_status.append(lgbm_status)
+
+        # --- ElasticNet margin (ensemble member) ---
+        if self.config.mapping_layer == "ensemble":
+            enet_status = self._fit_member_or_exclude(
+                name="enet_mu_margin",
+                head=self.enet_margin,
+                features=features,
+                labels=labels,
+                pred_col="pred_margin",
+                mode=mode,
+            )
+            self._member_status.append(enet_status)
+
+        # --- Total head (non-NNLS; exclude-or-raise, never silence) ---
         if "realized_total" in labels.columns:
-            with contextlib.suppress(Exception):
+            try:
                 self.total_head.fit(features, labels)
+            except Exception as exc:
+                if mode == "raise":
+                    raise
+                self._member_status.append(
+                    MemberStatus(
+                        name="lgbm_mu_total",
+                        fitted=False,
+                        selection_consistent=True,
+                        non_degenerate=False,
+                        credible=False,
+                        exclude_reason=f"fit_exception:{type(exc).__name__}",
+                    )
+                )
 
         oof = self._time_ordered_oof_mu(features, labels)
         self._set_weights(oof)
 
-        if oof is not None and len(oof) >= _MIN_OOF_ROWS:
+        if self._null_reason is None and not any(s.credible for s in self._member_status):
+            self._null_reason = NULL_REASON_COLD_START
+            # Prefer cold_start label when the only fitted member was a constant leaf.
+            if any(s.fitted and not s.non_degenerate for s in self._member_status):
+                self._null_reason = NULL_REASON_COLD_START
+            else:
+                self._null_reason = NULL_REASON_NO_CREDIBLE
+
+        if oof is not None and len(oof) >= _MIN_OOF_ROWS and self._null_reason is None:
             self._fit_sigma_heads(features, labels, oof)
-            with contextlib.suppress(Exception):
+            try:
                 self.quantile_margin_head.fit(features, labels)
+            except Exception as exc:
+                if mode == "raise":
+                    raise
+                self._member_status.append(
+                    MemberStatus(
+                        name="lgbm_quantile_margin",
+                        fitted=False,
+                        selection_consistent=True,
+                        non_degenerate=False,
+                        credible=False,
+                        exclude_reason=f"fit_exception:{type(exc).__name__}",
+                    )
+                )
             self._fit_rho_and_kernel(oof)
             self._fit_cqr_layer(features, labels, oof)
             self._fit_calibration_from_oof(features, oof)
         self._fitted = True
+
+    def _fit_member_or_exclude(
+        self,
+        *,
+        name: str,
+        head: Any,
+        features: pd.DataFrame,
+        labels: pd.DataFrame,
+        pred_col: str,
+        mode: str,
+    ) -> MemberStatus:
+        try:
+            head.fit(features, labels)
+        except Exception as exc:
+            # ElasticNet clears selection on failure; ensure consistency clause.
+            clear = getattr(head, "_clear_estimator_state", None)
+            if callable(clear):
+                clear()
+            if hasattr(head, "_fitted"):
+                head._fitted = False
+            if mode == "raise":
+                raise
+            return MemberStatus(
+                name=name,
+                fitted=False,
+                selection_consistent=True,
+                non_degenerate=False,
+                credible=False,
+                exclude_reason=f"fit_exception:{type(exc).__name__}",
+            )
+        return self._assess_member_credibility(
+            name=name, head=head, features=features, pred_col=pred_col
+        )
+
+    def _assess_member_credibility(
+        self,
+        *,
+        name: str,
+        head: Any,
+        features: pd.DataFrame,
+        pred_col: str,
+    ) -> MemberStatus:
+        fitted = bool(getattr(head, "is_fitted", False))
+        selection_consistent = True
+        if name.startswith("enet"):
+            selected = list(getattr(head, "_selected_features", []) or [])
+            model = getattr(head, "_model", None)
+            # Consistent: both present or both absent.
+            selection_consistent = (bool(selected) and model is not None and fitted) or (
+                not selected and model is None and not fitted
+            )
+            if fitted and not selection_consistent:
+                clear = getattr(head, "_clear_estimator_state", None)
+                if callable(clear):
+                    clear()
+                if hasattr(head, "_fitted"):
+                    head._fitted = False
+                fitted = False
+        train_sd = float("nan")
+        n_train = 0
+        non_deg = False
+        if fitted:
+            try:
+                pred = head.predict(features)
+                vals = pred[pred_col].to_numpy(dtype=float)
+                train_sd = _member_train_sd(vals)
+                n_train = int(np.isfinite(vals).sum())
+                non_deg = _is_non_degenerate(vals)
+            except Exception as exc:
+                return MemberStatus(
+                    name=name,
+                    fitted=True,
+                    selection_consistent=selection_consistent,
+                    non_degenerate=False,
+                    credible=False,
+                    exclude_reason=f"train_predict_exception:{type(exc).__name__}",
+                    train_sd=train_sd,
+                    n_train=n_train,
+                )
+        exclude: str | None = None
+        if not fitted:
+            exclude = "not_fitted"
+        elif not selection_consistent:
+            exclude = "selection_estimator_inconsistent"
+        elif not non_deg:
+            exclude = "degenerate_constant_on_train"
+        credible = fitted and selection_consistent and non_deg
+        return MemberStatus(
+            name=name,
+            fitted=fitted,
+            selection_consistent=selection_consistent,
+            non_degenerate=non_deg,
+            credible=credible,
+            exclude_reason=exclude,
+            train_sd=train_sd,
+            n_train=n_train,
+        )
 
     def predict(self, features: pd.DataFrame) -> pd.DataFrame:
         empty_cols = [
@@ -989,6 +1252,11 @@ class ProductionEnsemblePredictor:
             "p_ml_home",
             "p_ats_home",
             "p_ou_over",
+            "null_reason",
+            "lgbm_credible",
+            "enet_credible",
+            "w_lgbm_mu_margin",
+            "w_enet_mu_margin",
         ]
         if features.empty:
             return pd.DataFrame(columns=empty_cols)
@@ -998,15 +1266,54 @@ class ProductionEnsemblePredictor:
         n = len(out)
         gids = out["game_id"].to_numpy()
 
+        point_mu = (
+            pd.to_numeric(out["pred_margin"], errors="coerce").to_numpy(dtype=float)
+            if "pred_margin" in out.columns
+            else np.full(n, np.nan)
+        )
+        # Honest null block: no constant fabrication; skip distributional assembly.
+        # Never mutate ``self._null_reason`` here — that is fit-time state and must
+        # not poison later weeks until the next retrain.
+        local_null_reason: str | None = self._null_reason
+        take_null = local_null_reason is not None or (
+            "null_reason" in out.columns
+            and out["null_reason"].notna().all()
+            and out["null_reason"].astype(str).ne("None").all()
+            and out["null_reason"].astype(str).ne("nan").all()
+        )
+        if not take_null and not np.any(np.isfinite(point_mu)):
+            take_null = True
+            local_null_reason = local_null_reason or NULL_REASON_NO_CREDIBLE
+
+        if take_null:
+            reason = local_null_reason or (
+                str(out["null_reason"].iloc[0])
+                if "null_reason" in out.columns
+                else NULL_REASON_NO_CREDIBLE
+            )
+            return self._null_prediction_frame(gids, reason=reason)
+
         # --- σ via LoTV ---
         sigma_head_m, sigma_head_t = self._predict_sigma_heads(features, gids)
         member_mus = self._member_margin_matrix(features, out["pred_margin"].to_numpy())
         weights = self.ensemble_weights
-        w = (
-            [weights.get("lgbm_mu_margin", 0.5), weights.get("enet_mu_margin", 0.5)]
-            if member_mus.shape[1] > 1
-            else None
-        )
+        # Align ensemble_sigma weights to the credible-only member matrix columns.
+        status = self._credibility_map()
+        w_list: list[float] = []
+        if status.get("lgbm_mu_margin") and status["lgbm_mu_margin"].credible:
+            w_list.append(float(weights.get("lgbm_mu_margin", 0.0)))
+        if (
+            self.config.mapping_layer == "ensemble"
+            and status.get("enet_mu_margin")
+            and status["enet_mu_margin"].credible
+        ):
+            w_list.append(float(weights.get("enet_mu_margin", 0.0)))
+        if member_mus.shape[1] > 1 and len(w_list) == member_mus.shape[1]:
+            w = w_list
+        elif member_mus.shape[1] > 1:
+            w = None
+        else:
+            w = None
         ens_m = ensemble_sigma(member_mus, sigma_head_m, weights=w)
         # Total: single member → ens σ = σ-head.
         ens_t = ensemble_sigma(out["pred_total"].to_numpy().reshape(-1, 1), sigma_head_t)
@@ -1073,33 +1380,75 @@ class ProductionEnsemblePredictor:
             out["cqr_nominal"] = np.nan
             out["cqr_is_missing"] = True
 
-        # Joint MC → market probs
+        # Joint MC → market probs. Sanitize non-finite params (never invent μ).
         spreads, totals = self._lookup_closes(gids)
-        params = assemble_bivariate(mu_m, sig_m, mu_t, sig_t, rho=self._rho)
+        ok_m = np.isfinite(mu_m) & np.isfinite(sig_m) & (sig_m > 0)
+        ok_t = np.isfinite(mu_t) & np.isfinite(sig_t) & (sig_t > 0)
+        if "null_reason" not in out.columns:
+            out["null_reason"] = None
+
+        def _mark_nonfinite_mu() -> None:
+            """Only non-finite μ is an intentional null — never erase honest μ."""
+            bad_mu = ~np.isfinite(mu_m)
+            if not bool(np.any(bad_mu)):
+                return
+            out.loc[bad_mu, "pred_margin"] = np.nan
+            out.loc[bad_mu, "null_reason"] = local_null_reason or NULL_REASON_NO_CREDIBLE
+
+        if not np.any(ok_m):
+            # σ may be missing after refusing a constant floor, but μ can still be
+            # an honest point prediction — do not erase it (ADR 0014).
+            if np.any(np.isfinite(mu_m)):
+                out["sigma_m"] = np.nan
+                out["sigma_t"] = np.nan
+                out["sigma_m_is_missing"] = True
+                out["sigma_t_is_missing"] = True
+                out["rho"] = np.nan
+                out["rho_is_missing"] = True
+                for col in (
+                    "p_ml_home_raw",
+                    "p_ats_home_raw",
+                    "p_ou_over_raw",
+                    "p_ml_home",
+                    "p_ats_home",
+                    "p_ou_over",
+                ):
+                    out[col] = np.nan
+                for col in (
+                    "p_ml_home_is_missing",
+                    "p_ats_home_is_missing",
+                    "p_ou_over_is_missing",
+                ):
+                    out[col] = True
+                _mark_nonfinite_mu()
+                return out
+            return self._null_prediction_frame(
+                gids, reason=local_null_reason or NULL_REASON_NO_CREDIBLE
+            )
+        mu_m_s = np.where(ok_m, mu_m, 0.0)
+        mu_t_s = np.where(ok_t, mu_t, 50.0)
+        sig_m_s = np.where(ok_m, sig_m, 1.0)
+        sig_t_s = np.where(ok_t, sig_t, 1.0)
+        params = assemble_bivariate(mu_m_s, sig_m_s, mu_t_s, sig_t_s, rho=self._rho)
         draws = sample_joint(
             params,
             kernel=self._key_kernel,
             n_draws=int(self.n_mc_draws),
             seed=int(self.seed),
         )
-        p_ml = np.empty(n, dtype=float)
-        p_ats = np.empty(n, dtype=float)
-        p_ou = np.empty(n, dtype=float)
+        p_ml = np.full(n, np.nan, dtype=float)
+        p_ats = np.full(n, np.nan, dtype=float)
+        p_ou = np.full(n, np.nan, dtype=float)
         for i in range(n):
-            # ML / ATS / OU binary markets are graded with pushes excluded.
-            # Emit push-conditional (two-way) side probs so p_side + p_other == 1
-            # net of push (H3). Continuous Gaussian draws have p_push=0 (no-op).
+            if not ok_m[i]:
+                continue
             p_ml[i] = two_way_side_prob(moneyline_probs(draws, game_index=i))
             if np.isfinite(spreads[i]):
                 p_ats[i] = two_way_side_prob(
                     spread_cover_probs(draws, float(spreads[i]), game_index=i)
                 )
-            else:
-                p_ats[i] = float("nan")
-            if np.isfinite(totals[i]):
+            if ok_t[i] and np.isfinite(totals[i]):
                 p_ou[i] = two_way_side_prob(total_probs(draws, float(totals[i]), game_index=i))
-            else:
-                p_ou[i] = float("nan")
 
         out["p_ml_home_raw"] = p_ml
         out["p_ats_home_raw"] = p_ats
@@ -1110,50 +1459,199 @@ class ProductionEnsemblePredictor:
         out["p_ml_home_is_missing"] = ~np.isfinite(out["p_ml_home"].to_numpy(dtype=float))
         out["p_ats_home_is_missing"] = ~np.isfinite(out["p_ats_home"].to_numpy(dtype=float))
         out["p_ou_over_is_missing"] = ~np.isfinite(out["p_ou_over"].to_numpy(dtype=float))
+        # Keep honest finite μ even when σ/prob path failed for that row (ADR 0014).
+        _mark_nonfinite_mu()
+        if not bool(np.all(ok_t)):
+            out.loc[~ok_t, "pred_total"] = np.nan
+            out.loc[~ok_t, "sigma_t"] = np.nan
         return out
 
     # ------------------------------------------------------------------
     # Internals
     # ------------------------------------------------------------------
 
+    def _null_prediction_frame(self, gids: np.ndarray, *, reason: str) -> pd.DataFrame:
+        """Emit null μ with reason — never a fabricated constant (ADR 0014)."""
+        n = len(gids)
+        status = self._credibility_map()
+        lgbm_cred = bool(status.get("lgbm_mu_margin") and status["lgbm_mu_margin"].credible)
+        enet_cred = bool(status.get("enet_mu_margin") and status["enet_mu_margin"].credible)
+        return pd.DataFrame(
+            {
+                "game_id": gids,
+                "pred_margin": np.full(n, np.nan),
+                "pred_total": np.full(n, np.nan),
+                "null_reason": reason,
+                "sigma_m": np.full(n, np.nan),
+                "sigma_t": np.full(n, np.nan),
+                "sigma_m_is_missing": True,
+                "sigma_t_is_missing": True,
+                "rho": np.full(n, np.nan),
+                "rho_is_missing": True,
+                "p_ml_home_raw": np.full(n, np.nan),
+                "p_ats_home_raw": np.full(n, np.nan),
+                "p_ou_over_raw": np.full(n, np.nan),
+                "p_ml_home": np.full(n, np.nan),
+                "p_ats_home": np.full(n, np.nan),
+                "p_ou_over": np.full(n, np.nan),
+                "p_ml_home_is_missing": True,
+                "p_ats_home_is_missing": True,
+                "p_ou_over_is_missing": True,
+                "lgbm_credible": lgbm_cred,
+                "enet_credible": enet_cred,
+                "w_lgbm_mu_margin": 0.0,
+                "w_enet_mu_margin": 0.0,
+            }
+        )
+
+    def _credibility_map(self) -> dict[str, MemberStatus]:
+        return {s.name: s for s in self._member_status}
+
     def _predict_point(self, features: pd.DataFrame) -> pd.DataFrame:
-        lgbm = self.margin_head.predict(features)
+        """Stack credible member μs only — never fabricate a constant (ADR 0014)."""
+        status = self._credibility_map()
         weights = self.ensemble_weights
-        margin = lgbm["pred_margin"].astype(float).to_numpy()
-        enet_m = np.full_like(margin, 2.5, dtype=float)
-        if self.config.mapping_layer == "ensemble":
-            try:
+        gids = features["game_id"].to_numpy()
+        n = len(features)
+
+        lgbm_cred = bool(status.get("lgbm_mu_margin") and status["lgbm_mu_margin"].credible)
+        enet_cred = bool(status.get("enet_mu_margin") and status["enet_mu_margin"].credible)
+
+        # Fit-time null block (zero credible members).
+        if self._null_reason is not None:
+            return pd.DataFrame(
+                {
+                    "game_id": gids,
+                    "pred_margin": np.full(n, np.nan),
+                    "pred_total": np.full(n, np.nan),
+                    "null_reason": self._null_reason,
+                    "lgbm_credible": lgbm_cred,
+                    "enet_credible": enet_cred,
+                    "w_lgbm_mu_margin": 0.0,
+                    "w_enet_mu_margin": 0.0,
+                }
+            )
+
+        margin = np.full(n, np.nan, dtype=float)
+        w_l = float(weights.get("lgbm_mu_margin", 0.0))
+        w_e = float(weights.get("enet_mu_margin", 0.0))
+
+        if self.config.mapping_layer == "single_lgbm":
+            if not lgbm_cred:
+                return pd.DataFrame(
+                    {
+                        "game_id": gids,
+                        "pred_margin": np.full(n, np.nan),
+                        "pred_total": np.full(n, np.nan),
+                        "null_reason": NULL_REASON_NO_CREDIBLE,
+                        "lgbm_credible": False,
+                        "enet_credible": False,
+                        "w_lgbm_mu_margin": 0.0,
+                        "w_enet_mu_margin": 0.0,
+                    }
+                )
+            lgbm = self.margin_head.predict(features)
+            margin = lgbm["pred_margin"].astype(float).to_numpy()
+            w_l, w_e = 1.0, 0.0
+        else:
+            parts: list[np.ndarray] = []
+            wts: list[float] = []
+            if lgbm_cred and w_l > 0.0:
+                lgbm = self.margin_head.predict(features)
+                parts.append(lgbm["pred_margin"].astype(float).to_numpy())
+                wts.append(w_l)
+            elif lgbm_cred and w_e <= 0.0:
+                # Credible but zero weight from NNLS — still allow if sole member.
+                pass
+            if enet_cred and w_e > 0.0:
                 enet = self.enet_margin.predict(features)
                 enet_m = (
-                    enet.set_index("game_id")
-                    .reindex(lgbm["game_id"])["pred_margin"]
-                    .astype(float)
-                    .to_numpy()
+                    enet.set_index("game_id").reindex(gids)["pred_margin"].astype(float).to_numpy()
                 )
-                credible = np.isfinite(enet_m) & (np.abs(enet_m) <= MAX_CREDIBLE_MARGIN_PRED)
-                if not bool(np.all(credible)):
-                    enet_m = np.full_like(margin, 2.5, dtype=float)
+                # Per-row OOD: drop non-finite / absurd rows — never block-fill 2.5.
+                bad = ~(np.isfinite(enet_m) & (np.abs(enet_m) <= MAX_CREDIBLE_MARGIN_PRED))
+                if bool(np.any(bad)):
+                    enet_m = enet_m.copy()
+                    enet_m[bad] = np.nan
+                parts.append(enet_m)
+                wts.append(w_e)
+
+            if not parts:
+                # No positive weight on any credible member.
+                if lgbm_cred:
+                    lgbm = self.margin_head.predict(features)
+                    margin = lgbm["pred_margin"].astype(float).to_numpy()
+                    w_l, w_e = 1.0, 0.0
+                elif enet_cred:
+                    enet = self.enet_margin.predict(features)
+                    margin = (
+                        enet.set_index("game_id")
+                        .reindex(gids)["pred_margin"]
+                        .astype(float)
+                        .to_numpy()
+                    )
+                    w_l, w_e = 0.0, 1.0
+                else:
+                    return pd.DataFrame(
+                        {
+                            "game_id": gids,
+                            "pred_margin": np.full(n, np.nan),
+                            "pred_total": np.full(n, np.nan),
+                            "null_reason": NULL_REASON_NO_CREDIBLE,
+                            "lgbm_credible": False,
+                            "enet_credible": False,
+                            "w_lgbm_mu_margin": 0.0,
+                            "w_enet_mu_margin": 0.0,
+                        }
+                    )
+            else:
+                stacked = np.column_stack(parts)
+                w_arr = np.asarray(wts, dtype=float)
+                w_arr = w_arr / max(float(w_arr.sum()), 1e-12)
+                # Row-wise: if a member is NaN, renormalize over finite members.
+                margin = np.full(n, np.nan, dtype=float)
+                for i in range(n):
+                    row = stacked[i]
+                    ok = np.isfinite(row)
+                    if not np.any(ok):
+                        continue
+                    ww = w_arr[ok]
+                    ww = ww / max(float(ww.sum()), 1e-12)
+                    margin[i] = float(np.dot(ww, row[ok]))
+
+        out = pd.DataFrame(
+            {
+                "game_id": gids,
+                "pred_margin": margin,
+                "null_reason": None,
+                "lgbm_credible": lgbm_cred,
+                "enet_credible": enet_cred,
+                "w_lgbm_mu_margin": float(weights.get("lgbm_mu_margin", w_l)),
+                "w_enet_mu_margin": float(weights.get("enet_mu_margin", w_e)),
+            }
+        )
+        if self.total_head.is_fitted:
+            try:
+                total = self.total_head.predict(features)
+                out["pred_total"] = (
+                    total.set_index("game_id").reindex(out["game_id"])["pred_total"].to_numpy()
+                )
             except Exception:
-                enet_m = np.full_like(margin, 2.5, dtype=float)
-            w_l = float(weights.get("lgbm_mu_margin", 0.5))
-            w_e = float(weights.get("enet_mu_margin", 0.5))
-            total_w = max(w_l + w_e, 1e-12)
-            margin = (w_l * margin + w_e * enet_m) / total_w
-        out = pd.DataFrame({"game_id": lgbm["game_id"].to_numpy(), "pred_margin": margin})
-        try:
-            total = self.total_head.predict(features)
-            out["pred_total"] = (
-                total.set_index("game_id").reindex(out["game_id"])["pred_total"].to_numpy()
-            )
-        except Exception:
+                out["pred_total"] = float("nan")
+        else:
             out["pred_total"] = float("nan")
         return out
 
     def _member_margin_matrix(self, features: pd.DataFrame, ens_margin: np.ndarray) -> np.ndarray:
-        lgbm = self.margin_head.predict(features)["pred_margin"].astype(float).to_numpy()
-        if self.config.mapping_layer != "ensemble":
-            return np.asarray(lgbm.reshape(-1, 1), dtype=float)
-        try:
+        """Credible member μ columns only — never constant-fill a dead member."""
+        del ens_margin
+        status = self._credibility_map()
+        lgbm_cred = bool(status.get("lgbm_mu_margin") and status["lgbm_mu_margin"].credible)
+        enet_cred = bool(status.get("enet_mu_margin") and status["enet_mu_margin"].credible)
+        cols: list[np.ndarray] = []
+        if lgbm_cred:
+            cols.append(self.margin_head.predict(features)["pred_margin"].astype(float).to_numpy())
+        if self.config.mapping_layer == "ensemble" and enet_cred:
             enet = self.enet_margin.predict(features)
             enet_m = (
                 enet.set_index("game_id")
@@ -1161,13 +1659,15 @@ class ProductionEnsemblePredictor:
                 .astype(float)
                 .to_numpy()
             )
-            credible = np.isfinite(enet_m) & (np.abs(enet_m) <= MAX_CREDIBLE_MARGIN_PRED)
-            if not bool(np.all(credible)):
-                enet_m = np.full_like(lgbm, 2.5, dtype=float)
-        except Exception:
-            enet_m = np.full_like(lgbm, 2.5, dtype=float)
-        del ens_margin
-        return np.column_stack([lgbm, enet_m])
+            bad = ~(np.isfinite(enet_m) & (np.abs(enet_m) <= MAX_CREDIBLE_MARGIN_PRED))
+            if bool(np.any(bad)):
+                enet_m = enet_m.copy()
+                enet_m[bad] = np.nan
+            cols.append(enet_m)
+        if not cols:
+            n = len(features)
+            return np.full((n, 1), np.nan, dtype=float)
+        return np.column_stack(cols)
 
     def _predict_sigma_heads(
         self, features: pd.DataFrame, gids: np.ndarray
@@ -1191,7 +1691,8 @@ class ProductionEnsemblePredictor:
                     break
             st = pred.set_index("game_id").reindex(gids)[col].to_numpy(dtype=float)
         # Heteroskedastic floor: if σ-head missing, derive a per-row proxy from
-        # rating_uncertainty so σ is never a global constant.
+        # rating_uncertainty. If that proxy is still block-constant, emit null
+        # with indicator — never a fabricated constant σ (ADR 0014 / D4).
         if not np.any(np.isfinite(sm)):
             unc = (
                 features["rating_uncertainty"].to_numpy(dtype=float)
@@ -1206,7 +1707,16 @@ class ProductionEnsemblePredictor:
                 else np.full(n, 1.0)
             )
             st = 8.0 + np.maximum(unc, 0.0)
-        return np.maximum(sm, 1e-6), np.maximum(st, 1e-6)
+        sm_out = np.asarray(sm, dtype=float)
+        st_out = np.asarray(st, dtype=float)
+        sm_out = np.where(np.isfinite(sm_out), np.maximum(sm_out, 1e-6), np.nan)
+        st_out = np.where(np.isfinite(st_out), np.maximum(st_out, 1e-6), np.nan)
+        # Refuse block-constant σ (fitted or floored) — D4 / ADR 0014.
+        for arr in (sm_out, st_out):
+            finite = arr[np.isfinite(arr)]
+            if finite.size >= 8 and float(np.nanmax(finite) - np.nanmin(finite)) < 1e-12:
+                arr[:] = np.nan
+        return sm_out, st_out
 
     def _time_ordered_oof_mu(
         self, features: pd.DataFrame, labels: pd.DataFrame
@@ -1252,15 +1762,21 @@ class ProductionEnsemblePredictor:
             pred_m = head_m.predict(te_feat).set_index("game_id")["pred_margin"]
             pred_enet: pd.Series | None = None
             if self.config.mapping_layer == "ensemble":
-                head_e = ElasticNetMuHead(
-                    target="margin",
-                    model_version=f"{self.model_version}-oof-enet",
-                    seed=self.seed + b + 31,
+                enet_ok = any(
+                    s.name == "enet_mu_margin" and s.credible for s in self._member_status
                 )
-                with contextlib.suppress(Exception):
-                    head_e.fit(tr_feat, tr_lab)
-                    if head_e.is_fitted:
-                        pred_enet = head_e.predict(te_feat).set_index("game_id")["pred_margin"]
+                if enet_ok:
+                    head_e = ElasticNetMuHead(
+                        target="margin",
+                        model_version=f"{self.model_version}-oof-enet",
+                        seed=self.seed + b + 31,
+                    )
+                    try:
+                        head_e.fit(tr_feat, tr_lab)
+                        if head_e.is_fitted:
+                            pred_enet = head_e.predict(te_feat).set_index("game_id")["pred_margin"]
+                    except Exception:
+                        pred_enet = None
             pred_t_series: pd.Series | None = None
             if "realized_total" in tr_lab.columns:
                 head_t = LightGBMMuHead(
@@ -1269,17 +1785,18 @@ class ProductionEnsemblePredictor:
                     model_version=f"{self.model_version}-oof-t",
                     seed=self.seed + b + 17,
                 )
-                with contextlib.suppress(Exception):
+                try:
                     head_t.fit(tr_feat, tr_lab)
                     pred_t_series = head_t.predict(te_feat).set_index("game_id")["pred_total"]
+                except Exception:
+                    pred_t_series = None
             for row in test.itertuples(index=False):
                 gid = int(row.game_id)
                 lgbm_val = float(pred_m.loc[gid])
-                enet_val = (
-                    float(pred_enet.loc[gid])
-                    if pred_enet is not None and gid in pred_enet.index
-                    else lgbm_val
-                )
+                if pred_enet is not None and gid in pred_enet.index:
+                    enet_val = float(pred_enet.loc[gid])
+                else:
+                    enet_val = float("nan")
                 entry: dict[str, Any] = {
                     "game_id": gid,
                     "pred_margin": lgbm_val,
@@ -1558,29 +2075,101 @@ class ProductionEnsemblePredictor:
         return mix_epistemic_predictions(rate_draws, mapping_fn, rho=rho, seed=seed)
 
     def _set_weights(self, oof: pd.DataFrame | None = None) -> None:
-        """Fit Level-1 NNLS stack on OOF member μs (DESIGN §5.2).
+        """Fit Level-1 NNLS stack on OOF μs of **credible** members only (ADR 0014).
 
-        Never hardcodes 0.5/0.5. Degenerate OOF raises unless
-        ``config.nnls_equal_weight_fallback`` is explicitly True.
+        Never hardcodes 0.5/0.5. Never assigns weight to a non-credible member.
+        Degenerate OOF raises unless ``config.nnls_equal_weight_fallback`` is True.
         """
         self._nnls_fallback = None
+        status = self._credibility_map()
+        if self._member_status:
+            lgbm_cred = bool(status.get("lgbm_mu_margin") and status["lgbm_mu_margin"].credible)
+            enet_cred = bool(status.get("enet_mu_margin") and status["enet_mu_margin"].credible)
+        else:
+            # Unit tests / direct _set_weights: treat present OOF columns as credible.
+            lgbm_cred = oof is not None and "lgbm_mu_margin" in oof.columns
+            enet_cred = (
+                self.config.mapping_layer == "ensemble"
+                and oof is not None
+                and "enet_mu_margin" in oof.columns
+            )
+
         if self.config.mapping_layer == "single_lgbm":
+            if not lgbm_cred:
+                self._null_reason = NULL_REASON_COLD_START
+                self._ensemble = None
+                return
             self._ensemble = FittedEnsemble(
                 margin=single_lgbm_stack(target="margin", lgbm_column="lgbm_mu_margin"),
                 total=single_lgbm_stack(target="total", lgbm_column="lgbm_mu_total"),
-                meta={"mapping_layer": "single_lgbm"},
+                meta={
+                    "mapping_layer": "single_lgbm",
+                    "member_status": [s.as_dict() for s in self._member_status],
+                },
             )
             return
 
-        member_cols = ("lgbm_mu_margin", "enet_mu_margin")
+        # Ensemble: only credible members enter NNLS.
+        member_cols: list[str] = []
+        if lgbm_cred:
+            member_cols.append("lgbm_mu_margin")
+        if enet_cred:
+            member_cols.append("enet_mu_margin")
+
+        if not member_cols:
+            self._null_reason = (
+                NULL_REASON_COLD_START
+                if any(s.fitted and not s.non_degenerate for s in self._member_status)
+                else NULL_REASON_NO_CREDIBLE
+            )
+            self._ensemble = None
+            report = {
+                "target": "margin",
+                "weights": {},
+                "n_oof_rows": 0 if oof is None else int(len(oof)),
+                "fallback": None,
+                "member_status": [s.as_dict() for s in self._member_status],
+                "null_reason": self._null_reason,
+            }
+            self._nnls_fold_reports.append(report)
+            return
+
         allow_fb = bool(getattr(self.config, "nnls_equal_weight_fallback", False))
+        if len(member_cols) == 1:
+            col = member_cols[0]
+            stack = NNLSStackResult(
+                target="margin",
+                member_columns=(col,),
+                weights=(1.0,),
+                condition_number=1.0,
+                n_oof_rows=0 if oof is None else int(len(oof)),
+                fallback=None,
+            )
+            report = {
+                "target": "margin",
+                "weights": stack.as_dict(),
+                "condition_number": stack.condition_number,
+                "n_oof_rows": stack.n_oof_rows,
+                "fallback": None,
+                "member_status": [s.as_dict() for s in self._member_status],
+                "n_train_labels": 0 if oof is None else int(len(oof)),
+            }
+            self._nnls_fold_reports.append(report)
+            self._ensemble = FittedEnsemble(
+                margin=stack,
+                total=single_lgbm_stack(target="total", lgbm_column="lgbm_mu_total"),
+                meta={"mapping_layer": "ensemble", "nnls_report": report},
+            )
+            return
+
         if oof is None or oof.empty:
             if allow_fb:
                 self._nnls_fallback = "equal_weight_thin_oof"
+                n = len(member_cols)
                 stack = NNLSStackResult(
                     target="margin",
-                    member_columns=member_cols,
-                    weights=(0.5, 0.5),
+                    member_columns=tuple(member_cols),
+                    weights=tuple(1.0 / n for _ in member_cols),
                     condition_number=float("nan"),
                     n_oof_rows=0,
                     fallback="equal_weight_thin_oof",
@@ -1591,6 +2180,7 @@ class ProductionEnsemblePredictor:
                     "condition_number": stack.condition_number,
                     "n_oof_rows": 0,
                     "fallback": stack.fallback,
+                    "member_status": [s.as_dict() for s in self._member_status],
                 }
                 self._nnls_fold_reports.append(report)
                 self._ensemble = FittedEnsemble(
@@ -1605,22 +2195,33 @@ class ProductionEnsemblePredictor:
                 "mapping_layer='single_lgbm', or set nnls_equal_weight_fallback=True."
             )
             raise EnsembleError(msg)
-        missing = [c for c in member_cols if c not in oof.columns]
-        if missing:
+
+        # Drop OOF rows where any credible member μ is NaN.
+        work = oof.copy()
+        for c in member_cols:
+            if c not in work.columns:
+                msg = f"OOF frame missing NNLS member column: {c}"
+                raise EnsembleError(msg)
+        mask = np.ones(len(work), dtype=bool)
+        for c in member_cols:
+            mask &= np.isfinite(pd.to_numeric(work[c], errors="coerce").to_numpy(dtype=float))
+        work = work.loc[mask]
+        if work.empty:
             if allow_fb:
-                self._nnls_fallback = "equal_weight_missing_members"
+                self._nnls_fallback = "equal_weight_thin_oof"
+                n = len(member_cols)
                 stack = NNLSStackResult(
                     target="margin",
-                    member_columns=member_cols,
-                    weights=(0.5, 0.5),
-                    fallback="equal_weight_missing_members",
+                    member_columns=tuple(member_cols),
+                    weights=tuple(1.0 / n for _ in member_cols),
+                    fallback="equal_weight_thin_oof",
                 )
                 self._nnls_fold_reports.append(
                     {
                         "target": "margin",
                         "weights": stack.as_dict(),
                         "fallback": stack.fallback,
-                        "missing": missing,
+                        "member_status": [s.as_dict() for s in self._member_status],
                     }
                 )
                 self._ensemble = FittedEnsemble(
@@ -1629,11 +2230,11 @@ class ProductionEnsemblePredictor:
                     meta={"mapping_layer": "ensemble"},
                 )
                 return
-            msg = f"OOF frame missing NNLS member columns: {missing}"
+            msg = "OOF frame has no finite rows for credible NNLS members"
             raise EnsembleError(msg)
 
         stack = fit_nnls_stack(
-            oof,
+            work,
             target="margin",
             member_columns=member_cols,
             allow_equal_weight_fallback=allow_fb,
@@ -1646,6 +2247,7 @@ class ProductionEnsemblePredictor:
             "n_oof_rows": stack.n_oof_rows,
             "fallback": stack.fallback,
             "n_train_labels": int(len(oof)),
+            "member_status": [s.as_dict() for s in self._member_status],
         }
         self._nnls_fold_reports.append(report)
         self._ensemble = FittedEnsemble(

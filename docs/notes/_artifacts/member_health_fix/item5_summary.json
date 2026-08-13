@@ -1,0 +1,29 @@
+{
+  "runs": {
+    "fundamental_v2": {
+      "path": "C:\\Users\\alecw\\Projects\\the-cfb-model\\data\\backtests\\task23_fundamental_reduced_v2\\full",
+      "n_folds": 18,
+      "clean": true,
+      "stops": []
+    },
+    "A3_v2": {
+      "path": "C:\\Users\\alecw\\Projects\\the-cfb-model\\data\\backtests\\task23_a3_reduced_v2\\A3_market_off",
+      "n_folds": 18,
+      "clean": true,
+      "stops": []
+    },
+    "A6_v2": {
+      "path": "C:\\Users\\alecw\\Projects\\the-cfb-model\\data\\backtests\\task23_a6_reduced_v2\\A6_cfbd_open_close",
+      "n_folds": 12,
+      "clean": true,
+      "stops": []
+    },
+    "SLOT_CLOSE": {
+      "path": "C:\\Users\\alecw\\Projects\\the-cfb-model\\data\\backtests\\task23_market_aware_reduced_v2_slot_close\\full",
+      "n_folds": 18,
+      "clean": true,
+      "stops": []
+    }
+  },
+  "any_stop": false
+}

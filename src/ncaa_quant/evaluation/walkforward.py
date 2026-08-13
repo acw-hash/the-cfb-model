@@ -135,6 +135,12 @@ DISTRIBUTIONAL_PASS_THROUGH: tuple[str, ...] = (
     "p_ml_home_is_missing",
     "p_ats_home_is_missing",
     "p_ou_over_is_missing",
+    # ADR 0014 member-credibility surfaces
+    "null_reason",
+    "lgbm_credible",
+    "enet_credible",
+    "w_lgbm_mu_margin",
+    "w_enet_mu_margin",
 )
 
 PREDICTION_COLUMNS: tuple[str, ...] = (
@@ -203,6 +209,11 @@ class PredictionQualityGateResult:
     min_train_games_required: int
     passed: bool
     failures: tuple[str, ...]
+    # ADR 0014 gate addenda (not threshold widenings).
+    absent_blocks: tuple[tuple[int, int], ...] = ()
+    null_reason_counts: tuple[tuple[str, int], ...] = ()
+    n_ungradable: int = 0
+    noncredible_weight_blocks: tuple[tuple[int, int], ...] = ()
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -216,6 +227,10 @@ class PredictionQualityGateResult:
             "min_train_games_required": self.min_train_games_required,
             "passed": self.passed,
             "failures": list(self.failures),
+            "absent_blocks": [list(b) for b in self.absent_blocks],
+            "null_reason_counts": {k: int(v) for k, v in self.null_reason_counts},
+            "n_ungradable": self.n_ungradable,
+            "noncredible_weight_blocks": [list(b) for b in self.noncredible_weight_blocks],
         }
 
 
@@ -263,8 +278,12 @@ class WalkForwardConfig:
     garbage_time_filter:
         Ablation A5. When False, efficiency/tempo builders keep garbage-time plays.
     market_feature_source:
-        Ablation A6. ``cfbd_open_close`` is valid only for 2021–2025; requesting
-        it outside that window is a hard error.
+        Ablation A6. ``snapshots`` (default): feature ladder is Odds snapshots
+        only in every season — a season with no snapshots yields null +
+        ``is_missing`` (never CFBD open/close). ``cfbd_open_close`` is valid
+        only for 2021–2025; requesting it outside that window is a hard error.
+        Close is never a feature (``for_features=True`` + ``closing=True`` is
+        a hard error).
     run_id / ablation_id:
         Written onto every prediction row so two runs cannot be confused.
     include_continuity_in_headline:
@@ -306,6 +325,8 @@ class WalkForwardConfig:
     max_zero_mu_rate: float = DEFAULT_MAX_ZERO_MU_RATE
     nnls_equal_weight_fallback: bool = False
     enforce_prediction_quality_gate: bool = False
+    # ADR 0014: member fit failure → exclude (record status) or fail the run.
+    member_fit_failure_mode: Literal["exclude", "raise"] = "exclude"
     lockbox_confirmatory_read: bool = False
     """Permit the lockbox season. Only for the logged annual confirmatory read."""
 
@@ -343,6 +364,7 @@ class WalkForwardConfig:
             "A6_market_feature_source": self.market_feature_source,
             "run_kind": self.run_kind,
             "nnls_equal_weight_fallback": self.nnls_equal_weight_fallback,
+            "member_fit_failure_mode": self.member_fit_failure_mode,
         }
 
     def validate_ablations(self) -> None:
@@ -620,19 +642,26 @@ def resolve_lines_for_games(
     cfbd_lines: pd.DataFrame | None,
     config: WalkForwardConfig,
     closing: bool = False,
+    for_features: bool = False,
 ) -> pd.DataFrame:
     """Resolve spread/total per game under the §7.2 item 8 fallback ladder.
 
-    Bet-time / as-of (``closing=False``):
-      Snapshot-backed seasons (``>= 2021``): Odds snapshots only — CFBD never
-      enters the feature information set. Per-game feature ``as_of`` is the
-      latest configured decision point strictly before kickoff and
-      ``<=`` the kickoff-aligned week decision (WEEK-ALIGN-FIX /
-      MKT-ASOF-FIX). Eligible snaps must satisfy ``event_time <= feature_as_of``
-      **and** ``event_time < kickoff``. CFBD-only seasons (``< 2021``): median
-      CFBD open (else close).
+    Feature path (``for_features=True``, ``closing=False`` only):
+      ``market_feature_source=snapshots``: Odds snapshots only in **every**
+      season. No CFBD open, no CFBD close, no exceptions. A season with no
+      snapshots yields null + ``is_missing``. ``closing=True`` on this path
+      is a hard error — close is never a feature (Tuesday-knowability).
+      ``market_feature_source=cfbd_open_close`` (A6): CFBD open only.
 
-    Closing lines for evaluation (``closing=True``):
+    Evaluation as-of (``for_features=False``, ``closing=False``):
+      Snapshot-backed seasons (``>= 2021``): Odds snapshots only — CFBD never
+      enters the as-of line. Per-game ``as_of`` is the latest configured
+      decision point strictly before kickoff and ``<=`` the kickoff-aligned
+      week decision (WEEK-ALIGN-FIX / MKT-ASOF-FIX). Eligible snaps must
+      satisfy ``event_time <= feature_as_of`` **and** ``event_time < kickoff``.
+      CFBD-only seasons (``< 2021``): median CFBD open (else close).
+
+    Closing lines for evaluation (``closing=True``, ``for_features=False``):
       Last Odds snapshot **strictly before kickoff** (§2.7); if unresolved,
       fall back to median CFBD ``line_type=close``. Closing lines are
       evaluation-only (ATS/OU@close, encompassing, CLV) — never features.
@@ -642,6 +671,13 @@ def resolve_lines_for_games(
     Aggregating both sides is forbidden (ATS-GRADE-FIX).
     """
     from ncaa_quant.features.market_lines import feature_as_of_for_game
+
+    if for_features and closing:
+        msg = (
+            "feature resolution with closing=True is forbidden "
+            "(Tuesday-knowability: close is never a feature in any regime)"
+        )
+        raise WalkForwardError(msg)
 
     assert_tz_aware(as_of)
     as_of_utc = to_utc(as_of)
@@ -658,7 +694,8 @@ def resolve_lines_for_games(
         game_id = int(row.game_id)
         kickoff = to_utc(pd.Timestamp(row.event_time).to_pydatetime())
         home_side = _home_side_from_game_row(row)
-        if season >= SNAPSHOT_BACKED_FROM_SEASON:
+        snapshot_feature_path = for_features and config.market_feature_source == "snapshots"
+        if snapshot_feature_path or (not for_features and season >= SNAPSHOT_BACKED_FROM_SEASON):
             if closing:
                 resolved = _resolve_from_snapshots(
                     snap,
@@ -672,7 +709,7 @@ def resolve_lines_for_games(
                 )
                 # Evaluation closes: fill gaps from CFBD so ATS/encompassing are
                 # not starved when Odds snapshots were never ingested. Bet-time
-                # as-of paths keep the null (no CFBD leak into features).
+                # as-of / feature paths keep the null (no CFBD leak into features).
                 if resolved["line_source"] == "null" or not np.isfinite(float(resolved["spread"])):
                     cfbd = _resolve_from_cfbd(lines, game_id=game_id, closing=True)
                     if cfbd["line_source"] != "null" and np.isfinite(float(cfbd["spread"])):
@@ -703,6 +740,13 @@ def resolve_lines_for_games(
                         as_of_inclusive=True,
                         kickoff_exclusive=kickoff,
                     )
+        elif for_features and config.market_feature_source == "cfbd_open_close":
+            resolved = _resolve_from_cfbd(
+                lines,
+                game_id=game_id,
+                closing=False,
+                allow_close_fallback=False,
+            )
         else:
             resolved = _resolve_from_cfbd(lines, game_id=game_id, closing=closing)
         rows.append({"game_id": game_id, **resolved})
@@ -832,6 +876,7 @@ def _resolve_from_cfbd(
     *,
     game_id: int,
     closing: bool,
+    allow_close_fallback: bool = True,
 ) -> dict[str, Any]:
     empty = dict(_LINE_RESOLVE_EMPTY)
     if lines.empty or "game_id" not in lines.columns:
@@ -841,10 +886,15 @@ def _resolve_from_cfbd(
         return empty
     preferred = "close" if closing else "close"
     # As-of Tuesday for CFBD-only seasons: prefer open when present, else close.
+    # Feature path (allow_close_fallback=False): open only — close is never a feature.
     if not closing and "line_type" in sub.columns and (sub["line_type"] == "open").any():
         preferred = "open"
+    elif not closing and not allow_close_fallback:
+        return empty
     typed = sub.loc[sub["line_type"] == preferred] if "line_type" in sub.columns else sub
     if typed.empty:
+        if not allow_close_fallback:
+            return empty
         typed = sub
     n_books = int(typed["book"].nunique()) if "book" in typed.columns else 0
     spread = (
@@ -885,15 +935,27 @@ def _resolve_from_cfbd(
 def _optional_pred_value(pred_map: pd.DataFrame, gid: int, col: str) -> Any:
     """Read an optional distributional column; NaN when absent (never default-filled)."""
     if col not in pred_map.columns or gid not in pred_map.index:
+        if col == "null_reason":
+            return None
+        if col in {"lgbm_credible", "enet_credible"}:
+            return False
         return float("nan")
     val = pred_map.loc[gid, col]
     if isinstance(val, (pd.Series, np.ndarray)):
         val = val.iloc[0] if hasattr(val, "iloc") else val[0]
+    if col == "null_reason":
+        if val is None or pd.isna(val):
+            return None
+        return str(val)
+    if col in {"lgbm_credible", "enet_credible"}:
+        if pd.isna(val):
+            return False
+        return bool(val)
     if pd.isna(val):
         return float("nan")
     if col.endswith("_is_missing") or col == "cqr_is_missing":
         return bool(val)
-    if col in {"cqr_nominal"}:
+    if col in {"cqr_nominal", "w_lgbm_mu_margin", "w_enet_mu_margin"}:
         return float(val)
     return float(val)
 
@@ -996,6 +1058,8 @@ def scored_prediction_rows(predictions: pd.DataFrame) -> pd.DataFrame:
     """Rows eligible for the quality gate and headline metrics.
 
     Excludes continuity / warm-up rows flagged ``exclude_from_headline``.
+    ADR 0014: also excludes intentional nulls carrying ``null_reason``
+    (ungradable honest gaps — not accidental null μ).
     """
     if predictions.empty:
         return predictions.copy()
@@ -1004,6 +1068,17 @@ def scored_prediction_rows(predictions: pd.DataFrame) -> pd.DataFrame:
         frame = frame.loc[~frame["exclude_from_headline"].fillna(False).astype(bool)]
     if "warmup_season" in frame.columns:
         frame = frame.loc[~frame["warmup_season"].fillna(False).astype(bool)]
+    if "null_reason" in frame.columns:
+        reasons = frame["null_reason"]
+        rstr = reasons.astype(str)
+        intentional = (
+            reasons.notna()
+            & rstr.str.len().gt(0)
+            & (rstr != "nan")
+            & (rstr != "None")
+            & (rstr != "<NA>")
+        )
+        frame = frame.loc[~intentional]
     return frame.copy()
 
 
@@ -1013,17 +1088,61 @@ def assert_prediction_quality_gate(
     max_zero_mu_rate: float = DEFAULT_MAX_ZERO_MU_RATE,
     min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
     raise_on_fail: bool = True,
+    scheduled_blocks: Sequence[tuple[int, int]] | None = None,
 ) -> PredictionQualityGateResult:
-    """Hard gate on every scored prediction table before metrics (D2).
+    """Hard gate on every scored prediction table before metrics (D2 + ADR 0014).
 
     Fails loudly when any of the following hold on scored rows:
     - ``zero_mu_rate > max_zero_mu_rate``
     - ``SD(mu) == 0`` within any ``(season, week)`` block with ≥2 games
-    - any scored row has a null μ
+    - any scored row has a null μ (accidental — intentional ``null_reason`` rows
+      are ungradable and excluded from scored)
     - fewer than ``min_train_games`` backed any scored fold
+    - any positive NNLS weight rests on a non-credible member (partial death)
+
+    When ``scheduled_blocks`` is provided, ``(season, week)`` pairs with scheduled
+    games but zero prediction rows are reported as ABSENT (never a silent pass).
     """
-    scored = scored_prediction_rows(predictions)
     failures: list[str] = []
+
+    # --- ABSENT blocks (ADR 0014 addendum a) ---
+    absent_blocks: list[tuple[int, int]] = []
+    if scheduled_blocks is not None and {"season", "week"} <= set(predictions.columns):
+        present = {
+            (int(s), int(w))
+            for s, w in predictions[["season", "week"]]
+            .drop_duplicates()
+            .itertuples(index=False, name=None)
+        }
+        for block in scheduled_blocks:
+            key = (int(block[0]), int(block[1]))
+            if key not in present:
+                absent_blocks.append(key)
+    elif scheduled_blocks is not None and predictions.empty:
+        absent_blocks = [(int(s), int(w)) for s, w in scheduled_blocks]
+
+    # --- null_reason counts (ungradable, not scored) ---
+    null_reason_counts: list[tuple[str, int]] = []
+    n_ungradable = 0
+    if "null_reason" in predictions.columns and not predictions.empty:
+        reasons = predictions["null_reason"]
+        rstr = reasons.astype(str)
+        intentional = (
+            reasons.notna()
+            & rstr.str.len().gt(0)
+            & (rstr != "nan")
+            & (rstr != "None")
+            & (rstr != "<NA>")
+        )
+        n_ungradable = int(intentional.sum())
+        if n_ungradable:
+            vc = reasons.loc[intentional].astype(str).value_counts()
+            null_reason_counts = [(str(k), int(v)) for k, v in vc.items()]
+
+    # ABSENT is reported on the result (never a silent vacuous pass) but is not
+    # itself a failing threshold — cold-start week-1 bank/reveal is expected.
+
+    scored = scored_prediction_rows(predictions)
     if scored.empty:
         result = PredictionQualityGateResult(
             n_scored=0,
@@ -1036,6 +1155,10 @@ def assert_prediction_quality_gate(
             min_train_games_required=int(min_train_games),
             passed=False,
             failures=("no scored prediction rows",),
+            absent_blocks=tuple(absent_blocks),
+            null_reason_counts=tuple(null_reason_counts),
+            n_ungradable=n_ungradable,
+            noncredible_weight_blocks=(),
         )
         if raise_on_fail:
             raise PredictionQualityGateError(str(result.failures))
@@ -1056,6 +1179,10 @@ def assert_prediction_quality_gate(
             min_train_games_required=int(min_train_games),
             passed=False,
             failures=(msg,),
+            absent_blocks=tuple(absent_blocks),
+            null_reason_counts=tuple(null_reason_counts),
+            n_ungradable=n_ungradable,
+            noncredible_weight_blocks=(),
         )
 
     mu = pd.to_numeric(scored["pred_margin"], errors="coerce")
@@ -1082,6 +1209,25 @@ def assert_prediction_quality_gate(
             f"{zero_sd_blocks[:8]}{'…' if len(zero_sd_blocks) > 8 else ''}"
         )
 
+    # --- Partial death (ADR 0014 addendum b) ---
+    noncredible_weight_blocks: list[tuple[int, int]] = []
+    cred_cols = {"lgbm_credible", "enet_credible", "w_lgbm_mu_margin", "w_enet_mu_margin"}
+    if cred_cols <= set(predictions.columns) and {"season", "week"} <= set(predictions.columns):
+        for (season, week), chunk in predictions.groupby(["season", "week"], sort=True):
+            w_l = pd.to_numeric(chunk["w_lgbm_mu_margin"], errors="coerce")
+            w_e = pd.to_numeric(chunk["w_enet_mu_margin"], errors="coerce")
+            c_l = chunk["lgbm_credible"].fillna(False).astype(bool)
+            c_e = chunk["enet_credible"].fillna(False).astype(bool)
+            bad = ((w_l.fillna(0.0) > 1e-12) & ~c_l) | ((w_e.fillna(0.0) > 1e-12) & ~c_e)
+            if bool(bad.any()):
+                noncredible_weight_blocks.append((int(season), int(week)))
+    if noncredible_weight_blocks:
+        failures.append(
+            f"NNLS weight on non-credible member in {len(noncredible_weight_blocks)} "
+            f"block(s): {noncredible_weight_blocks[:8]}"
+            f"{'…' if len(noncredible_weight_blocks) > 8 else ''}"
+        )
+
     min_train = 0
     if "n_train_games" in scored.columns:
         train_vals = pd.to_numeric(scored["n_train_games"], errors="coerce").dropna()
@@ -1105,6 +1251,10 @@ def assert_prediction_quality_gate(
         min_train_games_required=int(min_train_games),
         passed=not failures,
         failures=tuple(failures),
+        absent_blocks=tuple(absent_blocks),
+        null_reason_counts=tuple(null_reason_counts),
+        n_ungradable=n_ungradable,
+        noncredible_weight_blocks=tuple(noncredible_weight_blocks),
     )
     if raise_on_fail and failures:
         raise PredictionQualityGateError("prediction quality gate failed: " + "; ".join(failures))
@@ -1292,6 +1442,7 @@ class WalkForwardHarness:
         prediction_rows: list[dict[str, Any]] = []
         feature_log_rows: list[dict[str, Any]] = []
         retrain_events: list[dict[str, Any]] = []
+        scheduled_blocks: list[tuple[int, int]] = []
         revealed_labels = (
             train_labels_seed.copy()
             if train_labels_seed is not None
@@ -1371,6 +1522,8 @@ class WalkForwardHarness:
                 as_of = week_decision_as_of(season, week, self.config, calendar=week_calendar)
                 week_games = season_games.loc[season_games["week"] == week].copy()
                 week_games = week_games.sort_values("game_id", kind="mergesort")
+                if not week_games.empty and not self.config.exclude_from_headline(season):
+                    scheduled_blocks.append((int(season), int(week)))
 
                 if week in self.config.retrain_weeks:
                     retrain_epoch += 1
@@ -1625,6 +1778,7 @@ class WalkForwardHarness:
                 max_zero_mu_rate=self.config.max_zero_mu_rate,
                 min_train_games=self.config.min_train_games,
                 raise_on_fail=True,
+                scheduled_blocks=tuple(dict.fromkeys(scheduled_blocks)),
             )
         return WalkForwardResult(
             predictions=predictions,

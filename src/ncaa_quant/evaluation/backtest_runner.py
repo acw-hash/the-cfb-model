@@ -47,7 +47,7 @@ import time
 from collections.abc import Mapping, Sequence
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any, cast
+from typing import Any, Literal, cast
 
 import numpy as np
 import pandas as pd  # type: ignore[import-untyped]
@@ -338,6 +338,10 @@ def walkforward_config_from_mapping(payload: Mapping[str, Any]) -> WalkForwardCo
         min_train_games=int(wf.get("min_train_games", WalkForwardConfig.min_train_games)),
         max_zero_mu_rate=float(wf.get("max_zero_mu_rate", WalkForwardConfig.max_zero_mu_rate)),
         nnls_equal_weight_fallback=bool(wf.get("nnls_equal_weight_fallback", False)),
+        member_fit_failure_mode=cast(
+            Literal["exclude", "raise"],
+            str(wf.get("member_fit_failure_mode", "exclude")),
+        ),
         enforce_prediction_quality_gate=bool(
             wf.get("enforce_prediction_quality_gate", run_kind_raw != "smoke")
         ),
@@ -677,6 +681,10 @@ def run_backtest(
         else list(cfg.test_seasons)
     )
     nnls_reports = getattr(stack.predictor, "nnls_fold_reports", []) or []
+    member_status_reports = [
+        s.as_dict() if hasattr(s, "as_dict") else dict(s)
+        for s in (getattr(stack.predictor, "member_status", []) or [])
+    ]
     gate_payload = result.quality_gate.as_dict() if result.quality_gate is not None else {}
     extra = {
         "ablation_settings": json.dumps(cfg.ablation_settings(), sort_keys=True),
@@ -693,6 +701,7 @@ def run_backtest(
         ),
         "quality_gate": json.dumps(gate_payload, sort_keys=True),
         "nnls_fold_reports": json.dumps(nnls_reports, sort_keys=True),
+        "member_status_latest": json.dumps(member_status_reports, sort_keys=True),
     }
     manifest = build_manifest(
         config={
