@@ -214,3 +214,167 @@ Site lint: eslint clean; prettier may still warn on pre-existing
 ---
 
 *End of W7 task notes.*
+
+---
+
+## W7-VERIFY attempt — 2026-08-13 (still blocked)
+
+**Claim checked:** “Credentials are configured.”  
+**Result:** workstation still cannot run deferred live acceptance. No deploy URL
+was exercised; no new features; no public exposure.
+
+### Credential discovery (names only; values never logged)
+
+| Location | Finding |
+|----------|---------|
+| Repo `.env` | Only `CFBD_API_KEY` / `ODDS_API_KEY` present. **Absent:** `R2_*`, `WEBAPP_REVALIDATE_SECRET`, `NCAA_QUANT_WEBAPP__*`, bypass secret |
+| `webapp/site/.env.local` / `.env` | Missing |
+| Process / User environment | No R2 / Vercel / revalidate / bypass vars |
+| Vercel CLI (`npx vercel whoami`) | **Logged out** (CLI present; no auth) |
+| `webapp/site/.vercel/` | Not linked |
+
+### Deferred items — status after this attempt
+
+| Priority | Item | Status |
+|----------|------|--------|
+| 1 | W7-0 `curl -I` unauth → 401/403 + `X-Robots-Tag: noindex…` | **OPEN** — no protected preview URL available to this agent |
+| 2 | W7-1.2 FIXTURE/LIVE banner both directions on deploy | **OPEN** — requires protected URL + R2 live/fixture publishes |
+| 3 | W7-4 items 1–5 (E2E + revalidate through Deployment Protection bypass + timings; staleness; STALE; schema gate; cost) | **OPEN** — same blockers |
+| 4 | Append-only notes | Done (this section) |
+
+### Still required from operator (then re-run W7-VERIFY)
+
+1. Paste the **Deployment-Protection-enabled** preview URL (do not share an unprotected production URL).
+2. Workstation `.env` entries (write path): `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `NCAA_QUANT_WEBAPP__EXPORT_ENABLED=true`, `NCAA_QUANT_WEBAPP__R2_BUCKET`, `NCAA_QUANT_WEBAPP__R2_ENDPOINT_URL`, `NCAA_QUANT_WEBAPP__REVALIDATE_URL`, `WEBAPP_REVALIDATE_SECRET`.
+3. `VERCEL_AUTOMATION_BYPASS_SECRET` (or equivalent) for server-to-server revalidate **through** protection.
+4. `vercel login` (or `VERCEL_TOKEN`) on this workstation if deploy/env inspection is needed from CLI.
+
+Until those are present **on this machine**, live acceptance remains blocked by design (W7 forbids creating a reachable URL without protection).
+
+---
+
+## W7-ENV — local env wiring (2026-08-13)
+
+Configuration only. No deploy. No code changes. No secret values recorded here.
+
+### Variable names (from `.env.example` + `config.py` / site loader)
+
+**Workstation (`.env`)**
+
+| Name | Expects |
+|------|---------|
+| `R2_ACCESS_KEY_ID` | S3-compatible Access Key ID (write); not `cfat_…` |
+| `R2_SECRET_ACCESS_KEY` | Matching Secret Access Key |
+| `WEBAPP_REVALIDATE_SECRET` | Shared bearer secret for `/api/revalidate` |
+| `NCAA_QUANT_WEBAPP__EXPORT_ENABLED` | `true` on preview workstation only |
+| `NCAA_QUANT_WEBAPP__R2_BUCKET` | Bucket name |
+| `NCAA_QUANT_WEBAPP__R2_ENDPOINT_URL` | `https://<accountid>.r2.cloudflarestorage.com` |
+| `NCAA_QUANT_WEBAPP__REVALIDATE_URL` | Protected preview `…/api/revalidate` |
+
+(Also present for other pipelines: `CFBD_API_KEY`, `ODDS_API_KEY`, optional `NTFY_AUTH_TOKEN` / `TELEGRAM_BOT_TOKEN`.)
+
+**Site (`webapp/site/.env.local`)**
+
+| Name | Expects |
+|------|---------|
+| `ARTIFACT_SOURCE` | `r2` for private-preview path |
+| `R2_BUCKET` | Same bucket name |
+| `R2_ACCOUNT_ID` | Cloudflare account id (or set `R2_ENDPOINT_URL` instead) |
+| `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` | Prefer **read-only** S3 pair |
+| `WEBAPP_REVALIDATE_SECRET` | Same shared secret as workstation |
+
+### gitignore evidence
+
+```
+$ git check-ignore -v .env
+.gitignore:42:.env	.env
+$ git check-ignore -v webapp/site/.env.local
+.gitignore:43:.env.*	webapp/site/.env.local
+```
+
+Neither path is tracked (`git ls-files` does not know them).
+
+### Files written — fill status (names only)
+
+| File | Configured (non-placeholder) | Operator must fill |
+|------|------------------------------|--------------------|
+| `.env` | `CFBD_API_KEY`, `ODDS_API_KEY`, `NCAA_QUANT_WEBAPP__EXPORT_ENABLED`, `NCAA_QUANT_WEBAPP__R2_BUCKET` | `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `WEBAPP_REVALIDATE_SECRET`, `NCAA_QUANT_WEBAPP__R2_ENDPOINT_URL` (replace `REPLACE_ACCOUNT_ID`), `NCAA_QUANT_WEBAPP__REVALIDATE_URL` (replace `REPLACE_PREVIEW`); optional NTFY/Telegram |
+| `webapp/site/.env.local` | `ARTIFACT_SOURCE`, `R2_BUCKET` | `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `WEBAPP_REVALIDATE_SECRET` |
+
+### Connectivity check
+
+**Not run yet** — R2 S3 key placeholders still present. After the operator fills the
+lines above, re-run W7-ENV step 4 (list/HEAD only; no value echo). If keys are
+`cfat_…` Cloudflare API tokens rather than an S3 Access Key pair → STOP (SigV4
+loader requires the S3 pair).
+
+---
+
+## W7-ENV-CHECK — R2 connectivity (2026-08-13)
+
+Read-only. No bucket writes. No deploy. No credential values recorded.
+
+### Variable status (workstation `.env`)
+
+| Name | Status |
+|------|--------|
+| `R2_ACCESS_KEY_ID` | PRESENT (S3-like shape; not `cfat_`) |
+| `R2_SECRET_ACCESS_KEY` | PRESENT (S3-like shape; not `cfat_`) |
+| `NCAA_QUANT_WEBAPP__R2_BUCKET` | PRESENT |
+| `NCAA_QUANT_WEBAPP__R2_ENDPOINT_URL` | PRESENT but **malformed** (see below) |
+| `NCAA_QUANT_WEBAPP__EXPORT_ENABLED` | PRESENT |
+| `WEBAPP_REVALIDATE_SECRET` | PLACEHOLDER |
+| `NCAA_QUANT_WEBAPP__REVALIDATE_URL` | PLACEHOLDER |
+
+### Connectivity — FAIL
+
+| Field | Result |
+|-------|--------|
+| Operation | `list_objects_v2` (MaxKeys=10), read-only |
+| HTTP status | n/a (request not issued) |
+| Object count | n/a |
+| Diagnosis | **endpoint_malformed** |
+
+**Endpoint diagnosis (structure only):** value length 100; does not start with `https://`; contains an embedded `https://…r2.cloudflarestorage.com` after a leading key-name prefix (`NCAA_QUANT_W…` ordinals at start). `urlparse` yields empty scheme/netloc. Canonical pattern `https://<32-hex>.r2.cloudflarestorage.com` does not match.
+
+No fix attempted (per task). Credentials were not classified as `cfat_` tokens; auth was not reached.
+
+### gitignore evidence
+
+```
+$ git check-ignore -v .env
+.gitignore:42:.env	.env
+```
+
+---
+
+## W7-ENV-CHECK reverify — 2026-08-13
+
+Operator corrected endpoint. Read-only recheck only.
+
+### Variable status
+
+| Name | Status |
+|------|--------|
+| `R2_ACCESS_KEY_ID` | PRESENT (S3-like; not `cfat_`) |
+| `R2_SECRET_ACCESS_KEY` | PRESENT (S3-like; not `cfat_`) |
+| `NCAA_QUANT_WEBAPP__R2_BUCKET` | PRESENT |
+| `NCAA_QUANT_WEBAPP__R2_ENDPOINT_URL` | PRESENT (canonical `https://…r2.cloudflarestorage.com`) |
+| `NCAA_QUANT_WEBAPP__EXPORT_ENABLED` | PRESENT |
+| `WEBAPP_REVALIDATE_SECRET` | PLACEHOLDER |
+| `NCAA_QUANT_WEBAPP__REVALIDATE_URL` | PLACEHOLDER |
+
+### Connectivity — PASS
+
+| Field | Result |
+|-------|--------|
+| Operation | `list_objects_v2` (MaxKeys=10), read-only |
+| HTTP status | **200** |
+| Object count | **0** (empty bucket — expected PASS) |
+
+### gitignore evidence
+
+```
+$ git check-ignore -v .env
+.gitignore:42:.env	.env
+```
