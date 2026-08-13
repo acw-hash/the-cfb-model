@@ -1,0 +1,47 @@
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-bottom: var(--space-3);
+}
+
+.titles {
+  min-width: 0;
+}
+
+.season {
+  display: block;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-1);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--type-t1-size);
+  line-height: var(--type-t1-line);
+  font-weight: var(--type-t1-weight);
+  color: var(--text-primary);
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-1);
+}
+
+.refresh {
+  margin: 0;
+  font-size: var(--type-c2-size);
+  line-height: var(--type-c2-line);
+  font-weight: var(--type-c2-weight);
+  color: var(--text-tertiary);
+}
+
+@media (max-width: 640px) {
+  .meta {
+    align-items: flex-start;
+  }
+}

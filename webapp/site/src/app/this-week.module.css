@@ -1,0 +1,10 @@
+/**
+ * This Week measure — §4 scores-app density.
+ * 44rem (704px) keeps kickoff / matchup / figures on a phone-to-tablet
+ * column instead of stretching GameRow across a 1280px viewport.
+ */
+.page {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 0 var(--space-4) var(--space-8);
+}

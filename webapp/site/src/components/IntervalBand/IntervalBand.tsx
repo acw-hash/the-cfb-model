@@ -1,6 +1,5 @@
 import { Figure } from "@/components/Figure/Figure";
 import {
-  formatIntervalInline,
   formatIntervalParts,
   formatMargin,
   renderAbsent,
@@ -17,7 +16,7 @@ interface IntervalBandProps {
   >;
 }
 
-/** Text-only `μ [lo, hi]` band — quiet, no chart junk (§4.3). */
+/** N1 headline μ with quiet N2 `[lo, hi]` band — no chart junk (§4.3). */
 export function IntervalBand({ game }: IntervalBandProps): React.ReactElement {
   const { mu_margin, sigma_margin, margin_interval_lo, margin_interval_hi, null_reason } = game;
 
@@ -45,11 +44,18 @@ export function IntervalBand({ game }: IntervalBandProps): React.ReactElement {
   }
 
   const muText = formatMargin(mu_margin, sigma_margin) ?? renderAbsent();
-  const hasBand = margin_interval_lo != null && margin_interval_hi != null;
+  const hasBand = parts.lo != null && parts.hi != null;
 
   return (
-    <Figure variant="n2" className={styles.band}>
-      {hasBand ? formatIntervalInline(parts) : muText}
-    </Figure>
+    <span className={styles.wrap}>
+      <Figure variant="n1" className={styles.mu}>
+        {muText}
+      </Figure>
+      {hasBand ? (
+        <Figure variant="n2" className={styles.range}>
+          [{parts.lo}, {parts.hi}]
+        </Figure>
+      ) : null}
+    </span>
   );
 }

@@ -14,6 +14,9 @@ export const metadata = {
   description: "College football forecasts with uncertainty",
 };
 
+/** Time-based ISR fallback per §3 — 6h, matching the stated layout revalidate. */
+export const revalidate = 21600;
+
 export default async function RootLayout({
   children,
 }: Readonly<{

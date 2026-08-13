@@ -1,5 +1,15 @@
-.band {
+.wrap {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-1);
+}
+
+.mu {
   color: var(--text-primary);
+}
+
+.range {
+  color: var(--text-secondary);
 }
 
 .unavailable {

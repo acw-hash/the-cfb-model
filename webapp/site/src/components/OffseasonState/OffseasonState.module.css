@@ -1,0 +1,10 @@
+.state {
+  padding: var(--space-8) var(--space-4);
+}
+
+.copy {
+  margin: 0;
+  font-size: var(--type-b1-size);
+  line-height: var(--type-b1-line);
+  color: var(--text-secondary);
+}
