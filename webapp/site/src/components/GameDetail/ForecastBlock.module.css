@@ -1,0 +1,56 @@
+.block {
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.label {
+  margin: 0 0 var(--space-2);
+  font-size: var(--type-c1-size);
+  line-height: var(--type-c1-line);
+  font-weight: var(--type-c1-weight);
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.figures {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.mu {
+  color: var(--text-primary);
+}
+
+.secondary .mu {
+  color: var(--text-secondary);
+}
+
+.range,
+.sigma {
+  color: var(--text-secondary);
+}
+
+.coverage {
+  margin: var(--space-1) 0 0;
+  font-size: var(--type-c2-size);
+  line-height: var(--type-c2-line);
+  color: var(--text-tertiary);
+}
+
+.absence {
+  margin: var(--space-1) 0 0;
+  font-size: var(--type-c2-size);
+  line-height: var(--type-c2-line);
+  color: var(--text-tertiary);
+}
+
+.reason {
+  color: var(--text-tertiary);
+}
+
+.muted {
+  color: var(--text-secondary);
+}

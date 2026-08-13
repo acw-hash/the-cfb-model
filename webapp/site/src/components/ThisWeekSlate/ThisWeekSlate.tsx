@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { GameRow } from "@/components/GameRow/GameRow";
@@ -89,7 +90,9 @@ export function ThisWeekSlate({
           <section key={group.id} className={styles.group} data-group={group.id}>
             <SlateGroupHeader label={group.label} />
             {group.games.map((game) => (
-              <GameRow key={game.game_id} game={game} />
+              <Link key={game.game_id} href={`/game/${game.game_id}`} className={styles.rowLink}>
+                <GameRow game={game} />
+              </Link>
             ))}
           </section>
         ))}

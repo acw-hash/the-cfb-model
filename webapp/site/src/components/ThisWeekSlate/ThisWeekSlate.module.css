@@ -14,3 +14,13 @@
 .group {
   margin: 0;
 }
+
+.rowLink {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.rowLink:hover {
+  background: var(--bg-secondary);
+}

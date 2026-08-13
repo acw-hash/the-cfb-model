@@ -1,0 +1,29 @@
+.page {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-4);
+}
+
+.title {
+  margin: 0 0 var(--space-3);
+  font-size: var(--type-t1-size);
+  line-height: var(--type-t1-line);
+  font-weight: var(--type-t1-weight);
+}
+
+.body {
+  margin: 0 0 var(--space-4);
+  font-size: var(--type-b1-size);
+  line-height: var(--type-b1-line);
+  color: var(--text-secondary);
+}
+
+.back a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: var(--type-c1-size);
+}
+
+.back a:hover {
+  color: var(--accent);
+}

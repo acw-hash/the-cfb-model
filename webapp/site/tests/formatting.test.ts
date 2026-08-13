@@ -7,9 +7,12 @@ import {
   formatIntervalInline,
   formatIntervalParts,
   formatMargin,
+  formatEpa,
+  formatNominalCoverage,
   formatProbability,
   formatSigma,
   formatTotal,
+  formatTotalIntervalParts,
   renderForecastUnavailable,
   renderNotComputed,
 } from "@/lib/formatting/numbers";
@@ -39,6 +42,27 @@ describe("formatSigma", () => {
 describe("formatTotal", () => {
   it("uses one decimal without sign", () => {
     expect(formatTotal(49.734)).toBe("49.7");
+  });
+});
+
+describe("formatNominalCoverage", () => {
+  it("states 0.8 as 80%", () => {
+    expect(formatNominalCoverage(0.8)).toBe("80%");
+  });
+});
+
+describe("formatEpa", () => {
+  it("shows sign and two decimals", () => {
+    expect(formatEpa(0.12)).toBe("+0.12");
+    expect(formatEpa(-0.08)).toBe("\u22120.08");
+  });
+});
+
+describe("formatTotalIntervalParts", () => {
+  it("does not force a sign on totals", () => {
+    const parts = formatTotalIntervalParts(49.7, 30.1, 70.2, 16.8);
+    expect(parts?.mu).toBe("49.7");
+    expect(parts?.lo).toBe("30.1");
   });
 });
 

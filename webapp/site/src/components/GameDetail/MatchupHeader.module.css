@@ -1,0 +1,24 @@
+.header {
+  padding: var(--space-5) 0 var(--space-4);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.matchup {
+  margin: 0 0 var(--space-2);
+  font-size: var(--type-t1-size);
+  line-height: var(--type-t1-line);
+  font-weight: var(--type-t1-weight);
+  color: var(--text-primary);
+}
+
+.neutral {
+  margin-left: var(--space-2);
+  font-size: var(--type-c1-size);
+  line-height: var(--type-c1-line);
+  font-weight: var(--type-c1-weight);
+  color: var(--text-tertiary);
+}
+
+.kickoff {
+  color: var(--text-secondary);
+}

@@ -161,3 +161,17 @@ Dev gallery: `npm run dev` → `/gallery` (zero server console errors on GET).
 ---
 
 *End of W2 task notes.*
+
+---
+
+## W3-AMENDED — primitive drift (2026-08-13)
+
+W3 changed two W2 primitives so the 56-game This Week slate could pass §4.3 density. The original W2 text above is unchanged; this records the tree as it stands after W3.
+
+1. **`IntervalBand`** — μ is N1 (`--text-primary`); `[lo, hi]` is N2 (`--text-secondary`). W2 rendered the whole `μ [lo, hi]` string as one N2 figure, so the band could not read quieter than the margin.
+
+2. **`GameRow` at `≤640px`** — two-row compact grid (kickoff spanning rows 1–2; matchup + figures in column 2) instead of a three-row stack. 56 stacked cards would not read as a scores app at 390px.
+
+**§4.3 as written:** Neither change requires a spec amendment. The Game row pattern already names “N1 margin + N2 interval band inline”; the IntervalBand split implements that line. Interval band remains text-only `μ [lo, hi]` with no error-bar graphics. The Game row ASCII is the ≥640px horizontal layout; the compact grid keeps the same elements, order, and type roles at mobile width.
+
+W4-0 gallery check (2026-08-13): `/gallery` still mounts every W2 demo (GameRow for all four tiers + neutral + stale + revised, IntervalBand including null forecast, TierChip, StaleBadge, RevisedMarker, PublishedAtStamp, StalenessBanner, MaintenanceState, layout FIXTURE + site-staleness banners). Evidence in `docs/notes/webapp-w4.md` (W4-0) and `webapp/site/docs/screenshots/gallery-w4-0-*.png`.

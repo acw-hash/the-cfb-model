@@ -56,7 +56,24 @@ export function formatTotal(value: number | null | undefined): string | null {
   if (value == null) {
     return null;
   }
-  return value.toFixed(1);
+  return clampDecimals(value, 1);
+}
+
+/** Nominal interval coverage as a percent (§4.2 probability rounding). */
+export function formatNominalCoverage(value: number | null | undefined): string | null {
+  return formatProbability(value);
+}
+
+/**
+ * Stage-1 EPA (relative, league-mean-centered) — 2 decimals, sign shown.
+ * Posterior SD in the ratings artifact is ~0.04–0.17, so 2 decimals is the
+ * precision the σ warrants.
+ */
+export function formatEpa(value: number | null | undefined): string | null {
+  if (value == null) {
+    return null;
+  }
+  return formatSigned(value, 2);
 }
 
 /** Probability percent — 0 decimals if ≥10%; 1 decimal if <10% (§4.2). */
@@ -100,6 +117,27 @@ export function formatIntervalInline(parts: IntervalParts): string {
     return parts.mu;
   }
   return `${parts.mu} [${parts.lo}, ${parts.hi}]`;
+}
+
+/**
+ * Total interval parts — unsigned μ and bounds (§4.2 total formatting).
+ * Null when μ is absent.
+ */
+export function formatTotalIntervalParts(
+  mu: number | null | undefined,
+  lo: number | null | undefined,
+  hi: number | null | undefined,
+  sigma?: number | null,
+): IntervalParts | null {
+  if (mu == null) {
+    return null;
+  }
+  const decimals = sigmaDecimalPlaces(sigma ?? null);
+  return {
+    mu: clampDecimals(mu, decimals),
+    lo: lo == null ? null : clampDecimals(lo, decimals),
+    hi: hi == null ? null : clampDecimals(hi, decimals),
+  };
 }
 
 /** §1.8 honest absence for generic nullable numbers. */
