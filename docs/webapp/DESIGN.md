@@ -278,7 +278,7 @@ v1 uses `off_epa` and `def_epa` (4-dim Stage-1 block). Uncertainty bands use `of
 
 ### 1.7 Versioning and evolution rules
 
-- **`schema_version`:** SemVer string on every artifact. **Major** bump = breaking field removal or type change → frontend renders site-wide **maintenance state** (see §3.2). **Minor** bump = additive fields only → frontend ignores unknown fields. **Patch** bump = documentation/clarification only.
+- **`schema_version`:** SemVer string on every artifact. **Major** bump = breaking field removal or type change **or semantic redefinition of an existing field or enum value** (e.g. moving the `strong_lean` enter threshold) → frontend renders site-wide **maintenance state** (see §3.2). **Minor** bump = additive fields only → frontend ignores unknown fields. **Patch** bump = documentation/clarification only. *Exception (W1A):* `schema_version` **1.1.0** used a minor bump despite redefining `strong_lean`'s threshold only because no pre-amendment Ridge artifacts were ever published (`webapp.export_enabled` OFF through W1); this must not be read as permitting the pattern once readers exist.
 - **Additive-only policy:** New fields are appended; existing fields are never repurposed in-place.
 - **Frontend on version mismatch:** If `schema_version.major` ≠ supported major, render maintenance page: *"Ridge is updating — check back shortly."* Do **not** guess, interpolate, or render partial data from an unsupported schema.
 - **Fixture artifacts** used in development must declare `"fixture": true` at file top level.
@@ -378,6 +378,10 @@ To avoid flicker across Thu–Sat refreshes, tiers use **asymmetric enter/exit b
 | Lean | `p_favored ≥ 0.55` | `p_favored < 0.52` |
 | Toss-up | `p_favored < 0.55` | `p_favored ≥ 0.58` (promotes to Lean) |
 </details>
+
+**Multi-boundary exit:** When `p_favored` exits a tier's hold band and the raw tier (§2.2) differs by more than one step from the prior tier, the tier **reassigns directly to the raw tier** — it does not descend one band at a time. Example: prior tier Strong lean, refresh yields `p_favored=0.68` (raw Lean) → tier becomes **Lean**, not Clear lean.
+
+**Flap exposure (measurement status):** Historical walkforward flap exposure (task23, 2019–2024, n=4,944): **42.1%** of games have `p_favored` within ±0.03 of any tier boundary (union of three bands). This measures **boundary proximity**, not realized intra-week tier flicker. Realized Tue→Sat tier-change counts are **NOT MEASURED** from existing artifacts (walkforward emits one row per game at the Tuesday decision point only). Status: **UNRESOLVED** until W7 deploy instruments per-publish tier-change counts (`game_id`, prior tier, new tier, `hysteresis_applied`), reported after the first four live publish weeks of 2026. The amended ladder is accepted **provisionally** on the hypothesis that ratings move little between Tuesday and Saturday for teams that have not played — a hypothesis, not a measurement.
 
 **State:** Export maintains `tier_state` keyed by `(season, game_id)` on the workstation. Each publish:
 

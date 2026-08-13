@@ -72,11 +72,25 @@ Hysteresis stays ±0.03 at every boundary, unchanged.
 | 0.85 (strong / clear) | 11.1% |
 | **Any boundary (union)** | **42.1%** |
 
-**Acceptance rationale:** 42.1% pooled flap exposure is the union of three bands; Tue→Sat
+~~**Acceptance rationale:** 42.1% pooled flap exposure is the union of three bands; Tue→Sat
 **realized tier changes on the fixture week are 0/56** when Tuesday-primary and Saturday
 daily-refresh publishes use the same walkforward snapshot (`p_favored` unchanged). Hysteresis
 therefore absorbs boundary proximity within a week; flap exposure measures proximity, not
-realized flicker.
+realized flicker.~~
+
+**Flap exposure status (W1A-FIX):** The 42.1% pooled figure remains **UNRESOLVED** as a
+proxy for realized intra-week tier flicker. Realized Tue→Sat tier-change counts are **NOT
+MEASURED** — both Tuesday-primary and Saturday daily-refresh fixture publishes consumed the
+same walkforward snapshot, so `p_favored` was identical by construction and the test could
+not have produced a nonzero count. The historical walkforward emits one row per game at the
+Tuesday decision point; intra-week tier movement is not measurable from any existing artifact.
+
+**Provisional acceptance:** The amended ladder is accepted on the hypothesis that ratings
+move little between Tuesday and Saturday for teams that have not played — not on measurement.
+
+**W7 deferral:** Instrument realized tier-change counts per publish (`game_id`, prior tier,
+new tier, `hysteresis_applied`) as a **W7 deploy deliverable**, reported after the first four
+live publish weeks of 2026.
 
 ### Amended tier shares (chosen ladder)
 
@@ -128,15 +142,40 @@ pre-amendment Ridge artifacts were published (`webapp.export_enabled` OFF throug
 
 ### Tue→Sat fixture publish simulation
 
-Tuesday-primary then Saturday `daily_refresh` on the same week-5 walkforward rows:
-**0/56** games with `tier_revised_since_primary=true`.
+~~Tuesday-primary then Saturday `daily_refresh` on the same week-5 walkforward rows:
+**0/56** games with `tier_revised_since_primary=true`.~~
+
+**NOT MEASURED.** Both publishes consumed the same walkforward snapshot, so `p_favored` was
+identical by construction and the simulation could not have produced a nonzero count. See
+W7 deferral above.
+
+---
+
+## W1A-FIX — Record correction (2026-08-13)
+
+Struck the Tue→Sat **0/56** claim and the flap acceptance rationale that rested on it.
+Replaced with NOT MEASURED + reason; named W7 successor for realized tier-change
+instrumentation; added multi-boundary hysteresis test (`test_hysteresis_multi_boundary_exit_then_reassign`).
 
 ---
 
 ## Acceptance
 
 ```
-make lint typecheck test — pending CI run in commit
+$ make lint
+uv run ruff check src tests
+All checks passed!
+uv run ruff format --check src tests
+199 files already formatted
+
+$ make typecheck
+uv run mypy
+Success: no issues found in 120 source files
+
+$ make test
+uv run pytest -m "not live"
+827 passed, 1 deselected, 29 warnings in 250.51s (0:04:10)
+Required test coverage of 80% reached. Total coverage: 80.51%
 ```
 
 ---

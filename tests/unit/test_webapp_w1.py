@@ -138,6 +138,21 @@ def test_hysteresis_flips_outside_band() -> None:
     assert tier == "toss_up"
 
 
+def test_hysteresis_multi_boundary_exit_then_reassign() -> None:
+    """Prior strong_lean exits hold band; tier reassigns to raw tier, not intermediate."""
+    p_favored = 0.68
+    raw = raw_tier_from_p_favored(p_favored)
+    assert raw == "lean"
+    tier, applied = apply_hysteresis(
+        p_favored=p_favored,
+        raw_tier=raw,
+        previous_tier="strong_lean",
+    )
+    assert tier == "lean"
+    assert tier != "clear_lean"
+    assert applied is False
+
+
 def test_w1a_old_boundaries_no_longer_apply() -> None:
     """Lock W1A amendment: pre-amendment thresholds must not classify tiers."""
     assert raw_tier_from_p_favored(0.70) == "clear_lean"
