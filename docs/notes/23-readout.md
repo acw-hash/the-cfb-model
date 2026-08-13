@@ -308,47 +308,57 @@ for either product; they do not gate Task 24.
 
 ---
 
-## ADDENDUM — 23-READOUT-ADDENDUM (2026-08-11) — **STOP**
+## ADDENDUM — 23-READOUT-CLOSE (2026-08-13) — FINAL
 
-**Status:** STOP. Campaign close **not written**. The planned five-point
-addendum (final market-features finding, §1.6 scorecard, verdict, ledger,
-measurement-layer close) is **blocked**.
+**Status:** CLOSED. Documentation only; no new runs.  
+**Vintage / scope:** `FEATURE_TIME=TUESDAY_DECISION` /
+`REDUCED_PER_ADR_0013` / **ADR_0014** (`member-health-fix.md`,
+`docs/adr/0014-member-credibility-contract.md`).
 
-**Check** (`scripts/_readout_addendum_check.py`): market-aware 2019
-equivalence on `task23_market_aware_reduced_v2_tue` —
-**RERUN_V2_WEEK_ALIGN / REDUCED_PER_ADR_0013 / FEATURE_TIME=TUESDAY_DECISION**.
+### 1. Final market-features finding
 
-| | |
-|---|---|
-| 2019 prediction rows | 763 (ATS-eligible n=743) |
-| 2019 Odds snapshot rows | **0** |
-| `mkt_*` null + `mkt_is_missing` | 6 |
-| violations (non-null `mkt_*`) | **757** |
-| `line_source` | **`cfbd_close` × 757**, `null` × 6 |
-| `market_provenance` | mislabeled **`snapshots` × 757** |
+| Slice | Market-aware | A3 | Δ pp | n |
+|---|---:|---:|---:|---:|
+| Snapshots 2021–24 | **50.27%** | 52.22% | **−1.95** | 3491 |
+| CFBD 2019 | 49.19% | 50.74% | **−1.55** | 553 / 743 |
 
-**This is a 2019 feature-source violation.** Snapshot-source Tuesday features
-resolved to CFBD **close** (not open; not null) and were relabeled
-`provenance=snapshots`. Artifact:
-`docs/notes/_artifacts/readout_addendum/STOP.md` +
-`2019_mkt_equivalence.json`.
+2019 n mismatch is honest: σ-refusal + 90 per-row OOD nulls under ADR 0014
+(`member-health-fix.md` §Item 6) — not CONTAMINATED_2019_FEATURE_SOURCE
+(`mkt-2019-fix.md`). **SLOT_CLOSE ceiling** (Tuesday→kick−5min,
+`week-align-fix.md`): ≈ **2.6 MAE** / **~0.8 pp ATS** on snapshots — most
+kick−5min “skill” was near-close information, not decision-time edge.
+**Conclusion:** no decision-time market edge on the reduced stack.
 
-**Refused claim:** 45.63% [42.9%, 48.6%] vs fundamental REGRADED_V2 51.3%
-(n=743) is **not** licensed as fit-path variance from feature-column presence
-(NaN-aware splits). That mechanism is **noise only if every 2019 `mkt_*` is
-null + is_missing**. Here 2019 market-aware actually saw the CFBD close as a
-feature — a different information set (and a Tuesday PIT defect).
+### 2. Campaign summary
 
-**Unchanged and still in force** (not re-litigated by this STOP): snapshot
-2021–2024 Tuesday market-aware vs A3 (−0.80 pp ATS, +0.11 MAE,
-FEATURE_TIME=TUESDAY_DECISION); SLOT_CLOSE ceiling ~2.6 MAE / ~0.8 pp ATS;
-§1.6 ATS and log-loss misses on the corrected snapshot tables; verdict
-**NOT CURRENTLY FIT TO BET**; predictions product unblocked. 2019
-market-aware ATS/LL/MAE from the Tuesday run are **not** a clean
-market-features increment until the snapshot-source 2019 path is null +
-`is_missing`.
+1. **Grade-fix** (`ats-grade-fix.md`) — median-over-sides bug; ATS plausibility
+   guard refused implausible v1 market-aware before publish.
+2. **As-of fix** (`mkt-asof-fix.md`) — per-game feature as-of; mirror-check
+   caught post-kickoff snapshot leaks.
+3. **Week-align** (`week-align-fix.md`) — CFBD-week calendar; slot_close fallback
+   distribution guard (0.75%) before Tuesday re-run.
+4. **2019-feature fix** (`mkt-2019-fix.md`) — equivalence check caught 757-row
+   CFBD-close relabeled as snapshots; null + `is_missing` enforced for 2019.
+5. **Member-credibility contract** (`docs/adr/0014-member-credibility-contract.md`,
+   `member-health-fix.md`) — quality + ATS gates published corrected Tuesday
+   market-aware; no dead-weight NNLS.
 
-**Successor (separate session):** stop CFBD from entering
-`market_feature_source=snapshots` features for 2019; do not relabel close as
-snapshots; re-run this check; then resume campaign close. Guard band not
-widened. Lockbox not read.
+Each layer caught a wrong number before it could reach the readout.
+
+### 3. §1.6 scorecard and verdict
+
+**Unchanged** — see §5 and §7 above. **NOT CURRENTLY FIT TO BET.** Predictions
+product unblocked (§7 table).
+
+### 4. Enhancement ledger (final order; all optional; none gate Task 24)
+
+1. **CLV/bets runner seam** — primary §1.6 instrument still NOT COMPUTED (§4).
+2. **Drives backfill 2014–2025** — flag quota; do not run from this memo (§4).
+3. **Membership build** — compose §5.2 per ADR 0013; now behind ADR 0014
+   credibility contract (§6a, §7).
+4. **Plan-estimator recalibration** — replace ~90 s fantasy with measured wall
+   clocks (§7).
+5. **Sprint drafts only** — priors (§6b), GT dual-path (§6c), derived-prob
+   calibration (§2, §7).
+
+Lockbox not read. Guard band not widened. No hyperparameters tuned.
