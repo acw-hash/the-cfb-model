@@ -120,6 +120,19 @@ class NotificationConfig(BaseModel):
     telegram_chat_id: str = ""
 
 
+class WebappConfig(BaseModel):
+    """Ridge public webapp export + R2 push (docs/webapp/DESIGN.md §3)."""
+
+    export_enabled: bool = False
+    """When False (default until W7 deploy), predict_publish skips R2 push."""
+
+    r2_bucket: str = ""
+    r2_endpoint_url: str = ""
+    r2_public_base_url: str = ""
+    tier_state_path: str = "data/webapp/tier_state.json"
+    fixture_artifacts_dir: str = "webapp/fixtures"
+
+
 class PipelineConfig(BaseModel):
     """Schedules, promotion gates, and monitoring thresholds."""
 
@@ -167,6 +180,7 @@ class AppConfig(BaseSettings):
     ratings: RatingsConfig = Field(default_factory=RatingsConfig)
     betting: BettingConfig = Field(default_factory=BettingConfig)
     pipeline: PipelineConfig = Field(default_factory=PipelineConfig)
+    webapp: WebappConfig = Field(default_factory=WebappConfig)
 
 
 class SecretsSettings(BaseSettings):
@@ -184,6 +198,10 @@ class SecretsSettings(BaseSettings):
     ntfy_auth_token: SecretStr = Field(default=SecretStr(""), validation_alias="NTFY_AUTH_TOKEN")
     telegram_bot_token: SecretStr = Field(
         default=SecretStr(""), validation_alias="TELEGRAM_BOT_TOKEN"
+    )
+    r2_access_key_id: SecretStr = Field(default=SecretStr(""), validation_alias="R2_ACCESS_KEY_ID")
+    r2_secret_access_key: SecretStr = Field(
+        default=SecretStr(""), validation_alias="R2_SECRET_ACCESS_KEY"
     )
 
 

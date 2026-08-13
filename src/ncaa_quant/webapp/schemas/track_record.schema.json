@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ridge.example/schemas/track_record.json",
+  "title": "track_record",
+  "type": "object",
+  "required": ["schema_version", "published_at", "source_memo", "verdict", "metrics"],
+  "properties": {
+    "schema_version": { "type": "string" },
+    "published_at": { "type": "string" },
+    "source_memo": { "type": "string" },
+    "fixture": { "type": "boolean" },
+    "verdict": {
+      "type": "object",
+      "required": ["label", "plain_language"],
+      "properties": {
+        "label": { "type": "string" },
+        "plain_language": { "type": "string" }
+      }
+    },
+    "metrics": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "value", "unit", "vintage"]
+      }
+    }
+  }
+}

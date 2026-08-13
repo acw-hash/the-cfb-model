@@ -24,6 +24,7 @@ class AlertKind(StrEnum):
     NEW_BET_CANDIDATE = "new_bet_candidate"
     CALIBRATION_ALARM = "calibration_alarm"
     CLV_WEEKLY_SUMMARY = "clv_weekly_summary"
+    WEBAPP_EXPORT_FAILURE = "webapp_export_failure"
 
 
 @dataclass(frozen=True, slots=True)

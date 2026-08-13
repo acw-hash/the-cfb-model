@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ridge.example/schemas/meta.json",
+  "title": "meta",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "published_at",
+    "season",
+    "week",
+    "refresh_kind",
+    "artifact_pointers"
+  ],
+  "properties": {
+    "schema_version": { "type": "string" },
+    "published_at": { "type": "string" },
+    "season": { "type": "integer" },
+    "week": { "type": "integer" },
+    "refresh_kind": { "type": "string" },
+    "fixture": { "type": "boolean" },
+    "artifact_pointers": { "type": "object" }
+  }
+}

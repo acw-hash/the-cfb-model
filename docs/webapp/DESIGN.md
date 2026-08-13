@@ -323,15 +323,40 @@ p_favored    = p_win_home           if favored_side == "home"
 
 ### 2.2 Tier boundaries
 
+> **AMENDED per W1A (2026-08-13).** Four tiers replace the W1 three-tier ladder.
+> `schema_version` bumped to **1.1.0** (minor — additive `clear_lean` enum value;
+> `strong_lean` threshold moved). No pre-amendment Ridge artifacts were ever
+> published (`webapp.export_enabled` remained OFF through W1), so there is no
+> reader in the wild to migrate.
+>
+> **Rationale:** Historical walkforward (task23_fundamental_reduced_v2, 2019–2024,
+> n=4,944) showed the superseded Strong-enter at 0.65 captured 63.0% of games
+> (71.2% in the worst season). The amended ladder spreads conviction across four
+> bands: pooled **strong_lean 17.3%**, **clear_lean 32.9%**, **lean 30.8%**,
+> **toss_up 18.9%**; worst-season top two tiers (clear+strong) **58.6%** (2022).
+
 Tiers are determined by `p_favored`:
+
+| Tier | Enter when | Label template |
+|------|------------|----------------|
+| **Strong lean** | `p_favored ≥ 0.85` | `Strong lean {Team}` |
+| **Clear lean** | `0.70 ≤ p_favored < 0.85` | `Clear lean {Team}` |
+| **Lean** | `0.575 ≤ p_favored < 0.70` | `Lean {Team}` |
+| **Toss-up** | `p_favored < 0.575` | `Toss-up` (no team name) |
+
+`{Team}` is `home_team` or `away_team` per `favored_side`.
+
+<details>
+<summary>Superseded W1 boundaries (2026-08-13, pre-W1A)</summary>
 
 | Tier | Enter when | Label template |
 |------|------------|----------------|
 | **Strong lean** | `p_favored ≥ 0.65` | `Strong lean {Team}` |
 | **Lean** | `0.55 ≤ p_favored < 0.65` | `Lean {Team}` |
-| **Toss-up** | `p_favored < 0.55` | `Toss-up` (no team name) |
+| **Toss-up** | `p_favored < 0.55` | `Toss-up` |
 
-`{Team}` is `home_team` or `away_team` per `favored_side`.
+Degeneracy finding on fixture week 2024 w5: 67.9% Strong lean (38/56 games).
+</details>
 
 ### 2.3 Hysteresis
 
@@ -339,9 +364,20 @@ To avoid flicker across Thu–Sat refreshes, tiers use **asymmetric enter/exit b
 
 | Tier | Enter | Exit (hold until) |
 |------|-------|-------------------|
+| Strong lean | `p_favored ≥ 0.85` | `p_favored < 0.82` |
+| Clear lean | `p_favored ≥ 0.70` | `p_favored < 0.67` |
+| Lean | `p_favored ≥ 0.575` | `p_favored < 0.545` |
+| Toss-up | `p_favored < 0.575` | `p_favored ≥ 0.605` (promotes to Lean) |
+
+<details>
+<summary>Superseded W1 hysteresis bands</summary>
+
+| Tier | Enter | Exit (hold until) |
+|------|-------|-------------------|
 | Strong lean | `p_favored ≥ 0.65` | `p_favored < 0.62` |
 | Lean | `p_favored ≥ 0.55` | `p_favored < 0.52` |
 | Toss-up | `p_favored < 0.55` | `p_favored ≥ 0.58` (promotes to Lean) |
+</details>
 
 **State:** Export maintains `tier_state` keyed by `(season, game_id)` on the workstation. Each publish:
 
@@ -388,22 +424,26 @@ When `tier_revised_since_primary == true` **and** `conviction_tier` is not suppr
 ### 2.7 Worked examples (ILLUSTRATIVE)
 
 **Example A — Strong lean (home):**  
-`mu_margin=+7.0`, `sigma_margin=14.0`, `p_win_home=0.71`, `sigma_margin_credible=true`  
-→ `p_favored=0.71` → **Strong lean {Home Team}**
+`mu_margin=+12.0`, `sigma_margin=14.0`, `p_win_home=0.88`, `sigma_margin_credible=true`  
+→ `p_favored=0.88` → **Strong lean {Home Team}**
 
-**Example B — Lean (away):**  
+**Example B — Clear lean (home):**  
+`mu_margin=+7.0`, `sigma_margin=14.0`, `p_win_home=0.74`, `sigma_margin_credible=true`  
+→ `p_favored=0.74` → **Clear lean {Home Team}**
+
+**Example C — Lean (away):**  
 `mu_margin=−2.5`, `sigma_margin=13.5`, `p_win_home=0.42`  
 → `p_favored=0.58` → **Lean {Away Team}**
 
-**Example C — Toss-up:**  
+**Example D — Toss-up:**  
 `mu_margin=+0.5`, `sigma_margin=14.0`, `p_win_home=0.51`  
 → `p_favored=0.51` → **Toss-up**
 
-**Example D — Hysteresis hold:**  
-Previous tier = Lean (home). Refresh yields `p_favored=0.53` (below 0.55 raw threshold but above 0.52 exit).  
+**Example E — Hysteresis hold:**  
+Previous tier = Lean (home). Refresh yields `p_favored=0.56` (below 0.575 raw threshold but above 0.545 exit).  
 → Tier **remains Lean** (`hysteresis_applied: true`).
 
-**Example E — Suppression:**  
+**Example F — Suppression:**  
 `sigma_margin=null`, `sigma_margin_credible=false`, `null_reason="cold_start_insufficient"`  
 → `conviction_tier=null`; UI shows margin if present without tier chip.
 

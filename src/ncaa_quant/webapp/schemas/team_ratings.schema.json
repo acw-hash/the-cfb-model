@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ridge.example/schemas/team_ratings.json",
+  "title": "team_ratings",
+  "type": "object",
+  "required": ["schema_version", "season", "published_at", "teams"],
+  "properties": {
+    "schema_version": { "type": "string" },
+    "season": { "type": "integer" },
+    "published_at": { "type": "string" },
+    "fixture": { "type": "boolean" },
+    "teams": { "type": "object" }
+  }
+}

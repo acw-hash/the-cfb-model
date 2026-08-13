@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ridge.example/schemas/week_predictions.json",
+  "title": "week_predictions",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "season",
+    "week",
+    "refresh_kind",
+    "published_at",
+    "feature_time_label",
+    "ensemble_scope_label",
+    "vintage_label",
+    "model_identity",
+    "publish_stale",
+    "games"
+  ],
+  "properties": {
+    "schema_version": { "type": "string" },
+    "season": { "type": "integer" },
+    "week": { "type": "integer" },
+    "refresh_kind": { "type": "string" },
+    "published_at": { "type": "string" },
+    "feature_time_label": { "type": "string" },
+    "ensemble_scope_label": { "type": "string" },
+    "vintage_label": { "type": "string" },
+    "fixture": { "type": "boolean" },
+    "model_identity": { "type": "object" },
+    "publish_stale": { "type": "object" },
+    "games": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/game_prediction" }
+    }
+  },
+  "$defs": {
+    "game_prediction": {
+      "type": "object",
+      "required": [
+        "game_id",
+        "season",
+        "week",
+        "home_team",
+        "away_team",
+        "kickoff_utc",
+        "sigma_margin_credible",
+        "tier_revised_since_primary",
+        "is_stale",
+        "published_at",
+        "refresh_kind"
+      ],
+      "properties": {
+        "game_id": { "type": "string" },
+        "mu_margin": { "type": ["number", "null"] },
+        "sigma_margin": { "type": ["number", "null"] },
+        "conviction_tier": {
+          "type": ["string", "null"],
+          "enum": ["strong_lean", "clear_lean", "lean", "toss_up", null]
+        }
+      }
+    }
+  }
+}

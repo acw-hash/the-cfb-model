@@ -182,7 +182,7 @@ def execute_predict_publish(
             notifier=n,
         )
 
-    return {
+    result: dict[str, Any] = {
         "season": season,
         "week": week,
         "refresh_kind": refresh_kind,
@@ -190,6 +190,7 @@ def execute_predict_publish(
         "ingest_error": ingest_error,
         "stale": stale_ctx.to_dict(),
         "predictions": [p.to_dict() for p in stamped],
+        "prediction_rows": list(raw_preds),
         "n_candidates": len(candidates),
         "n_accepted": len(accepted),
         "n_rejected": len(rejected),
@@ -199,6 +200,25 @@ def execute_predict_publish(
             stale_ctx.sources[0].last_good_at.isoformat() if stale_ctx.sources else None
         ),
     }
+
+    if cfg.webapp.export_enabled:
+        try:
+            from ncaa_quant.webapp.export import export_publish_artifacts
+
+            export_out = export_publish_artifacts(result, config=cfg, push=True)
+            result["webapp_export"] = {"ok": True, "push": export_out.get("push")}
+        except Exception as exc:
+            log.warning("webapp_export_failed", error=str(exc))
+            notify(
+                AlertKind.WEBAPP_EXPORT_FAILURE,
+                "Ridge artifact export/push failed",
+                str(exc),
+                config=cfg,
+                notifier=n,
+            )
+            result["webapp_export"] = {"ok": False, "error": str(exc)}
+
+    return result
 
 
 def run_predict_publish(

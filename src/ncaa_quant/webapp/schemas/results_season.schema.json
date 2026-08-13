@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ridge.example/schemas/results_season.json",
+  "title": "results_season",
+  "type": "object",
+  "required": ["schema_version", "season", "published_at", "grading_rule", "games"],
+  "properties": {
+    "schema_version": { "type": "string" },
+    "season": { "type": "integer" },
+    "published_at": { "type": "string" },
+    "grading_rule": { "const": "last_pre_kickoff_publish" },
+    "fixture": { "type": "boolean" },
+    "games": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["game_id", "grade_status"],
+        "properties": {
+          "grade_status": {
+            "type": "string",
+            "enum": [
+              "graded",
+              "no_pre_kickoff_publish",
+              "game_not_final",
+              "postgame_missing"
+            ]
+          }
+        }
+      }
+    }
+  }
+}
