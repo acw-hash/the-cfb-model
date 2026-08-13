@@ -19,3 +19,23 @@ pipeline:
   task_retries: 3
   # PLACEHOLDER — wall-clock guard hours for a weekly pipeline run (§1.4: <2h).
   weekly_pipeline_timeout_hours: 2.0
+  # STALE mode threshold (DESIGN §10).
+  stale_odds_max_age_hours: 6.0
+  # Cadence shortfall tolerance (§10): alert when count < expected − tolerance.
+  odds_cadence_tolerance: 1
+  # Bet confirmation void threshold (§16 item 3).
+  bet_line_move_void_points: 0.5
+  # Prefect cron schedules (UTC).
+  postgame_ingest_cron_sat: "30 23 * * 6"
+  postgame_ingest_cron_hourly: "0 0-3 * * 0"
+  weekly_update_cron: "0 6 * * 0"
+  predict_publish_cron_tuesday: "0 6 * * 2"
+  predict_publish_cron_refresh: "0 6 * * 4-6"
+  settle_clv_cron: "0 8 * * 0"
+  idempotency_dir: data/pipeline_state
+  dead_letter_dir: data/pipeline_state/dead_letter
+  notifications:
+    provider: "null"
+    ntfy_server: https://ntfy.sh
+    ntfy_topic: ""
+    telegram_chat_id: ""

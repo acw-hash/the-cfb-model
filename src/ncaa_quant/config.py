@@ -105,12 +105,33 @@ class BettingConfig(BaseModel):
     max_weekly_exposure: float = 0.10
 
 
+class NotificationConfig(BaseModel):
+    """Alert routing for Prefect flows (DESIGN §10).
+
+    Provider tokens live in :class:`SecretsSettings`; only non-secret routing
+    fields appear here.
+    """
+
+    provider: str = "null"
+    """``null`` | ``ntfy`` | ``telegram`` — disabled when ``null`` or empty."""
+
+    ntfy_server: str = "https://ntfy.sh"
+    ntfy_topic: str = ""
+    telegram_chat_id: str = ""
+
+
 class PipelineConfig(BaseModel):
     """Schedules, promotion gates, and monitoring thresholds."""
 
     odds_snapshots_per_day: int = 6
     # 6×/day UTC (DESIGN §10); overridable.
     odds_ingest_cron: str = "0 0,4,8,12,16,20 * * *"
+    postgame_ingest_cron_sat: str = "30 23 * * 6"
+    postgame_ingest_cron_hourly: str = "0 0-3 * * 0"
+    weekly_update_cron: str = "0 6 * * 0"
+    predict_publish_cron_tuesday: str = "0 6 * * 2"
+    predict_publish_cron_refresh: str = "0 6 * * 4-6"
+    settle_clv_cron: str = "0 8 * * 0"
     retrain_gate_weeks: list[int] = Field(default_factory=lambda: [5, 10])
     ensemble_weight_dampen: float = 0.7
     feature_drift_psi_warn: float = 0.2
@@ -119,6 +140,15 @@ class PipelineConfig(BaseModel):
     calibration_slope_high: float = 1.15
     task_retries: int = 3
     weekly_pipeline_timeout_hours: float = 2.0
+    # STALE mode: max age before odds are considered stale (DESIGN §10).
+    stale_odds_max_age_hours: float = 6.0
+    # Cadence shortfall: alert when snapshots < expected − tolerance within 24h.
+    odds_cadence_tolerance: int = 1
+    # Bet confirmation: void if market line moved more than this (§16 item 3).
+    bet_line_move_void_points: float = 0.5
+    notifications: NotificationConfig = Field(default_factory=NotificationConfig)
+    idempotency_dir: str = "data/pipeline_state"
+    dead_letter_dir: str = "data/pipeline_state/dead_letter"
 
 
 class AppConfig(BaseSettings):
@@ -151,6 +181,10 @@ class SecretsSettings(BaseSettings):
 
     cfbd_api_key: SecretStr = Field(default=SecretStr(""), validation_alias="CFBD_API_KEY")
     odds_api_key: SecretStr = Field(default=SecretStr(""), validation_alias="ODDS_API_KEY")
+    ntfy_auth_token: SecretStr = Field(default=SecretStr(""), validation_alias="NTFY_AUTH_TOKEN")
+    telegram_bot_token: SecretStr = Field(
+        default=SecretStr(""), validation_alias="TELEGRAM_BOT_TOKEN"
+    )
 
 
 class _YamlSettingsSource(PydanticBaseSettingsSource):
