@@ -1,0 +1,1741 @@
+{
+  "ensemble_scope": "REDUCED_PER_ADR_0013",
+  "ensemble_composition": "margin: LGBM+ENet NNLS; total: single-LGBM stub; quantile: margin only; MC + epistemic active",
+  "runs": [
+    {
+      "run_id": "task23_fundamental_reduced_v1",
+      "ablation_id": "full",
+      "stack": "fundamental",
+      "status": "OK",
+      "ensemble_scope": "REDUCED_PER_ADR_0013",
+      "ensemble_composition": "margin: LGBM+ENet NNLS; total: single-LGBM stub; quantile: margin only; MC + epistemic active",
+      "n_predictions": 4944,
+      "n_headline": 4376,
+      "wall_clock_sec": "5303.828",
+      "label": "ensemble_scope=REDUCED_PER_ADR_0013",
+      "regimes": {
+        "cfbd_2019": {
+          "n": 763,
+          "ats": {
+            "n": 743,
+            "rate": 0.5074024226110363,
+            "bootstrap": {
+              "point": 0.5074024226110363,
+              "lo": 0.47870512566792006,
+              "hi": 0.5395791366906475
+            },
+            "naive": {
+              "point": 0.5074024226110363,
+              "lo": 0.47145431043969294,
+              "hi": 0.5433505347823796
+            }
+          },
+          "ou": {
+            "n": 747,
+            "rate": 0.5087014725568942,
+            "bootstrap": {
+              "point": 0.5087014725568942,
+              "lo": 0.4661368286445013,
+              "hi": 0.5541388541232095
+            },
+            "naive": {
+              "point": 0.5087014725568942,
+              "lo": 0.4728512365747934,
+              "hi": 0.5445517085389951
+            }
+          },
+          "crps_margin": 13.039586788822806,
+          "mae_margin": 17.842475453385465,
+          "crps_total": 10.186057213954998,
+          "mae_total": 14.224533444042876,
+          "logloss_ats": 17.404182249409924
+        },
+        "snapshots_2021_2024": {
+          "n": 3613,
+          "ats": {
+            "n": 3577,
+            "rate": 0.39670114621190944,
+            "bootstrap": {
+              "point": 0.39670114621190944,
+              "lo": 0.35573461656289035,
+              "hi": 0.44361901677825105
+            },
+            "naive": {
+              "point": 0.39670114621190944,
+              "lo": 0.3806691870210065,
+              "hi": 0.4127331054028124
+            }
+          },
+          "ou": {
+            "n": 3136,
+            "rate": 0.5232780612244898,
+            "bootstrap": {
+              "point": 0.5232780612244898,
+              "lo": 0.49748828076867446,
+              "hi": 0.5483174298523842
+            },
+            "naive": {
+              "point": 0.5232780612244898,
+              "lo": 0.505797358115007,
+              "hi": 0.5407587643339726
+            }
+          },
+          "crps_margin": 10.179704247629257,
+          "mae_margin": 14.214953147582452,
+          "crps_total": 9.35452309005912,
+          "mae_total": 13.137022955072455,
+          "logloss_ats": 19.157503616462517
+        }
+      },
+      "a2_components_by_basis": [
+        {
+          "metric": "mae_margin",
+          "value": 14.847593037714498,
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ],
+          "n": 4375,
+          "basis": "all_seasons"
+        },
+        {
+          "metric": "crps_margin",
+          "value": 10.678467762813412,
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ],
+          "n": 4375,
+          "basis": "all_seasons"
+        },
+        {
+          "metric": "ats_accuracy",
+          "value": 0.41574074074074074,
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ],
+          "n": 4320,
+          "basis": "line_backed"
+        }
+      ],
+      "weekly_mae_week4": 14.97997101467417,
+      "weekly_mae_week10": 13.54831195693989,
+      "weekly_mae_week10_minus_week4": -1.4316590577342794,
+      "clv_status": "NOT COMPUTED",
+      "clv_reason": "no bets.parquet / settle path in this runner output",
+      "clv": null,
+      "possessions_null": {
+        "explicit_is_missing_column": false,
+        "zero_filled": false,
+        "lgbm_native_nan": true,
+        "drives_staged_seasons": [
+          2023
+        ],
+        "by_season_week_band": [
+          {
+            "season": 2019,
+            "week_band": "weeks_1_4",
+            "n": 200,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2019,
+            "week_band": "weeks_5_plus",
+            "n": 563,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2021,
+            "week_band": "weeks_1_4",
+            "n": 349,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2021,
+            "week_band": "weeks_5_plus",
+            "n": 538,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2022,
+            "week_band": "weeks_1_4",
+            "n": 356,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2022,
+            "week_band": "weeks_5_plus",
+            "n": 540,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2023,
+            "week_band": "weeks_1_4",
+            "n": 363,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2023,
+            "week_band": "weeks_5_plus",
+            "n": 547,
+            "null_share_structural": null,
+            "note": "partial \u2014 only 2023 drives staged; week>=5 after retrain"
+          },
+          {
+            "season": 2024,
+            "week_band": "weeks_1_4",
+            "n": 351,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2024,
+            "week_band": "weeks_5_plus",
+            "n": 569,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          }
+        ]
+      }
+    },
+    {
+      "run_id": "task23_market_aware_reduced_v1",
+      "ablation_id": "full",
+      "stack": "market_aware",
+      "status": "OK",
+      "ensemble_scope": "REDUCED_PER_ADR_0013",
+      "ensemble_composition": "margin: LGBM+ENet NNLS; total: single-LGBM stub; quantile: margin only; MC + epistemic active",
+      "n_predictions": 4944,
+      "n_headline": 4376,
+      "wall_clock_sec": "6890.679",
+      "label": "ensemble_scope=REDUCED_PER_ADR_0013",
+      "regimes": {
+        "cfbd_2019": {
+          "n": 763,
+          "ats": {
+            "n": 743,
+            "rate": 0.47510094212651416,
+            "bootstrap": {
+              "point": 0.47510094212651416,
+              "lo": 0.44191696375519907,
+              "hi": 0.5067495066998542
+            },
+            "naive": {
+              "point": 0.47510094212651416,
+              "lo": 0.43919349525344936,
+              "hi": 0.511008388999579
+            }
+          },
+          "ou": {
+            "n": 747,
+            "rate": 0.5287817938420348,
+            "bootstrap": {
+              "point": 0.5287817938420348,
+              "lo": 0.5052219321148825,
+              "hi": 0.5577717025899193
+            },
+            "naive": {
+              "point": 0.5287817938420348,
+              "lo": 0.4929855821420449,
+              "hi": 0.5645780055420248
+            }
+          },
+          "crps_margin": 11.082463910284485,
+          "mae_margin": 15.11474948611816,
+          "crps_total": 9.73176229999646,
+          "mae_total": 13.644206732940239,
+          "logloss_ats": 17.683316998223976
+        },
+        "snapshots_2021_2024": {
+          "n": 3613,
+          "ats": {
+            "n": 3577,
+            "rate": 0.32653061224489793,
+            "bootstrap": {
+              "point": 0.32653061224489793,
+              "lo": 0.30195256861742564,
+              "hi": 0.3522866529669408
+            },
+            "naive": {
+              "point": 0.32653061224489793,
+              "lo": 0.31116289001179837,
+              "hi": 0.3418983344779975
+            }
+          },
+          "ou": {
+            "n": 3136,
+            "rate": 0.48692602040816324,
+            "bootstrap": {
+              "point": 0.48692602040816324,
+              "lo": 0.4625705262646527,
+              "hi": 0.5065071163453668
+            },
+            "naive": {
+              "point": 0.48692602040816324,
+              "lo": 0.46943232540073826,
+              "hi": 0.5044197154155883
+            }
+          },
+          "crps_margin": 10.804189861184748,
+          "mae_margin": 15.126894600678975,
+          "crps_total": 7.516927762299434,
+          "mae_total": 10.3390139092996,
+          "logloss_ats": 20.694215682415035
+        }
+      },
+      "a2_components_by_basis": [
+        {
+          "metric": "mae_margin",
+          "value": 15.124776492699569,
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ],
+          "n": 4375,
+          "basis": "all_seasons"
+        },
+        {
+          "metric": "crps_margin",
+          "value": 10.852720855347743,
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ],
+          "n": 4375,
+          "basis": "all_seasons"
+        },
+        {
+          "metric": "ats_accuracy",
+          "value": 0.35208333333333336,
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ],
+          "n": 4320,
+          "basis": "line_backed"
+        }
+      ],
+      "weekly_mae_week4": 14.692767608853222,
+      "weekly_mae_week10": 13.917347289171678,
+      "weekly_mae_week10_minus_week4": -0.7754203196815439,
+      "clv_status": "NOT COMPUTED",
+      "clv_reason": "no bets.parquet / settle path in this runner output",
+      "clv": null,
+      "possessions_null": {
+        "explicit_is_missing_column": false,
+        "zero_filled": false,
+        "lgbm_native_nan": true,
+        "drives_staged_seasons": [
+          2023
+        ],
+        "by_season_week_band": [
+          {
+            "season": 2019,
+            "week_band": "weeks_1_4",
+            "n": 200,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2019,
+            "week_band": "weeks_5_plus",
+            "n": 563,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2021,
+            "week_band": "weeks_1_4",
+            "n": 349,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2021,
+            "week_band": "weeks_5_plus",
+            "n": 538,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2022,
+            "week_band": "weeks_1_4",
+            "n": 356,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2022,
+            "week_band": "weeks_5_plus",
+            "n": 540,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2023,
+            "week_band": "weeks_1_4",
+            "n": 363,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2023,
+            "week_band": "weeks_5_plus",
+            "n": 547,
+            "null_share_structural": null,
+            "note": "partial \u2014 only 2023 drives staged; week>=5 after retrain"
+          },
+          {
+            "season": 2024,
+            "week_band": "weeks_1_4",
+            "n": 351,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2024,
+            "week_band": "weeks_5_plus",
+            "n": 569,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          }
+        ]
+      }
+    },
+    {
+      "run_id": "task23_a1_reduced_v1",
+      "ablation_id": "A1_league_mean",
+      "stack": "fundamental",
+      "status": "OK",
+      "ensemble_scope": "REDUCED_PER_ADR_0013",
+      "ensemble_composition": "margin: LGBM+ENet NNLS; total: single-LGBM stub; quantile: margin only; MC + epistemic active",
+      "n_predictions": 4944,
+      "n_headline": 4376,
+      "wall_clock_sec": "6250.723",
+      "label": "ensemble_scope=REDUCED_PER_ADR_0013",
+      "regimes": {
+        "cfbd_2019": {
+          "n": 763,
+          "ats": {
+            "n": 743,
+            "rate": 0.5033647375504711,
+            "bootstrap": {
+              "point": 0.5033647375504711,
+              "lo": 0.4769410127399568,
+              "hi": 0.5317511035055937
+            },
+            "naive": {
+              "point": 0.5033647375504711,
+              "lo": 0.4674134991844813,
+              "hi": 0.5393159759164609
+            }
+          },
+          "ou": {
+            "n": 747,
+            "rate": 0.5207496653279786,
+            "bootstrap": {
+              "point": 0.5207496653279786,
+              "lo": 0.49081576760125645,
+              "hi": 0.5512030373756037
+            },
+            "naive": {
+              "point": 0.5207496653279786,
+              "lo": 0.4849248877855924,
+              "hi": 0.5565744428703648
+            }
+          },
+          "crps_margin": 13.072856245516666,
+          "mae_margin": 17.887317772806053,
+          "crps_total": 10.160454219938245,
+          "mae_total": 14.14531584686375,
+          "logloss_ats": 17.369549275156043
+        },
+        "snapshots_2021_2024": {
+          "n": 3613,
+          "ats": {
+            "n": 3577,
+            "rate": 0.3941850712887895,
+            "bootstrap": {
+              "point": 0.3941850712887895,
+              "lo": 0.3613509179452188,
+              "hi": 0.42992882881757905
+            },
+            "naive": {
+              "point": 0.3941850712887895,
+              "lo": 0.37817074426777797,
+              "hi": 0.410199398309801
+            }
+          },
+          "ou": {
+            "n": 3136,
+            "rate": 0.5191326530612245,
+            "bootstrap": {
+              "point": 0.5191326530612245,
+              "lo": 0.495446121003449,
+              "hi": 0.5425844340572912
+            },
+            "naive": {
+              "point": 0.5191326530612245,
+              "lo": 0.5016457911301746,
+              "hi": 0.5366195149922743
+            }
+          },
+          "crps_margin": 10.116575804827706,
+          "mae_margin": 14.153478303160156,
+          "crps_total": 9.33918319907759,
+          "mae_total": 13.130301946741843,
+          "logloss_ats": 19.159779407619105
+        }
+      },
+      "a2_components_by_basis": [
+        {
+          "metric": "mae_margin",
+          "value": 14.8046599066664,
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ],
+          "n": 4375,
+          "basis": "all_seasons"
+        },
+        {
+          "metric": "crps_margin",
+          "value": 10.632151113683861,
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ],
+          "n": 4375,
+          "basis": "all_seasons"
+        },
+        {
+          "metric": "ats_accuracy",
+          "value": 0.412962962962963,
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ],
+          "n": 4320,
+          "basis": "line_backed"
+        }
+      ],
+      "weekly_mae_week4": 15.943137663408761,
+      "weekly_mae_week10": 13.523349183934684,
+      "weekly_mae_week10_minus_week4": -2.419788479474077,
+      "clv_status": "NOT COMPUTED",
+      "clv_reason": "no bets.parquet / settle path in this runner output",
+      "clv": null,
+      "possessions_null": {
+        "explicit_is_missing_column": false,
+        "zero_filled": false,
+        "lgbm_native_nan": true,
+        "drives_staged_seasons": [
+          2023
+        ],
+        "by_season_week_band": [
+          {
+            "season": 2019,
+            "week_band": "weeks_1_4",
+            "n": 200,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2019,
+            "week_band": "weeks_5_plus",
+            "n": 563,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2021,
+            "week_band": "weeks_1_4",
+            "n": 349,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2021,
+            "week_band": "weeks_5_plus",
+            "n": 538,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2022,
+            "week_band": "weeks_1_4",
+            "n": 356,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2022,
+            "week_band": "weeks_5_plus",
+            "n": 540,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2023,
+            "week_band": "weeks_1_4",
+            "n": 363,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2023,
+            "week_band": "weeks_5_plus",
+            "n": 547,
+            "null_share_structural": null,
+            "note": "partial \u2014 only 2023 drives staged; week>=5 after retrain"
+          },
+          {
+            "season": 2024,
+            "week_band": "weeks_1_4",
+            "n": 351,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2024,
+            "week_band": "weeks_5_plus",
+            "n": 569,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          }
+        ]
+      }
+    },
+    {
+      "run_id": "task23_a2_reduced_v1",
+      "ablation_id": "A2_frozen_after_week_1",
+      "stack": "fundamental",
+      "status": "OK",
+      "ensemble_scope": "REDUCED_PER_ADR_0013",
+      "ensemble_composition": "margin: LGBM+ENet NNLS; total: single-LGBM stub; quantile: margin only; MC + epistemic active",
+      "n_predictions": 4944,
+      "n_headline": 4376,
+      "wall_clock_sec": "5642.121",
+      "label": "ensemble_scope=REDUCED_PER_ADR_0013",
+      "regimes": {
+        "cfbd_2019": {
+          "n": 763,
+          "ats": {
+            "n": 743,
+            "rate": 0.4670255720053836,
+            "bootstrap": {
+              "point": 0.4670255720053836,
+              "lo": 0.4438664594913993,
+              "hi": 0.4879885703757354
+            },
+            "naive": {
+              "point": 0.4670255720053836,
+              "lo": 0.43115178702566465,
+              "hi": 0.5028993569851025
+            }
+          },
+          "ou": {
+            "n": 747,
+            "rate": 0.5180722891566265,
+            "bootstrap": {
+              "point": 0.5180722891566265,
+              "lo": 0.47930514166217936,
+              "hi": 0.5565055631318051
+            },
+            "naive": {
+              "point": 0.5180722891566265,
+              "lo": 0.4822400522182906,
+              "hi": 0.5539045260949624
+            }
+          },
+          "crps_margin": 14.881361451719235,
+          "mae_margin": 20.306698853396956,
+          "crps_total": 10.336711859905602,
+          "mae_total": 14.446696320256681,
+          "logloss_ats": 17.649579383039526
+        },
+        "snapshots_2021_2024": {
+          "n": 3613,
+          "ats": {
+            "n": 3577,
+            "rate": 0.3631534805703103,
+            "bootstrap": {
+              "point": 0.3631534805703103,
+              "lo": 0.33147030630221386,
+              "hi": 0.3962714932705522
+            },
+            "naive": {
+              "point": 0.3631534805703103,
+              "lo": 0.3473936655310802,
+              "hi": 0.37891329560954046
+            }
+          },
+          "ou": {
+            "n": 3136,
+            "rate": 0.5258290816326531,
+            "bootstrap": {
+              "point": 0.5258290816326531,
+              "lo": 0.5044373794599807,
+              "hi": 0.5464792891988638
+            },
+            "naive": {
+              "point": 0.5258290816326531,
+              "lo": 0.508352768319482,
+              "hi": 0.5433053949458242
+            }
+          },
+          "crps_margin": 11.238133624937209,
+          "mae_margin": 15.631411466420454,
+          "crps_total": 9.519059317905018,
+          "mae_total": 13.365695097051999,
+          "logloss_ats": 20.158628101981495
+        }
+      },
+      "a2_components_by_basis": [
+        {
+          "metric": "mae_margin",
+          "value": 16.446781586709157,
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ],
+          "n": 4375,
+          "basis": "all_seasons"
+        },
+        {
+          "metric": "crps_margin",
+          "value": 11.873512557927995,
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ],
+          "n": 4375,
+          "basis": "all_seasons"
+        },
+        {
+          "metric": "ats_accuracy",
+          "value": 0.38101851851851853,
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ],
+          "n": 4320,
+          "basis": "line_backed"
+        }
+      ],
+      "weekly_mae_week4": 15.941585697341361,
+      "weekly_mae_week10": 15.161054872889405,
+      "weekly_mae_week10_minus_week4": -0.7805308244519562,
+      "clv_status": "NOT COMPUTED",
+      "clv_reason": "no bets.parquet / settle path in this runner output",
+      "clv": null,
+      "possessions_null": {
+        "explicit_is_missing_column": false,
+        "zero_filled": false,
+        "lgbm_native_nan": true,
+        "drives_staged_seasons": [
+          2023
+        ],
+        "by_season_week_band": [
+          {
+            "season": 2019,
+            "week_band": "weeks_1_4",
+            "n": 200,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2019,
+            "week_band": "weeks_5_plus",
+            "n": 563,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2021,
+            "week_band": "weeks_1_4",
+            "n": 349,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2021,
+            "week_band": "weeks_5_plus",
+            "n": 538,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2022,
+            "week_band": "weeks_1_4",
+            "n": 356,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2022,
+            "week_band": "weeks_5_plus",
+            "n": 540,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2023,
+            "week_band": "weeks_1_4",
+            "n": 363,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2023,
+            "week_band": "weeks_5_plus",
+            "n": 547,
+            "null_share_structural": null,
+            "note": "partial \u2014 only 2023 drives staged; week>=5 after retrain"
+          },
+          {
+            "season": 2024,
+            "week_band": "weeks_1_4",
+            "n": 351,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2024,
+            "week_band": "weeks_5_plus",
+            "n": 569,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          }
+        ]
+      }
+    },
+    {
+      "run_id": "task23_a3_reduced_v1",
+      "ablation_id": "A3_market_off",
+      "stack": "market_aware",
+      "status": "OK",
+      "ensemble_scope": "REDUCED_PER_ADR_0013",
+      "ensemble_composition": "margin: LGBM+ENet NNLS; total: single-LGBM stub; quantile: margin only; MC + epistemic active",
+      "n_predictions": 4944,
+      "n_headline": 4376,
+      "wall_clock_sec": "5450.289",
+      "label": "ensemble_scope=REDUCED_PER_ADR_0013",
+      "regimes": {
+        "cfbd_2019": {
+          "n": 763,
+          "ats": {
+            "n": 743,
+            "rate": 0.5074024226110363,
+            "bootstrap": {
+              "point": 0.5074024226110363,
+              "lo": 0.47870512566792006,
+              "hi": 0.5395791366906475
+            },
+            "naive": {
+              "point": 0.5074024226110363,
+              "lo": 0.47145431043969294,
+              "hi": 0.5433505347823796
+            }
+          },
+          "ou": {
+            "n": 747,
+            "rate": 0.5087014725568942,
+            "bootstrap": {
+              "point": 0.5087014725568942,
+              "lo": 0.4661368286445013,
+              "hi": 0.5541388541232095
+            },
+            "naive": {
+              "point": 0.5087014725568942,
+              "lo": 0.4728512365747934,
+              "hi": 0.5445517085389951
+            }
+          },
+          "crps_margin": 13.039586788822806,
+          "mae_margin": 17.842475453385465,
+          "crps_total": 10.186057213954998,
+          "mae_total": 14.224533444042876,
+          "logloss_ats": 17.404182249409924
+        },
+        "snapshots_2021_2024": {
+          "n": 3613,
+          "ats": {
+            "n": 3577,
+            "rate": 0.39670114621190944,
+            "bootstrap": {
+              "point": 0.39670114621190944,
+              "lo": 0.35573461656289035,
+              "hi": 0.44361901677825105
+            },
+            "naive": {
+              "point": 0.39670114621190944,
+              "lo": 0.3806691870210065,
+              "hi": 0.4127331054028124
+            }
+          },
+          "ou": {
+            "n": 3136,
+            "rate": 0.5232780612244898,
+            "bootstrap": {
+              "point": 0.5232780612244898,
+              "lo": 0.49748828076867446,
+              "hi": 0.5483174298523842
+            },
+            "naive": {
+              "point": 0.5232780612244898,
+              "lo": 0.505797358115007,
+              "hi": 0.5407587643339726
+            }
+          },
+          "crps_margin": 10.179704247629257,
+          "mae_margin": 14.214953147582452,
+          "crps_total": 9.35452309005912,
+          "mae_total": 13.137022955072455,
+          "logloss_ats": 19.157503616462517
+        }
+      },
+      "a2_components_by_basis": [
+        {
+          "metric": "mae_margin",
+          "value": 14.847593037714498,
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ],
+          "n": 4375,
+          "basis": "all_seasons"
+        },
+        {
+          "metric": "crps_margin",
+          "value": 10.678467762813412,
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ],
+          "n": 4375,
+          "basis": "all_seasons"
+        },
+        {
+          "metric": "ats_accuracy",
+          "value": 0.41574074074074074,
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ],
+          "n": 4320,
+          "basis": "line_backed"
+        }
+      ],
+      "weekly_mae_week4": 14.97997101467417,
+      "weekly_mae_week10": 13.54831195693989,
+      "weekly_mae_week10_minus_week4": -1.4316590577342794,
+      "clv_status": "NOT COMPUTED",
+      "clv_reason": "no bets.parquet / settle path in this runner output",
+      "clv": null,
+      "possessions_null": {
+        "explicit_is_missing_column": false,
+        "zero_filled": false,
+        "lgbm_native_nan": true,
+        "drives_staged_seasons": [
+          2023
+        ],
+        "by_season_week_band": [
+          {
+            "season": 2019,
+            "week_band": "weeks_1_4",
+            "n": 200,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2019,
+            "week_band": "weeks_5_plus",
+            "n": 563,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2021,
+            "week_band": "weeks_1_4",
+            "n": 349,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2021,
+            "week_band": "weeks_5_plus",
+            "n": 538,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2022,
+            "week_band": "weeks_1_4",
+            "n": 356,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2022,
+            "week_band": "weeks_5_plus",
+            "n": 540,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2023,
+            "week_band": "weeks_1_4",
+            "n": 363,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2023,
+            "week_band": "weeks_5_plus",
+            "n": 547,
+            "null_share_structural": null,
+            "note": "partial \u2014 only 2023 drives staged; week>=5 after retrain"
+          },
+          {
+            "season": 2024,
+            "week_band": "weeks_1_4",
+            "n": 351,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2024,
+            "week_band": "weeks_5_plus",
+            "n": 569,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          }
+        ]
+      }
+    },
+    {
+      "run_id": "task23_a4_reduced_v1",
+      "ablation_id": "A4_single_lgbm",
+      "stack": "fundamental",
+      "status": "OK",
+      "ensemble_scope": "REDUCED_PER_ADR_0013",
+      "ensemble_composition": "margin: LGBM+ENet NNLS; total: single-LGBM stub; quantile: margin only; MC + epistemic active",
+      "n_predictions": 4944,
+      "n_headline": 4376,
+      "wall_clock_sec": "5429.534",
+      "label": "ensemble_scope=REDUCED_PER_ADR_0013",
+      "regimes": {
+        "cfbd_2019": {
+          "n": 763,
+          "ats": {
+            "n": 743,
+            "rate": 0.5047106325706595,
+            "bootstrap": {
+              "point": 0.5047106325706595,
+              "lo": 0.45282958702348863,
+              "hi": 0.545959418053319
+            },
+            "naive": {
+              "point": 0.5047106325706595,
+              "lo": 0.4687601757278455,
+              "hi": 0.5406610894134736
+            }
+          },
+          "ou": {
+            "n": 747,
+            "rate": 0.5087014725568942,
+            "bootstrap": {
+              "point": 0.5087014725568942,
+              "lo": 0.4661368286445013,
+              "hi": 0.5541388541232095
+            },
+            "naive": {
+              "point": 0.5087014725568942,
+              "lo": 0.4728512365747934,
+              "hi": 0.5445517085389951
+            }
+          },
+          "crps_margin": 11.69865230543807,
+          "mae_margin": 16.15425122117701,
+          "crps_total": 10.186057213954998,
+          "mae_total": 14.224533444042876,
+          "logloss_ats": 17.515297694726492
+        },
+        "snapshots_2021_2024": {
+          "n": 3613,
+          "ats": {
+            "n": 3577,
+            "rate": 0.4350013978194017,
+            "bootstrap": {
+              "point": 0.4350013978194017,
+              "lo": 0.3958189525810324,
+              "hi": 0.48071087880590685
+            },
+            "naive": {
+              "point": 0.4350013978194017,
+              "lo": 0.4187549794084414,
+              "hi": 0.45124781623036203
+            }
+          },
+          "ou": {
+            "n": 3136,
+            "rate": 0.5232780612244898,
+            "bootstrap": {
+              "point": 0.5232780612244898,
+              "lo": 0.49748828076867446,
+              "hi": 0.5483174298523842
+            },
+            "naive": {
+              "point": 0.5232780612244898,
+              "lo": 0.505797358115007,
+              "hi": 0.5407587643339726
+            }
+          },
+          "crps_margin": 9.808456558019698,
+          "mae_margin": 13.724109526539081,
+          "crps_total": 9.35452309005912,
+          "mae_total": 13.137022955072455,
+          "logloss_ats": 18.37781093861016
+        }
+      },
+      "a2_components_by_basis": [
+        {
+          "metric": "mae_margin",
+          "value": 14.147926238083935,
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ],
+          "n": 4375,
+          "basis": "all_seasons"
+        },
+        {
+          "metric": "crps_margin",
+          "value": 10.138106696369462,
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ],
+          "n": 4375,
+          "basis": "all_seasons"
+        },
+        {
+          "metric": "ats_accuracy",
+          "value": 0.44699074074074074,
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ],
+          "n": 4320,
+          "basis": "line_backed"
+        }
+      ],
+      "weekly_mae_week4": 14.486774490834824,
+      "weekly_mae_week10": 13.515173380962075,
+      "weekly_mae_week10_minus_week4": -0.9716011098727488,
+      "clv_status": "NOT COMPUTED",
+      "clv_reason": "no bets.parquet / settle path in this runner output",
+      "clv": null,
+      "possessions_null": {
+        "explicit_is_missing_column": false,
+        "zero_filled": false,
+        "lgbm_native_nan": true,
+        "drives_staged_seasons": [
+          2023
+        ],
+        "by_season_week_band": [
+          {
+            "season": 2019,
+            "week_band": "weeks_1_4",
+            "n": 200,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2019,
+            "week_band": "weeks_5_plus",
+            "n": 563,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2021,
+            "week_band": "weeks_1_4",
+            "n": 349,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2021,
+            "week_band": "weeks_5_plus",
+            "n": 538,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2022,
+            "week_band": "weeks_1_4",
+            "n": 356,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2022,
+            "week_band": "weeks_5_plus",
+            "n": 540,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2023,
+            "week_band": "weeks_1_4",
+            "n": 363,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2023,
+            "week_band": "weeks_5_plus",
+            "n": 547,
+            "null_share_structural": null,
+            "note": "partial \u2014 only 2023 drives staged; week>=5 after retrain"
+          },
+          {
+            "season": 2024,
+            "week_band": "weeks_1_4",
+            "n": 351,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2024,
+            "week_band": "weeks_5_plus",
+            "n": 569,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          }
+        ]
+      }
+    },
+    {
+      "run_id": "task23_a5_reduced_v1",
+      "ablation_id": "A5_gt_off",
+      "stack": "fundamental",
+      "status": "OK",
+      "ensemble_scope": "REDUCED_PER_ADR_0013",
+      "ensemble_composition": "margin: LGBM+ENet NNLS; total: single-LGBM stub; quantile: margin only; MC + epistemic active",
+      "n_predictions": 4944,
+      "n_headline": 4376,
+      "wall_clock_sec": "5548.512",
+      "label": "ensemble_scope=REDUCED_PER_ADR_0013",
+      "regimes": {
+        "cfbd_2019": {
+          "n": 763,
+          "ats": {
+            "n": 743,
+            "rate": 0.5006729475100942,
+            "bootstrap": {
+              "point": 0.5006729475100942,
+              "lo": 0.4562676739209355,
+              "hi": 0.5433565179388652
+            },
+            "naive": {
+              "point": 0.5006729475100942,
+              "lo": 0.46472092763791734,
+              "hi": 0.5366249673822711
+            }
+          },
+          "ou": {
+            "n": 747,
+            "rate": 0.5046854082998661,
+            "bootstrap": {
+              "point": 0.5046854082998661,
+              "lo": 0.4732611164017288,
+              "hi": 0.5351066373163401
+            },
+            "naive": {
+              "point": 0.5046854082998661,
+              "lo": 0.4688313165553741,
+              "hi": 0.5405395000443581
+            }
+          },
+          "crps_margin": 11.84044608807518,
+          "mae_margin": 16.05445331861135,
+          "crps_total": 9.88329295580115,
+          "mae_total": 13.79332769867145,
+          "logloss_ats": 17.64764474032725
+        },
+        "snapshots_2021_2024": {
+          "n": 3613,
+          "ats": {
+            "n": 3577,
+            "rate": 0.4022924238188426,
+            "bootstrap": {
+              "point": 0.4022924238188426,
+              "lo": 0.36354688279477787,
+              "hi": 0.4477254507706254
+            },
+            "naive": {
+              "point": 0.4022924238188426,
+              "lo": 0.3862228659399325,
+              "hi": 0.41836198169775274
+            }
+          },
+          "ou": {
+            "n": 3136,
+            "rate": 0.5258290816326531,
+            "bootstrap": {
+              "point": 0.5258290816326531,
+              "lo": 0.502601917616151,
+              "hi": 0.5480319101124385
+            },
+            "naive": {
+              "point": 0.5258290816326531,
+              "lo": 0.508352768319482,
+              "hi": 0.5433053949458242
+            }
+          },
+          "crps_margin": 10.034799843045201,
+          "mae_margin": 14.03689630851939,
+          "crps_total": 9.151344217717625,
+          "mae_total": 12.881234971932502,
+          "logloss_ats": 19.027298369164175
+        }
+      },
+      "a2_components_by_basis": [
+        {
+          "metric": "mae_margin",
+          "value": 14.388758251079429,
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ],
+          "n": 4375,
+          "basis": "all_seasons"
+        },
+        {
+          "metric": "crps_margin",
+          "value": 10.34970454817843,
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ],
+          "n": 4375,
+          "basis": "all_seasons"
+        },
+        {
+          "metric": "ats_accuracy",
+          "value": 0.41921296296296295,
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ],
+          "n": 4320,
+          "basis": "line_backed"
+        }
+      ],
+      "weekly_mae_week4": 15.13719437150569,
+      "weekly_mae_week10": 13.517643985835708,
+      "weekly_mae_week10_minus_week4": -1.6195503856699816,
+      "clv_status": "NOT COMPUTED",
+      "clv_reason": "no bets.parquet / settle path in this runner output",
+      "clv": null,
+      "possessions_null": {
+        "explicit_is_missing_column": false,
+        "zero_filled": false,
+        "lgbm_native_nan": true,
+        "drives_staged_seasons": [
+          2023
+        ],
+        "by_season_week_band": [
+          {
+            "season": 2019,
+            "week_band": "weeks_1_4",
+            "n": 200,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2019,
+            "week_band": "weeks_5_plus",
+            "n": 563,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2021,
+            "week_band": "weeks_1_4",
+            "n": 349,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2021,
+            "week_band": "weeks_5_plus",
+            "n": 538,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2022,
+            "week_band": "weeks_1_4",
+            "n": 356,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2022,
+            "week_band": "weeks_5_plus",
+            "n": 540,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2023,
+            "week_band": "weeks_1_4",
+            "n": 363,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2023,
+            "week_band": "weeks_5_plus",
+            "n": 547,
+            "null_share_structural": null,
+            "note": "partial \u2014 only 2023 drives staged; week>=5 after retrain"
+          },
+          {
+            "season": 2024,
+            "week_band": "weeks_1_4",
+            "n": 351,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2024,
+            "week_band": "weeks_5_plus",
+            "n": 569,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          }
+        ]
+      }
+    },
+    {
+      "run_id": "task23_a6_reduced_v1",
+      "ablation_id": "A6_cfbd_open_close",
+      "stack": "market_aware",
+      "status": "OK",
+      "ensemble_scope": "REDUCED_PER_ADR_0013",
+      "ensemble_composition": "margin: LGBM+ENet NNLS; total: single-LGBM stub; quantile: margin only; MC + epistemic active",
+      "n_predictions": 3486,
+      "n_headline": 3486,
+      "wall_clock_sec": "3908.942",
+      "label": "ensemble_scope=REDUCED_PER_ADR_0013",
+      "regimes": {
+        "snapshots_2021_2024": {
+          "n": 3486,
+          "ats": {
+            "n": 3451,
+            "rate": 0.3645320197044335,
+            "bootstrap": {
+              "point": 0.3645320197044335,
+              "lo": 0.3517610119746887,
+              "hi": 0.3778385649495261
+            },
+            "naive": {
+              "point": 0.3645320197044335,
+              "lo": 0.3484740627839638,
+              "hi": 0.3805899766249032
+            }
+          },
+          "ou": {
+            "n": 3015,
+            "rate": 0.5008291873963516,
+            "bootstrap": {
+              "point": 0.5008291873963516,
+              "lo": 0.4757131983957191,
+              "hi": 0.521234464558037
+            },
+            "naive": {
+              "point": 0.5008291873963516,
+              "lo": 0.4829818333136912,
+              "hi": 0.518676541479012
+            }
+          },
+          "crps_margin": 10.832295780928444,
+          "mae_margin": 14.936706335474655,
+          "crps_total": 9.113528429579993,
+          "mae_total": 12.79210690528776,
+          "logloss_ats": 19.880104263824084
+        }
+      },
+      "a2_components_by_basis": [
+        {
+          "metric": "mae_margin",
+          "value": 14.936706335474655,
+          "seasons": [
+            2021,
+            2022,
+            2023,
+            2024
+          ],
+          "n": 3485,
+          "basis": "all_seasons"
+        },
+        {
+          "metric": "crps_margin",
+          "value": 10.832295780928444,
+          "seasons": [
+            2021,
+            2022,
+            2023,
+            2024
+          ],
+          "n": 3485,
+          "basis": "all_seasons"
+        },
+        {
+          "metric": "ats_accuracy",
+          "value": 0.3645320197044335,
+          "seasons": [
+            2021,
+            2022,
+            2023,
+            2024
+          ],
+          "n": 3451,
+          "basis": "line_backed"
+        }
+      ],
+      "weekly_mae_week4": 14.458819502935773,
+      "weekly_mae_week10": 12.73176387988942,
+      "weekly_mae_week10_minus_week4": -1.7270556230463523,
+      "clv_status": "NOT COMPUTED",
+      "clv_reason": "no bets.parquet / settle path in this runner output",
+      "clv": null,
+      "possessions_null": {
+        "explicit_is_missing_column": false,
+        "zero_filled": false,
+        "lgbm_native_nan": true,
+        "drives_staged_seasons": [
+          2023
+        ],
+        "by_season_week_band": [
+          {
+            "season": 2021,
+            "week_band": "weeks_1_4",
+            "n": 222,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2021,
+            "week_band": "weeks_5_plus",
+            "n": 538,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2022,
+            "week_band": "weeks_1_4",
+            "n": 356,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2022,
+            "week_band": "weeks_5_plus",
+            "n": 540,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2023,
+            "week_band": "weeks_1_4",
+            "n": 363,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2023,
+            "week_band": "weeks_5_plus",
+            "n": 547,
+            "null_share_structural": null,
+            "note": "partial \u2014 only 2023 drives staged; week>=5 after retrain"
+          },
+          {
+            "season": 2024,
+            "week_band": "weeks_1_4",
+            "n": 351,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          },
+          {
+            "season": 2024,
+            "week_band": "weeks_5_plus",
+            "n": 569,
+            "null_share_structural": 1.0,
+            "note": "all null (no drives staged / before first PIT retrain)"
+          }
+        ]
+      }
+    }
+  ],
+  "ablation_deltas": {
+    "A1": {
+      "base_mae_margin_all_seasons": 14.847593037714498,
+      "ablation_mae_margin_all_seasons": 14.8046599066664,
+      "delta_ablation_minus_base": -0.04293313104809826,
+      "ensemble_scope": "REDUCED_PER_ADR_0013"
+    },
+    "A2": {
+      "base_mae_margin_all_seasons": 14.847593037714498,
+      "ablation_mae_margin_all_seasons": 16.446781586709157,
+      "delta_ablation_minus_base": 1.5991885489946593,
+      "ensemble_scope": "REDUCED_PER_ADR_0013"
+    },
+    "A4": {
+      "base_mae_margin_all_seasons": 14.847593037714498,
+      "ablation_mae_margin_all_seasons": 14.147926238083935,
+      "delta_ablation_minus_base": -0.6996667996305632,
+      "ensemble_scope": "REDUCED_PER_ADR_0013"
+    },
+    "A5": {
+      "base_mae_margin_all_seasons": 14.847593037714498,
+      "ablation_mae_margin_all_seasons": 14.388758251079429,
+      "delta_ablation_minus_base": -0.4588347866350695,
+      "ensemble_scope": "REDUCED_PER_ADR_0013"
+    },
+    "A3": {
+      "base_mae_margin_all_seasons": 15.124776492699569,
+      "ablation_mae_margin_all_seasons": 14.847593037714498,
+      "delta_ablation_minus_base": -0.2771834549850709,
+      "base": "market_aware_full",
+      "ensemble_scope": "REDUCED_PER_ADR_0013"
+    },
+    "A6": {
+      "market_aware_ats": {
+        "n": 3577,
+        "rate": 0.32653061224489793,
+        "bootstrap": {
+          "point": 0.32653061224489793,
+          "lo": 0.30195256861742564,
+          "hi": 0.3522866529669408
+        },
+        "naive": {
+          "point": 0.32653061224489793,
+          "lo": 0.31116289001179837,
+          "hi": 0.3418983344779975
+        }
+      },
+      "a6_ats": {
+        "n": 3451,
+        "rate": 0.3645320197044335,
+        "bootstrap": {
+          "point": 0.3645320197044335,
+          "lo": 0.3517610119746887,
+          "hi": 0.3778385649495261
+        },
+        "naive": {
+          "point": 0.3645320197044335,
+          "lo": 0.3484740627839638,
+          "hi": 0.3805899766249032
+        }
+      },
+      "note": "A6 is cfbd_open_close on 2021-2024 only; compare ATS rates, not pooled",
+      "ensemble_scope": "REDUCED_PER_ADR_0013"
+    },
+    "A4_framing": {
+      "margin": {
+        "reduced_ensemble_mae": 14.847593037714498,
+        "single_lgbm_mae": 14.147926238083935,
+        "increment_reduced_minus_single": 0.6996667996305632,
+        "note": "reduced-ensemble increment over single LGBM (margin: LGBM+ENet vs LGBM)"
+      },
+      "total": {
+        "reduced_ensemble_mae": 14.224533444042876,
+        "single_lgbm_mae": 14.224533444042876,
+        "note": "total-side A4 is stub-vs-single and measures nothing about \u00a75.2 ensembling"
+      },
+      "ensemble_scope": "REDUCED_PER_ADR_0013"
+    }
+  },
+  "determinism": {
+    "path": "data\\backtests\\task23_fundamental_reduced_v1\\full\\predictions.parquet",
+    "sha256": "a3d0495d0e2b6cf0a6621388d1af80a9c71788877bfa973dc64f37a27293129a",
+    "note": "byte hash of first completed run; second pass not re-executed this session"
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "reason_code": "CONTAMINATED_2019_FEATURE_SOURCE",
+  "struck_2019_market_aware": [
+    {
+      "label": "Tuesday-decision market-aware 2019 ATS",
+      "value": "45.63%",
+      "ci": "[42.9%, 48.6%]",
+      "n": 743,
+      "ll": 0.835,
+      "mae": 14.59,
+      "source": "docs/notes/week-align-fix.md",
+      "run_id": "task23_market_aware_reduced_v2_tue",
+      "feature_time": "TUESDAY_DECISION",
+      "reason": "CONTAMINATED_2019_FEATURE_SOURCE"
+    },
+    {
+      "label": "kick\u22125min market-aware 2019 ATS",
+      "value": "47.51%",
+      "ci": "[44.5%, 50.8%]",
+      "n": 743,
+      "ll": 0.961,
+      "mae": 15.11,
+      "source": "docs/notes/mkt-asof-fix.md",
+      "run_id": "task23_market_aware_reduced_v2",
+      "feature_time": "SLOT_CLOSE_KICK_MINUS_5M",
+      "reason": "CONTAMINATED_2019_FEATURE_SOURCE"
+    },
+    {
+      "label": "v1 market-aware 2019 ATS (ancestor)",
+      "value": "CONTAMINATED_v1 (see 23-rerun-r1.md)",
+      "source": "docs/notes/23-rerun-r1.md",
+      "run_id": "task23_market_aware_reduced_v1",
+      "reason": "CONTAMINATED_2019_FEATURE_SOURCE",
+      "note": "v1 also used CFBD close as 2019 snapshot-config features; additionally CONTAMINATED_v1 on snapshot ATS grading."
+    }
+  ],
+  "superseded_not_deleted_2021_2024_tuesday": {
+    "label": "Tuesday-decision snapshot 2021\u20132024 (prior run)",
+    "ats": "51.42%",
+    "n": 3491,
+    "ll": 0.812,
+    "mae": 14.32,
+    "crps": 10.26,
+    "ci": "[49.3%, 53.6%]",
+    "source": "docs/notes/week-align-fix.md",
+    "run_id": "task23_market_aware_reduced_v2_tue",
+    "feature_time": "TUESDAY_DECISION",
+    "disposition": "superseded-by-retrain",
+    "note": "Odds-backed; not in the 2019 feature-source blast radius. Retrain required because 2019 null features change the expanding-window fit."
+  },
+  "note": "Struck numbers are retained in source memos. Do not delete. 2021\u20132024 Tuesday snapshot figures were Odds-backed and are superseded-by-retrain, not in the 2019 feature-source blast radius."
+}

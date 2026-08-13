@@ -14,7 +14,8 @@ before kickoff it is the feature as-of. When it falls at or after kickoff
 (Week-0 / midweek exceptions), fall back to the latest configured
 decision-point instant strictly before kickoff (typically ``slot_close``).
 The ladder then enforces ``event_time <= feature_as_of`` **and**
-``event_time < kickoff``.
+``event_time < kickoff``. Close is never a feature (MKT-2019-FIX /
+DESIGN §7.2 item 8 Tuesday-knowability).
 """
 
 from __future__ import annotations
@@ -41,6 +42,7 @@ __all__ = [
     "filter_home_side_spreads",
     "median_home_spread",
     "median_total_line",
+    "provenance_from_line_source",
     "slot_close_instant",
 ]
 
@@ -53,6 +55,34 @@ DEFAULT_FEATURE_DECISION_POINTS: Final[tuple[str, ...]] = (
 
 #: Slot-close request is kickoff minus this lead (Task 5B / odds ingester).
 SLOT_CLOSE_LEAD: Final[timedelta] = timedelta(minutes=5)
+
+#: Provenance labels stamped from the resolving ``line_source`` (never inferred
+#: from non-nullness or from ``market_feature_source`` config).
+_NULL_LINE_SOURCES: Final[frozenset[str]] = frozenset({"", "null", "nan", "none"})
+
+
+def provenance_from_line_source(line_source: str | None) -> str:
+    """Stamp ``market_provenance`` from the resolving source only.
+
+    Units: dimensionless label. Time semantics: none (label of the row that
+    already passed the as-of bound).
+
+    - ``null`` / missing ``line_source`` → ``null``
+    - ``cfbd_*`` → ``cfbd`` (a CFBD-sourced row can never read ``snapshots``)
+    - Odds snapshot sources → ``snapshots``
+    - anything else → ``null`` (do not guess ``snapshots`` from non-nullness)
+    """
+    if line_source is None:
+        return "null"
+    src = str(line_source).strip()
+    if src.casefold() in _NULL_LINE_SOURCES:
+        return "null"
+    lower = src.casefold()
+    if lower.startswith("cfbd"):
+        return "cfbd"
+    if "snapshot" in lower or lower.startswith("odds_api"):
+        return "snapshots"
+    return "null"
 
 
 def slot_close_instant(kickoff: datetime) -> datetime:

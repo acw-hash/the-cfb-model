@@ -134,6 +134,7 @@ def check_2019_mkt_equivalence(preds: pd.DataFrame | None = None) -> dict[str, A
             cfbd_lines=provider.cfbd_lines,
             config=provider.config,
             closing=False,
+            for_features=True,
         )
         ladder_parts.append(ladder[["game_id", "line_source"]])
 
@@ -226,9 +227,10 @@ def check_2019_mkt_equivalence(preds: pd.DataFrame | None = None) -> dict[str, A
         "provenance_counts": provenance_counts,
         "line_source_counts": line_source_counts,
         "mechanism_if_violation": (
-            "resolve_lines_for_games(closing=False) uses CFBD open/close for "
-            "season<2021 even when market_feature_source=snapshots; "
-            "ProductionFeatureProvider then labels non-null provenance as 'snapshots'."
+            "resolve_lines_for_games(..., for_features=True) with "
+            "market_feature_source=snapshots must never admit CFBD open/close; "
+            "market_provenance must be stamped from line_source at resolution, "
+            "never inferred from non-nullness or config."
         ),
         "n_violations": len(violations),
         "violation_sample": violations[:20],
