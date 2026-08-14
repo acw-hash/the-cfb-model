@@ -1254,3 +1254,199 @@ determinism (R2-shaped `g-fix-1` / `g-fix-2` + dated game), null kickoff groupin
 
 **Acceptance:** `npm run typecheck`, `test`, `lint`, `build` pass; R2 artifact
 sort/group verified without throw.
+
+---
+
+## W7-BUCKET-AUDIT — R2 inventory + `latest/*` restore (2026-08-14)
+
+**Trigger:** Production alias (`the-cfb-model.vercel.app`) served synthetic
+`game_id`s (`g-fix-1`, `g-fix-2`) from R2 `latest/week_predictions.json` with
+`meta.fixture` absent (live posture).
+
+### 1) Full bucket inventory — pre-restore (`ridge-artifacts`, 23 objects)
+
+Classification: read each `.json` object; `fixture` when `meta.json` has
+`fixture: true` or a data file has top-level `fixture: true`; `live` when
+`fixture` key absent or false; `unknown` when no `fixture` field (e.g. empty
+stub `team_ratings`).
+
+| Key | Size (B) | Last modified (UTC) | fixture / live |
+|-----|----------|---------------------|----------------|
+| `latest/meta.json` | 906 | 2026-08-14T14:28:59Z | **live** (`fixture` absent; week **6**) |
+| `latest/results_2024.json` | 59,717 | 2026-08-14T14:27:10Z | fixture |
+| `latest/team_ratings_2024.json` | 107 | 2026-08-14T14:28:58Z | unknown (empty stub) |
+| `latest/track_record.json` | 5,605 | 2026-08-14T14:28:59Z | unknown |
+| `latest/week_predictions.json` | 3,861 | 2026-08-14T14:28:59Z | unknown (2 synthetic games) |
+| `v1/2024/w5/daily_refresh/meta.json` | 904 | 2026-08-14T14:28:55Z | **live** |
+| `v1/2024/w5/daily_refresh/team_ratings_2024.json` | 107 | 2026-08-14T14:28:54Z | unknown |
+| `v1/2024/w5/daily_refresh/track_record.json` | 5,605 | 2026-08-14T14:28:55Z | unknown |
+| `v1/2024/w5/daily_refresh/week_predictions.json` | 2,569 | 2026-08-14T14:28:55Z | unknown (1 synthetic game) |
+| `v1/2024/w5/tuesday_primary/meta.json` | 906 | 2026-08-14T14:28:57Z | **live** |
+| `v1/2024/w5/tuesday_primary/results_2024.json` | 59,717 | 2026-08-14T14:27:10Z | fixture |
+| `v1/2024/w5/tuesday_primary/team_ratings_2024.json` | 107 | 2026-08-14T14:28:56Z | unknown |
+| `v1/2024/w5/tuesday_primary/track_record.json` | 5,605 | 2026-08-14T14:28:57Z | unknown |
+| `v1/2024/w5/tuesday_primary/week_predictions.json` | 3,861 | 2026-08-14T14:28:57Z | unknown (2 synthetic games) |
+| `v1/2024/w6/tuesday_primary/meta.json` | 906 | 2026-08-14T14:28:59Z | **live** |
+| `v1/2024/w6/tuesday_primary/team_ratings_2024.json` | 107 | 2026-08-14T14:28:58Z | unknown |
+| `v1/2024/w6/tuesday_primary/track_record.json` | 5,605 | 2026-08-14T14:28:59Z | unknown |
+| `v1/2024/w6/tuesday_primary/week_predictions.json` | 3,861 | 2026-08-14T14:28:59Z | unknown (2 synthetic games) |
+| `v2/2024/w5/tuesday_primary/meta.json` | 906 | 2026-08-14T14:06:44Z | **live** (`schema_version=2.0.0`) |
+| `v2/2024/w5/tuesday_primary/results_2024.json` | 59,698 | 2026-08-14T14:06:41Z | unknown |
+| `v2/2024/w5/tuesday_primary/team_ratings_2024.json` | 991,889 | 2026-08-14T14:06:43Z | unknown |
+| `v2/2024/w5/tuesday_primary/track_record.json` | 5,605 | 2026-08-14T14:06:43Z | unknown |
+| `v2/2024/w5/tuesday_primary/week_predictions.json` | 107,245 | 2026-08-14T14:06:44Z | unknown (56 real CFBD ids) |
+
+**Note:** `v2/*` is the doctored schema-major set from W7-CLOSE-2 check #4
+(`schema_version=2.0.0`); real week-5 game ids but not the intended published
+prefix. Left untouched per task rule (no deletes outside `latest/` without
+reporting first).
+
+### 2) `latest/week_predictions.json` — pre-restore game_ids
+
+| `game_id` | CFBD-plausible? | Teams | `kickoff_utc` |
+|-----------|-----------------|-------|---------------|
+| `g-fix-1` | **NO** — synthetic pipeline stub | *(empty)* | `null` |
+| `g-fix-2` | **NO** — synthetic pipeline stub | *(empty)* | `null` |
+
+Top-level `fixture` was **absent**; `meta.json` also had `fixture` absent and
+`week: 6` (misaligned with a 2-game stub slate).
+
+**Origin (determined from notes + code):**
+
+| Record | Writer | Evidence |
+|--------|--------|----------|
+| `g-fix-1`, `g-fix-2` | `run_fixture_week_publish()` → `export_publish_artifacts(push=True)` when `NCAA_QUANT_WEBAPP__EXPORT_ENABLED=true` | Hard-coded in `src/ncaa_quant/pipelines/predict.py` (`predict_fn` returns only these two ids). Same pair appears in `v1/2024/w5/tuesday_primary` and `v1/2024/w6/tuesday_primary` (week-6 prefix matches integration test `test_idempotent_rerun_fixture_week`). Timestamps `2026-08-14T14:28:*` cluster on the same day as W7-ENVFILE-FIX / W7-SORTFIX work — after `.env` export gate became live, a pipeline dry-run helper was executed against real R2 instead of the committed `webapp/fixtures/*` push path. |
+| *(not in `latest/` but same incident)* `g-chaos-1` in `v1/2024/w5/daily_refresh/week_predictions.json` | `run_chaos_stale_publish()` with export enabled | Same `predict.py` chaos helper; `g-chaos-1` documented in `docs/notes/24.md`. |
+
+W7-SORTFIX (above) first observed the bad `latest/*` pair while debugging the
+sort crash; this audit confirms they were **live-published** (no `fixture:
+true`), not merely local test fixtures.
+
+### 3) Restore — stock push from `webapp/fixtures/*`
+
+Used documented path: read committed fixtures → `push_artifacts_to_r2` (data
+files first, `meta.json` last) → on-demand revalidate.
+
+| Field | Value |
+|-------|-------|
+| Source | `webapp/fixtures/{week_predictions,track_record,results_2024,team_ratings_2024,meta}.json` |
+| Target bucket | `ridge-artifacts` |
+| Versioned prefix updated | `v1/2024/w5/tuesday_primary/*` (side effect of stock push — overwrites prior synthetic `g-fix` copy) |
+| `meta_last` | `true` |
+| Revalidation | **200** — paths `/`, `/results`, `/about`, `/game` |
+| `latest/meta.json` after | `fixture: true`, `season: 2024`, `week: 5`, `schema_version: 1.1.0`, `published_at: 2024-09-24T06:00:00Z` |
+| `latest/week_predictions.json` after | **56 games**, all numeric CFBD ids (`401628373` … `401645337`), top-level `fixture: true` |
+
+Content hashes (restore push):
+
+| File | SHA-256 |
+|------|---------|
+| `week_predictions.json` | `d0736af934ab254219add3f38ac0967257debbe6b4561bb25650116402055567` |
+| `meta.json` | `3e03dd6722e43749d1207872efec7687974368af12ec2b4b073d863bce293acf` |
+
+### 4) Post-restore `latest/*` inventory (5 objects — all fixture)
+
+| Key | Size (B) | Last modified (UTC) | fixture / live |
+|-----|----------|---------------------|----------------|
+| `latest/meta.json` | 925 | 2026-08-14T14:50:31Z | **fixture** |
+| `latest/results_2024.json` | 59,717 | 2026-08-14T14:50:28Z | fixture |
+| `latest/team_ratings_2024.json` | 991,908 | 2026-08-14T14:50:29Z | fixture |
+| `latest/track_record.json` | 5,624 | 2026-08-14T14:50:30Z | fixture |
+| `latest/week_predictions.json` | 107,264 | 2026-08-14T14:50:30Z | fixture (56 CFBD ids) |
+
+### 5) Deployed site verification — production alias
+
+GET `https://the-cfb-model.vercel.app/` after revalidate **200**:
+
+| Check | Result |
+|-------|--------|
+| FIXTURE banner | **PASS** — `FixtureBanner` text: “FIXTURE DATA - development artifacts only; not live publishes.” |
+| Synthetic ids absent | **PASS** — no `g-fix-1` / `g-fix-2` in HTML |
+| Real fixture game visible | **PASS** — `/game/401628373` link (Arkansas @ Texas A&M) in slate |
+| Maintenance gate | **PASS** — full slate renders (not `MaintenanceState`) |
+
+### 6) Non-`latest/` prefixes still containing synthetic or doctored data
+
+**Not deleted** (forbidden without prior report). Operator may clean in a
+follow-up if desired:
+
+| Prefix | Issue |
+|--------|-------|
+| `v1/2024/w5/daily_refresh/*` | `g-chaos-1` synthetic game; live meta |
+| `v1/2024/w6/tuesday_primary/*` | `g-fix-1` / `g-fix-2`; live meta |
+| `v2/2024/w5/tuesday_primary/*` | Doctored `schema_version=2.0.0` (W7-CLOSE-2 schema gate test) |
+
+`v1/2024/w5/tuesday_primary/*` was **repaired** by the restore push (now matches
+committed fixtures, `fixture: true`).
+
+### Acceptance
+
+- [x] Full bucket inventory recorded (pre + post)
+- [x] Synthetic ids identified with origin (`run_fixture_week_publish` /
+  `run_chaos_stale_publish` + export-enabled `.env`)
+- [x] `latest/*` restored to committed 2024 week-5 fixture set (`fixture: true`,
+  56 real CFBD ids, no synthetic records)
+- [x] Production site verified: FIXTURE banner on, real slate, no synthetic ids
+- [x] Notes appended
+
+---
+
+## W7-TESTPUBLISH-GUARD — test helpers cannot write `latest/`
+
+### Flaw
+
+`run_fixture_week_publish()` and `run_chaos_stale_publish()` called the same
+`export_publish_artifacts(..., push=True)` path as production
+`predict_publish`. With `NCAA_QUANT_WEBAPP__EXPORT_ENABLED=true` on the
+workstation, a dry-run or chaos helper run pushed synthetic records
+(`g-fix-1`, `g-fix-2`, `g-chaos-1`) to `latest/` and `v1/…`, which the live
+Ridge site reads. See inventory above (2026-08-14 incident).
+
+### Fix (two layers)
+
+**1. Sandbox routing for test/chaos helpers (default, structural)**
+
+Choice: route helpers to a **`sandbox/` prefix**, not an opt-in refusal.
+Rationale:
+
+- Default remains safe when `EXPORT_ENABLED=true` — helpers cannot reach
+  `latest/` or `v*/` without editing code.
+- Integration/acceptance tests still exercise the full export → push chain
+  (artifact build, key layout, S3 puts) under `sandbox/latest/` and
+  `sandbox/v1/…`.
+- Opt-in refusal would silently skip push and weaken test coverage; sandbox
+  preserves observability without polluting the live prefix.
+
+Implementation: `_run_helper_publish()` in `predict.py` runs the pipeline
+with export suppressed, then pushes explicitly with
+`publish_scope="sandbox"`. Revalidation is skipped for sandbox pushes.
+
+**2. CFBD `game_id` guard on the live push path (defense in depth)**
+
+`push_artifacts_to_r2(..., publish_scope="live")` validates every
+`game_id` in `week_predictions.json` (and `results_*.json` when present)
+**before** any upload to `latest/` or `v*/`:
+
+| Rule | Value |
+|------|-------|
+| Pattern | `^[0-9]{6,12}$` |
+| Meaning | Decimal digits only, length 6–12 (CFBD numeric id, e.g. `401628373`) |
+| Rejects | `g-fix-1`, `g-chaos-1`, `g1`, alphanumeric stubs |
+| Scope | `publish_scope="live"` only; sandbox pushes skip validation |
+
+Failure raises `R2PushError` with a clear message; no objects are written.
+
+### Tests (`tests/unit/test_webapp_w7.py`)
+
+- `test_fixture_helper_export_enabled_uses_sandbox_not_latest` — helper with
+  export enabled writes only under `sandbox/`.
+- `test_live_push_refuses_synthetic_game_ids` — synthetic id blocked for live.
+- `test_live_push_succeeds_with_real_fixture_game_ids` — committed
+  `webapp/fixtures/week_predictions.json` still pushes to `latest/` + `v1/`.
+
+### Acceptance
+
+- [x] Helpers cannot write `latest/` by default (sandbox routing + test)
+- [x] Id-shape guard refuses synthetic records with stated rule
+- [x] Real fixture push still works end-to-end
+- [x] `make test` passes

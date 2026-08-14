@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -19,6 +20,7 @@ from ncaa_quant.webapp.export import (
 )
 from ncaa_quant.webapp.push import (
     META_FILENAME,
+    R2PushError,
     push_artifacts_to_r2,
     trigger_on_demand_revalidation,
 )
@@ -383,3 +385,112 @@ def test_shell_env_overrides_dotenv_webapp_settings(
     cfg = load_config()
     assert cfg.webapp.r2_bucket == _SHELL_BUCKET
     assert cfg.webapp.r2_endpoint_url == _DOTENV_ENDPOINT
+
+
+def _push_env(monkeypatch: pytest.MonkeyPatch) -> AppConfig:
+    monkeypatch.setenv("R2_ACCESS_KEY_ID", "test-key")
+    monkeypatch.setenv("R2_SECRET_ACCESS_KEY", "test-secret")
+    return AppConfig(
+        webapp=WebappConfig(
+            export_enabled=True,
+            r2_bucket="ridge-test",
+            r2_endpoint_url="https://example.r2.cloudflarestorage.com",
+        )
+    )
+
+
+def test_fixture_helper_export_enabled_uses_sandbox_not_latest(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test helpers must not write live prefixes even when export is enabled."""
+    from ncaa_quant.pipelines.predict import run_fixture_week_publish
+    from ncaa_quant.webapp.push import push_artifacts_to_r2 as real_push
+
+    cfg = _push_env(monkeypatch)
+    s3 = FakeS3()
+    fake_pipeline_result = {
+        "season": 2024,
+        "week": 5,
+        "refresh_kind": "tuesday_primary",
+        "predictions": [{"game_id": "g-fix-1"}],
+        "prediction_rows": [{"game_id": "g-fix-1", "mu_margin": 1.0, "sigma_margin": 14.0}],
+        "stale": {"is_stale": False},
+    }
+    synthetic_week = (
+        '{"games":[{"game_id":"g-fix-1"},{"game_id":"g-fix-2"}],"schema_version":"1.1.0"}\n'
+    )
+
+    monkeypatch.setattr(
+        "ncaa_quant.pipelines.predict.run_predict_publish",
+        lambda **_kw: fake_pipeline_result,
+    )
+    monkeypatch.setattr(
+        "ncaa_quant.webapp.export.export_publish_artifacts",
+        lambda *_a, **_kw: {
+            "artifacts": {
+                "week_predictions.json": synthetic_week,
+                META_FILENAME: '{"schema_version":"1.1.0"}\n',
+            }
+        },
+    )
+
+    def sandbox_aware_push(*args: Any, **kwargs: Any) -> dict[str, Any]:
+        kwargs["client"] = s3
+        kwargs.setdefault("skip_revalidation", True)
+        return real_push(*args, **kwargs)
+
+    monkeypatch.setattr("ncaa_quant.webapp.push.push_artifacts_to_r2", sandbox_aware_push)
+
+    out = run_fixture_week_publish(season=2024, week=5, config=cfg)
+    assert out["webapp_export"]["ok"] is True
+    assert out["webapp_export"]["publish_scope"] == "sandbox"
+    assert s3.put_calls
+    assert all(key.startswith("sandbox/") for key in s3.put_calls)
+    assert not any(key.startswith("latest/") or re.match(r"^v\d+/", key) for key in s3.put_calls)
+
+
+def test_live_push_refuses_synthetic_game_ids(monkeypatch: pytest.MonkeyPatch) -> None:
+    cfg = _push_env(monkeypatch)
+    synthetic = (
+        '{"games":[{"game_id":"g-fix-1"},{"game_id":"401628373"}],"schema_version":"1.1.0"}\n'
+    )
+    with pytest.raises(R2PushError, match="refused live publish.*g-fix-1"):
+        push_artifacts_to_r2(
+            {"week_predictions.json": synthetic, META_FILENAME: "{}\n"},
+            season=2024,
+            week=5,
+            refresh_kind="tuesday_primary",
+            schema_version="1.1.0",
+            publish_scope="live",
+            config=cfg,
+            client=FakeS3(),
+            skip_revalidation=True,
+        )
+
+
+def test_live_push_succeeds_with_real_fixture_game_ids(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fixture_path = Path("webapp/fixtures/week_predictions.json")
+    week_predictions = fixture_path.read_text(encoding="utf-8")
+    cfg = _push_env(monkeypatch)
+    s3 = FakeS3()
+    result = push_artifacts_to_r2(
+        {
+            "week_predictions.json": week_predictions,
+            META_FILENAME: '{"schema_version":"1.1.0"}\n',
+        },
+        season=2024,
+        week=5,
+        refresh_kind="tuesday_primary",
+        schema_version="1.1.0",
+        publish_scope="live",
+        config=cfg,
+        client=s3,
+        skip_revalidation=True,
+    )
+    assert result["uploads"]
+    live_keys = [u["key"] for u in result["uploads"]]
+    assert any(k == "latest/week_predictions.json" for k in live_keys)
+    assert any(k.startswith("v1/2024/w5/tuesday_primary/") for k in live_keys)
+    assert not any(k.startswith("sandbox/") for k in live_keys)

@@ -4,9 +4,10 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import time
 from collections.abc import Mapping
-from typing import Any, Protocol
+from typing import Any, Literal, Protocol
 
 import httpx
 from tenacity import retry, stop_after_attempt, wait_exponential
@@ -18,6 +19,51 @@ from ncaa_quant.utils.logging import get_logger
 log = get_logger(__name__)
 
 META_FILENAME = "meta.json"
+
+PublishScope = Literal["live", "sandbox"]
+
+# CFBD ``game_id`` values are numeric identifiers (e.g. ``401628373``).
+# Synthetic test stubs (``g-fix-1``, ``g-chaos-1``) must not reach live prefixes.
+CFBD_GAME_ID_PATTERN = re.compile(r"^[0-9]{6,12}$")
+
+
+def is_cfbd_game_id(game_id: str) -> bool:
+    """Return True when ``game_id`` matches the CFBD numeric id shape."""
+    return bool(CFBD_GAME_ID_PATTERN.fullmatch(str(game_id)))
+
+
+def collect_game_ids_from_artifacts(artifacts: Mapping[str, str | bytes]) -> list[str]:
+    """Extract ``game_id`` values from push-bound JSON artifacts."""
+    ids: list[str] = []
+    for filename, content in artifacts.items():
+        if not filename.endswith(".json"):
+            continue
+        text = content.decode("utf-8") if isinstance(content, bytes) else content
+        payload = json.loads(text)
+        if filename == "week_predictions.json":
+            for game in payload.get("games") or []:
+                if isinstance(game, dict) and game.get("game_id") is not None:
+                    ids.append(str(game["game_id"]))
+        elif filename.startswith("results_") and isinstance(payload.get("games"), list):
+            for game in payload["games"]:
+                if isinstance(game, dict) and game.get("game_id") is not None:
+                    ids.append(str(game["game_id"]))
+    return ids
+
+
+def validate_live_publish_game_ids(artifacts: Mapping[str, str | bytes]) -> None:
+    """Refuse live-prefix push when any artifact carries a non-CFBD ``game_id``."""
+    bad = [gid for gid in collect_game_ids_from_artifacts(artifacts) if not is_cfbd_game_id(gid)]
+    if bad:
+        sample = bad[:5]
+        suffix = f" (+{len(bad) - len(sample)} more)" if len(bad) > len(sample) else ""
+        msg = (
+            "refused live publish: game_id(s) "
+            f"{sample!r}{suffix} do not match CFBD shape "
+            "(decimal digits only, length 6–12); "
+            "synthetic ids cannot write to latest/ or v*/ prefixes"
+        )
+        raise R2PushError(msg)
 
 
 class S3Client(Protocol):
@@ -38,10 +84,13 @@ def artifact_object_keys(
     week: int,
     refresh_kind: str,
     schema_version: str,
+    publish_scope: PublishScope = "live",
 ) -> tuple[str, str]:
     major = schema_version.split(".", 1)[0]
     versioned = f"v{major}/{season}/w{week}/{refresh_kind}/{filename}"
     latest = f"latest/{filename}"
+    if publish_scope == "sandbox":
+        return f"sandbox/{versioned}", f"sandbox/{latest}"
     return versioned, latest
 
 
@@ -176,6 +225,7 @@ def push_artifacts_to_r2(
     week: int,
     refresh_kind: str,
     schema_version: str = "1.0.0",
+    publish_scope: PublishScope = "live",
     config: AppConfig | None = None,
     client: S3Client | None = None,
     notifier: Notifier | None = None,
@@ -200,6 +250,9 @@ def push_artifacts_to_r2(
     if not access_key or not secret_key:
         msg = "R2 credentials missing from environment"
         raise R2PushError(msg)
+
+    if publish_scope == "live":
+        validate_live_publish_game_ids(artifacts)
 
     s3 = client
     if s3 is None:
@@ -228,6 +281,7 @@ def push_artifacts_to_r2(
             week=week,
             refresh_kind=refresh_kind,
             schema_version=schema_version,
+            publish_scope=publish_scope,
         )
         for key in (versioned_key, latest_key):
             started = time.monotonic()
@@ -244,7 +298,7 @@ def push_artifacts_to_r2(
     # meta-last ordering: revalidation runs only after the upload loop completes.
     n = notifier if notifier is not None else build_notifier(cfg)
     revalidation: dict[str, Any] | None = None
-    if not skip_revalidation:
+    if not skip_revalidation and publish_scope == "live":
         revalidation = _maybe_revalidate(config=cfg, notifier=n, http_client=http_client)
 
     return {

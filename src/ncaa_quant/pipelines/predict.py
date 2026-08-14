@@ -221,6 +221,78 @@ def execute_predict_publish(
     return result
 
 
+def _run_helper_publish(
+    *,
+    season: int,
+    week: int,
+    refresh_kind: str,
+    odds_ingest_fn: OddsIngestFn | None = None,
+    predict_fn: PredictFn | None = None,
+    simulate_ingest_failure: bool = False,
+    config: AppConfig | None = None,
+    notifier: Notifier | None = None,
+    publish_scope: str = "sandbox",
+) -> dict[str, Any]:
+    """Run predict/publish for test helpers; default scope is non-live ``sandbox/``.
+
+    Test and chaos helpers must not write ``latest/`` or ``v*/`` even when
+    ``export_enabled`` is true on the workstation. The pipeline body runs with
+    export suppressed; artifacts are pushed explicitly under ``publish_scope``.
+    """
+    cfg = config or load_config()
+    export_wanted = cfg.webapp.export_enabled
+    inner_cfg = cfg
+    if export_wanted and publish_scope != "live":
+        inner_cfg = cfg.model_copy(
+            update={"webapp": cfg.webapp.model_copy(update={"export_enabled": False})}
+        )
+
+    result = run_predict_publish(
+        season=season,
+        week=week,
+        refresh_kind=refresh_kind,
+        odds_ingest_fn=odds_ingest_fn,
+        predict_fn=predict_fn,
+        simulate_ingest_failure=simulate_ingest_failure,
+        config=inner_cfg,
+        notifier=notifier,
+    )
+
+    if not export_wanted or publish_scope == "live":
+        return result
+
+    n = notifier or build_notifier(cfg)
+    try:
+        from ncaa_quant.webapp.export import SCHEMA_VERSION, export_publish_artifacts
+        from ncaa_quant.webapp.push import push_artifacts_to_r2
+
+        export_out = export_publish_artifacts(result, config=cfg, push=False, notifier=n)
+        push_result = push_artifacts_to_r2(
+            export_out["artifacts"],
+            season=season,
+            week=week,
+            refresh_kind=refresh_kind,
+            schema_version=SCHEMA_VERSION,
+            publish_scope="sandbox",  # type: ignore[arg-type]
+            config=cfg,
+            notifier=n,
+            skip_revalidation=True,
+        )
+        result["webapp_export"] = {"ok": True, "push": push_result, "publish_scope": publish_scope}
+    except Exception as exc:
+        log.warning("webapp_export_failed", error=str(exc))
+        notify(
+            AlertKind.WEBAPP_EXPORT_FAILURE,
+            "Ridge artifact export/push failed",
+            str(exc),
+            config=cfg,
+            notifier=n,
+        )
+        result["webapp_export"] = {"ok": False, "error": str(exc)}
+
+    return result
+
+
 def run_predict_publish(
     *,
     season: int,
@@ -329,7 +401,7 @@ def run_fixture_week_publish(
     def _ingest() -> dict[str, Any]:
         return {"rows_written": 100}
 
-    return run_predict_publish(
+    return _run_helper_publish(
         season=season,
         week=week,
         refresh_kind=RefreshKind.TUESDAY_PRIMARY,
@@ -359,7 +431,7 @@ def run_chaos_stale_publish(
     def _predict(_ctx: StaleContext) -> list[dict[str, Any]]:
         return [{"game_id": "g-chaos-1", "mu_margin": 2.0, "sigma_margin": 14.0}]
 
-    return run_predict_publish(
+    return _run_helper_publish(
         season=season,
         week=week,
         refresh_kind=RefreshKind.DAILY_REFRESH,
