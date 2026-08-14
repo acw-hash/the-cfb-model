@@ -378,3 +378,529 @@ Operator corrected endpoint. Read-only recheck only.
 $ git check-ignore -v .env
 .gitignore:42:.env	.env
 ```
+
+---
+
+## W7-VERIFY attempt — 2026-08-13 (credentials partial; preview URL missing)
+
+**Claim checked:** “Credentials and protected preview deploy are now configured
+(R2 private bucket, Vercel Standard Protection ON, automation bypass secret and
+WEBAPP_REVALIDATE_SECRET both set on workstation and site).”
+
+**Result:** Claim is **only partially true on this workstation**. Live acceptance
+items that need a Deployment-Protection-enabled preview URL remain **BLOCKED**.
+No deploy was created or altered by this agent. No credential values recorded.
+No public exposure.
+
+### Credential discovery (names only; values never logged)
+
+| Location / name | Status |
+|-----------------|--------|
+| `.env` `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` | **PRESENT** (S3-like lengths; not `cfat_`) |
+| `.env` `NCAA_QUANT_WEBAPP__EXPORT_ENABLED` | **PRESENT** (`true`) |
+| `.env` `NCAA_QUANT_WEBAPP__R2_BUCKET` | **PRESENT** (`ridge-artifacts`) |
+| `.env` `NCAA_QUANT_WEBAPP__R2_ENDPOINT_URL` | **PRESENT** (canonical `https://….r2.cloudflarestorage.com`) |
+| `.env` `WEBAPP_REVALIDATE_SECRET` | **PRESENT** |
+| `.env` `NCAA_QUANT_WEBAPP__REVALIDATE_URL` | **PLACEHOLDER** — host is still `REPLACE_PREVIEW.vercel.app` |
+| `.env` `VERCEL_AUTOMATION_BYPASS_SECRET` | **ABSENT** (canonical name) |
+| `.env` `WORKSTATION_REVALIDATION_VERCEL` | **PRESENT** (non-canonical name; not read by `config.py` / `push.py`) |
+| `webapp/site/.env.local` R2 read keys / `WEBAPP_REVALIDATE_SECRET` / account id | **PLACEHOLDER** (`REPLACE_*`) |
+| Process / User env (`VERCEL_TOKEN`, bypass, revalidate) | **ABSENT** |
+| Vercel CLI (`npx vercel whoami`) | **Logged out** |
+| `webapp/site/.vercel/` | **Not linked** |
+
+R2 read-only recheck this run: `list_objects_v2` **HTTP 200**, **key_count=0**
+(empty bucket — no published `latest/*` yet).
+
+**Security note (no values):** tracked `.env.example` currently has **non-empty**
+`R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` assignments. Operator should scrub
+to empty placeholders and rotate those keys if they were ever real.
+
+### Priority results
+
+#### 1) W7-0 — unauthenticated `curl -I` — **BLOCKED**
+
+**Reason:** No real protected preview URL is available to this agent.
+`NCAA_QUANT_WEBAPP__REVALIDATE_URL` still points at
+`https://REPLACE_PREVIEW.vercel.app/api/revalidate`. Vercel CLI is logged out;
+project is unlinked; no `*.vercel.app` host appears in local config or prior
+notes except the placeholder.
+
+**Evidence that could not be collected:**
+
+```
+# expected after operator pastes real protected URL:
+curl -I https://<protected-preview>/
+# expect: HTTP/2 401 or 403 from Deployment Protection
+# expect: X-Robots-Tag: noindex, nofollow, noarchive
+```
+
+**Not run** against the placeholder host (would not prove protection).
+
+#### 2) W7-1.2 — FIXTURE/LIVE banner both directions on deploy — **BLOCKED**
+
+**Reason:** Requires (a) protected preview URL reachable with operator/bypass
+auth, and (b) R2 `latest/meta.json` toggled `fixture: true` then live
+(`fixture` omitted/false) with revalidate. Bucket is empty; no preview URL.
+
+#### 3) W7-4 items 1–5 — **BLOCKED** (each)
+
+| # | Check | Status | Specific blocker |
+|---|-------|--------|------------------|
+| 1 | E2E publish → export → push → revalidate → site + timings | **BLOCKED** | Placeholder `REVALIDATE_URL`; empty R2; no preview URL; `push.py` sends Bearer revalidate secret only — **does not** attach `x-vercel-protection-bypass` / read `WORKSTATION_REVALIDATION_VERCEL` |
+| 2 | Site staleness banner (>36h + past next slot) | **BLOCKED** | No deployed URL to observe |
+| 3 | Per-game STALE stamps | **BLOCKED** | No deployed URL; no stale-stamped publish in R2 |
+| 4 | Schema major → maintenance gate | **BLOCKED** | No deployed URL; cannot doctor/restore `meta` on a live site |
+| 5 | Cost vs free tier / $20 ceiling | **BLOCKED** | No Vercel login / project link on this machine; zero preview traffic observable here. Remains free-tier oriented by architecture only |
+
+#### 4) Notes append — **DONE** (this section)
+
+### Still required from operator (then re-run W7-VERIFY)
+
+1. Set `NCAA_QUANT_WEBAPP__REVALIDATE_URL` to the real **Deployment-Protection-ON**
+   preview `…/api/revalidate` (not `REPLACE_PREVIEW`).
+2. Paste that same preview origin (or confirm it in `.env`) so W7-0 `curl -I`
+   can be run from this workstation.
+3. Put the automation bypass under the name the verification / Vercel docs
+   expect (`VERCEL_AUTOMATION_BYPASS_SECRET`), or confirm how workstation
+   revalidate POSTs are supposed to send `x-vercel-protection-bypass`
+   (`push.py` does not send it today).
+4. Ensure Vercel project server env has read-only R2 + matching
+   `WEBAPP_REVALIDATE_SECRET` (site `.env.local` placeholders do not prove
+   dashboard env).
+5. Optional for CLI inspection: `vercel login` / link `webapp/site`.
+
+Until the **preview URL** is present on this machine, items 1–3 stay **BLOCKED**
+by design (W7 forbids inventing or opening an unprotected reachable deploy).
+
+---
+
+## W7-VERIFY attempt — 2026-08-13 (preview URL live; site R2 still broken)
+
+**Claim checked:** “Credentials and protected preview deploy are now configured
+(R2 private bucket, Vercel Standard Protection ON, automation bypass secret and
+WEBAPP_REVALIDATE_SECRET both set on workstation and site).”
+
+**Result:** Workstation write path + protected **deployment URL** are usable.
+**Deployed site still cannot render artifacts** (MaintenanceState after a successful
+fixture push to R2). Production alias is **publicly reachable** — W7 non-public
+posture is **not** satisfied for that host. No code changes. No credential values
+recorded. Protection was **not** removed; no custom domain attached; W6 legal
+checklist remains **OPEN**.
+
+### Credential discovery (names only; values never logged)
+
+| Location / name | Status |
+|-----------------|--------|
+| `.env` `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` | **PRESENT** (S3-like; not `cfat_`) |
+| `.env` `NCAA_QUANT_WEBAPP__EXPORT_ENABLED` | **PRESENT** (`true`) |
+| `.env` `NCAA_QUANT_WEBAPP__R2_BUCKET` | **PRESENT** (`ridge-artifacts`) |
+| `.env` `NCAA_QUANT_WEBAPP__R2_ENDPOINT_URL` | **PRESENT** (canonical R2 host) |
+| `.env` `WEBAPP_REVALIDATE_SECRET` | **PRESENT** |
+| `.env` `NCAA_QUANT_WEBAPP__REVALIDATE_URL` | **PRESENT** — host `the-cfb-model-hd5oqmobf-alecs-projects-2eeacfd8.vercel.app` |
+| `.env` `VERCEL_AUTOMATION_BYPASS_SECRET` | **PRESENT** |
+| `webapp/site/.env.local` | Exists; `ARTIFACT_SOURCE=r2`, `R2_BUCKET=ridge-artifacts`; R2 keys / account / revalidate secret still **PLACEHOLDER** (local only — does not prove Vercel dashboard) |
+| Vercel CLI | **Logged out**; `webapp/site/.vercel/` absent |
+
+R2 notes this run: bucket `ridge-artifacts` exists; `ridge-artifacts-preview`
+→ **NoSuchBucket**. After fixture push: `latest/*` key_count=**5**. Read-pair
+creds in `.env` (`RIDGE_READ_*`) can GET `latest/meta.json` (OK).
+
+---
+
+### 1) W7-0 — unauthenticated `curl -I` — **BLOCKED** (posture incomplete)
+
+**Protected deployment URL** (from `NCAA_QUANT_WEBAPP__REVALIDATE_URL` origin):
+Standard Protection is ON for this host. Unauthenticated **GET** returns **302**
+to Vercel SSO (not 401/403 — SSO redirect is how Standard Protection answers
+HTML). `X-Robots-Tag: noindex` is present on that response.
+
+```
+$ curl -I https://the-cfb-model-hd5oqmobf-alecs-projects-2eeacfd8.vercel.app/
+HTTP/1.1 302 Found
+Cache-Control: no-store, max-age=0
+Content-Type: text/plain
+Date: Fri, 14 Aug 2026 00:41:47 GMT
+Location: https://vercel.com/sso-api?url=https%3A%2F%2Fthe-cfb-model-hd5oqmobf-alecs-projects-2eeacfd8.vercel.app%2F&nonce=…
+Server: Vercel
+Set-Cookie: _vercel_sso_nonce=…; Max-Age=3600; Path=/; Secure; HttpOnly; SameSite=Lax
+Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+X-Frame-Options: DENY
+X-Robots-Tag: noindex
+X-Vercel-Id: cle1::…
+```
+
+Unauthenticated **POST** `/api/revalidate` (no bypass) → **401**
+`Protected deployment` / `vercel_auth_enabled: true` (confirms protection on
+API as well).
+
+**Production alias exposure (critical):**
+
+```
+$ curl -I https://the-cfb-model.vercel.app/
+HTTP/1.1 200 OK
+… Content-Type: text/html; charset=utf-8 …
+X-Robots-Tag: noindex, nofollow, noarchive
+X-Matched-Path: /
+X-Powered-By: Next.js
+```
+
+Unauthenticated GET returns full HTML (MaintenanceState body observed). That
+host is **publicly reachable**. W7 forbids a publicly reachable site; this is
+why W7-0 is **BLOCKED** overall despite protection on the hashed deployment URL.
+`noindex` is present but does **not** equal access control.
+
+**Agent did not** disable protection, attach a domain, or widen exposure.
+
+---
+
+### 2) W7-1.2 — FIXTURE/LIVE banner both directions on deploy — **BLOCKED**
+
+**What ran**
+
+1. Pushed full `webapp/fixtures/*` to R2 `ridge-artifacts` via `push_artifacts_to_r2`
+   (`meta_last=true`, `fixture: true`, `schema_version: 1.1.0`).
+2. On-demand revalidate **with** `x-vercel-protection-bypass` → HTTP **200**
+   `{"ok":true,"revalidated":true,…}`.
+3. Fetched `/` **with** bypass against the protected deployment URL.
+
+**Site result (both before and after push):** still MaintenanceState —
+
+`Ridge is updating — check back shortly. Published artifacts use a schema version this build does not support.`
+
+No `FIXTURE DATA` banner. Live (fixture omitted/false) direction **not attempted**
+after this failure — would not be observable while the site cannot load `meta`.
+
+**Specific blocker:** Deployed app is not successfully reading `ridge-artifacts/latest/*`
+(load failure and unsupported-schema both render the same `MaintenanceState` copy).
+Local `.env.local` still names non-existent `ridge-artifacts`; Vercel
+dashboard R2 env cannot be inspected here (`vercel` logged out). Until Vercel
+server env points at the real private bucket with working read creds, banner
+honesty cannot be verified in the deployed environment.
+
+---
+
+### 3) W7-4 items 1–5
+
+| # | Check | Status | Evidence / blocker |
+|---|-------|--------|--------------------|
+| 1 | E2E publish → export → push → revalidate → site + timings | **BLOCKED** (partial workstation path only) | **Push** of fixture set: `push_ms≈3255`, upload `elapsed_ms` sum≈2932, 10 keys (versioned+latest), `meta_last=true`. **Stock** `trigger_on_demand_revalidation` (Bearer only, no bypass) → **FAIL HTTP 401** Protection (`push.py` does not send `x-vercel-protection-bypass`). **Manual** revalidate with bypass → **200** in ≈310–1056ms. **Site** after push+revalidate: still MaintenanceState — E2E does **not** complete to a rendered slate. |
+| 2 | Site staleness banner (>36h + past next slot) | **BLOCKED** | Cannot observe layout banners while MaintenanceState short-circuits. |
+| 3 | Per-game STALE stamps | **BLOCKED** | Same; no rendered `GameRow` / `StaleBadge` on deploy. |
+| 4 | Schema major → maintenance gate | **BLOCKED** as a *controlled* check | Site already shows MaintenanceState, but that is indistinguishable from R2 load failure with current UI copy — cannot credit a deliberate schema-major doctor/restore cycle. |
+| 5 | Cost vs free tier / $20 ceiling | **BLOCKED** | No Vercel login / usage dashboard on this workstation. Architecture remains Hobby/free-tier oriented; no traffic or invoice evidence to report. |
+
+**Revalidation through Deployment Protection (bypass)** — isolated probe **PASS**:
+
+- Without bypass: HTTP **401** `Protected deployment`
+- With `x-vercel-protection-bypass`: HTTP **200** `ok/revalidated`
+- Stock `push.py` path: **does not** attach bypass → **401** (automation gap remains)
+
+---
+
+### 4) Notes append — **DONE** (this section)
+
+### Operator actions required before re-run can pass
+
+1. **Enable Deployment Protection on Production** (or remove/unpublish the public
+   `*.vercel.app` production alias) so unauthenticated GET cannot return 200 HTML.
+   Keep Standard Protection on previews.
+2. Fix **Vercel server env** for private R2: `R2_BUCKET=ridge-artifacts` (not
+   `ridge-artifacts`), plus `R2_ACCOUNT_ID` or `R2_ENDPOINT_URL`, and
+   **read-only** `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY`, and matching
+   `WEBAPP_REVALIDATE_SECRET`. Redeploy after env change.
+3. Decide how workstation push sends bypass: either teach `push.py` to add
+   `x-vercel-protection-bypass` from `VERCEL_AUTOMATION_BYPASS_SECRET`, or
+   configure a Vercel automation exception — stock push revalidate is 401 today.
+4. Then re-run W7-1.2 (fixture banner on → live banner off) and W7-4 doctor
+   checks (staleness / STALE / schema major) against the **protected** URL only.
+
+Fixture artifacts were **left** in R2 `latest/*` (`fixture: true`) for the next
+attempt once Vercel read env is fixed.
+
+---
+
+## W7-VERIFY attempt — 2026-08-13 (re-run; still blocked)
+
+**Claim checked:** “Credentials and protected preview deploy are now configured
+(R2 private bucket, Vercel Standard Protection ON, automation bypass secret and
+WEBAPP_REVALIDATE_SECRET both set on workstation and site).”
+
+**Result:** Workstation write path + bypass secret + protected **deployment** URL
+are present and usable. **W7 non-public posture still fails** because production
+alias remains publicly reachable. **Deployed site still cannot render R2
+artifacts** (MaintenanceState after successful fixture *and* live-shaped pushes).
+No code changes. No credential values recorded. Protection was not removed; no
+custom domain attached; W6 legal checklist remains **OPEN**.
+
+### Credential discovery (names only; values never logged)
+
+| Location / name | Status |
+|-----------------|--------|
+| `.env` `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` | **PRESENT** |
+| `.env` `NCAA_QUANT_WEBAPP__EXPORT_ENABLED` | **PRESENT** (`true`) |
+| `.env` `NCAA_QUANT_WEBAPP__R2_BUCKET` | **PRESENT** (`ridge-artifacts`) |
+| `.env` `NCAA_QUANT_WEBAPP__R2_ENDPOINT_URL` | **PRESENT** (canonical R2 host) |
+| `.env` `WEBAPP_REVALIDATE_SECRET` | **PRESENT** |
+| `.env` `NCAA_QUANT_WEBAPP__REVALIDATE_URL` | **PRESENT** — host `the-cfb-model-hd5oqmobf-alecs-projects-2eeacfd8.vercel.app` |
+| `.env` `VERCEL_AUTOMATION_BYPASS_SECRET` | **PRESENT** |
+| `webapp/site/.env.local` | Exists; `ARTIFACT_SOURCE=r2`, `R2_BUCKET=ridge-artifacts-preview`; R2 keys / account / revalidate still **PLACEHOLDER** (local only — does not prove Vercel dashboard) |
+| Vercel CLI | **Logged out**; `webapp/site/.vercel/` absent |
+
+R2 this run: `latest/*` key_count=**5** before/after cycle; `meta.schema_version=1.1.0`
+(compatible with `SUPPORTED_SCHEMA_MAJOR=1`). After cycle, fixtures restored
+(`fixture: true`).
+
+---
+
+### 1) W7-0 — unauthenticated `curl -I` — **BLOCKED** (posture incomplete)
+
+**Protected deployment URL** (from `NCAA_QUANT_WEBAPP__REVALIDATE_URL` origin):
+Standard Protection ON. Unauthenticated **HEAD/GET** returns **302** to Vercel
+SSO (not 401/403 — SSO redirect is how Standard Protection answers HTML).
+`X-Robots-Tag: noindex` is present.
+
+```
+$ curl -I https://the-cfb-model-hd5oqmobf-alecs-projects-2eeacfd8.vercel.app/
+HTTP/1.1 302 Found
+Cache-Control: no-store, max-age=0
+Content-Type: text/plain
+Date: Fri, 14 Aug 2026 00:49:06 GMT
+Location: https://vercel.com/sso-api?url=https%3A%2F%2Fthe-cfb-model-hd5oqmobf-alecs-projects-2eeacfd8.vercel.app%2F&nonce=…
+Server: Vercel
+Set-Cookie: …
+Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+X-Frame-Options: DENY
+X-Robots-Tag: noindex
+X-Vercel-Id: …
+```
+
+Unauthenticated **POST** `/api/revalidate` (no bypass) → **401**
+`Protected deployment` / `vercel_auth_enabled: true`.
+
+**Production alias exposure (unchanged blocker):**
+
+```
+$ curl -I https://the-cfb-model.vercel.app/
+HTTP/1.1 200 OK
+… Content-Type: text/html; charset=utf-8 …
+X-Robots-Tag: noindex, nofollow, noarchive
+X-Matched-Path: /
+X-Powered-By: Next.js
+```
+
+Unauthenticated GET returns full HTML (MaintenanceState body). That host is
+**publicly reachable**. W7 forbids a publicly reachable site; this is why W7-0
+is **BLOCKED** overall despite protection on the hashed deployment URL.
+`noindex` ≠ access control.
+
+**Agent did not** disable protection, attach a domain, or widen exposure.
+
+---
+
+### 2) W7-1.2 — FIXTURE/LIVE banner both directions on deploy — **BLOCKED**
+
+**What ran (both directions attempted)**
+
+1. **Fixture push** of `webapp/fixtures/*` → R2 `ridge-artifacts`
+   (`meta_last=true`, `fixture: true`, `schema_version: 1.1.0`).
+   Timings: `push_ms≈4219`, upload `elapsed_ms` sum≈3743, 10 keys.
+2. Stock `push.py` revalidate (Bearer only) → **FAIL HTTP 401** Protection.
+3. Manual revalidate with `x-vercel-protection-bypass` → **200** in ≈212ms
+   `{"ok":true,"revalidated":true,…}`.
+4. GET `/` **with** bypass against protected deployment → **MaintenanceState**
+   (no `FIXTURE DATA` banner).
+5. **Live-shaped push** (same artifacts with `fixture` key **omitted** from meta
+   + other JSON) → `meta_last=true`; R2 confirm `fixture=<absent>`.
+   Timings: `push_ms≈2748`, upload sum≈2729.
+6. Manual bypass revalidate → **200** in ≈181ms.
+7. GET `/` with bypass → still **MaintenanceState** (banner clear not observable).
+
+**Site markers (identical both directions):**
+
+| After | `has_fixture_banner` | `has_maintenance` | `has_schema_msg` |
+|-------|----------------------|-------------------|------------------|
+| Fixture set | false | true | true |
+| Live set (`fixture` absent) | false | true | true |
+
+Visible copy: `Ridge is updating — check back shortly. Published artifacts use a
+schema version this build does not support.`
+
+**Specific blocker:** Deployed app is not successfully reading
+`ridge-artifacts/latest/*`. Load failure and unsupported-schema share the same
+`MaintenanceState` copy; R2 meta is `1.1.0` (major 1 = supported), so this is
+**not** a real schema gate — it is an R2 load failure path. Local
+`.env.local` still names non-existent `ridge-artifacts-preview` and placeholders;
+Vercel dashboard R2 env cannot be inspected here (`vercel` logged out). Until
+Vercel server env points at the real private bucket with working read creds
+**and** a redeploy picks them up, banner honesty cannot be verified on deploy.
+
+Fixtures restored to R2 `latest/*` (`fixture: true`) after the cycle.
+
+---
+
+### 3) W7-4 items 1–5
+
+| # | Check | Status | Evidence / blocker |
+|---|-------|--------|--------------------|
+| 1 | E2E publish → export → push → revalidate → site + timings | **BLOCKED** (partial workstation path only) | Fixture push timings above; stock revalidate **401** (no bypass header in `push.py`); manual bypass revalidate **200** ≈180–212ms; site remains MaintenanceState — E2E does **not** complete to a rendered slate. |
+| 2 | Site staleness banner (>36h + past next slot) | **BLOCKED** | Cannot observe layout banners while MaintenanceState short-circuits. (Fixture `published_at` is already 2024-09-24 — would be stale *if* meta loaded.) |
+| 3 | Per-game STALE stamps | **BLOCKED** | Same; no rendered `GameRow` / `StaleBadge` on deploy. |
+| 4 | Schema major → maintenance gate | **BLOCKED** as a *controlled* check | Site already shows MaintenanceState from R2 load failure — indistinguishable from schema-major copy; cannot credit a deliberate doctor/restore cycle. |
+| 5 | Cost vs free tier / $20 ceiling | **BLOCKED** | No Vercel login / usage dashboard on this workstation. Architecture remains Hobby/free-tier oriented; no traffic or invoice evidence to report. |
+
+**Revalidation through Deployment Protection (bypass)** — isolated probe **PASS**:
+
+- Unauth / Bearer-only: HTTP **401** `Protected deployment`
+- Bearer + `x-vercel-protection-bypass`: HTTP **200** `ok/revalidated` (≈180–884ms this run)
+- Stock `push.py` path: **does not** attach bypass → **401** (automation gap remains)
+
+Production unauth HTML also MaintenanceState (same failure mode; publicly reachable).
+
+---
+
+### 4) Notes append — **DONE** (this section)
+
+### Operator actions required before re-run can pass
+
+1. **Enable Deployment Protection on Production** (or remove/unpublish the public
+   `the-cfb-model.vercel.app` production alias) so unauthenticated GET cannot
+   return 200 HTML. Keep Standard Protection on previews.
+2. Fix **Vercel server env** (Production *and* Preview): `R2_BUCKET=ridge-artifacts`
+   (not `ridge-artifacts-preview`), `R2_ACCOUNT_ID` or `R2_ENDPOINT_URL`,
+   **read-only** `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY`, matching
+   `WEBAPP_REVALIDATE_SECRET`, `ARTIFACT_SOURCE=r2`. **Redeploy** after env
+   change; point `NCAA_QUANT_WEBAPP__REVALIDATE_URL` at a protected deployment
+   that has the new env.
+3. Decide how workstation push sends bypass: teach `push.py` to add
+   `x-vercel-protection-bypass` from `VERCEL_AUTOMATION_BYPASS_SECRET`, or
+   configure a Vercel automation exception — stock push revalidate is 401 today.
+4. Then re-run W7-1.2 (fixture banner on → live banner off) and W7-4 doctor
+   checks (staleness / STALE / schema major) against the **protected** URL only.
+
+Fixture artifacts are again in R2 `latest/*` (`fixture: true`) for the next
+attempt once Vercel read env is fixed.
+
+---
+
+## W7-CLOSE — 2026-08-14 (bypass wired; deferred verification re-run)
+
+**Code:** `push.py` reads `VERCEL_AUTOMATION_BYPASS_SECRET` via
+`SecretsSettings` and sends `x-vercel-protection-bypass` on the revalidation
+POST when set; unchanged when unset. Secret is never logged, echoed, or written
+to push audit / alerts (unit tests cover both paths + env wiring).
+
+**Operator decision (accepted risk, not relitigated):** Production alias
+`the-cfb-model.vercel.app` remains **publicly reachable** (unauthenticated GET
+→ 200 HTML). Operator accepts this posture for W7. W6 legal checklist remains
+**OPEN**. Protection was not removed; no custom domain; no search-engine
+submission.
+
+**Claim checked:** R2 bucket corrected to `ridge-artifacts` in Vercel dashboard;
+redeploy occurred; stock push path should now complete E2E through revalidation.
+
+**Result:** Workstation push + **stock** revalidation **PASS** (HTTP 200 with
+bypass header). R2 `latest/*` is populated and readable from workstation (write +
+read creds, `key_count=5`, `meta.schema_version=1.1.0`, `fixture=true`).
+**Deployed site still cannot load R2 artifacts** — both protected deployment and
+production alias render `MaintenanceState` after every push + successful
+revalidate. Banner / staleness / STALE / controlled schema checks remain
+**BLOCKED** on deploy.
+
+### Credential discovery (names only; values never logged)
+
+| Location / name | Status |
+|-----------------|--------|
+| `.env` `VERCEL_AUTOMATION_BYPASS_SECRET` | **PRESENT** (now read by `push.py`) |
+| `.env` `WEBAPP_REVALIDATE_SECRET` | **PRESENT** |
+| `.env` `NCAA_QUANT_WEBAPP__REVALIDATE_URL` | **PRESENT** — host `the-cfb-model-hd5oqmobf-alecs-projects-2eeacfd8.vercel.app` |
+| `.env` R2 write + `RIDGE_READ_*` | **PRESENT** — both can list/GET `ridge-artifacts/latest/*` |
+| Vercel CLI | **Logged out** (dashboard env not inspectable here) |
+
+R2 this run: `latest/*` key_count=**5**; fixtures restored (`fixture: true`).
+
+---
+
+### 1) W7-0 — unauthenticated `curl -I` — **ACCEPTED RISK** (posture note)
+
+**Protected deployment URL** (from `NCAA_QUANT_WEBAPP__REVALIDATE_URL` origin):
+Standard Protection ON. Unauthenticated HEAD → **302** to Vercel SSO.
+`X-Robots-Tag: noindex`.
+
+**Production alias** (`the-cfb-model.vercel.app`): Unauthenticated HEAD → **200**
+`text/html`. `X-Robots-Tag: noindex, nofollow, noarchive`. **Publicly
+reachable** — operator **accepts** for W7 (see decision above). W6 legal
+checklist **OPEN**.
+
+Unauthenticated POST `/api/revalidate` (no bypass) → **401** `Protected deployment`.
+
+---
+
+### 2) W7-1.2 — FIXTURE/LIVE banner both directions on deploy — **BLOCKED**
+
+**What ran (both directions)**
+
+1. **Fixture push** of `webapp/fixtures/*` → R2 `ridge-artifacts`
+   (`meta_last=true`, `fixture: true`, `schema_version: 1.1.0`).
+   Timings: `push_ms≈4358`, upload `elapsed_ms` sum≈3043, 10 keys.
+2. **Stock** `push_artifacts_to_r2` revalidate (Bearer + bypass from env) → **200**
+   (≈141ms isolated probe).
+3. GET `/` with bypass (protected) → **MaintenanceState** — no `FIXTURE DATA`
+   banner.
+4. **Live-shaped push** (`fixture` key omitted from all JSON) → `meta_last=true`.
+   Timings: `push_ms≈3046`, upload sum≈2870.
+5. Stock revalidate → **200**.
+6. GET `/` with bypass → still **MaintenanceState** (banner clear not observable).
+
+**Site markers (identical both directions, protected + production):**
+
+| After | `has_fixture_banner` | `has_maintenance` | `has_schema_msg` |
+|-------|----------------------|-------------------|------------------|
+| Fixture set | false | true | true |
+| Live set (`fixture` absent) | false | true | true |
+
+**Specific blocker:** Deployed app is not successfully reading
+`ridge-artifacts/latest/*` despite workstation-confirmed objects and successful
+on-demand revalidate. R2 meta is `1.1.0` (major 1 = supported), so this is the
+**load-failure** path, not a real schema gate. Vercel server env (read creds /
+`R2_BUCKET` / endpoint) cannot be verified from this workstation (`vercel`
+logged out). Operator-reported dashboard fix + redeploy did not unblock deploy
+reads in this verification run.
+
+Fixtures restored to R2 `latest/*` (`fixture: true`) after the cycle.
+
+---
+
+### 3) W7-4 items 1–5
+
+| # | Check | Status | Evidence / blocker |
+|---|-------|--------|--------------------|
+| 1 | E2E publish → export → push → revalidate → site + timings | **PARTIAL PASS** | Fixture push `push_ms≈4358`; live push `push_ms≈3046`; stock revalidate **200** both cycles (bypass wired). Site remains MaintenanceState — E2E does **not** complete to a rendered slate. |
+| 2 | Site staleness banner (>36h + past next slot) | **BLOCKED** | MaintenanceState short-circuits layout; fixture `published_at` would trigger staleness *if* meta loaded. |
+| 3 | Per-game STALE stamps | **BLOCKED** | Doctored `STALE(odds, 4.0h)` push + revalidate OK; no rendered `StaleBadge` on deploy. |
+| 4 | Schema major → maintenance gate | **BLOCKED** as a *controlled* check | Doctored `schema_version=2.0.0` push + revalidate OK; site already MaintenanceState from load failure — indistinguishable from deliberate schema gate. |
+| 5 | Cost vs free tier / $20 ceiling | **BLOCKED** | No Vercel login / usage dashboard on this workstation. Architecture remains Hobby/free-tier oriented. |
+
+**Revalidation through Deployment Protection (stock path)** — **PASS**:
+
+- Unauth / Bearer-only: HTTP **401** `Protected deployment`
+- Stock `push.py` with `VERCEL_AUTOMATION_BYPASS_SECRET` set: HTTP **200**
+  `ok/revalidated` (≈63–141ms this run)
+- Push audit: `audit_leaked_secret_names=[]` (no secret names in JSON trail)
+
+---
+
+### 4) Notes append — **DONE** (this section)
+
+### Operator actions if deploy reads should pass
+
+1. Confirm Vercel **Production** server env: `R2_BUCKET=ridge-artifacts`,
+   `R2_ENDPOINT_URL` or `R2_ACCOUNT_ID`, **read-only**
+   `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY`, `WEBAPP_REVALIDATE_SECRET`,
+   `ARTIFACT_SOURCE=r2` — and that the **production** deployment serving
+   `the-cfb-model.vercel.app` picked up the env after redeploy (not just
+   Preview).
+2. Re-run W7-1.2 banner cycle and W7-4 doctor checks once GET `/` serves
+   artifacts instead of MaintenanceState.
+
+Fixture artifacts are again in R2 `latest/*` (`fixture: true`).

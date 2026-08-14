@@ -85,10 +85,14 @@ def trigger_on_demand_revalidation(
     *,
     url: str,
     secret: str,
+    protection_bypass_secret: str | None = None,
     timeout_s: float = 15.0,
     client: httpx.Client | None = None,
 ) -> dict[str, Any]:
     """POST the Vercel revalidation endpoint with the shared secret.
+
+    When ``protection_bypass_secret`` is set, also sends
+    ``x-vercel-protection-bypass`` for Deployment Protection.
 
     Returns a result dict. Raises on HTTP/transport failure so callers can
     treat the hook as best-effort.
@@ -104,6 +108,8 @@ def trigger_on_demand_revalidation(
         "Authorization": f"Bearer {secret}",
         "Content-Type": "application/json",
     }
+    if protection_bypass_secret:
+        headers["x-vercel-protection-bypass"] = protection_bypass_secret
     body = {"source": "ridge_r2_push"}
     owns_client = client is None
     http = client or httpx.Client(timeout=timeout_s)
@@ -141,8 +147,14 @@ def _maybe_revalidate(
 
     secrets = load_secrets()
     secret = secrets.webapp_revalidate_secret.get_secret_value()
+    bypass = secrets.vercel_automation_bypass_secret.get_secret_value().strip() or None
     try:
-        result = trigger_on_demand_revalidation(url=url, secret=secret, client=http_client)
+        result = trigger_on_demand_revalidation(
+            url=url,
+            secret=secret,
+            protection_bypass_secret=bypass,
+            client=http_client,
+        )
         log.info("webapp_revalidate_ok", status_code=result.get("status_code"))
         return result
     except Exception as exc:

@@ -45,6 +45,7 @@ class FakeS3:
 def test_trigger_revalidation_ok() -> None:
     def handler(request: httpx.Request) -> httpx.Response:
         assert request.headers["Authorization"] == "Bearer test-secret"
+        assert "x-vercel-protection-bypass" not in request.headers
         return httpx.Response(200, json={"ok": True, "revalidated": True})
 
     transport = httpx.MockTransport(handler)
@@ -56,6 +57,52 @@ def test_trigger_revalidation_ok() -> None:
         )
     assert result["ok"] is True
     assert result["status_code"] == 200
+
+
+def test_trigger_revalidation_with_protection_bypass() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.headers["Authorization"] == "Bearer test-secret"
+        assert request.headers["x-vercel-protection-bypass"] == "bypass-token"
+        return httpx.Response(200, json={"ok": True, "revalidated": True})
+
+    transport = httpx.MockTransport(handler)
+    with httpx.Client(transport=transport) as client:
+        result = trigger_on_demand_revalidation(
+            url="https://ridge.example/api/revalidate",
+            secret="test-secret",
+            protection_bypass_secret="bypass-token",
+            client=client,
+        )
+    assert result["ok"] is True
+    assert result["status_code"] == 200
+
+
+def test_maybe_revalidate_uses_bypass_from_env(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("WEBAPP_REVALIDATE_SECRET", "hook-secret")
+    monkeypatch.setenv("VERCEL_AUTOMATION_BYPASS_SECRET", "bypass-from-env")
+
+    seen: dict[str, str] = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen["bypass"] = request.headers.get("x-vercel-protection-bypass", "")
+        return httpx.Response(200, json={"ok": True})
+
+    cfg = AppConfig(
+        webapp=WebappConfig(
+            revalidate_url="https://ridge.example/api/revalidate",
+        )
+    )
+    transport = httpx.MockTransport(handler)
+    with httpx.Client(transport=transport) as http:
+        from ncaa_quant.webapp.push import _maybe_revalidate
+
+        result = _maybe_revalidate(config=cfg, notifier=RecordingNotifier(), http_client=http)
+
+    assert result is not None
+    assert result["ok"] is True
+    assert seen["bypass"] == "bypass-from-env"
 
 
 def test_trigger_revalidation_wrong_secret_refused() -> None:
@@ -81,6 +128,7 @@ def test_push_revalidation_failure_is_nonfatal(
     monkeypatch.setenv("R2_ACCESS_KEY_ID", "test-key")
     monkeypatch.setenv("R2_SECRET_ACCESS_KEY", "test-secret")
     monkeypatch.setenv("WEBAPP_REVALIDATE_SECRET", "hook-secret")
+    monkeypatch.delenv("VERCEL_AUTOMATION_BYPASS_SECRET", raising=False)
 
     notifier = RecordingNotifier()
     cfg = AppConfig(
@@ -214,6 +262,7 @@ def test_push_calls_revalidation_after_meta(
     monkeypatch.setenv("R2_ACCESS_KEY_ID", "test-key")
     monkeypatch.setenv("R2_SECRET_ACCESS_KEY", "test-secret")
     monkeypatch.setenv("WEBAPP_REVALIDATE_SECRET", "hook-secret")
+    monkeypatch.delenv("VERCEL_AUTOMATION_BYPASS_SECRET", raising=False)
 
     order: list[str] = []
     s3 = FakeS3()

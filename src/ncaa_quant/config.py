@@ -219,6 +219,9 @@ class SecretsSettings(BaseSettings):
     webapp_revalidate_secret: SecretStr = Field(
         default=SecretStr(""), validation_alias="WEBAPP_REVALIDATE_SECRET"
     )
+    vercel_automation_bypass_secret: SecretStr = Field(
+        default=SecretStr(""), validation_alias="VERCEL_AUTOMATION_BYPASS_SECRET"
+    )
 
 
 class _YamlSettingsSource(PydanticBaseSettingsSource):
