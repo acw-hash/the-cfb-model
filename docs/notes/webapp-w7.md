@@ -904,3 +904,313 @@ Fixtures restored to R2 `latest/*` (`fixture: true`) after the cycle.
    artifacts instead of MaintenanceState.
 
 Fixture artifacts are again in R2 `latest/*` (`fixture: true`).
+
+---
+
+## W7-CLOSE-2 — 2026-08-14 (deploy reads R2; deferred checks re-run)
+
+**Claim checked:** Deployed site now reads artifacts from R2 successfully.
+Operator accepted-risk decision on public production alias stands unchanged.
+
+**Security note:** Read-only R2 token was **rotated after exposure** (prior
+`.env.example` / credential leak). Canonical workstation `R2_ACCESS_KEY_ID` /
+`R2_SECRET_ACCESS_KEY` in local `.env` now return **Unauthorized** on
+`list_objects_v2` — same rotation lineage. This run used `RIDGE_WRITE_*` mapped
+into `R2_*` for push only; operator should sync `.env` `R2_*` to the current
+write key so stock `push.py` works without overrides. Tracked `.env.example`
+scrubbed back to empty placeholders (bucket comment remains
+`ridge-artifacts`).
+
+**Code:** No changes this run (W7-CLOSE bypass wiring unchanged). `make test`
+**PASS** (836 passed, coverage 80.54%).
+
+### Credential discovery (names only; values never logged)
+
+| Location / name | Status |
+|-----------------|--------|
+| `.env` `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` | **PRESENT** — `list_objects_v2` **Unauthorized** (rotated / stale) |
+| `.env` `RIDGE_WRITE_ACCESS_KEY` / `RIDGE_WRITE_SECRET` | **PRESENT** — `list_objects_v2` **PASS** (`latest/*` key_count=5) |
+| `.env` `RIDGE_READ_*` | **PRESENT** — read **PASS** (key_count=5) |
+| `.env` `VERCEL_AUTOMATION_BYPASS_SECRET` | **PRESENT** (read by `push.py`) |
+| `.env` `WEBAPP_REVALIDATE_SECRET` | **PRESENT** |
+| `.env` `NCAA_QUANT_WEBAPP__REVALIDATE_URL` | **PRESENT** — protected deployment host |
+| Vercel CLI | **Logged out** (usage dashboard not inspectable) |
+
+R2 this run: `latest/*` key_count=**5** before/after cycles; fixtures restored
+(`fixture: true`, `meta.schema_version=1.1.0`).
+
+---
+
+### 1) W7-0 — unauthenticated posture — **ACCEPTED RISK** (unchanged)
+
+**Production alias** (`the-cfb-model.vercel.app`): Unauthenticated HEAD → **200**
+`text/html`. `X-Robots-Tag: noindex, nofollow, noarchive`. Publicly reachable —
+operator **accepts** for W7.
+
+**Protected deployment URL:** With bypass cookie/header, GET → **200** HTML.
+Unauthenticated HEAD without bypass → **302** SSO (Standard Protection ON).
+
+---
+
+### 2) W7-1.2 — FIXTURE/LIVE banner both directions on deploy — **PASS** (production)
+
+Verified against **production alias** (`the-cfb-model.vercel.app`), which now
+loads R2 artifacts. Protected hashed deployment still renders `MaintenanceState`
+(stale server env on that deployment — not used for banner acceptance).
+
+**What ran (both directions)**
+
+1. **Pre-push** `list_objects_v2` via write-capable creds → **PASS** (key_count=5).
+2. **Fixture push** of `webapp/fixtures/*` → R2 `ridge-artifacts`
+   (`meta_last=true`, `fixture: true`, `schema_version: 1.1.0`).
+   Timings: `push_ms≈4031`, upload `elapsed_ms` sum≈3041, 10 keys.
+3. Stock `push_artifacts_to_r2` revalidate (Bearer + bypass) → **200** (≈141ms).
+4. GET `/` production → **FIXTURE DATA** banner **on**; slate renders; no
+   `MaintenanceState`.
+5. **Live-shaped push** (`fixture` key omitted from all JSON) → `meta_last=true`.
+   Timings: `push_ms≈3093`, upload sum≈2886.
+6. Stock revalidate → **200**.
+7. GET `/` production → FIXTURE banner **off**; staleness banner still **on**
+   (fixture `published_at` 2024-09-24); slate renders.
+
+**Site markers (production alias)**
+
+| After | `has_fixture_banner` | `has_staleness_banner` | `has_maintenance` |
+|-------|----------------------|------------------------|-------------------|
+| Fixture set | **true** | true | false |
+| Live set (`fixture` absent) | **false** | true | false |
+
+**Protected deployment (informational):** both directions still
+`has_maintenance=true` / `has_schema_msg=true` — env not aligned on that host.
+
+Fixtures restored to R2 `latest/*` (`fixture: true`) after the cycle.
+
+---
+
+### 3) W7-4 items 2–5
+
+| # | Check | Status | Evidence |
+|---|-------|--------|----------|
+| 2 | Site staleness banner (>36h + past next slot) | **PASS** | Production GET `/` after fixture restore: `Data may be stale — last updated …` present (`published_at` 2024-09-24, `next_expected_publish_utc` 2024-09-26; clock 2026-08-14). |
+| 3 | Per-game STALE stamps | **PASS** | Doctored `STALE(odds, 4.0h)` on first game in `week_predictions.json`; push + revalidate **200**; production GET `/` shows `STALE(odds, 4.0h)` in HTML. Restored clean fixtures after. |
+| 4 | Schema major → maintenance gate | **PASS** | Doctored `schema_version=2.0.0` on all artifacts; push + revalidate **200**; production GET `/` → `MaintenanceState` with schema-unsupported copy (`has_schema_msg=true`, no partial slate). Restored `1.1.0` fixtures after. |
+| 5 | Cost vs free tier / $20 ceiling | **BLOCKED** | No Vercel login / usage dashboard on this workstation. Architecture remains Hobby/free-tier oriented per DESIGN §3.4 (~$0/mo at forecast-only traffic; $20 hard ceiling). No invoice or bandwidth evidence to report. |
+
+**Write credential gate (pre-push):** Canonical `.env` `R2_*` → **FAIL**
+(Unauthorized). `RIDGE_WRITE_*` → **PASS**. Push cycles in this section used
+working write creds; operator must refresh `.env` `R2_*` for unattended stock
+push.
+
+**Revalidation (stock path)** — **PASS**:
+
+- Stock `push.py` with bypass secret: HTTP **200** each cycle (≈63–200ms).
+
+---
+
+### 4) Notes append — **DONE** (this section)
+
+### Operator follow-ups (non-blocking for W7-CLOSE-2 acceptance)
+
+1. Update workstation `.env` `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` to
+   the current write key (post-rotation) so `push.py` works without
+   `RIDGE_WRITE_*` overrides.
+2. Align **protected hashed deployment** server env with production (same R2 read
+   creds + `ridge-artifacts`) if that URL is still used for revalidation targets.
+3. `vercel login` when cost dashboard evidence is needed for W7-4 item 5.
+
+Fixture artifacts are again in R2 `latest/*` (`fixture: true`).
+
+---
+
+## W7-CLOSE-2 — 2026-08-14 (deploy reads R2; deferred checks re-run)
+
+**Claim checked:** Deployed site now reads artifacts from R2 successfully.
+Operator accepted-risk decision on public production alias stands unchanged.
+
+**Security note:** Read-only R2 token was **rotated after exposure** (prior
+`.env.example` / credential leak). Canonical workstation `R2_ACCESS_KEY_ID` /
+`R2_SECRET_ACCESS_KEY` in local `.env` now return **Unauthorized** on
+`list_objects_v2` — same rotation lineage. This run used `RIDGE_WRITE_*` mapped
+into `R2_*` for push only; operator should sync `.env` `R2_*` to the current
+write key so stock `push.py` works without overrides. Tracked `.env.example`
+scrubbed back to empty placeholders (bucket comment remains
+`ridge-artifacts`).
+
+**Code:** No changes this run (W7-CLOSE bypass wiring unchanged). `make test`
+**PASS** (836 passed, coverage 80.54%).
+
+### Credential discovery (names only; values never logged)
+
+| Location / name | Status |
+|-----------------|--------|
+| `.env` `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` | **PRESENT** — `list_objects_v2` **Unauthorized** (rotated / stale) |
+| `.env` `RIDGE_WRITE_ACCESS_KEY` / `RIDGE_WRITE_SECRET` | **PRESENT** — `list_objects_v2` **PASS** (`latest/*` key_count=5) |
+| `.env` `RIDGE_READ_*` | **PRESENT** — read **PASS** (key_count=5) |
+| `.env` `VERCEL_AUTOMATION_BYPASS_SECRET` | **PRESENT** (read by `push.py`) |
+| `.env` `WEBAPP_REVALIDATE_SECRET` | **PRESENT** |
+| `.env` `NCAA_QUANT_WEBAPP__REVALIDATE_URL` | **PRESENT** — protected deployment host |
+| Vercel CLI | **Logged out** (usage dashboard not inspectable) |
+
+R2 this run: `latest/*` key_count=**5** before/after cycles; fixtures restored
+(`fixture: true`, `meta.schema_version=1.1.0`).
+
+---
+
+### 1) W7-0 — unauthenticated posture — **ACCEPTED RISK** (unchanged)
+
+**Production alias** (`the-cfb-model.vercel.app`): Unauthenticated HEAD → **200**
+`text/html`. `X-Robots-Tag: noindex, nofollow, noarchive`. Publicly reachable —
+operator **accepts** for W7.
+
+**Protected deployment URL:** With bypass cookie/header, GET → **200** HTML.
+Unauthenticated HEAD without bypass → **302** SSO (Standard Protection ON).
+
+---
+
+### 2) W7-1.2 — FIXTURE/LIVE banner both directions on deploy — **PASS** (production)
+
+Verified against **production alias** (`the-cfb-model.vercel.app`), which now
+loads R2 artifacts. Protected hashed deployment still renders `MaintenanceState`
+(stale server env on that deployment — not used for banner acceptance).
+
+**What ran (both directions)**
+
+1. **Pre-push** `list_objects_v2` via write-capable creds → **PASS** (key_count=5).
+2. **Fixture push** of `webapp/fixtures/*` → R2 `ridge-artifacts`
+   (`meta_last=true`, `fixture: true`, `schema_version: 1.1.0`).
+   Timings: `push_ms≈4031`, upload `elapsed_ms` sum≈3041, 10 keys.
+3. Stock `push_artifacts_to_r2` revalidate (Bearer + bypass) → **200** (≈141ms).
+4. GET `/` production → **FIXTURE DATA** banner **on**; slate renders; no
+   `MaintenanceState`.
+5. **Live-shaped push** (`fixture` key omitted from all JSON) → `meta_last=true`.
+   Timings: `push_ms≈3093`, upload sum≈2886.
+6. Stock revalidate → **200**.
+7. GET `/` production → FIXTURE banner **off**; staleness banner still **on**
+   (fixture `published_at` 2024-09-24); slate renders.
+
+**Site markers (production alias)**
+
+| After | `has_fixture_banner` | `has_staleness_banner` | `has_maintenance` |
+|-------|----------------------|------------------------|-------------------|
+| Fixture set | **true** | true | false |
+| Live set (`fixture` absent) | **false** | true | false |
+
+**Protected deployment (informational):** both directions still
+`has_maintenance=true` / `has_schema_msg=true` — env not aligned on that host.
+
+Fixtures restored to R2 `latest/*` (`fixture: true`) after the cycle.
+
+---
+
+### 3) W7-4 items 2–5
+
+| # | Check | Status | Evidence |
+|---|-------|--------|----------|
+| 2 | Site staleness banner (>36h + past next slot) | **PASS** | Production GET `/` after fixture restore: `Data may be stale — last updated …` present (`published_at` 2024-09-24, `next_expected_publish_utc` 2024-09-26; clock 2026-08-14). |
+| 3 | Per-game STALE stamps | **PASS** | Doctored `STALE(odds, 4.0h)` on first game in `week_predictions.json`; push + revalidate **200**; production GET `/` shows `STALE(odds, 4.0h)` in HTML. Restored clean fixtures after. |
+| 4 | Schema major → maintenance gate | **PASS** | Doctored `schema_version=2.0.0` on all artifacts; push + revalidate **200**; production GET `/` → `MaintenanceState` with schema-unsupported copy (`has_schema_msg=true`, no partial slate). Restored `1.1.0` fixtures after. |
+| 5 | Cost vs free tier / $20 ceiling | **BLOCKED** | No Vercel login / usage dashboard on this workstation. Architecture remains Hobby/free-tier oriented per DESIGN §3.4 (~$0/mo at forecast-only traffic; $20 hard ceiling). No invoice or bandwidth evidence to report. |
+
+**Write credential gate (pre-push):** Canonical `.env` `R2_*` → **FAIL**
+(Unauthorized). `RIDGE_WRITE_*` → **PASS**. Push cycles in this section used
+working write creds; operator must refresh `.env` `R2_*` for unattended stock
+push.
+
+**Revalidation (stock path)** — **PASS**:
+
+- Stock `push.py` with bypass secret: HTTP **200** each cycle (≈63–200ms).
+
+---
+
+### 4) Notes append — **DONE** (this section)
+
+### Operator follow-ups (non-blocking for W7-CLOSE-2 acceptance)
+
+1. Update workstation `.env` `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` to
+   the current write key (post-rotation) so `push.py` works without
+   `RIDGE_WRITE_*` overrides.
+2. Align **protected hashed deployment** server env with production (same R2 read
+   creds + `ridge-artifacts`) if that URL is still used for revalidation targets.
+3. `vercel login` when cost dashboard evidence is needed for W7-4 item 5.
+
+Fixture artifacts are again in R2 `latest/*` (`fixture: true`).
+
+---
+
+## W7-ENV-CHECK — R2 connectivity verification (2026-08-14)
+
+Read-only check against workstation `.env`; no deploy, no bucket writes, no
+credential values recorded.
+
+### Variable status (canonical names from `config.py`)
+
+| Variable | Status |
+|----------|--------|
+| `R2_ACCESS_KEY_ID` | PRESENT |
+| `R2_SECRET_ACCESS_KEY` | PRESENT |
+| `NCAA_QUANT_WEBAPP__R2_BUCKET` | PRESENT |
+| `NCAA_QUANT_WEBAPP__R2_ENDPOINT_URL` | PRESENT |
+| `NCAA_QUANT_WEBAPP__R2_PUBLIC_BASE_URL` | MISSING |
+
+`R2_PUBLIC_BASE_URL` is unused in private preview (server-side R2 read); not
+required for list-objects connectivity.
+
+### List-objects connectivity
+
+- Operation: `ListObjectsV2` (read-only, `MaxKeys=1000`)
+- HTTP status: **200**
+- Object count (first page): **15**
+- Diagnosis: **PASS** — auth and bucket reachable with canonical `.env` values
+
+### `.env` gitignore
+
+```
+.gitignore:42:.env	.env
+```
+
+### Note
+
+`SecretsSettings` loads `.env`; `AppConfig` / `WebappConfig` does not
+(`env_file` absent). Workstation must export `NCAA_QUANT_WEBAPP__*` into the
+shell for `load_config()` / `push.py`, or those fields remain empty at runtime
+despite being present in `.env`. This check used `.env` values directly for
+connectivity; runtime push behavior is unchanged by this task.
+
+---
+
+## W7-ENVFILE-FIX — AppConfig loads `.env` (2026-08-14)
+
+**Bug:** `SecretsSettings` had `env_file=".env"`; `AppConfig` did not. Scheduled
+`predict_publish` / stock `push.py` call `load_config()` with no shell exports,
+so `NCAA_QUANT_WEBAPP__R2_BUCKET` and `NCAA_QUANT_WEBAPP__R2_ENDPOINT_URL` stayed
+at YAML defaults (`""`) even when present in `.env`. Confirmed before the fix:
+no `NCAA_QUANT_WEBAPP__*` in the process environment, `load_config()` bucket and
+endpoint empty, `SecretsSettings` R2 key still present from `.env`.
+
+**Fix:** `AppConfig.model_config` now uses the same `env_file=".env"` /
+`env_file_encoding="utf-8"` as `SecretsSettings`. `dotenv_filtering="only_existing"`
+is required because `AppConfig` keeps `extra="forbid"` and the shared `.env` also
+holds `SecretsSettings` keys (those must not be ingested as AppConfig fields).
+Source order is unchanged: CLI/init > env > dotenv > YAML.
+
+**Test:** `tests/unit/test_webapp_w7.py` — isolated tmp `.env`, no shell exports;
+`load_config()` returns bucket/endpoint from the file; stock `push_artifacts_to_r2`
+(`config=None` → `load_config()`) resolves a non-empty bucket. A second test
+asserts a real env var still wins over `.env`. Asserts the failure mode: class
+defaults leave bucket/endpoint empty.
+
+**Stock push path (no `NCAA_QUANT_WEBAPP__*` shell exports):**
+
+| Check | Result |
+|-------|--------|
+| `load_config()` bucket | PRESENT (`ridge-artifacts`) |
+| `load_config()` endpoint | PRESENT (R2 host) |
+| `load_config()` `export_enabled` | `true` (from `.env`) |
+| Fixture export+push | **PASS** — 10 keys (versioned+latest), `meta_last=true` |
+| Revalidation | **FAIL** HTTP **503** `revalidation secret not configured` on the URL in `.env` (Vercel server env missing `WEBAPP_REVALIDATE_SECRET`). Push semantics unchanged: revalidation remains best-effort / non-fatal. |
+
+The 503 is the production alias's server env, not empty workstation config.
+Before this fix the stock path never reached revalidation: bucket was empty and
+`push.py` raised `webapp.r2_bucket is not configured`.
+
+`make test`: **838 passed**, coverage 80.61%.

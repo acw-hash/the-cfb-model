@@ -10,7 +10,7 @@ from typing import Any
 import httpx
 import pytest
 
-from ncaa_quant.config import AppConfig, WebappConfig
+from ncaa_quant.config import AppConfig, WebappConfig, load_config
 from ncaa_quant.pipelines.notifications import AlertKind, RecordingNotifier
 from ncaa_quant.webapp.export import (
     TierStateStore,
@@ -307,3 +307,79 @@ def test_push_calls_revalidation_after_meta(
     meta_puts = [i for i, step in enumerate(order) if step.endswith(META_FILENAME)]
     assert meta_puts
     assert max(meta_puts) < order.index("revalidate")
+
+
+_DOTENV_BUCKET = "ridge-from-dotenv"
+_DOTENV_ENDPOINT = "https://example.r2.cloudflarestorage.com"
+_SHELL_BUCKET = "ridge-from-shell"
+
+_WEBAPP_ENV_KEYS = (
+    "NCAA_QUANT_WEBAPP__R2_BUCKET",
+    "NCAA_QUANT_WEBAPP__R2_ENDPOINT_URL",
+    "NCAA_QUANT_WEBAPP__EXPORT_ENABLED",
+    "NCAA_QUANT_WEBAPP__REVALIDATE_URL",
+    "R2_ACCESS_KEY_ID",
+    "R2_SECRET_ACCESS_KEY",
+)
+
+
+def _write_webapp_dotenv(path: Path, *, bucket: str = _DOTENV_BUCKET) -> None:
+    path.write_text(
+        f"NCAA_QUANT_WEBAPP__R2_BUCKET={bucket}\n"
+        f"NCAA_QUANT_WEBAPP__R2_ENDPOINT_URL={_DOTENV_ENDPOINT}\n"
+        "R2_ACCESS_KEY_ID=test-key\n"
+        "R2_SECRET_ACCESS_KEY=test-secret\n"
+        "CFBD_API_KEY=not-an-appconfig-field\n",
+        encoding="utf-8",
+    )
+
+
+def test_load_config_resolves_webapp_from_dotenv_without_shell_exports(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """AppConfig must read NCAA_QUANT_WEBAPP__* from .env like SecretsSettings.
+
+    Failure mode: YAML/class defaults leave bucket and endpoint empty. Without
+    env_file on AppConfig, scheduled predict_publish would then call push.py
+    with an empty bucket/endpoint even when .env has the values.
+    """
+    assert WebappConfig().r2_bucket == ""
+    assert WebappConfig().r2_endpoint_url == ""
+
+    _write_webapp_dotenv(tmp_path / ".env")
+    monkeypatch.chdir(tmp_path)
+    for key in _WEBAPP_ENV_KEYS:
+        monkeypatch.delenv(key, raising=False)
+
+    cfg = load_config()
+    assert cfg.webapp.r2_bucket == _DOTENV_BUCKET
+    assert cfg.webapp.r2_endpoint_url == _DOTENV_ENDPOINT
+
+    # Stock push path: config=None → load_config(). Empty bucket raises R2PushError.
+    result = push_artifacts_to_r2(
+        {META_FILENAME: "{}\n"},
+        season=2026,
+        week=1,
+        refresh_kind="tuesday_primary",
+        client=FakeS3(),
+        notifier=RecordingNotifier(),
+        skip_revalidation=True,
+    )
+    assert result["bucket"] == _DOTENV_BUCKET
+
+
+def test_shell_env_overrides_dotenv_webapp_settings(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Real environment variables still win over .env (precedence unchanged)."""
+    _write_webapp_dotenv(tmp_path / ".env")
+    monkeypatch.chdir(tmp_path)
+    for key in _WEBAPP_ENV_KEYS:
+        monkeypatch.delenv(key, raising=False)
+    monkeypatch.setenv("NCAA_QUANT_WEBAPP__R2_BUCKET", _SHELL_BUCKET)
+
+    cfg = load_config()
+    assert cfg.webapp.r2_bucket == _SHELL_BUCKET
+    assert cfg.webapp.r2_endpoint_url == _DOTENV_ENDPOINT

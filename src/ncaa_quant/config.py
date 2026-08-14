@@ -1,8 +1,9 @@
 """Application configuration loader (OmegaConf YAML + pydantic-settings).
 
 Precedence (lowest → highest): ``base.yaml`` < domain YAML
-(``data`` / ``ratings`` / ``betting`` / ``pipeline``) < environment variables
-< explicit CLI overrides passed to :func:`load_config`.
+(``data`` / ``ratings`` / ``betting`` / ``pipeline``) < ``.env``
+< environment variables < explicit CLI overrides passed to
+:func:`load_config`.
 
 Secrets (``CFBD_API_KEY``, ``ODDS_API_KEY``) are loaded only from the
 environment via :class:`SecretsSettings` and are never fields on
@@ -183,6 +184,10 @@ class AppConfig(BaseSettings):
     model_config = SettingsConfigDict(
         env_prefix="NCAA_QUANT_",
         env_nested_delimiter="__",
+        env_file=".env",
+        env_file_encoding="utf-8",
+        # Same file as SecretsSettings; ignore keys that are not AppConfig fields.
+        dotenv_filtering="only_existing",
         extra="forbid",
     )
 
@@ -268,7 +273,7 @@ def load_config(
     config_dir: Path | str | None = None,
     overrides: dict[str, Any] | None = None,
 ) -> AppConfig:
-    """Load layered YAML, then apply env vars, then ``overrides`` (CLI).
+    """Load layered YAML, then ``.env``, then env vars, then ``overrides`` (CLI).
 
     Parameters
     ----------
