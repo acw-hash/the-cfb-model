@@ -15,12 +15,13 @@ interface GameRowProps {
 /** Scores-app density game row (§4.3). */
 export function GameRow({ game }: GameRowProps): React.ReactElement {
   const kickoff = formatKickoffLocal(game.kickoff_utc);
+  const kickoffTitle = game.kickoff_utc == null ? undefined : `${kickoff.utc} UTC`;
   const matchup = `${game.away_team} @ ${game.home_team}`;
 
   return (
     <article className={styles.row}>
       <div className={styles.kickoff}>
-        <Figure variant="c2" className={styles.kickoffTime} title={`${kickoff.utc} UTC`}>
+        <Figure variant="c2" className={styles.kickoffTime} title={kickoffTitle}>
           {kickoff.local}
         </Figure>
       </div>

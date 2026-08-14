@@ -25,6 +25,29 @@ export const TIER_GROUP_LABEL: Record<ConvictionTier, string> = {
 export const NO_TIER_GROUP_ID = "none";
 export const NO_TIER_GROUP_LABEL = "No tier";
 
+export const NO_KICKOFF_GROUP_ID = "no_kickoff";
+export const NO_KICKOFF_GROUP_LABEL = "Kickoff unavailable";
+
+/**
+ * Ascending string compare. Null sorts last — never coerced to a string.
+ * Matches conviction sort null-last policy (tier rank, p_favored).
+ */
+export function compareNullableStringAsc(
+  a: string | null | undefined,
+  b: string | null | undefined,
+): number {
+  if (a == null && b == null) {
+    return 0;
+  }
+  if (a == null) {
+    return 1;
+  }
+  if (b == null) {
+    return -1;
+  }
+  return a.localeCompare(b);
+}
+
 export interface SlateGroup {
   id: string;
   label: string;
@@ -48,11 +71,11 @@ function tierRank(game: GamePrediction): number {
  * Tie-break: kickoff_utc ascending, then game_id lexicographic.
  */
 export function compareByKickoff(a: GamePrediction, b: GamePrediction): number {
-  const kick = a.kickoff_utc.localeCompare(b.kickoff_utc);
+  const kick = compareNullableStringAsc(a.kickoff_utc, b.kickoff_utc);
   if (kick !== 0) {
     return kick;
   }
-  return a.game_id.localeCompare(b.game_id);
+  return compareNullableStringAsc(a.game_id, b.game_id);
 }
 
 /**
@@ -68,7 +91,7 @@ export function compareByConviction(a: GamePrediction, b: GamePrediction): numbe
   const pA = pFavoredOf(a);
   const pB = pFavoredOf(b);
   if (pA == null && pB == null) {
-    return a.game_id.localeCompare(b.game_id);
+    return compareNullableStringAsc(a.game_id, b.game_id);
   }
   if (pA == null) {
     return 1;
@@ -79,7 +102,7 @@ export function compareByConviction(a: GamePrediction, b: GamePrediction): numbe
   if (pA !== pB) {
     return pB - pA;
   }
-  return a.game_id.localeCompare(b.game_id);
+  return compareNullableStringAsc(a.game_id, b.game_id);
 }
 
 function localDateKey(iso: string, timeZone: string): string {
@@ -111,7 +134,12 @@ export function formatDayLabel(dateKey: string): string {
 export function groupByKickoffDay(games: GamePrediction[], timeZone: string): SlateGroup[] {
   const sorted = [...games].sort(compareByKickoff);
   const buckets = new Map<string, GamePrediction[]>();
+  const noKickoff: GamePrediction[] = [];
   for (const game of sorted) {
+    if (game.kickoff_utc == null) {
+      noKickoff.push(game);
+      continue;
+    }
     const key = localDateKey(game.kickoff_utc, timeZone);
     const list = buckets.get(key);
     if (list) {
@@ -120,11 +148,19 @@ export function groupByKickoffDay(games: GamePrediction[], timeZone: string): Sl
       buckets.set(key, [game]);
     }
   }
-  return [...buckets.entries()].map(([id, groupGames]) => ({
+  const groups = [...buckets.entries()].map(([id, groupGames]) => ({
     id,
     label: formatDayLabel(id),
     games: groupGames,
   }));
+  if (noKickoff.length > 0) {
+    groups.push({
+      id: NO_KICKOFF_GROUP_ID,
+      label: NO_KICKOFF_GROUP_LABEL,
+      games: noKickoff,
+    });
+  }
+  return groups;
 }
 
 /** Group by conviction_tier descending; omit empty tiers; suppressed last. */

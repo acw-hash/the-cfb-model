@@ -6,7 +6,7 @@ import styles from "./MatchupHeader.module.css";
 interface MatchupHeaderProps {
   awayTeam: string;
   homeTeam: string;
-  kickoffUtc: string;
+  kickoffUtc: string | null;
   neutralSite: boolean;
 }
 
@@ -18,6 +18,7 @@ export function MatchupHeader({
   neutralSite,
 }: MatchupHeaderProps): React.ReactElement {
   const kickoff = formatKickoffLocal(kickoffUtc);
+  const kickoffTitle = kickoffUtc == null ? undefined : `${kickoff.utc} UTC`;
   const vs = `${awayTeam} @ ${homeTeam}`;
 
   return (
@@ -30,7 +31,7 @@ export function MatchupHeader({
           </span>
         ) : null}
       </h1>
-      <Figure variant="b2" className={styles.kickoff} title={`${kickoff.utc} UTC`}>
+      <Figure variant="b2" className={styles.kickoff} title={kickoffTitle}>
         {kickoff.local}
       </Figure>
     </header>

@@ -14,8 +14,16 @@ export function formatAbsoluteUtc(iso: string): string {
   return `${formatted} UTC`;
 }
 
+const ABSENT_KICKOFF = "—";
+
 /** Format kickoff in visitor-local time with UTC available for tooltip. */
-export function formatKickoffLocal(kickoffUtc: string): { local: string; utc: string } {
+export function formatKickoffLocal(kickoffUtc: string | null | undefined): {
+  local: string;
+  utc: string;
+} {
+  if (kickoffUtc == null) {
+    return { local: ABSENT_KICKOFF, utc: ABSENT_KICKOFF };
+  }
   const date = new Date(kickoffUtc);
   const local = new Intl.DateTimeFormat("en-US", {
     weekday: "short",

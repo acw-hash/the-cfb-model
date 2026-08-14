@@ -1214,3 +1214,43 @@ Before this fix the stock path never reached revalidation: bucket was empty and
 `push.py` raised `webapp.r2_bucket is not configured`.
 
 `make test`: **838 passed**, coverage 80.61%.
+
+---
+
+## W7-SORTFIX — null in sort comparator crashes page render
+
+**Bug:** `compareByKickoff` called `kickoff_utc.localeCompare(...)` without a null
+guard. Current R2 `week_predictions.json` (2 games) includes records where
+`kickoff_utc` is JSON `null`, crashing client slate sort/group on `/`.
+
+**Trigger records (R2 `latest/week_predictions.json`, fetched 2026-08-14):**
+
+| `game_id` | null field(s) | comparator |
+|-----------|---------------|------------|
+| `g-fix-1` | `kickoff_utc`, `conviction_tier`, `conviction_basis` (hence `p_favored`) | `compareByKickoff` → `localeCompare` on null `kickoff_utc` |
+| `g-fix-2` | same | same |
+
+Both records share the null profile; either pair in sort triggers the throw.
+
+**Fix:**
+
+- Added `compareNullableStringAsc` — null sorts **last**, never coerced to
+  `"null"`. Same policy as existing conviction path (`SUPPRESSED_RANK`, `p_favored`
+  null last). Rationale: a scores-app slate should lead with schedulable games;
+  missing kickoff/tier/probability data belongs at the bottom, not the top.
+- Applied to `compareByKickoff` (`kickoff_utc`, `game_id` tie-break) and
+  `compareByConviction` (`game_id` tie-break; tier/`p_favored` already null-safe).
+- `groupByKickoffDay`: skip `localDateKey` when `kickoff_utc` is null; append a
+  trailing **Kickoff unavailable** group (`NO_KICKOFF_GROUP_ID`).
+- Display (in scope): `formatKickoffLocal` returns `"—"` for null kickoff;
+  `GameRow` / `MatchupHeader` omit the UTC tooltip when absent.
+
+**Out of scope (report only):** `GradedGameRow` calls `formatKickoffLocal` on
+results rows — graded games spec types `kickoff_utc` as required string; no change.
+
+**Tests:** `webapp/site/tests/this-week-sort.test.ts` — per-field null clones
+(`conviction_tier`, `p_favored`, `kickoff_utc`, `game_id`), combination
+determinism (R2-shaped `g-fix-1` / `g-fix-2` + dated game), null kickoff grouping.
+
+**Acceptance:** `npm run typecheck`, `test`, `lint`, `build` pass; R2 artifact
+sort/group verified without throw.
