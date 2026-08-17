@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable, Sequence
+import json
+import math
+from collections.abc import Callable, Mapping, Sequence
 from datetime import UTC, datetime
 from enum import StrEnum
 from pathlib import Path
 from typing import Any
 
+import pandas as pd  # type: ignore[import-untyped]
 from prefect import flow, task
 from tenacity import retry, stop_after_attempt, wait_exponential
 
@@ -29,6 +32,19 @@ log = get_logger(__name__)
 OddsIngestFn = Callable[[], dict[str, Any]]
 PredictFn = Callable[[StaleContext], list[dict[str, Any]]]
 BuildCandidatesFn = Callable[[list[StampedPrediction]], list[BetCandidate]]
+
+LOCKBOX_SEASON = 2025
+_REPO_ROOT = Path(__file__).resolve().parents[3]
+#: Stored ProductionEnsemblePredictor.predict() frames from the champion walkforward
+#: (task23 fundamental reduced v2). No pickled mapping layer exists on disk.
+_CHAMPION_WEEK_DIR = (
+    _REPO_ROOT / "data" / "backtests" / "task23_fundamental_reduced_v2" / "full" / "weeks"
+)
+_FIXTURE_WEEK5_PUBLISHED_AT = datetime(2024, 9, 24, 6, 0, 0, tzinfo=UTC)
+
+
+class LockboxSeasonError(ValueError):
+    """predict_fn refused a lockbox season (2025 is never evaluated)."""
 
 
 class RefreshKind(StrEnum):
@@ -66,8 +82,96 @@ def check_odds_cadence(
     }
 
 
-def _default_predict(_stale_ctx: StaleContext) -> list[dict[str, Any]]:
-    return []
+def production_week_predictions_path(season: int, week: int) -> Path:
+    """On-disk champion-week frame written by WalkForwardHarness after ``predict()``."""
+    return _CHAMPION_WEEK_DIR / f"season={season}_week={week}.parquet"
+
+
+def _as_stamp_float(value: Any) -> float:
+    """Coerce None / NA to NaN so :func:`stamp_predictions` can ``float()`` it."""
+    if value is None:
+        return float("nan")
+    try:
+        if pd.isna(value):
+            return float("nan")
+    except (TypeError, ValueError):
+        pass
+    try:
+        out = float(value)
+    except (TypeError, ValueError):
+        return float("nan")
+    if math.isnan(out) or math.isinf(out):
+        return float("nan")
+    return out
+
+
+def _alias_stamp_columns(row: Mapping[str, Any]) -> dict[str, Any]:
+    """Keep production names; add stub aliases ``stamp_predictions`` requires.
+
+    Rename itself lives in ``export.build_game_prediction`` (``_field`` first-present).
+    """
+    out = dict(row)
+    gid = out.get("game_id")
+    if gid is not None and str(gid) != "":
+        try:
+            out["game_id"] = str(int(gid))
+        except (TypeError, ValueError):
+            out["game_id"] = str(gid)
+    if "mu_margin" not in out or out.get("mu_margin") is None:
+        out["mu_margin"] = out.get("pred_margin")
+    if "sigma_margin" not in out or out.get("sigma_margin") is None:
+        out["sigma_margin"] = out.get("sigma_m")
+    out["mu_margin"] = _as_stamp_float(out.get("mu_margin"))
+    out["sigma_margin"] = _as_stamp_float(out.get("sigma_margin"))
+    return out
+
+
+def load_production_prediction_rows(season: int, week: int) -> list[dict[str, Any]]:
+    """Return production walkforward rows for ``(season, week)`` plus stamp aliases.
+
+    This is the stored ``ProductionEnsemblePredictor.predict()`` frame from the
+    champion reduced-v2 walkforward. Mapping-layer heads are not pickled; calling
+    ``predict()`` live would require a mapping-layer retrain (forbidden here).
+    Season 2025 is refused. The parquet is 2024-only for the W9-P oracle.
+    """
+    if season == LOCKBOX_SEASON:
+        msg = (
+            f"season {LOCKBOX_SEASON} is lockbox; predict_fn refuses it "
+            "(producing predictions for 2025 is not permitted)"
+        )
+        raise LockboxSeasonError(msg)
+    path = production_week_predictions_path(season, week)
+    if not path.is_file():
+        msg = f"champion week predictions missing: {path}"
+        raise FileNotFoundError(msg)
+    frame = pd.read_parquet(path)
+    if "season" in frame.columns:
+        frame = frame.loc[frame["season"].astype(int) == int(season)]
+    if "week" in frame.columns:
+        frame = frame.loc[frame["week"].astype(int) == int(week)]
+    if frame.empty:
+        msg = f"champion week predictions empty after season/week filter: {path}"
+        raise FileNotFoundError(msg)
+    rows = [_alias_stamp_columns(rec) for rec in frame.to_dict(orient="records")]
+    first = rows[0]
+    log.info(
+        "production_predict_loaded",
+        season=season,
+        week=week,
+        path=str(path),
+        n=len(rows),
+        champion_version=3,
+        model_version=first.get("model_version"),
+        run_id=first.get("run_id"),
+    )
+    return rows
+
+
+def _default_predict_for(season: int, week: int) -> PredictFn:
+    def _predict(_stale_ctx: StaleContext) -> list[dict[str, Any]]:
+        return load_production_prediction_rows(season, week)
+
+    return _predict
 
 
 def _default_build_candidates(predictions: list[StampedPrediction]) -> list[BetCandidate]:
@@ -144,7 +248,7 @@ def execute_predict_publish(
     if ingest_failed and not stale_ctx.use_last_good:
         raise IngestFailure(ingest_error or "ingest failed with no fallback")
 
-    predict = predict_fn or _default_predict
+    predict = predict_fn or _default_predict_for(season, week)
     raw_preds = predict(stale_ctx)
     stamped = stamp_predictions(raw_preds, stale_ctx)
 
@@ -273,7 +377,7 @@ def _run_helper_publish(
             week=week,
             refresh_kind=refresh_kind,
             schema_version=SCHEMA_VERSION,
-            publish_scope="sandbox",  # type: ignore[arg-type]
+            publish_scope="sandbox",
             config=cfg,
             notifier=n,
             skip_revalidation=True,
@@ -440,3 +544,102 @@ def run_chaos_stale_publish(
         config=config,
         notifier=notifier,
     )
+
+
+def _isolated_publish_config(config: AppConfig, state_dir: Path) -> AppConfig:
+    """Redirect hysteresis / jsonl / ledger writes; force export off (no R2)."""
+    return config.model_copy(
+        update={
+            "webapp": config.webapp.model_copy(
+                update={
+                    "export_enabled": False,
+                    "tier_state_path": str(state_dir / "tier_state.json"),
+                    "tier_changes_path": str(state_dir / "tier_changes.jsonl"),
+                }
+            ),
+            "pipeline": config.pipeline.model_copy(
+                update={
+                    "idempotency_dir": str(state_dir / "pipeline_state"),
+                    "dead_letter_dir": str(state_dir / "pipeline_state" / "dead_letter"),
+                }
+            ),
+        }
+    )
+
+
+def run_isolated_week_export(
+    *,
+    season: int = 2024,
+    week: int = 5,
+    refresh_kind: str = RefreshKind.TUESDAY_PRIMARY,
+    output_dir: Path | str,
+    state_dir: Path | str,
+    published_at: datetime | None = None,
+    config: AppConfig | None = None,
+    notifier: Notifier | None = None,
+) -> dict[str, Any]:
+    """Run wired ``predict_fn`` → local artifacts. No R2, no real tier files.
+
+    Uses :func:`execute_predict_publish` (not the idempotent wrapper) so the
+    real ``data/pipeline_state/idempotency.json`` is not touched. Export is
+    disabled on the config; artifacts are written only under ``output_dir``.
+    """
+    from ncaa_quant.webapp.export import export_publish_artifacts
+
+    out_dir = Path(output_dir)
+    iso_state = Path(state_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    iso_state.mkdir(parents=True, exist_ok=True)
+
+    base = config or load_config()
+    cfg = _isolated_publish_config(base, iso_state)
+    clock = published_at
+    if clock is None and season == 2024 and week == 5:
+        clock = _FIXTURE_WEEK5_PUBLISHED_AT
+    if clock is None:
+        clock = datetime.now(tz=UTC)
+
+    print(f"W9-P isolated export_enabled={cfg.webapp.export_enabled}")
+    print(f"W9-P tier_state_path={cfg.webapp.tier_state_path}")
+    print(f"W9-P tier_changes_path={cfg.webapp.tier_changes_path}")
+    print(f"W9-P season={season} week={week} refresh_kind={refresh_kind}")
+
+    result = execute_predict_publish(
+        season=season,
+        week=week,
+        refresh_kind=refresh_kind,
+        config=cfg,
+        notifier=notifier,
+    )
+    first = (result.get("prediction_rows") or [{}])[0]
+    print("W9-P champion_version=3")
+    print(f"W9-P model_version={first.get('model_version')}")
+    print(f"W9-P run_id={first.get('run_id')}")
+    print(f"W9-P n_prediction_rows={len(result.get('prediction_rows') or [])}")
+
+    export_out = export_publish_artifacts(
+        result,
+        config=cfg,
+        published_at=clock,
+        push=False,
+        notifier=notifier,
+    )
+    written: dict[str, str] = {}
+    for name, body in (export_out.get("artifacts") or {}).items():
+        dest = out_dir / str(name)
+        dest.write_text(str(body), encoding="utf-8")
+        written[str(name)] = str(dest)
+        print(f"W9-P wrote {dest}")
+
+    identity = (export_out.get("week_predictions") or {}).get("model_identity") or {}
+    print(f"W9-P artifact_model_identity={json.dumps(identity, sort_keys=True)}")
+    print("W9-P push=False (R2 disabled; no upload)")
+
+    return {
+        "result": result,
+        "export": export_out,
+        "written": written,
+        "export_enabled": cfg.webapp.export_enabled,
+        "state_dir": str(iso_state),
+        "output_dir": str(out_dir),
+    }

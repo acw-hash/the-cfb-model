@@ -463,6 +463,24 @@ def merge_prediction_rows(
     return merged
 
 
+def _model_identity_from_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+    """Pass walkforward ``run_id`` / ``model_version`` through when present."""
+    identity: dict[str, Any] = {
+        "registry_name": "ncaa-quant",
+        "champion_version": 3,
+        "model_version": "production-v0_reduced_v1",
+        "run_id": None,
+    }
+    if not rows:
+        return identity
+    row = rows[0]
+    if row.get("model_version") is not None:
+        identity["model_version"] = str(row["model_version"])
+    if row.get("run_id") is not None:
+        identity["run_id"] = str(row["run_id"])
+    return identity
+
+
 def build_game_prediction(
     row: Mapping[str, Any],
     schedule: Mapping[str, Any],
@@ -1136,6 +1154,7 @@ def export_publish_artifacts(
             row.setdefault("stale_stamp", stale_ctx.get("combined_stamp"))
             row.setdefault("stale_sources", stale_ctx.get("sources") or [])
 
+    identity = _model_identity_from_rows(production_rows)
     week_preds = build_week_predictions(
         season=season,
         week=week,
@@ -1144,6 +1163,7 @@ def export_publish_artifacts(
         prediction_rows=merged_rows,
         schedule_by_game=schedule_by_game,
         stale_context=stale_ctx,
+        model_identity=identity,
         tier_store=TierStateStore(Path(cfg.webapp.tier_state_path)),
         stale_max_age_hours=float(cfg.pipeline.stale_odds_max_age_hours),
         tier_changes_path=Path(cfg.webapp.tier_changes_path),
