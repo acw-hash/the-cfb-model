@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
 
 import { GradedGameRow } from "@/components/Results/GradedGameRow";
 import { GradedGamesSection } from "@/components/Results/GradedGamesSection";
@@ -17,6 +16,7 @@ import {
   EXPECTED_METRIC_IDS,
 } from "@/lib/results/demo-states";
 
+import { assertGalleryAllowed } from "../gallery-gate";
 import { GalleryThemeToggle } from "../GalleryThemeToggle";
 import styles from "../gallery.module.css";
 
@@ -27,9 +27,7 @@ export const metadata = {
 
 /** Dev-only doctored-clone gallery for W5-5. Fixtures on disk are untouched. */
 export default async function ResultsStatesPage(): Promise<React.ReactElement> {
-  if (process.env.NODE_ENV === "production") {
-    notFound();
-  }
+  assertGalleryAllowed();
 
   const [track, results] = await Promise.all([
     loadArtifact<TrackRecord>("track_record"),
@@ -67,10 +65,14 @@ export default async function ResultsStatesPage(): Promise<React.ReactElement> {
       <section className={styles.section} data-testid="state-ci">
         <h2 className={styles.sectionTitle}>CI treatment</h2>
         <div className={styles.statePanel}>
-          <MetricRow
-            metric={track.metrics.find((m) => m.id === "fund_ats_snapshots") ?? null}
-            expectedId="fund_ats_snapshots"
-          />
+          <table>
+            <tbody>
+              <MetricRow
+                metric={track.metrics.find((m) => m.id === "fund_ats_snapshots") ?? null}
+                expectedId="fund_ats_snapshots"
+              />
+            </tbody>
+          </table>
         </div>
       </section>
 

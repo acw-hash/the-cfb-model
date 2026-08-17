@@ -27,3 +27,28 @@
 .list {
   border-top: 1px solid var(--border-subtle);
 }
+
+.tableWrap {
+  width: 100%;
+  overflow-x: auto;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.tableWrap:focus-visible {
+  box-shadow: var(--focus-ring);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.table thead th {
+  padding: var(--space-2) var(--space-2) var(--space-3) 0;
+  font-size: var(--type-c1-size);
+  line-height: var(--type-c1-line);
+  font-weight: var(--type-c1-weight);
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-subtle);
+}

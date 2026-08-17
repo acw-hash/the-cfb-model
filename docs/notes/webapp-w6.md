@@ -162,3 +162,40 @@ $ npm run build       # /about route present
 ---
 
 *End of W6.*
+
+---
+
+## W8-A correction — CFBD attribution (2026-08-14)
+
+**Correction to W6-3 / W6-4 above.** W6 recorded CFBD attribution as **required**.
+That was wrong relative to CFBD Terms of Use **effective August 12, 2026**
+(archived at `docs/notes/_artifacts/webapp-w8a/cfbd-terms-2026-08-12.md`).
+
+### What the terms say (verbatim sense)
+
+- **§6 Attribution:** “Attribution is appreciated but not required.” Recommended
+  line when practical: “Data provided by CollegeFootballData.com.”
+- **§4:** Expressly permits publishing Derived Outputs (models, predictions,
+  projections, visualizations) and displaying reasonable portions of factual API
+  data as part of a larger product (carved out of Redistribution).
+- **§2 / §5 (constraints still bearing on architecture):** API key stays
+  server-side / never in a public repo; no programmatic third-party access to
+  stored raw API responses. These bear on the deferred public-read R2 decision
+  (DESIGN §3.3 as amended in W8-A).
+
+### Ridge posture after correction
+
+Ridge **still renders** CFBD attribution on About. That stays — recommended and
+already shipped; not removed. No new attribution / contact / repo identity is
+invented here (W8-B remains operator-blocked).
+
+### PRE-LAUNCH LEGAL CHECKLIST — status update
+
+| ID | Item | Status | Evidence |
+|----|------|--------|----------|
+| L1 | CFBD data terms for public display | **RESOLVED** (W8-A) | Attribution recommended not required; Derived Outputs + reasonable factual display permitted; archive `docs/notes/_artifacts/webapp-w8a/cfbd-terms-2026-08-12.md`. |
+| L2 | Team-name / mark usage | **RESOLVED** (W8-A) | ToU §8 grants no trademark/logo rights; Ridge v1 already uses school names as text only with no official logos — the posture the ToU contemplates. No logos introduced in W8-A. |
+| L3 | State-level sports-content rules | **OPEN** (unchanged) | As recorded in W6 |
+| L4 | Privacy / analytics | **OPEN / default-safe** (unchanged) | No third-party analytics; L4 posture load-bearing — W8-A added none |
+| L5 | Age gating | **OPEN** (unchanged) | As recorded in W6 |
+| L6 | Accessibility WCAG 2.1 AA | **RESOLVED** (W8-A D5) | See `docs/notes/webapp-w8a.md` and `docs/notes/_artifacts/webapp-w8a/a11y-*.json` |

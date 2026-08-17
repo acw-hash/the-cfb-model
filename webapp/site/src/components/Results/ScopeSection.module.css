@@ -28,8 +28,9 @@
 }
 
 .links a {
-  color: var(--text-secondary);
-  text-decoration: none;
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .links a:hover {

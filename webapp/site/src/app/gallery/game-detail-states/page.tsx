@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
 
 import { GameDetail } from "@/components/GameDetail/GameDetail";
 import { loadArtifact } from "@/lib/artifacts/loader";
@@ -13,6 +12,7 @@ import {
 } from "@/lib/game-detail/demo-states";
 import { lookupTeam, seriesForTeam } from "@/lib/game-detail/ratings";
 
+import { assertGalleryAllowed } from "../gallery-gate";
 import { GalleryThemeToggle } from "../GalleryThemeToggle";
 import styles from "../gallery.module.css";
 
@@ -45,9 +45,7 @@ function seriesPair(
 
 /** Dev-only doctored-clone gallery for W4-5. Fixtures on disk are untouched. */
 export default async function GameDetailStatesPage(): Promise<React.ReactElement> {
-  if (process.env.NODE_ENV === "production") {
-    notFound();
-  }
+  assertGalleryAllowed();
 
   const [week, ratings] = await Promise.all([
     loadArtifact<WeekPredictions>("week_predictions"),

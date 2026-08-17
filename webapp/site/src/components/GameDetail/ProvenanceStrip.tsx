@@ -25,8 +25,10 @@ export function ProvenanceStrip({ game }: ProvenanceStripProps): React.ReactElem
         {items.map((item) => (
           <div key={item.gloss.field} className={styles.item}>
             <dt className={styles.title}>{item.gloss.title}</dt>
-            <dd className={styles.value}>{item.value}</dd>
-            <p className={styles.meaning}>{item.gloss.meaning}</p>
+            <dd className={styles.value}>
+              <span className={styles.valueText}>{item.value}</span>
+              <span className={styles.meaning}>{item.gloss.meaning}</span>
+            </dd>
           </div>
         ))}
       </dl>

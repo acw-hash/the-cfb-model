@@ -507,13 +507,25 @@ flowchart LR
 
 | Asset | Exposure | Notes |
 |-------|----------|-------|
-| R2 bucket objects (JSON) | **Public read** via HTTPS | Versioned predictions only; no secrets in objects |
-| Vercel app | **Public** | Static + SSR fetch; env vars = R2 public base URL + revalidation secret (server-only) |
+| R2 bucket objects (JSON) | **Private**; server-side credentialed read (SigV4) | No public object URLs. Next.js Server Components fetch with read-only R2 API credentials in Vercel server env. World-readable public-read is **not** the live posture. |
+| Vercel app | **Public** (operator-accepted for launch readiness) | Static + SSR; env vars = R2 read credentials + revalidation secret (server-only). `noindex` via `X-Robots-Tag` + `robots.ts`. |
 | R2 write credential | **Workstation only** | Never in Vercel, never in git |
 | MLflow UI | **Never public** | DESIGN §10; localhost bind |
 | Prefect UI | **Never public** | DESIGN §10 |
 | Workstation / DuckDB / Parquet | **Never public** | No inbound ports |
 | CFBD / Odds API keys | **Workstation only** | Webapp consumes zero credits (§3.5) |
+
+#### Public-read R2 — DEFERRED
+
+W0 described R2 as “Public read via HTTPS.” W7 shipped a **private** bucket with SigV4 server-side reads (`webapp/site/src/lib/artifacts/r2.ts`). Public-read remains deferred for these reasons on record:
+
+1. **Field surface:** Public object URLs would publish every artifact field, not only every rendered field (see W8-A D4 RSC payload findings — even the private model already serializes full `GamePrediction` objects into the This Week client boundary).
+2. **Synthetic / doctored prefixes:** W7-BUCKET-AUDIT found non-`latest/` prefixes still holding synthetic games (`g-chaos-1`, `g-fix-1`, `g-fix-2`) and a doctored `schema_version=2.0.0` object under `v2/…`, all with live-looking meta. Under public-read those become publicly fetchable synthetic model output at guessable URLs. **Operator action:** clean those prefixes (W8-A does not delete R2 objects).
+3. **Sandbox exposure:** `sandbox/` (W7-TESTPUBLISH-GUARD) would be world-readable alongside `latest/`.
+
+**Successor task:** W8-R2-PUBLIC (name reserved) — enable public-read **only** after: (a) a separate bucket or `public/` prefix carrying **projected** artifacts (rendered-field subset only), (b) synthetic / doctored non-`latest/` prefixes cleaned, (c) W8-A D3 field diff green, and (d) CFBD ToU §2 / §5 constraints reviewed against any public raw-response mirror risk (see `docs/notes/webapp-w6.md` L1 correction and archived terms).
+
+Cross-reference: CFBD Terms §2 (API key stays server-side, never in a public repo) and §5 (no programmatic third-party access to stored raw API responses) bear on this deferral.
 
 ### 3.4 Cost table
 

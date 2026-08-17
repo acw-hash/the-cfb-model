@@ -38,10 +38,15 @@
 }
 
 .meaning {
+  display: block;
   margin: var(--space-1) 0 0;
   font-size: var(--type-c2-size);
   line-height: var(--type-c2-line);
   color: var(--text-tertiary);
+}
+
+.valueText {
+  display: block;
 }
 
 .publish {

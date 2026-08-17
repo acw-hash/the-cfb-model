@@ -26,7 +26,21 @@ a {
 }
 
 a:focus-visible,
-button:focus-visible {
+button:focus-visible,
+[role="radio"]:focus-visible,
+[role="tab"]:focus-visible {
   outline: none;
   box-shadow: var(--focus-ring);
+}
+
+/* Honor reduced motion — no decorative motion ships today; gate future transitions. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

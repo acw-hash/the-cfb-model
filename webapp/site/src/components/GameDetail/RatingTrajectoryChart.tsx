@@ -151,9 +151,16 @@ export function RatingTrajectoryChart({
   const caption = trajectoryCaption(homeSchool, awaySchool, home, away, throughWeek);
 
   return (
-    <figure className={styles.figure} data-testid="trajectory-chart">
-      <h2 className={styles.label}>Stage-1 ratings</h2>
-      <div className={styles.legend}>
+    <figure
+      className={styles.figure}
+      data-testid="trajectory-chart"
+      aria-labelledby="trajectory-chart-label"
+      aria-describedby="trajectory-chart-caption"
+    >
+      <h2 className={styles.label} id="trajectory-chart-label">
+        Stage-1 ratings
+      </h2>
+      <div className={styles.legend} aria-hidden="true">
         <span className={styles.legendHome}>{homeSchool}</span>
         <span className={styles.legendAway}>{awaySchool}</span>
       </div>
@@ -184,8 +191,12 @@ export function RatingTrajectoryChart({
           </span>
         ))}
       </div>
-      <p className={styles.xTitle}>Week</p>
-      <figcaption className={styles.caption}>{caption}</figcaption>
+      <p className={styles.xTitle} aria-hidden="true">
+        Week
+      </p>
+      <figcaption className={styles.caption} id="trajectory-chart-caption">
+        {caption}. Home team uses a solid line; away team uses a dashed line (not color alone).
+      </figcaption>
     </figure>
   );
 }

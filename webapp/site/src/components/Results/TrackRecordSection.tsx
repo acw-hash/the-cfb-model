@@ -20,7 +20,9 @@ export function TrackRecordSection({
 }: TrackRecordSectionProps): React.ReactElement {
   return (
     <section className={styles.section} data-testid="track-record-section">
-      <h2 className={styles.title}>Recorded results</h2>
+      <h2 className={styles.title} id="recorded-results-heading">
+        Recorded results
+      </h2>
       <p className={styles.noAggregate} data-testid="no-single-number">
         {NO_SINGLE_NUMBER_COPY}
       </p>
@@ -32,18 +34,35 @@ export function TrackRecordSection({
             : null}
         </p>
       ) : null}
-      <div className={styles.list} data-testid="metric-list">
-        {expectedIds.map((id) => {
-          const metric: TrackRecordMetric | undefined = metricById(track.metrics, id);
-          return (
-            <MetricRow
-              key={id}
-              metric={metric ?? null}
-              expectedId={id}
-              expectedLabel={metric?.label ?? id}
-            />
-          );
-        })}
+      <div
+        className={styles.tableWrap}
+        tabIndex={0}
+        role="region"
+        aria-labelledby="recorded-results-heading"
+      >
+        <table className={styles.table} data-testid="metric-list">
+          <thead>
+            <tr>
+              <th scope="col">Metric</th>
+              <th scope="col">Value</th>
+              <th scope="col">Interval</th>
+              <th scope="col">Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            {expectedIds.map((id) => {
+              const metric: TrackRecordMetric | undefined = metricById(track.metrics, id);
+              return (
+                <MetricRow
+                  key={id}
+                  metric={metric ?? null}
+                  expectedId={id}
+                  expectedLabel={metric?.label ?? id}
+                />
+              );
+            })}
+          </tbody>
+        </table>
       </div>
     </section>
   );

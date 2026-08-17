@@ -1,0 +1,130 @@
+[
+  {
+    "page": "home",
+    "path": "/",
+    "theme": "light",
+    "width": "390",
+    "count": 0,
+    "violations": []
+  },
+  {
+    "page": "home",
+    "path": "/",
+    "theme": "light",
+    "width": "desktop",
+    "count": 0,
+    "violations": []
+  },
+  {
+    "page": "home",
+    "path": "/",
+    "theme": "dark",
+    "width": "390",
+    "count": 0,
+    "violations": []
+  },
+  {
+    "page": "home",
+    "path": "/",
+    "theme": "dark",
+    "width": "desktop",
+    "count": 0,
+    "violations": []
+  },
+  {
+    "page": "game",
+    "path": "/game/401628373",
+    "theme": "light",
+    "width": "390",
+    "count": 0,
+    "violations": []
+  },
+  {
+    "page": "game",
+    "path": "/game/401628373",
+    "theme": "light",
+    "width": "desktop",
+    "count": 0,
+    "violations": []
+  },
+  {
+    "page": "game",
+    "path": "/game/401628373",
+    "theme": "dark",
+    "width": "390",
+    "count": 0,
+    "violations": []
+  },
+  {
+    "page": "game",
+    "path": "/game/401628373",
+    "theme": "dark",
+    "width": "desktop",
+    "count": 0,
+    "violations": []
+  },
+  {
+    "page": "results",
+    "path": "/results",
+    "theme": "light",
+    "width": "390",
+    "count": 0,
+    "violations": []
+  },
+  {
+    "page": "results",
+    "path": "/results",
+    "theme": "light",
+    "width": "desktop",
+    "count": 0,
+    "violations": []
+  },
+  {
+    "page": "results",
+    "path": "/results",
+    "theme": "dark",
+    "width": "390",
+    "count": 0,
+    "violations": []
+  },
+  {
+    "page": "results",
+    "path": "/results",
+    "theme": "dark",
+    "width": "desktop",
+    "count": 0,
+    "violations": []
+  },
+  {
+    "page": "about",
+    "path": "/about",
+    "theme": "light",
+    "width": "390",
+    "count": 0,
+    "violations": []
+  },
+  {
+    "page": "about",
+    "path": "/about",
+    "theme": "light",
+    "width": "desktop",
+    "count": 0,
+    "violations": []
+  },
+  {
+    "page": "about",
+    "path": "/about",
+    "theme": "dark",
+    "width": "390",
+    "count": 0,
+    "violations": []
+  },
+  {
+    "page": "about",
+    "path": "/about",
+    "theme": "dark",
+    "width": "desktop",
+    "count": 0,
+    "violations": []
+  }
+]

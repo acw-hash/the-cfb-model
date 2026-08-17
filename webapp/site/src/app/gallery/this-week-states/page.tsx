@@ -1,5 +1,3 @@
-import { notFound } from "next/navigation";
-
 import { GameRow } from "@/components/GameRow/GameRow";
 import { OffseasonState } from "@/components/OffseasonState/OffseasonState";
 import { ThisWeekHeader } from "@/components/ThisWeekHeader/ThisWeekHeader";
@@ -14,6 +12,7 @@ import {
   cloneTwoBandRevision,
 } from "@/lib/this-week/demo-states";
 
+import { assertGalleryAllowed } from "../gallery-gate";
 import { GalleryThemeToggle } from "../GalleryThemeToggle";
 import styles from "../gallery.module.css";
 
@@ -36,9 +35,7 @@ function requireGame(
 
 /** Dev-only doctored-clone gallery for W3-3 states. Fixtures on disk are untouched. */
 export default async function ThisWeekStatesPage(): Promise<React.ReactElement> {
-  if (process.env.NODE_ENV === "production") {
-    notFound();
-  }
+  assertGalleryAllowed();
 
   const [meta, week] = await Promise.all([
     loadArtifact<MetaArtifact>("meta"),

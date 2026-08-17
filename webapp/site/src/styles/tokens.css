@@ -9,7 +9,8 @@
   --bg-secondary: #f5f5f7;
   --text-primary: #1d1d1f;
   --text-secondary: #6e6e73;
-  --text-tertiary: #aeaeb2;
+  /* W8-A: was #aeaeb2 (2.21:1 on white — fails AA). #75757a ≈ 4.58:1. */
+  --text-tertiary: #75757a;
   --accent: #0071e3;
   --semantic-stale: #bf4800;
   --semantic-revised: #6e6e73;
@@ -74,7 +75,8 @@
   --bg-secondary: #1c1c1e;
   --text-primary: #f5f5f7;
   --text-secondary: #98989d;
-  --text-tertiary: #636366;
+  /* W8-A: was #636366 (3.51:1 on black — fails AA normal). #8e8e93 ≈ 6.44:1. */
+  --text-tertiary: #8e8e93;
   --accent: #0a84ff;
   --semantic-stale: #ff9f0a;
   --semantic-revised: #98989d;
@@ -88,7 +90,7 @@
     --bg-secondary: #1c1c1e;
     --text-primary: #f5f5f7;
     --text-secondary: #98989d;
-    --text-tertiary: #636366;
+    --text-tertiary: #8e8e93;
     --accent: #0a84ff;
     --semantic-stale: #ff9f0a;
     --semantic-revised: #98989d;

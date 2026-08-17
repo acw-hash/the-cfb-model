@@ -1,5 +1,3 @@
-import { notFound } from "next/navigation";
-
 import { GameRow } from "@/components/GameRow/GameRow";
 import { IntervalBand } from "@/components/IntervalBand/IntervalBand";
 import { MaintenanceState } from "@/components/MaintenanceState/MaintenanceState";
@@ -11,6 +9,7 @@ import { TierChip } from "@/components/TierChip/TierChip";
 import { loadArtifact } from "@/lib/artifacts/loader";
 import type { GamePrediction, MetaArtifact, WeekPredictions } from "@/lib/artifacts/types";
 
+import { assertGalleryAllowed } from "./gallery-gate";
 import styles from "./gallery.module.css";
 import { GalleryThemeToggle } from "./GalleryThemeToggle";
 
@@ -77,9 +76,7 @@ function demoNullForecastGame(base: GamePrediction): GamePrediction {
 
 /** Dev-only component gallery — excluded from production via 404. */
 export default async function GalleryPage(): Promise<React.ReactElement> {
-  if (process.env.NODE_ENV === "production") {
-    notFound();
-  }
+  assertGalleryAllowed();
 
   const [meta, weekPredictions] = await Promise.all([
     loadArtifact<MetaArtifact>("meta"),

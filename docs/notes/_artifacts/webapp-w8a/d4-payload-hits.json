@@ -1,0 +1,150 @@
+{
+  "home_hits": [
+    {
+      "field": "conviction_basis",
+      "count": 56,
+      "sample": "_team_id\\\":8,\\\"conference_game\\\":true,\\\"conviction_basis\\\":{\\\"favored_side\\\":\\\"home\\\",\\\"hysteres"
+    },
+    {
+      "field": "mu_sigma_ratio",
+      "count": 56,
+      "sample": "alse,\\\"mu_margin\\\":4.1460979146876005,\\\"mu_sigma_ratio\\\":0.2477858580095849,\\\"p_favored\\\":0.67"
+    },
+    {
+      "field": "p_favored",
+      "count": 56,
+      "sample": "\\\"mu_sigma_ratio\\\":0.2477858580095849,\\\"p_favored\\\":0.6758793711506627,\\\"p_win_home\\\":0.6"
+    },
+    {
+      "field": "hysteresis_applied",
+      "count": 56,
+      "sample": "on_basis\\\":{\\\"favored_side\\\":\\\"home\\\",\\\"hysteresis_applied\\\":false,\\\"mu_margin\\\":4.146097914687600"
+    },
+    {
+      "field": "previous_tier",
+      "count": 56,
+      "sample": "627,\\\"p_win_home\\\":0.6758793711506627,\\\"previous_tier\\\":null,\\\"raw_tier\\\":\\\"lean\\\",\\\"sigma_ma"
+    },
+    {
+      "field": "raw_tier",
+      "count": 56,
+      "sample": "58793711506627,\\\"previous_tier\\\":null,\\\"raw_tier\\\":\\\"lean\\\",\\\"sigma_margin\\\":16.73258493"
+    },
+    {
+      "field": "favored_side",
+      "count": 56,
+      "sample": "nce_game\\\":true,\\\"conviction_basis\\\":{\\\"favored_side\\\":\\\"home\\\",\\\"hysteresis_applied\\\":false"
+    },
+    {
+      "field": "p_cover_home",
+      "count": 56,
+      "sample": "tral_site\\\":true,\\\"null_reason\\\":null,\\\"p_cover_home\\\":0.42531,\\\"p_cover_home_credible\\\":tru"
+    },
+    {
+      "field": "p_over",
+      "count": 56,
+      "sample": ".42531,\\\"p_cover_home_credible\\\":true,\\\"p_over\\\":0.44672924450891227,\\\"p_over_credible"
+    },
+    {
+      "field": "p_cover_home_credible",
+      "count": 56,
+      "sample": "eason\\\":null,\\\"p_cover_home\\\":0.42531,\\\"p_cover_home_credible\\\":true,\\\"p_over\\\":0.44672924450891227,\\"
+    },
+    {
+      "field": "p_over_credible",
+      "count": 56,
+      "sample": "\":true,\\\"p_over\\\":0.44672924450891227,\\\"p_over_credible\\\":true,\\\"p_win_home\\\":0.675879371150662"
+    },
+    {
+      "field": "sigma_total",
+      "count": 56,
+      "sample": "396137,\\\"sigma_margin_credible\\\":true,\\\"sigma_total\\\":16.84756925548838,\\\"sigma_total_credi"
+    },
+    {
+      "field": "sigma_total_credible",
+      "count": 56,
+      "sample": "rue,\\\"sigma_total\\\":16.84756925548838,\\\"sigma_total_credible\\\":true,\\\"stale_sources\\\":[],\\\"stale_sta"
+    },
+    {
+      "field": "total_interval_lo",
+      "count": 56,
+      "sample": "ry\\\":false,\\\"total_interval_hi\\\":null,\\\"total_interval_lo\\\":null,\\\"total_interval_nominal\\\":null,"
+    },
+    {
+      "field": "total_interval_hi",
+      "count": 56,
+      "sample": ",\\\"tier_revised_since_primary\\\":false,\\\"total_interval_hi\\\":null,\\\"total_interval_lo\\\":null,\\\"tot"
+    },
+    {
+      "field": "total_interval_nominal",
+      "count": 56,
+      "sample": "_hi\\\":null,\\\"total_interval_lo\\\":null,\\\"total_interval_nominal\\\":null,\\\"vintage_label\\\":\\\"REGRADED_V2\\"
+    },
+    {
+      "field": "mu_total",
+      "count": 56,
+      "sample": ":0.8,\\\"mu_margin\\\":4.1460979146876005,\\\"mu_total\\\":49.734479196412956,\\\"neutral_site\\\":t"
+    },
+    {
+      "field": "home_team_id",
+      "count": 56,
+      "sample": "73\\\",\\\"home_team\\\":\\\"Texas A\\u0026M\\\",\\\"home_team_id\\\":245,\\\"is_stale\\\":false,\\\"kickoff_utc\\"
+    },
+    {
+      "field": "away_team_id",
+      "count": 56,
+      "sample": "\"games\\\":[{\\\"away_team\\\":\\\"Arkansas\\\",\\\"away_team_id\\\":8,\\\"conference_game\\\":true,\\\"convicti"
+    },
+    {
+      "field": "ensemble_scope_label",
+      "count": 56,
+      "sample": "u0026M\\\",\\\"conviction_tier\\\":\\\"lean\\\",\\\"ensemble_scope_label\\\":\\\"REDUCED_PER_ADR_0013\\\",\\\"feature_ti"
+    },
+    {
+      "field": "feature_time_label",
+      "count": 56,
+      "sample": "cope_label\\\":\\\"REDUCED_PER_ADR_0013\\\",\\\"feature_time_label\\\":\\\"FEATURE_TIME=TUESDAY_DECISION\\\",\\\"g"
+    },
+    {
+      "field": "vintage_label",
+      "count": 56,
+      "sample": ":null,\\\"total_interval_nominal\\\":null,\\\"vintage_label\\\":\\\"REGRADED_V2\\\",\\\"week\\\":5},{\\\"away_t"
+    },
+    {
+      "field": "null_reason",
+      "count": 56,
+      "sample": "734479196412956,\\\"neutral_site\\\":true,\\\"null_reason\\\":null,\\\"p_cover_home\\\":0.42531,\\\"p_cov"
+    },
+    {
+      "field": "tier_primary",
+      "count": 56,
+      "sample": "ale_sources\\\":[],\\\"stale_stamp\\\":null,\\\"tier_primary\\\":null,\\\"tier_revised_since_primary\\\":f"
+    },
+    {
+      "field": "stale_sources",
+      "count": 56,
+      "sample": "5548838,\\\"sigma_total_credible\\\":true,\\\"stale_sources\\\":[],\\\"stale_stamp\\\":null,\\\"tier_primar"
+    },
+    {
+      "field": "conference_game",
+      "count": 56,
+      "sample": "eam\\\":\\\"Arkansas\\\",\\\"away_team_id\\\":8,\\\"conference_game\\\":true,\\\"conviction_basis\\\":{\\\"favored_"
+    },
+    {
+      "field": "sigma_margin_credible",
+      "count": 56,
+      "sample": "4,\\\"sigma_margin\\\":16.732584934396137,\\\"sigma_margin_credible\\\":true,\\\"sigma_total\\\":16.8475692554883"
+    },
+    {
+      "field": "p_win_home_credible",
+      "count": 56,
+      "sample": "rue,\\\"p_win_home\\\":0.6758793711506627,\\\"p_win_home_credible\\\":true,\\\"published_at\\\":\\\"2024-09-24T06"
+    },
+    {
+      "field": "margin_interval_nominal",
+      "count": 56,
+      "sample": "rgin_interval_lo\\\":-23.83538038381835,\\\"margin_interval_nominal\\\":0.8,\\\"mu_margin\\\":4.1460979146876005,"
+    }
+  ],
+  "game_hits": []
+}
