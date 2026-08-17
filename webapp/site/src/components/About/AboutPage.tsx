@@ -1,4 +1,5 @@
 import {
+  ATTRIBUTION_HEADING,
   ATTRIBUTION_PLACEHOLDER,
   CFBD_ATTRIBUTION,
   HONESTY_COMMITMENTS,
@@ -69,7 +70,7 @@ export function AboutPage({ year }: AboutPageProps): React.ReactElement {
       </section>
 
       <section id="attribution" className={styles.section} data-testid="about-attribution">
-        <h2 className={styles.sectionTitle}>Attribution and contact</h2>
+        <h2 className={styles.sectionTitle}>{ATTRIBUTION_HEADING}</h2>
         <p className={styles.attribution}>{CFBD_ATTRIBUTION}</p>
         <p className={styles.placeholder} data-testid="attribution-placeholder">
           {ATTRIBUTION_PLACEHOLDER}

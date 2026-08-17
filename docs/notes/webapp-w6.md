@@ -199,3 +199,62 @@ invented here (W8-B remains operator-blocked).
 | L4 | Privacy / analytics | **OPEN / default-safe** (unchanged) | No third-party analytics; L4 posture load-bearing — W8-A added none |
 | L5 | Age gating | **OPEN** (unchanged) | As recorded in W6 |
 | L6 | Accessibility WCAG 2.1 AA | **RESOLVED** (W8-A D5) | See `docs/notes/webapp-w8a.md` and `docs/notes/_artifacts/webapp-w8a/a11y-*.json` |
+
+---
+
+## L3 — OPERATOR ACCEPTED RISK (2026-08-17)
+
+**Item:** L3 — state-level sports-content considerations (DESIGN §6.3).
+**Disposition:** OPERATOR ACCEPTED RISK. No counsel review was obtained.
+**Decided by:** operator. This is not a legal opinion and no attorney reviewed it.
+
+### What L3 covers
+
+Whether publicly publishing statistical college-football forecasts triggers any
+state-level requirement governing gambling-adjacent content in the operator's
+jurisdiction.
+
+### Basis for acceptance
+
+| Factor | State at launch |
+|--------|-----------------|
+| Wagers accepted | None. No accounts, payments, or wagering functionality. |
+| Sportsbook lines published | None. DESIGN §1.2 excludes spread, total, moneyline, book, and market-implied fields from the artifact contract; verified in W8-A D3 with a passing assertion. |
+| Picks / recommendations | None. Product decision #1; enforced by the no-bet-language grep gate. |
+| Monetization | None. No ads, affiliate links, subscriptions, or paywalls. |
+| Affiliation with any sportsbook | None, and disclaimed in §6.1 copy. |
+| Responsible-gambling resource | Present site-wide per §6.2 (1-800-GAMBLER). |
+| Betting-fitness claim | The site publishes the §23 verdict in plain language: NOT CURRENTLY FIT TO BET, no demonstrated edge. |
+| Age gating | None (L5, separately open). |
+
+The assessed exposure is low because Ridge is informational and non-commercial,
+publishes no market data, makes no recommendation, and affirmatively states it is
+not fit for betting use. The residual risk is accepted rather than eliminated.
+
+### Conditions that reopen L3
+
+Any of the following voids this acceptance and requires re-review before shipping:
+
+1. Any monetization — ads, affiliate links, sponsorship, subscriptions, donations.
+2. Publishing any sportsbook line, market-implied probability, or edge/EV figure.
+3. Any copy that frames output as a pick, bet, or recommendation.
+4. User accounts, payments, or any wagering-adjacent interactive feature.
+5. Removing or weakening the §6.1 disclaimer, the §6.2 RG copy, or the
+   not-fit-to-bet verdict on /results.
+6. Attaching a custom domain or removing `noindex` — materially changes reach.
+7. A change in the operator's state of residence or operation.
+
+### Effect on launch gating
+
+DESIGN §6.3 blocks launch on L1–L3 at minimum. L1 and L2 are RESOLVED with evidence
+(W8-A D7). L3 is now DISPOSED as accepted risk. L4 (no analytics, default-safe) and
+L5 (no age gate) remain OPEN and are not launch blockers under §6.3.
+
+---
+
+## W6-4 — CLOSED (2026-08-17)
+
+**Item:** W6-4 — Attribution and contact placeholder.
+**Disposition:** CLOSED. Operator supplied entity attribution copy; consumed by W8-B.
+**Decided by:** operator. No individual, contact method, or repository link was added.
+**Pointer:** `docs/notes/webapp-w8b.md`

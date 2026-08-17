@@ -67,9 +67,18 @@ export const FOOTER_DISCLAIMER_SHORT =
 export const CFBD_ATTRIBUTION =
   "Schedule, score, and team-name data displayed on Ridge are derived from CollegeFootballData (collegefootballdata.com). Ridge is not affiliated with CollegeFootballData.";
 
-/** Operator must replace before W7 — never invent identity. */
-export const ATTRIBUTION_PLACEHOLDER =
-  "[Operator to supply: public attribution / contact before W7 launch]";
+/**
+ * W8-B operator-supplied attribution. Entity only: no personal name, no
+ * contact method, no repository URL. AboutPage still imports the body copy
+ * under the W6 export name.
+ */
+export const ATTRIBUTION_HEADING = "Attribution";
+
+export const ATTRIBUTION_COPY =
+  "Ridge is an independent research project. It is not affiliated with any school or conference.";
+
+/** W6 export name — same string as ATTRIBUTION_COPY. Do not restore a placeholder. */
+export const ATTRIBUTION_PLACEHOLDER = ATTRIBUTION_COPY;
 
 export function disclaimerForYear(year: number): string {
   return DISCLAIMER_TEMPLATE.replace("{year}", String(year));
