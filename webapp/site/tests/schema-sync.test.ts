@@ -13,6 +13,7 @@ import type {
   TrackRecord,
   WeekPredictions,
 } from "@/lib/artifacts/types";
+import { isSchemaVersionSupported } from "@/lib/artifacts/schema-version";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, "../../..");
@@ -50,6 +51,7 @@ describe("types-schemas sync via committed JSON Schemas", () => {
     const week = loadJson(path.join(FIXTURE_DIR, "week_predictions.json")) as WeekPredictions;
     expect(validateWeek(week)).toBe(true);
     expect(week.fixture).toBe(true);
+    expect(week.schema_version).toBe("1.2.0");
     expect(week.games.length).toBeGreaterThan(0);
     for (const game of week.games) {
       expect(typeof game.game_id).toBe("string");
@@ -57,6 +59,15 @@ describe("types-schemas sync via committed JSON Schemas", () => {
         game.conviction_tier,
       );
     }
+  });
+
+  it("validates 1.1.0 legacy week_predictions fixture (withdrawn keys still present)", () => {
+    const week = loadJson(
+      path.join(FIXTURE_DIR, "week_predictions.legacy-1.1.0.json"),
+    ) as WeekPredictions;
+    expect(validateWeek(week)).toBe(true);
+    expect(week.schema_version).toBe("1.1.0");
+    expect(isSchemaVersionSupported(week.schema_version)).toBe(true);
   });
 
   it("validates track_record.json fixture", () => {

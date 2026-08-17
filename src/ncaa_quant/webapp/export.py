@@ -15,7 +15,7 @@ import pandas as pd  # type: ignore[import-untyped]
 from ncaa_quant.config import AppConfig, load_config
 from ncaa_quant.pipelines.predict import RefreshKind
 
-SCHEMA_VERSION = "1.1.0"
+SCHEMA_VERSION = "1.2.0"
 
 ConvictionTier = Literal["strong_lean", "clear_lean", "lean", "toss_up"]
 
@@ -24,6 +24,80 @@ TIER_STRONG_ENTER = 0.85
 TIER_CLEAR_ENTER = 0.70
 TIER_LEAN_ENTER = 0.575
 HYSTERESIS_BAND = 0.03
+
+#: Per-game cover/over probs vs the CFBD close. Computed internally; not published.
+#: ADR 0015 / schema 1.2.0 WITHDRAWAL.
+WITHDRAWN_FIELDS: frozenset[str] = frozenset(
+    {
+        "p_cover_home",
+        "p_cover_home_credible",
+        "p_over",
+        "p_over_credible",
+    }
+)
+
+#: Exact keys of a published ``GamePrediction`` object (schema 1.2.0).
+PUBLISHED_GAME_PREDICTION_KEYS: frozenset[str] = frozenset(
+    {
+        "away_team",
+        "away_team_id",
+        "conference_game",
+        "conviction_basis",
+        "conviction_label",
+        "conviction_team",
+        "conviction_tier",
+        "ensemble_scope_label",
+        "feature_time_label",
+        "game_id",
+        "home_team",
+        "home_team_id",
+        "is_stale",
+        "kickoff_utc",
+        "margin_interval_hi",
+        "margin_interval_lo",
+        "margin_interval_nominal",
+        "mu_margin",
+        "mu_total",
+        "neutral_site",
+        "null_reason",
+        "p_win_home",
+        "p_win_home_credible",
+        "published_at",
+        "refresh_kind",
+        "season",
+        "sigma_margin",
+        "sigma_margin_credible",
+        "sigma_total",
+        "sigma_total_credible",
+        "stale_sources",
+        "stale_stamp",
+        "tier_primary",
+        "tier_revised_since_primary",
+        "total_interval_hi",
+        "total_interval_lo",
+        "total_interval_nominal",
+        "vintage_label",
+        "week",
+    }
+)
+
+
+class PublishedKeyAllowlistError(ValueError):
+    """A published object contains a key outside the sanctioned allowlist."""
+
+
+def assert_game_prediction_allowlist(game: Mapping[str, Any]) -> None:
+    """Fail on any unknown or withdrawn key in a published game object."""
+    present = set(game.keys())
+    extra = present - PUBLISHED_GAME_PREDICTION_KEYS
+    if extra:
+        msg = f"unpublished or withdrawn keys in GamePrediction: {sorted(extra)}"
+        raise PublishedKeyAllowlistError(msg)
+    missing = PUBLISHED_GAME_PREDICTION_KEYS - present
+    if missing:
+        msg = f"published GamePrediction missing required keys: {sorted(missing)}"
+        raise PublishedKeyAllowlistError(msg)
+
 
 #: Odds / market / bet-candidate field names that must never appear in artifacts.
 ODDS_FIELD_DENYLIST: frozenset[str] = frozenset(
@@ -455,12 +529,6 @@ def build_game_prediction(
         "p_win_home_credible": probability_credible(
             row, "p_ml_home_is_missing", "p_win_home_is_missing"
         ),
-        "p_cover_home": _optional_float(_field(row, "p_cover_home", "p_ats_home")),
-        "p_cover_home_credible": probability_credible(
-            row, "p_ats_home_is_missing", "p_cover_home_is_missing"
-        ),
-        "p_over": _optional_float(_field(row, "p_over", "p_ou_over")),
-        "p_over_credible": probability_credible(row, "p_ou_over_is_missing", "p_over_is_missing"),
         "conviction_tier": conviction["conviction_tier"],
         "conviction_team": conviction["conviction_team"],
         "conviction_label": conviction["conviction_label"],
@@ -477,7 +545,9 @@ def build_game_prediction(
         "published_at": _iso_utc(published_at),
         "refresh_kind": refresh_kind,
     }
-    return cast(dict[str, Any], _json_safe(game))
+    safe = cast(dict[str, Any], _json_safe(game))
+    assert_game_prediction_allowlist(safe)
+    return safe
 
 
 def append_tier_change_records(

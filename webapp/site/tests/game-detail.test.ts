@@ -161,8 +161,6 @@ describe("W4-5 doctored clones", () => {
     expect(clone.sigma_margin_credible).toBe(false);
     expect(clone.conviction_tier).toBeNull();
     expect(probabilityIsCredible(clone, "p_win_home")).toBe(false);
-    expect(probabilityIsCredible(clone, "p_cover_home")).toBe(false);
-    expect(probabilityIsCredible(clone, "p_over")).toBe(false);
     expect(clone.null_reason).toBe("cold_start_insufficient");
     expect(clone.mu_margin).toBe(source.mu_margin);
   });
@@ -199,12 +197,11 @@ describe("σ-gating is authoritative", () => {
     expect(probabilityIsCredible(gated, "p_win_home")).toBe(false);
   });
 
-  it("Liberty fixture has cover/over not credible with no fallback", () => {
+  it("Liberty fixture still has a credible home-win probability (no cover/over)", () => {
     const week = loadWeek();
     const liberty = week.games.find((g) => g.game_id === "401640992")!;
     expect(probabilityIsCredible(liberty, "p_win_home")).toBe(true);
-    expect(probabilityIsCredible(liberty, "p_cover_home")).toBe(false);
-    expect(liberty.p_cover_home).toBeNull();
+    expect(liberty.p_win_home).not.toBeNull();
   });
 });
 

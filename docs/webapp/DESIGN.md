@@ -81,12 +81,8 @@ Top-level object:
 | `total_interval_lo` | float \| null | conformal / quantile | |
 | `total_interval_hi` | float \| null | conformal / quantile | |
 | `total_interval_nominal` | float \| null | | |
-| `p_win_home` | float \| null | `p_ml_home` | Home win probability |
+| `p_win_home` | float \| null | `p_ml_home` | Home win probability (vs 0; no line) |
 | `p_win_home_credible` | bool | `!p_ml_home_is_missing` | Suppressed when σ refused |
-| `p_cover_home` | float \| null | `p_ats_home` | **Model-internal cover prob only** — not vs a published line; display label "cover (model ref)" in UI copy |
-| `p_cover_home_credible` | bool | `!p_ats_home_is_missing` | |
-| `p_over` | float \| null | `p_ou_over` | Over prob vs model total ref |
-| `p_over_credible` | bool | `!p_ou_over_is_missing` | |
 | `conviction_tier` | string \| null | computed at export | `"strong_lean"` \| `"lean"` \| `"toss_up"` \| null |
 | `conviction_team` | string \| null | computed at export | Team school name |
 | `conviction_label` | string \| null | computed at export | e.g. `"Strong lean Michigan"` |
@@ -114,7 +110,9 @@ Top-level object:
 
 **FBS scope:** all scheduled FBS games for the target `(season, week)` — regular season and postseason FBS matchups. FCS opponents appear as the away/home team name but the game is included when it is on the FBS schedule ingest (`classification=fbs`).
 
-**Odds API exclusion:** no spread, total, moneyline, book, or market-implied field appears in this contract. `p_cover_home` and `p_over` are derived from the model's own μ/σ (and internal reference total/spread used only for probability construction), never from captured sportsbook lines.
+**Odds API / market-number exclusion:** no spread, total, moneyline, book, or market-implied field appears in this contract. Cover and over probabilities (`p_ats_home` / `p_ou_over`) **are** computed against the CFBD closing spread and total (median of staged `lines_historical` where `line_type == "close"`; see `_lookup_closes` and `spread_cover_probs`). Those quantities and the `ats_close` / `ou_close` calibrators remain **internal only** — they are not present in published artifacts as of schema **1.2.0**. ADR 0015. A name-based field diff cannot detect an invertible leak from (`μ`, `σ`, close-conditional `p`); withdrawal is the control.
+
+**Withdrawn (1.2.0):** `p_cover_home`, `p_cover_home_credible`, `p_over`, `p_over_credible`. Pipeline columns `p_ats_home` / `p_ou_over` are unchanged. `p_win_home` is retained (no line).
 
 ### 1.3 `results_<season>.json`
 
@@ -278,8 +276,8 @@ v1 uses `off_epa` and `def_epa` (4-dim Stage-1 block). Uncertainty bands use `of
 
 ### 1.7 Versioning and evolution rules
 
-- **`schema_version`:** SemVer string on every artifact. **Major** bump = breaking field removal or type change **or semantic redefinition of an existing field or enum value** (e.g. moving the `strong_lean` enter threshold) → frontend renders site-wide **maintenance state** (see §3.2). **Minor** bump = additive fields only → frontend ignores unknown fields. **Patch** bump = documentation/clarification only. *Exception (W1A):* `schema_version` **1.1.0** used a minor bump despite redefining `strong_lean`'s threshold only because no pre-amendment Ridge artifacts were ever published (`webapp.export_enabled` OFF through W1); this must not be read as permitting the pattern once readers exist.
-- **Additive-only policy:** New fields are appended; existing fields are never repurposed in-place.
+- **`schema_version`:** SemVer string on every artifact. **Major** bump = **REMOVAL** (a field removed while a consumer still reads it), a type change, **or** semantic redefinition of an existing field or enum value (e.g. moving the `strong_lean` enter threshold) → frontend renders site-wide **maintenance state** (see §3.2). **Minor** bump = additive fields, **or WITHDRAWAL** (a field removed in the same change that removes every consumer of it — first applied in 1.2.0 / ADR 0015). Frontend ignores unknown and withdrawn fields under the same major. **Patch** bump = documentation/clarification only. *Exception (W1A):* `schema_version` **1.1.0** used a minor bump despite redefining `strong_lean`'s threshold only because no pre-amendment Ridge artifacts were ever published (`webapp.export_enabled` OFF through W1); this must not be read as permitting that pattern for a REMOVAL once readers exist. *Note:* the schema-gate test uses `2.0.0` as its unsupported major; any real future move to major 2 must relocate that test to `3.0.0` first.
+- **Additive-only policy:** New fields are appended; existing fields are never repurposed in-place. WITHDRAWAL (ADR 0015) is the sanctioned exception when every consumer is removed in the same change.
 - **Frontend on version mismatch:** If `schema_version.major` ≠ supported major, render maintenance page: *"Ridge is updating — check back shortly."* Do **not** guess, interpolate, or render partial data from an unsupported schema.
 - **Fixture artifacts** used in development must declare `"fixture": true` at file top level.
 
@@ -293,7 +291,7 @@ v1 uses `off_epa` and `def_epa` (4-dim Stage-1 block). Uncertainty bands use `of
 | `sigma_margin` | σ refused (block-constant or missing) | Hide σ-dependent visuals; suppress tiers |
 | `margin_interval_*` | Conformal/quantile not emitted | Omit interval band |
 | `mu_total` | Total head null | Secondary column shows "—" |
-| `p_win_home` / `p_cover_home` / `p_over` | σ-gated refusal | "not computed"; no probability bar |
+| `p_win_home` | σ-gated refusal | "not computed"; no probability bar |
 | `*_credible: false` | Field present but not trustworthy | Render value dimmed or hidden per field rules |
 | `conviction_tier` | Suppressed (see §2.3) | No tier chip |
 | `stale_stamp` | Fresh inputs | No per-game stale badge |
@@ -691,7 +689,6 @@ Field-to-artifact mapping is mandatory: nothing on screen without a named source
 | Margin block | `mu_margin`, `sigma_margin`, interval fields |
 | Total block (secondary) | `mu_total`, `sigma_total`, total interval |
 | Win probability | `p_win_home`, `p_win_home_credible` |
-| Cover / over (tertiary) | `p_cover_home`, `p_over` + credibility flags — labeled "model reference only" |
 | Tier | `conviction_label`, `conviction_basis` |
 | Revised badge | `tier_revised_since_primary`, `tier_primary` |
 | Provenance strip | `vintage_label`, `ensemble_scope_label`, `feature_time_label` |

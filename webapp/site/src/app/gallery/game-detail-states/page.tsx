@@ -11,6 +11,7 @@ import {
   cloneTwoBandRevision,
 } from "@/lib/game-detail/demo-states";
 import { lookupTeam, seriesForTeam } from "@/lib/game-detail/ratings";
+import { projectGameDetailGame } from "@/lib/game-detail/project";
 
 import { assertGalleryAllowed } from "../gallery-gate";
 import { GalleryThemeToggle } from "../GalleryThemeToggle";
@@ -95,7 +96,7 @@ export default async function GameDetailStatesPage(): Promise<React.ReactElement
           Doctored: tier_primary=strong_lean, current fixture-verbatim lean. No clear_lean step.
         </p>
         <GameDetail
-          game={twoBand}
+          game={projectGameDetailGame(twoBand)}
           homeSeries={twoBandSeries.home}
           awaySeries={twoBandSeries.away}
         />
@@ -107,7 +108,7 @@ export default async function GameDetailStatesPage(): Promise<React.ReactElement
           Doctored: sigma_margin_credible=false; probabilities and tier absent.
         </p>
         <GameDetail
-          game={suppressed}
+          game={projectGameDetailGame(suppressed)}
           homeSeries={suppressedSeries.home}
           awaySeries={suppressedSeries.away}
         />
@@ -116,7 +117,11 @@ export default async function GameDetailStatesPage(): Promise<React.ReactElement
       <section className={styles.section} data-testid="state-stale">
         <h2 className={styles.sectionTitle}>Stale game</h2>
         <p className={styles.note}>Doctored: stale_stamp=STALE(odds, 4.0h).</p>
-        <GameDetail game={stale} homeSeries={staleSeries.home} awaySeries={staleSeries.away} />
+        <GameDetail
+          game={projectGameDetailGame(stale)}
+          homeSeries={staleSeries.home}
+          awaySeries={staleSeries.away}
+        />
       </section>
 
       <section className={styles.section} data-testid="state-null-total">
@@ -126,7 +131,7 @@ export default async function GameDetailStatesPage(): Promise<React.ReactElement
           fixture-verbatim.
         </p>
         <GameDetail
-          game={nullTotal}
+          game={projectGameDetailGame(nullTotal)}
           homeSeries={twoBandSeries.home}
           awaySeries={twoBandSeries.away}
         />
@@ -136,7 +141,7 @@ export default async function GameDetailStatesPage(): Promise<React.ReactElement
         <h2 className={styles.sectionTitle}>Missing mid-season rating week</h2>
         <p className={styles.note}>Doctored ratings clone: week 3 removed for both teams.</p>
         <GameDetail
-          game={twoBandBase}
+          game={projectGameDetailGame(twoBandBase)}
           homeSeries={gappedSeries.home}
           awaySeries={gappedSeries.away}
         />

@@ -3,6 +3,7 @@
 from ncaa_quant.webapp.export import (
     ODDS_FIELD_DENYLIST,
     SCHEMA_VERSION,
+    WITHDRAWN_FIELDS,
     build_meta,
     build_team_ratings,
     build_track_record,
@@ -15,6 +16,7 @@ from ncaa_quant.webapp.push import R2PushError, push_artifacts_to_r2
 
 __all__ = [
     "SCHEMA_VERSION",
+    "WITHDRAWN_FIELDS",
     "ODDS_FIELD_DENYLIST",
     "GradeExportError",
     "R2PushError",

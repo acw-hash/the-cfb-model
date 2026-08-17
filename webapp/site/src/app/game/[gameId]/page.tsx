@@ -6,6 +6,7 @@ import { loadArtifact } from "@/lib/artifacts/loader";
 import { isSchemaVersionSupported } from "@/lib/artifacts/schema-version";
 import type { TeamRatings, WeekPredictions } from "@/lib/artifacts/types";
 import { lookupTeam, seriesForTeam } from "@/lib/game-detail/ratings";
+import { projectGameDetailGame } from "@/lib/game-detail/project";
 
 /**
  * ISR fallback 6h (§3) — same as This Week. Primary freshness is on-demand
@@ -76,5 +77,11 @@ export default async function GamePage({ params }: GamePageProps): Promise<React
     awaySeries = [];
   }
 
-  return <GameDetail game={game} homeSeries={homeSeries} awaySeries={awaySeries} />;
+  return (
+    <GameDetail
+      game={projectGameDetailGame(game)}
+      homeSeries={homeSeries}
+      awaySeries={awaySeries}
+    />
+  );
 }

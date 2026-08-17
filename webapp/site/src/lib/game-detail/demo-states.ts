@@ -12,10 +12,8 @@ export function cloneSuppressedSigma(game: GamePrediction): GamePrediction {
   const base = cloneSuppressed(game);
   return {
     ...base,
-    p_cover_home: null,
-    p_cover_home_credible: false,
-    p_over: null,
-    p_over_credible: false,
+    p_win_home: null,
+    p_win_home_credible: false,
     sigma_total: null,
     sigma_total_credible: false,
   };

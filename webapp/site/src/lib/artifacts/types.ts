@@ -75,10 +75,6 @@ export interface GamePrediction {
   total_interval_nominal: number | null;
   p_win_home: number | null;
   p_win_home_credible: boolean;
-  p_cover_home: number | null;
-  p_cover_home_credible: boolean;
-  p_over: number | null;
-  p_over_credible: boolean;
   conviction_tier: ConvictionTier | null;
   conviction_team: string | null;
   conviction_label: string | null;

@@ -6,6 +6,7 @@ describe("schema_version handling (§1.7)", () => {
   it("accepts same major minor/patch", () => {
     expect(isSchemaVersionSupported("1.0.0")).toBe(true);
     expect(isSchemaVersionSupported("1.1.0")).toBe(true);
+    expect(isSchemaVersionSupported("1.2.0")).toBe(true);
     expect(isSchemaVersionSupported("1.2.3")).toBe(true);
   });
 

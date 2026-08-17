@@ -1,6 +1,6 @@
 import type { GamePrediction } from "@/lib/artifacts/types";
 
-export type ProbabilityField = "p_win_home" | "p_cover_home" | "p_over";
+export type ProbabilityField = "p_win_home";
 
 /**
  * Per-field credibility, with σ-gating authoritative (§1.8).
@@ -11,26 +11,12 @@ export function probabilityIsCredible(game: GamePrediction, field: ProbabilityFi
   if (!game.sigma_margin_credible) {
     return false;
   }
-  switch (field) {
-    case "p_win_home":
-      return game.p_win_home_credible && game.p_win_home != null;
-    case "p_cover_home":
-      return game.p_cover_home_credible && game.p_cover_home != null;
-    case "p_over":
-      return game.p_over_credible && game.p_over != null;
-  }
+  return field === "p_win_home" && game.p_win_home_credible && game.p_win_home != null;
 }
 
 export function probabilityValue(game: GamePrediction, field: ProbabilityField): number | null {
   if (!probabilityIsCredible(game, field)) {
     return null;
   }
-  switch (field) {
-    case "p_win_home":
-      return game.p_win_home;
-    case "p_cover_home":
-      return game.p_cover_home;
-    case "p_over":
-      return game.p_over;
-  }
+  return game.p_win_home;
 }
