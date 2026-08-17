@@ -577,12 +577,15 @@ def run_isolated_week_export(
     published_at: datetime | None = None,
     config: AppConfig | None = None,
     notifier: Notifier | None = None,
+    predict_fn: PredictFn | None = None,
 ) -> dict[str, Any]:
     """Run wired ``predict_fn`` → local artifacts. No R2, no real tier files.
 
     Uses :func:`execute_predict_publish` (not the idempotent wrapper) so the
     real ``data/pipeline_state/idempotency.json`` is not touched. Export is
     disabled on the config; artifacts are written only under ``output_dir``.
+    ``predict_fn`` defaults to the parquet loader; pass a live fitted predictor
+    callable to verify the serialized champion without reading week parquet.
     """
     from ncaa_quant.webapp.export import export_publish_artifacts
 
@@ -610,6 +613,7 @@ def run_isolated_week_export(
         refresh_kind=refresh_kind,
         config=cfg,
         notifier=notifier,
+        predict_fn=predict_fn,
     )
     first = (result.get("prediction_rows") or [{}])[0]
     print("W9-P champion_version=3")
