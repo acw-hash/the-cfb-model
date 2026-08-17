@@ -1,0 +1,29 @@
+run_id: task23_a2_reduced_v2
+ablation_id: A2_frozen_after_week_1
+stack: fundamental
+ensemble_scope: REDUCED_PER_ADR_0013
+run_kind: backtest
+experiment_name: ncaa-quant-backtest-reduced-v3
+tracking_uri: file:./mlruns
+walkforward:
+  test_seasons:
+  - 2019
+  - 2021
+  - 2022
+  - 2023
+  - 2024
+  continuity_seasons:
+  - 2020
+  retrain_weeks:
+  - 5
+  - 10
+  market_features_available: false
+  preseason_priors: fitted
+  rating_updates: frozen_after_week_1
+  mapping_layer: ensemble
+  garbage_time_filter: true
+  market_feature_source: snapshots
+  seed: 42
+  model_version: production-v0_a2_reduced_v2
+  run_id: task23_a2_reduced_v2
+  ablation_id: A2_frozen_after_week_1

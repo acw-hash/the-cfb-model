@@ -1,0 +1,638 @@
+{
+  "grade_version": "v2",
+  "vintage": "W9A_CURRENT_CODE",
+  "runs": {
+    "task23_fundamental_reduced_v3": {
+      "run_id": "task23_fundamental_reduced_v3",
+      "role": "fundamental",
+      "n_predictions": 4944,
+      "n_headline": 4376,
+      "n_test_seasons": 4376,
+      "n_2025": 0,
+      "ungradable_blocks": [
+        [
+          2019,
+          2
+        ],
+        [
+          2019,
+          3
+        ],
+        [
+          2019,
+          4
+        ]
+      ],
+      "ungradable_extra_beyond_adr_0014": [],
+      "suite": {
+        "mae_margin": 14.533427013627348,
+        "crps_margin": NaN,
+        "ats_accuracy": 0.48759932578858656,
+        "ou_accuracy": 0.5145104420938432,
+        "logloss_ats": 0.9968973169373674,
+        "n_games": 4376
+      },
+      "cis": {
+        "crps_margin": {
+          "point": NaN,
+          "lo": NaN,
+          "hi": NaN
+        },
+        "ats_accuracy": {
+          "point": 0.4897381457891012,
+          "lo": 0.47807937316188626,
+          "hi": 0.5015255071415743
+        },
+        "ats_accuracy_naive": {
+          "point": 0.4897381457891012,
+          "lo": 0.47468958730362587,
+          "hi": 0.5047867042745765
+        }
+      },
+      "a2_components_by_basis": [
+        {
+          "metric": "mae_margin",
+          "value": 14.533427013627348,
+          "n": 4285,
+          "basis": "all_seasons",
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ]
+        },
+        {
+          "metric": "crps_margin",
+          "value": 10.023904530821943,
+          "n": 4175,
+          "basis": "all_seasons",
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ]
+        },
+        {
+          "metric": "ats_accuracy",
+          "value": 0.48759932578858656,
+          "n": 4153,
+          "basis": "line_backed",
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ]
+        }
+      ],
+      "ats_regimes": [
+        {
+          "regime": "cfbd_2019",
+          "n": 657,
+          "ats": 0.4779299847792998,
+          "logloss_model": 1.3499203258962642,
+          "logloss_market": 0.6931471805599453,
+          "bootstrap_lo": 0.46938455432361154,
+          "bootstrap_hi": 0.5112363061797753,
+          "naive_lo": 0.4553051333967095,
+          "naive_hi": 0.527198231340841,
+          "spread_abs_median": 10.5,
+          "pct_near0": 0.005242463958060288
+        },
+        {
+          "regime": "snapshots_2021_2024",
+          "n": 3496,
+          "ats": 0.48941647597254007,
+          "logloss_model": 0.9305540340752406,
+          "logloss_market": 0.6931471805599453,
+          "bootstrap_lo": 0.47537955516946023,
+          "bootstrap_hi": 0.5048301408155539,
+          "naive_lo": 0.47284599669041455,
+          "naive_hi": 0.5059869552546655,
+          "spread_abs_median": 12.625,
+          "pct_near0": 0.0027677830058123443
+        }
+      ],
+      "ou_regimes": [
+        {
+          "regime": "cfbd_2019",
+          "n": 551,
+          "ou": 0.5136116152450091,
+          "bootstrap_lo": 0.4646330690338706,
+          "bootstrap_hi": 0.5527223814391589,
+          "naive_lo": 0.47187845167540005,
+          "naive_hi": 0.5553447788146182
+        },
+        {
+          "regime": "snapshots_2021_2024",
+          "n": 3136,
+          "ou": 0.5146683673469388,
+          "bootstrap_lo": 0.4972687490800255,
+          "bootstrap_hi": 0.535470582880533,
+          "naive_lo": 0.49717622103115694,
+          "naive_hi": 0.5321605136627207
+        }
+      ],
+      "logloss_ats_regimes": [
+        {
+          "regime": "cfbd_2019",
+          "n": 657,
+          "logloss_model": 1.3499203258962642,
+          "logloss_market": 0.6931471805599453
+        },
+        {
+          "regime": "snapshots_2021_2024",
+          "n": 3496,
+          "logloss_model": 0.9305540340752406,
+          "logloss_market": 0.6931471805599453
+        }
+      ],
+      "mae_all_seasons": {
+        "metric": "mae_margin",
+        "value": 14.533427013627348,
+        "n": 4285,
+        "basis": "all_seasons",
+        "seasons": [
+          2019,
+          2021,
+          2022,
+          2023,
+          2024
+        ]
+      },
+      "crps_all_seasons": {
+        "metric": "crps_margin",
+        "value": 10.023904530821943,
+        "n": 4175,
+        "basis": "all_seasons",
+        "seasons": [
+          2019,
+          2021,
+          2022,
+          2023,
+          2024
+        ]
+      },
+      "weekly_mae": [
+        {
+          "week": 1,
+          "n": 545,
+          "mae": 15.70885055093263,
+          "rmse": 19.585018201593705,
+          "target": "margin"
+        },
+        {
+          "week": 2,
+          "n": 401,
+          "mae": 17.7674451978135,
+          "rmse": 23.480765451958984,
+          "target": "margin"
+        },
+        {
+          "week": 3,
+          "n": 351,
+          "mae": 17.360680185304215,
+          "rmse": 21.904064882023977,
+          "target": "margin"
+        },
+        {
+          "week": 4,
+          "n": 322,
+          "mae": 15.31143752397087,
+          "rmse": 20.695483887015676,
+          "target": "margin"
+        },
+        {
+          "week": 5,
+          "n": 294,
+          "mae": 13.71678733221622,
+          "rmse": 17.302864705898592,
+          "target": "margin"
+        },
+        {
+          "week": 6,
+          "n": 256,
+          "mae": 12.768386321433976,
+          "rmse": 16.08157083032046,
+          "target": "margin"
+        },
+        {
+          "week": 7,
+          "n": 265,
+          "mae": 13.284233720966848,
+          "rmse": 16.92827658144354,
+          "target": "margin"
+        },
+        {
+          "week": 8,
+          "n": 282,
+          "mae": 13.209587551114213,
+          "rmse": 16.17417250592086,
+          "target": "margin"
+        },
+        {
+          "week": 9,
+          "n": 267,
+          "mae": 13.726849565132149,
+          "rmse": 17.15061591426538,
+          "target": "margin"
+        },
+        {
+          "week": 10,
+          "n": 283,
+          "mae": 13.238902871519098,
+          "rmse": 16.842680531554848,
+          "target": "margin"
+        },
+        {
+          "week": 11,
+          "n": 291,
+          "mae": 13.880636498696258,
+          "rmse": 16.976863165688368,
+          "target": "margin"
+        },
+        {
+          "week": 12,
+          "n": 309,
+          "mae": 13.570783890627824,
+          "rmse": 17.49599659797691,
+          "target": "margin"
+        },
+        {
+          "week": 13,
+          "n": 322,
+          "mae": 13.22307251130808,
+          "rmse": 17.142120916690104,
+          "target": "margin"
+        },
+        {
+          "week": 14,
+          "n": 164,
+          "mae": 13.857960077060952,
+          "rmse": 17.976716428348965,
+          "target": "margin"
+        },
+        {
+          "week": 15,
+          "n": 23,
+          "mae": 15.96995786197672,
+          "rmse": 19.63322517009585,
+          "target": "margin"
+        },
+        {
+          "week": 16,
+          "n": 1,
+          "mae": 19.225097874470393,
+          "rmse": 19.225097874470393,
+          "target": "margin"
+        }
+      ],
+      "weekly_mae_week4": 15.31143752397087,
+      "weekly_mae_week10": 13.238902871519098,
+      "weekly_mae_week10_minus_week4": -2.072534652451772,
+      "ats_pct": {
+        "cfbd_2019": {
+          "ats_pct": 47.8,
+          "n": 657
+        },
+        "snapshots_2021_2024": {
+          "ats_pct": 48.9,
+          "n": 3496
+        }
+      },
+      "ou_pct": {
+        "cfbd_2019": {
+          "ou_pct": 51.4,
+          "n": 551
+        },
+        "snapshots_2021_2024": {
+          "ou_pct": 51.5,
+          "n": 3136
+        }
+      }
+    },
+    "task23_a2_reduced_v2": {
+      "run_id": "task23_a2_reduced_v2",
+      "role": "a2",
+      "n_predictions": 4944,
+      "n_headline": 4376,
+      "n_test_seasons": 4376,
+      "n_2025": 0,
+      "ungradable_blocks": [
+        [
+          2019,
+          2
+        ],
+        [
+          2019,
+          3
+        ],
+        [
+          2019,
+          4
+        ]
+      ],
+      "ungradable_extra_beyond_adr_0014": [],
+      "suite": {
+        "mae_margin": 15.506907425348972,
+        "crps_margin": NaN,
+        "ats_accuracy": 0.4973544973544973,
+        "ou_accuracy": 0.5202061296446976,
+        "logloss_ats": 1.0149242107818228,
+        "n_games": 4376
+      },
+      "cis": {
+        "crps_margin": {
+          "point": NaN,
+          "lo": NaN,
+          "hi": NaN
+        },
+        "ats_accuracy": {
+          "point": 0.4979948100967209,
+          "lo": 0.4866522659607481,
+          "hi": 0.5094415035400105
+        },
+        "ats_accuracy_naive": {
+          "point": 0.4979948100967209,
+          "lo": 0.48294320225317133,
+          "hi": 0.5130464179402705
+        }
+      },
+      "a2_components_by_basis": [
+        {
+          "metric": "mae_margin",
+          "value": 15.506907425348972,
+          "n": 4290,
+          "basis": "all_seasons",
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ]
+        },
+        {
+          "metric": "crps_margin",
+          "value": 10.75463385920428,
+          "n": 4175,
+          "basis": "all_seasons",
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ]
+        },
+        {
+          "metric": "ats_accuracy",
+          "value": 0.4973544973544973,
+          "n": 4158,
+          "basis": "line_backed",
+          "seasons": [
+            2019,
+            2021,
+            2022,
+            2023,
+            2024
+          ]
+        }
+      ],
+      "ats_regimes": [
+        {
+          "regime": "cfbd_2019",
+          "n": 662,
+          "ats": 0.4380664652567976,
+          "logloss_model": 1.4354269398432133,
+          "logloss_market": 0.6931471805599453,
+          "bootstrap_lo": 0.4173177529099623,
+          "bootstrap_hi": 0.48211858595629786,
+          "naive_lo": 0.412424572780169,
+          "naive_hi": 0.4839415106653223,
+          "spread_abs_median": 10.5,
+          "pct_near0": 0.005242463958060288
+        },
+        {
+          "regime": "snapshots_2021_2024",
+          "n": 3496,
+          "ats": 0.5085812356979404,
+          "logloss_model": 0.9352981219263766,
+          "logloss_market": 0.6931471805599453,
+          "bootstrap_lo": 0.498313192896013,
+          "bootstrap_hi": 0.5216639715450233,
+          "naive_lo": 0.49200948416418694,
+          "naive_hi": 0.5251529872316939,
+          "spread_abs_median": 12.625,
+          "pct_near0": 0.0027677830058123443
+        }
+      ],
+      "ou_regimes": [
+        {
+          "regime": "cfbd_2019",
+          "n": 551,
+          "ou": 0.5045372050816697,
+          "bootstrap_lo": 0.4569814836380575,
+          "bootstrap_hi": 0.5528679154836093,
+          "naive_lo": 0.46279028752766155,
+          "naive_hi": 0.5462841226356777
+        },
+        {
+          "regime": "snapshots_2021_2024",
+          "n": 3136,
+          "ou": 0.5229591836734694,
+          "bootstrap_lo": 0.5095820489741788,
+          "bootstrap_hi": 0.5363160729040564,
+          "naive_lo": 0.5054779639802698,
+          "naive_hi": 0.540440403366669
+        }
+      ],
+      "logloss_ats_regimes": [
+        {
+          "regime": "cfbd_2019",
+          "n": 662,
+          "logloss_model": 1.4354269398432133,
+          "logloss_market": 0.6931471805599453
+        },
+        {
+          "regime": "snapshots_2021_2024",
+          "n": 3496,
+          "logloss_model": 0.9352981219263766,
+          "logloss_market": 0.6931471805599453
+        }
+      ],
+      "mae_all_seasons": {
+        "metric": "mae_margin",
+        "value": 15.506907425348972,
+        "n": 4290,
+        "basis": "all_seasons",
+        "seasons": [
+          2019,
+          2021,
+          2022,
+          2023,
+          2024
+        ]
+      },
+      "crps_all_seasons": {
+        "metric": "crps_margin",
+        "value": 10.75463385920428,
+        "n": 4175,
+        "basis": "all_seasons",
+        "seasons": [
+          2019,
+          2021,
+          2022,
+          2023,
+          2024
+        ]
+      },
+      "weekly_mae": [
+        {
+          "week": 1,
+          "n": 545,
+          "mae": 15.829210083139968,
+          "rmse": 19.679990606325706,
+          "target": "margin"
+        },
+        {
+          "week": 2,
+          "n": 401,
+          "mae": 18.236256668019973,
+          "rmse": 23.91792734038789,
+          "target": "margin"
+        },
+        {
+          "week": 3,
+          "n": 351,
+          "mae": 18.47301419370446,
+          "rmse": 23.30051855629149,
+          "target": "margin"
+        },
+        {
+          "week": 4,
+          "n": 322,
+          "mae": 14.975276813428694,
+          "rmse": 19.450021067376987,
+          "target": "margin"
+        },
+        {
+          "week": 5,
+          "n": 294,
+          "mae": 14.40531140922375,
+          "rmse": 18.547953623394882,
+          "target": "margin"
+        },
+        {
+          "week": 6,
+          "n": 256,
+          "mae": 13.833184738807244,
+          "rmse": 18.122985458223145,
+          "target": "margin"
+        },
+        {
+          "week": 7,
+          "n": 265,
+          "mae": 14.686477115789716,
+          "rmse": 18.52155780237723,
+          "target": "margin"
+        },
+        {
+          "week": 8,
+          "n": 282,
+          "mae": 14.155388297256355,
+          "rmse": 18.212453278259606,
+          "target": "margin"
+        },
+        {
+          "week": 9,
+          "n": 267,
+          "mae": 14.861819384563804,
+          "rmse": 18.106449439875924,
+          "target": "margin"
+        },
+        {
+          "week": 10,
+          "n": 283,
+          "mae": 14.394374439523586,
+          "rmse": 18.178006712530113,
+          "target": "margin"
+        },
+        {
+          "week": 11,
+          "n": 291,
+          "mae": 14.997829244624901,
+          "rmse": 18.938414977101797,
+          "target": "margin"
+        },
+        {
+          "week": 12,
+          "n": 309,
+          "mae": 15.45613016268532,
+          "rmse": 19.663599061193185,
+          "target": "margin"
+        },
+        {
+          "week": 13,
+          "n": 322,
+          "mae": 15.321216817187135,
+          "rmse": 19.391081470389356,
+          "target": "margin"
+        },
+        {
+          "week": 14,
+          "n": 164,
+          "mae": 16.005331164101644,
+          "rmse": 20.713312100309086,
+          "target": "margin"
+        },
+        {
+          "week": 15,
+          "n": 23,
+          "mae": 15.601455104514512,
+          "rmse": 20.188542549054056,
+          "target": "margin"
+        },
+        {
+          "week": 16,
+          "n": 1,
+          "mae": 19.396967878853925,
+          "rmse": 19.396967878853925,
+          "target": "margin"
+        }
+      ],
+      "weekly_mae_week4": 14.975276813428694,
+      "weekly_mae_week10": 14.394374439523586,
+      "weekly_mae_week10_minus_week4": -0.5809023739051078,
+      "ats_pct": {
+        "cfbd_2019": {
+          "ats_pct": 43.8,
+          "n": 662
+        },
+        "snapshots_2021_2024": {
+          "ats_pct": 50.9,
+          "n": 3496
+        }
+      },
+      "ou_pct": {
+        "cfbd_2019": {
+          "ou_pct": 50.5,
+          "n": 551
+        },
+        "snapshots_2021_2024": {
+          "ou_pct": 52.3,
+          "n": 3136
+        }
+      },
+      "ats_plausibility": {
+        "tripped": true,
+        "message": "PIPELINE ERROR: ATS vs close outside fair-coin band for regime='cfbd_pre_2021': rate=43.81% n=662 band=[44.17%, 55.83%] (z=3.0). line_source_mix={'cfbd_close': 757, 'null': 6} pct_|spread_close|<0.5=0.5%. Refuse to publish \u2014 treat as a grading/pipeline failure, not a model finding."
+      }
+    }
+  }
+}

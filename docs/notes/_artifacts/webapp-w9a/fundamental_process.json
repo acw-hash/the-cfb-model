@@ -1,0 +1,29 @@
+{
+  "champion_version_registry": 2,
+  "ended_at": "2026-08-17T20:41:48Z",
+  "export_enabled_env": "false",
+  "label": "W9A-PATH-A;FEATURE_TIME=TUESDAY_DECISION;ensemble_scope=REDUCED_PER_ADR_0013;ADR_0014",
+  "n_2025": 0,
+  "output_dir": "data\\backtests\\task23_fundamental_reduced_v3\\full",
+  "pid": 37468,
+  "read_from_2025": false,
+  "replay_seasons": [
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+  ],
+  "run_id": "task23_fundamental_reduced_v3",
+  "seeds": {
+    "extra": {},
+    "global_seed": 42,
+    "lightgbm_seed": 42,
+    "numpy_seed": 42,
+    "python_hash_seed": "42",
+    "xgboost_seed": 42
+  },
+  "started_at": "2026-08-17T20:01:36Z",
+  "wall_clock_sec": 2412.666
+}

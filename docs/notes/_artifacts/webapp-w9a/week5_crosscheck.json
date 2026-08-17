@@ -1,0 +1,24 @@
+{
+  "all_zero": true,
+  "fields": {
+    "mu_margin": {
+      "max_abs": 0.0,
+      "n": 56,
+      "zero": true
+    },
+    "p_ml_home": {
+      "max_abs": 0.0,
+      "n": 56,
+      "zero": true
+    },
+    "sigma_margin": {
+      "max_abs": 0.0,
+      "n": 56,
+      "zero": true
+    }
+  },
+  "game_id_sets_identical": true,
+  "n": 56,
+  "n_new": 56,
+  "n_old": 56
+}

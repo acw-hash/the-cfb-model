@@ -362,3 +362,15 @@ product unblocked (§7 table).
    calibration (§2, §7).
 
 Lockbox not read. Guard band not widened. No hyperparameters tuned.
+
+---
+
+## Pointer (W9-A, 2026-08-17) — superseded for `/results` restamp
+
+This document remains **FINAL**. It is the record of what the site claimed
+under REGRADED_V2 / champion 3. Do not rewrite or delete it.
+
+The successor citable memo for `/results` restamp is
+`docs/notes/23-reval.md` (honest Tuesday clock,
+`run_id=task23_fundamental_reduced_v3`, W9-A). Site literals in
+`build_track_record` / `copy.ts` are **not** updated in W9-A.
