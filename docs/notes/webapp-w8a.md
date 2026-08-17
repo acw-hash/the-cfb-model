@@ -337,3 +337,11 @@ Appended from the successor that actually closed this file. Details: `docs/notes
 - L3 **OPERATOR ACCEPTED RISK** — operator text appended verbatim to `docs/notes/webapp-w6.md`.
 
 *End of W8-A (closed by W8-D).*
+
+## W8-COMMIT (2026-08-17)
+
+This notes file existed before the code was on `main`. Commit `e20cad5`.
+Production greps of `/` after that deploy are 0 for the non-allowlist names;
+that is projection only. Game Detail Cover/Over stayed until `913312c` (W8-C).
+See `docs/notes/webapp-w8commit.md`.
+

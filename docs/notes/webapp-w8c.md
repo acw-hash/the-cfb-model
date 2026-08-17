@@ -131,8 +131,51 @@ Required extra check (expect Cover/Over **present** on a W8-COMMIT-only deploy):
 curl -s https://the-cfb-model.vercel.app/game/401628373 | rg -i -c 'cover|model ref'
 ```
 
-After this W8-C deploy, that count must be 0; `/results` ATS count must stay
-non-zero.
+Two-step push (`4a0dd4a:main` then `913312c:main`) captured that window.
+
+**After `4a0dd4a` was production (W8-A+D, not W8-C):**
+
+```
+# /
+conviction_basis: 0
+p_cover_home: 0
+p_over: 0
+p_win_home: 0
+home_team_id: 0
+mu_margin: 56
+
+# /game/401628373
+Cover (model ref): 2
+```
+
+The five names at 0 on `/` is W8-A projection. Cover on Game Detail was still
+there — that is the remaining W8-C-scoped leak.
+
+**After `913312c` (W8-C) was production:**
+
+```
+# /
+conviction_basis: 0
+p_cover_home: 0
+p_over: 0
+p_win_home: 0
+home_team_id: 0
+mu_margin: 56
+
+# /game/401628373
+Cover (model ref): 0
+Over (model ref): 0
+Home win: 2   # "Probabilities Home win 68%"
+HAS maintenance / schema warning: False
+
+# /results
+ATS: 12
+NOT CURRENTLY FIT TO BET: 2
+```
+
+Loose `cover|model ref` still counts 4 after W8-C: all `ForecastBlock` **coverage**
+(`nominal coverage`, CSS `ForecastBlock_coverage`). That pattern is not a close
+signal. Close signal is the exact labels `Cover (model ref)` / `Over (model ref)`.
 
 ---
 

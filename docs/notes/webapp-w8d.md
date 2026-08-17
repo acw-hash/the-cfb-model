@@ -461,3 +461,10 @@ $ npm run build     # clean (ARTIFACT_SOURCE=fixtures)
 ---
 
 *End of W8-D.*
+
+## W8-COMMIT (2026-08-17)
+
+This notes file existed before the code was on `main`. Commit `4a0dd4a`.
+`npm test` now reports 129 passed (W8-C added allowlist / dual-fixture tests
+after this file's 119 count). See `docs/notes/webapp-w8commit.md`.
+
