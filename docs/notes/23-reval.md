@@ -2,6 +2,14 @@
 
 **Date:** 2026-08-17  
 **Status:** DECISION — documentation only. No site restamp in this task.  
+**W9-G amendment (2026-08-17):** the first W9-A pass carried two ATS
+grading defects: (1) `attach_metric_cis` scored NaN `p_ats_home` as an away
+pick, so 2019 CIs used n=743 against a rate on n=657; (2) `_p_ats_gaussian`
+invented p∈{0.999,0.001} for missing-σ 2019 w2–4 rows, so those rows entered
+the ATS rate, CI, and log-loss after the fit stored them as missing. This
+memo’s ATS 2019 / log-loss / scorecard rows are the W9-G regrade of the same
+`task23_fundamental_reduced_v3` / `task23_a2_reduced_v2` walk-forward (no
+refit). MAE, CRPS, and OU are unchanged. Details: `docs/notes/webapp-w9g.md`.  
 **ensemble_scope:** `REDUCED_PER_ADR_0013` (not §5.2-complete; ADR 0013).  
 **ADR 0014:** member-credibility contract in force (code constants, not re-fit).  
 **Vintage:** **W9A_REVAL** / `FEATURE_TIME=TUESDAY_DECISION` — current-code
@@ -21,7 +29,9 @@ and remains the record of what the site claimed. A successor task restamps
 
 Sources: DESIGN §1.6 / §13 / §16; `docs/notes/webapp-w9v.md`;
 `docs/notes/week-align-fix.md`; `docs/notes/mkt-asof-fix.md`; ADR 0005, 0013,
-0014; artifacts `docs/notes/_artifacts/webapp-w9a/metrics_summary.json`.
+0014; artifacts `docs/notes/_artifacts/webapp-w9a/metrics_summary.json`
+(MAE/CRPS/OU) and `docs/notes/_artifacts/webapp-w9g/acceptance.json`
+(ATS 2019 / log-loss / CIs after W9-G).
 
 ---
 
@@ -89,36 +99,39 @@ run scores n=4286 and drops 90 ADR 0014 2019 w2–4 OOD rows from the MAE sample
 Do not treat 14.53 vs 14.85 as a same-n comparison.
 
 **Clause B — how much of that learning the close already prices (sides).**  
-ATS, **W9A_REVAL / REDUCED**, regimes never pooled:
+ATS, **W9G_REGRADE of W9A_REVAL / REDUCED**, regimes never pooled:
 
 | Regime | Fund ATS | A2 ATS | Δ (pp) | n (fund / A2) |
 |---|---:|---:|---:|---|
-| CFBD 2019 | 47.8% | 43.8% | **−4.0** | 657 / 662 |
+| CFBD 2019 | 49.9% | 45.6% | **−4.3** | 553 / 553 |
 | Snapshots 2021–24 | 48.9% | 50.9% | **+2.0** | 3496 / 3496 |
 
 MAE/CRPS learning is still not an ATS edge vs the close. Snapshot ATS straddles
 50%. 2019 frozen-ratings ATS is worse (small-n, single CFBD-close regime) and
 must not be pooled with snapshots.
 
-A2 2019 regrade ATS 43.81% (n=662) sits 0.36 pp below the ATS plausibility
-band [44.17%, 55.83%]. The **in-run** A2 walk-forward published (guard passed
-on harness closes). The trip is on the post-hoc fixed-close regrade of a stack
-that is *supposed* to be worse. Recorded, not fatal, not a license to retune.
+A2 2019 regrade ATS **45.6%** (n=553) sits inside the ATS plausibility band
+[43.62%, 56.38%]. The W9-A first pass tripped on 43.81% (n=662) because that
+sample included invented missing-σ probabilities; after W9-G the guard does
+**not** fire. Recorded. Band not retuned.
 
 ---
 
 ## 2. MARKET (probabilistic)
 
 **Log-loss vs fair-coin market baseline 0.693** (ATS @ −110/−110 → fair 0.5),
-**W9A_REVAL / REDUCED**:
+**W9G_REGRADE of W9A_REVAL / REDUCED**:
 
 | Run | Vintage | 2019 LL | Snapshots LL |
 |---|---|---:|---:|
-| fundamental | W9A_REVAL | 1.350 | 0.931 |
-| A2 | W9A_REVAL | 1.435 | 0.935 |
+| fundamental | W9G_REGRADE | 0.779 | 0.931 |
+| A2 | W9G_REGRADE | 0.831 | 0.935 |
 
-The miss is universal on this pair: model ATS log-loss ≈ **0.93–1.44**, all ≫
-0.693. Core fundamental band **0.93–1.35**.
+The miss is universal on this pair: model ATS log-loss ≈ **0.78–0.94**, all ≫
+0.693. Core fundamental band **0.78–0.93**. W9-A’s 1.35 / 1.44 2019 figures
+were the invented hard-edge rows (p∈{0.001, 0.999}); they are not a
+calibration finding. Remaining 2019 (0.779) is **not** ≈ snapshot 0.931, so
+the band is two regime numbers, not one number plus an artifact.
 
 **CRPS vs de-vigged market baseline:** **NOT COMPUTED** (same gap as
 23-readout §2).
@@ -134,20 +147,21 @@ A1 / A3 / A4 / A5 / A6 / market-aware were **not** re-run. They are not
 
 | Run | Vintage | Regime | ATS | n | 95% bootstrap CI | 95% naive CI |
 |---|---|---|---:|---:|---|---|
-| fundamental | W9A_REVAL | 2019 | 47.8% | 657 | [46.9%, 51.1%] | [45.5%, 52.7%] |
-| fundamental | W9A_REVAL | snapshots | 48.9% | 3496 | [47.5%, 50.5%] | [47.3%, 50.6%] |
-| A2 | W9A_REVAL | 2019 | 43.8% | 662 | [41.7%, 48.2%] | [41.2%, 48.4%] |
-| A2 | W9A_REVAL | snapshots | 50.9% | 3496 | [49.8%, 52.2%] | [49.2%, 52.5%] |
+| fundamental | W9G_REGRADE | 2019 | 49.9% | 553 | [46.9%, 52.3%] | [45.7%, 54.1%] |
+| fundamental | W9G_REGRADE | snapshots | 48.9% | 3496 | [47.5%, 50.5%] | [47.3%, 50.6%] |
+| A2 | W9G_REGRADE | 2019 | 45.6% | 553 | [41.5%, 49.8%] | [41.4%, 49.7%] |
+| A2 | W9G_REGRADE | snapshots | 50.9% | 3496 | [49.8%, 52.2%] | [49.2%, 52.5%] |
 
 **Does any ATS CI exclude 50%?**  
 - **Fundamental both regimes:** no — bootstrap CIs include 50%.  
-- **A2 2019:** bootstrap [41.7%, 48.2%] excludes 50% **low** (frozen ratings;
+- **A2 2019:** bootstrap [41.5%, 49.8%] excludes 50% **low** (frozen ratings;
   expected worse).  
 - **A2 snapshots:** no.
 
 Neither fundamental regime's CI clears a clean §1.6 ≥51.5% claim. Snapshot
 headline moved from REGRADED_V2 50.7% toward 48.9% — the leak-removal landing
-on sides.
+on sides. Snapshot ATS n/rate/CIs are byte-identical to the W9-A first pass
+(zero missing-σ rows in 2021–24).
 
 ### OU vs close (REDUCED)
 
@@ -173,14 +187,14 @@ totals feature on almost all rows.
 
 ---
 
-## 5. §1.6 SCORECARD (REDUCED, W9A_REVAL)
+## 5. §1.6 SCORECARD (REDUCED, W9A_REVAL / W9G_REGRADE ATS)
 
 | Criterion | Result | Number vs target | Vintage |
 |---|---|---|---|
 | Mean same-book CLV > 0, 95% CI excludes 0, n≥300 | **UNMEASURABLE** | NOT COMPUTED (no bets/settle path) | — |
-| Fundamental ATS ≥ 51.5% | **MISSED** | Snapshots **48.9%** [47.5%, 50.5%] (n=3496); 2019 **47.8%** [46.9%, 51.1%] (n=657) — neither CI clears 51.5% | W9A_REVAL |
+| Fundamental ATS ≥ 51.5% | **MISSED** | Snapshots **48.9%** [47.5%, 50.5%] (n=3496); 2019 **49.9%** [46.9%, 52.3%] (n=553) — neither CI clears 51.5% | W9G_REGRADE |
 | Fundamental OU ≥ 51.5% | **MISSED / uninterpretable** | Snapshots **51.5%** [49.7%, 53.5%] (CI includes 51.5%); 2019 **51.4%** — possessions structurally null outside partial 2023 | W9A_REVAL |
-| Brier / log-loss ≤ market baseline | **MISSED** | ATS LL **0.93–1.35** (fundamental) vs market **0.693** | W9A_REVAL |
+| Brier / log-loss ≤ market baseline | **MISSED** | ATS LL **0.78–0.93** (fundamental) vs market **0.693** | W9G_REGRADE |
 | Calibration slope ∈ [0.9, 1.1] | **UNMEASURABLE this session** | Not the restamp target | — |
 | Process: zero leakage / pipeline | **Carried, with honest clock** | Week-align is now the harness; champion 3 Labor-Day clock is not this run | — |
 | Full §5.2 ensemble | **MISSED by definition** | REDUCED_PER_ADR_0013 | ADR 0013 |
@@ -211,8 +225,27 @@ are **lower** than REGRADED_V2. Two facts block reading that as a modeling win:
 2. **Week-align rewires every Tuesday**, not only 2024 week 5. Training as_ofs,
    Kalman `prior_as_of`, and retrain banks all move.
 
+**Matched subset (W9-R Phase 0.1).** Intersection of rows with finite μ and
+realized margin on both champion 3 (`task23_fundamental_reduced_v2`) and
+`task23_fundamental_reduced_v3` (same 4285 as the new MAE n; the 90 dropped
+rows are exactly the ADR 0014 null-μ set):
+
+| Metric | Champion 3 | v3 | Δ | n |
+|---|---:|---:|---:|---:|
+| MAE margin | 14.58 | 14.53 | **−0.05** | 4285 |
+| CRPS margin | 10.19 | 10.02 | **−0.16** | 4175 |
+
+CRPS n is the further intersection where both frames have finite σ>0 (v3
+drops 110 extra 2019 w2–4 rows that keep μ and lose σ; see W9-R 0.2). Mean
+|error| on the 90 rows champion 3 scored and v3 did not: **27.41**. The
+14.85→14.53 headline is almost entirely those 90 rows. Once the sample is
+held fixed, point accuracy barely moved (−0.05 MAE / −0.16 CRPS) — not a
+modeling win, and not “unchanged to rounding,” but not the published 0.32-point
+MAE drop either.
+
 Snapshot ATS on **matched n=3496** moved 50.7% → 48.9%. That is the cleaner
-leak-removal read on sides. No tuning. No member re-selection.
+leak-removal read on sides. No tuning. No member re-selection. W9-G did not
+move snapshot ATS (zero missing-σ rows; see W9-G / W9-R 0.3).
 
 ### 6c. Week-5 causal prefix vs W9-M
 
@@ -221,6 +254,23 @@ This run's 2024 week-5 rows match W9-M
 `data/registry_w9m_truncated/`) at **0.0** on `mu_margin` / `sigma_margin` /
 `p_ml_home`, 56/56. The truncated W9-M walk-forward is a PIT prefix of this
 full run.
+
+### 6d. W9-G grading defects (ATS 2019 / log-loss only)
+
+The W9-A first-pass 2019 ATS rate, CIs, and log-loss are **not** the
+estimator of the honest sample. Two stacked defects, both in the grader:
+
+1. **CI mask.** `attach_metric_cis` treated NaN `p` as an away pick. 2019
+   rate n=657 sat next to a Wald interval for 49.13% on n=743.
+2. **Invented missing-σ p.** `_p_ats_gaussian` filled p∈{0.999, 0.001} on
+   109 fundamental / 114 A2 2019 rows (110 / 115 missing-σ; one per run
+   lacked a finite spread). 104 / 109 of those entered the 2019 log-loss.
+
+W9-G drops invented p and aligns the interval sample with the rate. MAE,
+CRPS, and OU were compared to this memo’s W9-A values and are
+byte-identical. Snapshot ATS is byte-identical. 2019 fund ATS 47.8% → 49.9%
+(+2.1 pp, n 657 → 553) is the 104 invented rows leaving (66 of them
+wrong), not a third defect.
 
 ---
 
@@ -233,14 +283,15 @@ full run.
 Point-prediction machinery remains **credible** (weekly MAE curve still
 declines through mid-season, MAE/CRPS sane, A2 Clause A confirms in-season
 learning) but **no edge vs the close is demonstrated** (fundamental snapshot
-ATS 48.9% [47.5%, 50.5%]; 2019 47.8% [46.9%, 51.1%]; log-loss loses to 0.693;
+ATS 48.9% [47.5%, 50.5%]; 2019 49.9% [46.9%, 52.3%]; log-loss loses to 0.693;
 CLV unmeasurable) and **two §1.6 instruments remain unmeasurable** (CLV; honest
 OU via possessions).
 
 The honest Tuesday clock did **not** move this label off `NOT CURRENTLY FIT TO
 BET`. Snapshot ATS receded from 50.7% toward 49%, which strengthens rather than
 weakens the no-edge clause. MAE/CRPS looking better than 14.85/10.68 is not a
-betting argument (see §6b).
+betting argument (see §6b). W9-G’s 2019 ATS correction (47.8% → 49.9%) still
+does not clear 51.5%; 2019 log-loss 0.779 still loses to 0.693.
 
 ### `/results` restamp (not this task)
 
@@ -285,23 +336,24 @@ CQR configuration were changed to chase these numbers.
 ## Old vs new — 13 `EXPECTED_METRIC_IDS`
 
 Old = 23-readout / REGRADED_V2 / champion 3 (`build_track_record` literals).
-New = this memo / W9A_REVAL. Site still shows **old** until a restamp task.
+New = this memo / W9A_REVAL (MAE/CRPS/OU) with W9G_REGRADE ATS 2019 / log-loss.
+Site still shows **old** until a restamp task.
 
 | id | old | new |
 |---|---|---|
-| `fund_ats_snapshots` | 50.7% [48.7%, 52.7%] n=3496 REGRADED_V2 | 48.9% [47.5%, 50.5%] n=3496 W9A_REVAL |
-| `fund_ats_2019` | 51.3% [48.3%, 54.3%] n=743 | 47.8% [46.9%, 51.1%] n=657 |
+| `fund_ats_snapshots` | 50.7% [48.7%, 52.7%] n=3496 REGRADED_V2 | 48.9% [47.5%, 50.5%] n=3496 W9A_REVAL / W9G (unchanged) |
+| `fund_ats_2019` | 51.3% [48.3%, 54.3%] n=743 | 49.9% [46.9%, 52.3%] n=553 W9G (was 47.8% n=657 W9-A first pass) |
 | `fund_ou_snapshots` | 52.3% [49.7%, 54.8%] n=3136 | 51.5% [49.7%, 53.5%] n=3136 |
 | `fund_ou_2019` | 50.9% [46.6%, 55.4%] n=747 | 51.4% [46.5%, 55.3%] n=551 |
 | `mae_margin_fund` | 14.85 n=4375 | 14.53 n=4285 |
 | `mae_margin_a2` | 16.45 n=4375 | 15.51 n=4290 |
 | `crps_margin_fund` | 10.68 n=4375 | 10.02 n=4175 |
 | `crps_margin_a2` | 11.87 n=4375 | 10.75 n=4175 |
-| `ats_logloss_band` | 0.82–1.04 vs 0.693 | 0.93–1.35 vs 0.693 (fundamental) |
+| `ats_logloss_band` | 0.82–1.04 vs 0.693 | 0.78–0.93 vs 0.693 (fundamental; W9-A 0.93–1.35 was invented-p) |
 | `scorecard_clv` | UNMEASURABLE | UNMEASURABLE |
-| `scorecard_fund_ats` | MISSED (50.7% / 51.3%) | MISSED (48.9% / 47.8%) |
+| `scorecard_fund_ats` | MISSED (50.7% / 51.3%) | MISSED (48.9% / 49.9%) |
 | `scorecard_fund_ou` | MISSED / uninterpretable | MISSED / uninterpretable |
-| `scorecard_logloss` | MISSED 0.82–1.04 vs 0.693 | MISSED 0.93–1.35 vs 0.693 |
+| `scorecard_logloss` | MISSED 0.82–1.04 vs 0.693 | MISSED 0.78–0.93 vs 0.693 |
 
 **Champion / registry.** Serialized from this fundamental run; promoted
 `force=False`, `manual_approve=True`, registry **v2** champion. W9-M truncated

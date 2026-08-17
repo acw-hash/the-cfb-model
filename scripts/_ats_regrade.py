@@ -85,14 +85,14 @@ def _read_hive(path: Path, seasons: list[int]) -> pd.DataFrame:
 
 
 def _p_ats_gaussian(mu: np.ndarray, sigma: np.ndarray, spread: np.ndarray) -> np.ndarray:
-    """P(home covers) under N(μ,σ²): Φ((μ + S) / σ)."""
+    """P(home covers) under N(μ,σ²): Φ((μ + S) / σ).
+
+    Missing σ stays NaN. Inventing p ∈ {0.999, 0.001, 0.5} from sign(μ+S) is
+    forbidden (ADR 0014 / DESIGN §1.6 honest absence).
+    """
     out = np.full(mu.shape, np.nan, dtype=float)
     ok = np.isfinite(mu) & np.isfinite(spread) & np.isfinite(sigma) & (sigma > 0)
     out[ok] = stats.norm.cdf((mu[ok] + spread[ok]) / sigma[ok])
-    # Missing σ: hard edge from μ alone (sign of μ+S).
-    fallback = np.isfinite(mu) & np.isfinite(spread) & (~ok)
-    edge = mu[fallback] + spread[fallback]
-    out[fallback] = np.where(edge > 0, 0.999, np.where(edge < 0, 0.001, 0.5))
     return out
 
 
@@ -208,12 +208,21 @@ def _regime_ats(frame: pd.DataFrame, regime: str, mask: pd.Series) -> RegimeAts 
     )
     p = sub["p_ats_home"].to_numpy(dtype=float)
     mask_y = np.isfinite(y) & np.isfinite(p)
+    n_rate = int(mask_y.sum())
+    if ats_ci is not None and int(ats_ci.n) != n_rate:
+        raise RuntimeError(
+            f"ATS rate n={n_rate} != bootstrap CI n={int(ats_ci.n)} for regime={regime!r}"
+        )
+    if ats_naive is not None and int(ats_naive.n) != n_rate:
+        raise RuntimeError(
+            f"ATS rate n={n_rate} != naive CI n={int(ats_naive.n)} for regime={regime!r}"
+        )
     rate = binary_accuracy(p, y) if np.any(mask_y) else float("nan")
     ll = log_loss(p[mask_y], y[mask_y]) if np.any(mask_y) else float("nan")
     sp = pd.to_numeric(sub["spread_close"], errors="coerce")
     return RegimeAts(
         regime=regime,
-        n=int(mask_y.sum()),
+        n=n_rate,
         ats=float(rate),
         logloss_model=float(ll),
         logloss_market=float(np.log(2.0)),

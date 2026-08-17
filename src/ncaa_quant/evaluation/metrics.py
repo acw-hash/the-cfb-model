@@ -1229,6 +1229,11 @@ def attach_metric_cis(
     so coverage can be compared (Task 23-FIX P2-6). Confidence level is
     ``1 - alpha`` (default 95%). Blocks are whole week-label groups with
     variable length (games or bets per week).
+
+    ATS interval sample is ``isfinite(p_ats_home) & isfinite(y)``, matching
+    :func:`binary_accuracy`. A missing probability is excluded, never scored
+    as an away pick.
+
     """
     frame = predictions
     if "exclude_from_headline" in frame.columns:
@@ -1250,11 +1255,11 @@ def attach_metric_cis(
         y_ats = ats_home_outcomes(
             frame["realized_margin"].to_numpy(), frame["spread_close"].to_numpy()
         )
-        p = frame["p_ats_home"].to_numpy()
-        hits = ((p >= 0.5).astype(float) == y_ats).astype(float)
-        hits[~np.isfinite(y_ats)] = np.nan
-        mask = np.isfinite(hits)
-        hit_vals = hits[mask]
+        p = frame["p_ats_home"].to_numpy(dtype=float)
+        # Same sample as binary_accuracy: finite p AND finite y. NaN p must not
+        # score as an away pick via (nan >= 0.5) == False (W9-G).
+        mask = np.isfinite(p) & np.isfinite(y_ats)
+        hit_vals = ((p[mask] >= 0.5).astype(float) == y_ats[mask]).astype(float)
         week_vals = [weeks[i] for i, m in enumerate(mask) if m]
         if hit_vals.size >= 2 and len(set(week_vals)) >= 1:
             out["ats_accuracy"] = rate_ci_block(
