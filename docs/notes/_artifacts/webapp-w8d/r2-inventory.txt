@@ -1,0 +1,49 @@
+﻿bucket=ridge-artifacts
+key_count=39
+top_prefixes={"latest": 5, "sandbox": 16, "v1": 13, "v2": 5}
+---ALL KEYS---
+     925  2026-08-14T22:21:34.423000+00:00  latest/meta.json
+   59717  2026-08-14T22:21:32.222000+00:00  latest/results_2024.json
+  991908  2026-08-14T22:21:33.347000+00:00  latest/team_ratings_2024.json
+    5624  2026-08-14T22:21:33.671000+00:00  latest/track_record.json
+  107264  2026-08-14T22:21:34.035000+00:00  latest/week_predictions.json
+     906  2026-08-14T14:57:36.277000+00:00  sandbox/latest/meta.json
+     107  2026-08-14T14:57:35.178000+00:00  sandbox/latest/team_ratings_2024.json
+    5605  2026-08-14T14:57:35.540000+00:00  sandbox/latest/track_record.json
+    3861  2026-08-14T14:57:35.918000+00:00  sandbox/latest/week_predictions.json
+     904  2026-08-14T14:57:30.204000+00:00  sandbox/v1/2024/w5/daily_refresh/meta.json
+     107  2026-08-14T14:57:29.108000+00:00  sandbox/v1/2024/w5/daily_refresh/team_ratings_2024.json
+    5605  2026-08-14T14:57:29.465000+00:00  sandbox/v1/2024/w5/daily_refresh/track_record.json
+    2569  2026-08-14T14:57:29.844000+00:00  sandbox/v1/2024/w5/daily_refresh/week_predictions.json
+     906  2026-08-14T14:57:31.856000+00:00  sandbox/v1/2024/w5/tuesday_primary/meta.json
+     107  2026-08-14T14:57:30.733000+00:00  sandbox/v1/2024/w5/tuesday_primary/team_ratings_2024.json
+    5605  2026-08-14T14:57:31.123000+00:00  sandbox/v1/2024/w5/tuesday_primary/track_record.json
+    3861  2026-08-14T14:57:31.490000+00:00  sandbox/v1/2024/w5/tuesday_primary/week_predictions.json
+     906  2026-08-14T14:57:36.105000+00:00  sandbox/v1/2024/w6/tuesday_primary/meta.json
+     107  2026-08-14T14:57:35.001000+00:00  sandbox/v1/2024/w6/tuesday_primary/team_ratings_2024.json
+    5605  2026-08-14T14:57:35.353000+00:00  sandbox/v1/2024/w6/tuesday_primary/track_record.json
+    3861  2026-08-14T14:57:35.735000+00:00  sandbox/v1/2024/w6/tuesday_primary/week_predictions.json
+     904  2026-08-14T14:28:55.848000+00:00  v1/2024/w5/daily_refresh/meta.json
+     107  2026-08-14T14:28:54.690000+00:00  v1/2024/w5/daily_refresh/team_ratings_2024.json
+    5605  2026-08-14T14:28:55.061000+00:00  v1/2024/w5/daily_refresh/track_record.json
+    2569  2026-08-14T14:28:55.434000+00:00  v1/2024/w5/daily_refresh/week_predictions.json
+     925  2026-08-14T22:21:34.235000+00:00  v1/2024/w5/tuesday_primary/meta.json
+   59717  2026-08-14T22:21:32.043000+00:00  v1/2024/w5/tuesday_primary/results_2024.json
+  991908  2026-08-14T22:21:32.781000+00:00  v1/2024/w5/tuesday_primary/team_ratings_2024.json
+    5624  2026-08-14T22:21:33.513000+00:00  v1/2024/w5/tuesday_primary/track_record.json
+  107264  2026-08-14T22:21:33.859000+00:00  v1/2024/w5/tuesday_primary/week_predictions.json
+     906  2026-08-14T14:28:59.772000+00:00  v1/2024/w6/tuesday_primary/meta.json
+     107  2026-08-14T14:28:58.684000+00:00  v1/2024/w6/tuesday_primary/team_ratings_2024.json
+    5605  2026-08-14T14:28:59.045000+00:00  v1/2024/w6/tuesday_primary/track_record.json
+    3861  2026-08-14T14:28:59.442000+00:00  v1/2024/w6/tuesday_primary/week_predictions.json
+     906  2026-08-14T14:06:44.706000+00:00  v2/2024/w5/tuesday_primary/meta.json
+   59698  2026-08-14T14:06:41.917000+00:00  v2/2024/w5/tuesday_primary/results_2024.json
+  991889  2026-08-14T14:06:43.074000+00:00  v2/2024/w5/tuesday_primary/team_ratings_2024.json
+    5605  2026-08-14T14:06:43.817000+00:00  v2/2024/w5/tuesday_primary/track_record.json
+  107245  2026-08-14T14:06:44.243000+00:00  v2/2024/w5/tuesday_primary/week_predictions.json
+---LATEST JSON FIXTURE FLAGS---
+latest/meta.json fixture=True season=2024 week=5 published_at=2024-09-24T06:00:00Z games=None metrics=None bytes=925
+latest/results_2024.json fixture=True season=2024 week=None published_at=2024-09-24T06:00:00Z games=56 metrics=None bytes=59717
+latest/team_ratings_2024.json fixture=True season=2024 week=None published_at=2024-09-24T06:00:00Z games=None metrics=None bytes=991908
+latest/track_record.json fixture=True season=None week=None published_at=2024-09-24T06:00:00Z games=None metrics=13 bytes=5624
+latest/week_predictions.json fixture=True season=2024 week=5 published_at=2024-09-24T06:00:00Z games=56 metrics=None bytes=107264

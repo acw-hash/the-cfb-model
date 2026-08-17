@@ -572,7 +572,7 @@ Benchmark: **Apple Sports** — clean, dense but calm, typography-driven, number
 | `--bg-secondary` | `#F5F5F7` | `#1C1C1E` | Group headers, table zebra |
 | `--text-primary` | `#1D1D1F` | `#F5F5F7` | Body, team names |
 | `--text-secondary` | `#6E6E73` | `#98989D` | Labels, kickoff time |
-| `--text-tertiary` | `#AEAEB2` | `#636366` | Provenance, footnotes |
+| `--text-tertiary` | `#75757A` | `#8E8E93` | Provenance, footnotes |
 | `--accent` | `#0071E3` | `#0A84FF` | Links, focus ring |
 | `--semantic-stale` | `#BF4800` | `#FF9F0A` | Site + input stale banners |
 | `--semantic-revised` | `#6E6E73` | `#98989D` | Quiet "Revised" badge |

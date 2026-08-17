@@ -13,7 +13,7 @@ const EXPECTED = {
     "--bg-secondary": "#f5f5f7",
     "--text-primary": "#1d1d1f",
     "--text-secondary": "#6e6e73",
-    "--text-tertiary": "#aeaeb2",
+    "--text-tertiary": "#75757a",
     "--accent": "#0071e3",
     "--semantic-stale": "#bf4800",
     "--semantic-revised": "#6e6e73",
@@ -25,7 +25,7 @@ const EXPECTED = {
     "--bg-secondary": "#1c1c1e",
     "--text-primary": "#f5f5f7",
     "--text-secondary": "#98989d",
-    "--text-tertiary": "#636366",
+    "--text-tertiary": "#8e8e93",
     "--accent": "#0a84ff",
     "--semantic-stale": "#ff9f0a",
     "--semantic-revised": "#98989d",
@@ -80,6 +80,59 @@ const darkBlock = extractBlock(tokens, '[data-theme="dark"]');
 const rootVars = readVars(rootBlock);
 const darkVars = readVars(darkBlock);
 
+/** WCAG 2.1 AA contrast threshold for normal text (1.4.3). */
+const AA_NORMAL = 4.5;
+
+function hexToRgb(hex) {
+  const normalized = hex.replace("#", "");
+  const n = Number.parseInt(normalized, 16);
+  return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+}
+
+function srgbChannel(c) {
+  const s = c / 255;
+  return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+}
+
+function relativeLuminance(hex) {
+  const { r, g, b } = hexToRgb(hex);
+  return 0.2126 * srgbChannel(r) + 0.7152 * srgbChannel(g) + 0.0722 * srgbChannel(b);
+}
+
+function contrastRatio(foreground, background) {
+  const l1 = relativeLuminance(foreground);
+  const l2 = relativeLuminance(background);
+  const lighter = Math.max(l1, l2);
+  const darker = Math.min(l1, l2);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+/**
+ * Every pair in the W8-A D5 ratio table. Threshold is AA normal 4.5:1 —
+ * hex equality alone would miss a tertiary tweak that drops below 4.5.
+ * Banner pair is --bg-primary text on --semantic-stale (W8-A solid fill).
+ */
+const CONTRAST_PAIRS = [
+  { theme: "light", fg: "--text-primary", bg: "--bg-primary", min: AA_NORMAL },
+  { theme: "light", fg: "--text-secondary", bg: "--bg-primary", min: AA_NORMAL },
+  { theme: "light", fg: "--text-tertiary", bg: "--bg-primary", min: AA_NORMAL },
+  { theme: "light", fg: "--accent", bg: "--bg-primary", min: AA_NORMAL },
+  { theme: "light", fg: "--semantic-stale", bg: "--bg-primary", min: AA_NORMAL },
+  { theme: "light", fg: "--text-primary", bg: "--bg-secondary", min: AA_NORMAL },
+  { theme: "light", fg: "--text-secondary", bg: "--bg-secondary", min: AA_NORMAL },
+  { theme: "dark", fg: "--text-primary", bg: "--bg-primary", min: AA_NORMAL },
+  { theme: "dark", fg: "--text-secondary", bg: "--bg-primary", min: AA_NORMAL },
+  { theme: "dark", fg: "--text-tertiary", bg: "--bg-primary", min: AA_NORMAL },
+  { theme: "dark", fg: "--accent", bg: "--bg-primary", min: AA_NORMAL },
+  {
+    theme: "light",
+    fg: "--bg-primary",
+    bg: "--semantic-stale",
+    min: AA_NORMAL,
+    label: "banner text / semantic-stale",
+  },
+];
+
 const mismatches = [];
 
 for (const [token, value] of Object.entries(EXPECTED.light)) {
@@ -100,9 +153,33 @@ for (const [token, value] of Object.entries(EXPECTED.type)) {
   }
 }
 
+for (const pair of CONTRAST_PAIRS) {
+  const vars = pair.theme === "dark" ? darkVars : rootVars;
+  const fg = vars[pair.fg];
+  const bg = vars[pair.bg];
+  if (!fg || !bg) {
+    mismatches.push(
+      `contrast ${pair.theme} ${pair.label ?? `${pair.fg}/${pair.bg}`}: missing ${!fg ? pair.fg : pair.bg}`,
+    );
+    continue;
+  }
+  const ratio = contrastRatio(fg, bg);
+  if (ratio + Number.EPSILON < pair.min) {
+    mismatches.push(
+      `contrast ${pair.theme} ${pair.label ?? `${pair.fg}/${pair.bg}`}: ${ratio.toFixed(2)}:1 < AA ${pair.min}:1`,
+    );
+  }
+}
+
 if (mismatches.length > 0) {
   console.error("Token diff-check FAILED:\n" + mismatches.join("\n"));
   process.exit(1);
 }
 
 console.log("Token diff-check PASSED — all §4.1/§4.2 values match tokens.css");
+const ratioLines = CONTRAST_PAIRS.map((pair) => {
+  const vars = pair.theme === "dark" ? darkVars : rootVars;
+  const ratio = contrastRatio(vars[pair.fg], vars[pair.bg]);
+  return `  ${pair.theme} ${pair.label ?? `${pair.fg}/${pair.bg}`}: ${ratio.toFixed(2)}:1 (>= ${pair.min})`;
+});
+console.log("Contrast ratios (AA normal " + AA_NORMAL + ":1):\n" + ratioLines.join("\n"));

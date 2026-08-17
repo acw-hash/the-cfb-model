@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint src && prettier --check .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
+    "test": "vitest run && node scripts/check-tokens.mjs",
     "check:tokens": "node scripts/check-tokens.mjs",
     "format": "prettier --write ."
   },
