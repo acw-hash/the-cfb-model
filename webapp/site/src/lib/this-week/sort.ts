@@ -1,4 +1,12 @@
-import type { ConvictionTier, GamePrediction } from "@/lib/artifacts/types";
+import type { ConvictionTier, GamePrediction, ThisWeekGame } from "@/lib/artifacts/types";
+
+/**
+ * Slate client games: projected DTO (This Week route) or full GamePrediction
+ * (dev gallery). Kickoff grouping uses the visitor timezone, so sort/group
+ * stays client-side. Conviction sort needs p_favored as a number, not the
+ * rest of conviction_basis.
+ */
+export type ThisWeekClientGame = ThisWeekGame | GamePrediction;
 
 /** Client-side slate orderings (§5.1). Default is kickoff — see notes. */
 export type SlateOrder = "kickoff" | "conviction";
@@ -51,15 +59,18 @@ export function compareNullableStringAsc(
 export interface SlateGroup {
   id: string;
   label: string;
-  games: GamePrediction[];
+  games: ThisWeekClientGame[];
 }
 
-/** p_favored from the artifact only — never recomputed client-side. */
-export function pFavoredOf(game: GamePrediction): number | null {
-  return game.conviction_basis?.p_favored ?? null;
+/** p_favored from the projected DTO, else conviction_basis (gallery rows). */
+export function pFavoredOf(game: ThisWeekClientGame): number | null {
+  if ("home_team_id" in game) {
+    return game.conviction_basis?.p_favored ?? null;
+  }
+  return game.p_favored;
 }
 
-function tierRank(game: GamePrediction): number {
+function tierRank(game: ThisWeekClientGame): number {
   if (game.conviction_tier == null) {
     return SUPPRESSED_RANK;
   }
@@ -70,7 +81,7 @@ function tierRank(game: GamePrediction): number {
  * BY KICKOFF comparator.
  * Tie-break: kickoff_utc ascending, then game_id lexicographic.
  */
-export function compareByKickoff(a: GamePrediction, b: GamePrediction): number {
+export function compareByKickoff(a: ThisWeekClientGame, b: ThisWeekClientGame): number {
   const kick = compareNullableStringAsc(a.kickoff_utc, b.kickoff_utc);
   if (kick !== 0) {
     return kick;
@@ -83,7 +94,7 @@ export function compareByKickoff(a: GamePrediction, b: GamePrediction): number {
  * Tie-break: tier rank ascending, then p_favored descending (null last),
  * then game_id lexicographic.
  */
-export function compareByConviction(a: GamePrediction, b: GamePrediction): number {
+export function compareByConviction(a: ThisWeekClientGame, b: ThisWeekClientGame): number {
   const rankDiff = tierRank(a) - tierRank(b);
   if (rankDiff !== 0) {
     return rankDiff;
@@ -131,10 +142,10 @@ export function formatDayLabel(dateKey: string): string {
 }
 
 /** Group by visitor-local calendar day of kickoff_utc. Empty days omitted. */
-export function groupByKickoffDay(games: GamePrediction[], timeZone: string): SlateGroup[] {
+export function groupByKickoffDay(games: ThisWeekClientGame[], timeZone: string): SlateGroup[] {
   const sorted = [...games].sort(compareByKickoff);
-  const buckets = new Map<string, GamePrediction[]>();
-  const noKickoff: GamePrediction[] = [];
+  const buckets = new Map<string, ThisWeekClientGame[]>();
+  const noKickoff: ThisWeekClientGame[] = [];
   for (const game of sorted) {
     if (game.kickoff_utc == null) {
       noKickoff.push(game);
@@ -164,9 +175,9 @@ export function groupByKickoffDay(games: GamePrediction[], timeZone: string): Sl
 }
 
 /** Group by conviction_tier descending; omit empty tiers; suppressed last. */
-export function groupByConviction(games: GamePrediction[]): SlateGroup[] {
+export function groupByConviction(games: ThisWeekClientGame[]): SlateGroup[] {
   const sorted = [...games].sort(compareByConviction);
-  const buckets = new Map<string, GamePrediction[]>();
+  const buckets = new Map<string, ThisWeekClientGame[]>();
   for (const game of sorted) {
     const id = game.conviction_tier ?? NO_TIER_GROUP_ID;
     const list = buckets.get(id);
@@ -187,7 +198,7 @@ export function groupByConviction(games: GamePrediction[]): SlateGroup[] {
 }
 
 export function groupSlate(
-  games: GamePrediction[],
+  games: ThisWeekClientGame[],
   order: SlateOrder,
   timeZone: string,
 ): SlateGroup[] {

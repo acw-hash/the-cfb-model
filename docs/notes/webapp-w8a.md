@@ -1,8 +1,10 @@
 # W8-A — Ridge launch readiness (verification, a11y, posture corrections)
 
 **Date:** 2026-08-14  
-**Status:** Complete (code + verification evidence)  
+**Status:** Closed by W8-D (2026-08-17)  
 **Authority:** `docs/webapp/DESIGN.md` §1, §3.2, §3.3, §4.4, §6; `docs/webapp/TASKS.md` cross-cutting; W6; W7 (incl. VERIFY / CLOSE-2 / BUCKET-AUDIT / TESTPUBLISH-GUARD)
+
+Closure evidence: `docs/notes/webapp-w8d.md`. W8-A code + verification remain below; several acceptance items were by-reference and are now pasted in W8-D.
 
 No artifact-contract change. No export/push/tier edits. No R2 deletes. No analytics.
 
@@ -229,7 +231,11 @@ IntervalBand uses tertiary on primary — now AA.
 
 ### AA verdict
 
-**WCAG 2.1 AA target is met for the four public pages under axe wcag2a/aa/21aa in both themes at 390px and desktop after fixes, with contrast numbers above and focus screenshots attached.** No rule was allowlisted.
+**Corrected in W8-D (D4.4).** W8-A measured AFTER on `next dev` and did not include 320px (1.4.10). That is not production evidence.
+
+**L6 restated:** verified by axe wcag2a/2aa/21aa on a production build (`next start`) at 320/390/desktop in both themes, plus the named manual checks (keyboard focus screenshots, trajectory figcaption text equivalent, `prefers-reduced-motion`, semantic table, About heading order), with **no screen-reader verification**. Successor **W8-SR**. axe covers a minority of AA success criteria.
+
+Production-build axe counts (W8-D): **0** in all 24 cells. See `docs/notes/webapp-w8d.md` §5.
 
 ---
 
@@ -254,10 +260,12 @@ See `docs/webapp/DESIGN.md` §3.3 (private bucket; public-read DEFERRED subsecti
 |----|--------|----------|
 | L1 | **RESOLVED** | ToU archive + w6 correction; attribution recommended, still rendered |
 | L2 | **RESOLVED** | Text-only school names / no logos; ToU §8 |
-| L3 | **OPEN** | Unchanged — counsel |
-| L4 | **OPEN / default-safe** | No analytics added |
-| L5 | **OPEN** | Unchanged |
-| L6 | **RESOLVED** | D5 a11y before/after + contrast + focus shots |
+| L3 | **OPERATOR ACCEPTED RISK** | Verbatim operator record appended to `docs/notes/webapp-w6.md` (2026-08-17). No counsel review. |
+| L4 | **OPEN / default-safe** | No analytics added (W8-A or W8-D). Not a §6.3 launch blocker. |
+| L5 | **OPEN** | Unchanged. Not a §6.3 launch blocker. |
+| L6 | **Verified by axe wcag2a/2aa/21aa on a production build at 320/390/desktop in both themes, plus the named W8-A manual checks, with no screen-reader verification** | W8-D D4; successor **W8-SR**. |
+
+DESIGN §6.3's L1–L3 launch gate is now satisfied — two resolved, one disposed. L4 and L5 are not launch blockers under §6.3.
 
 ---
 
@@ -265,12 +273,13 @@ See `docs/webapp/DESIGN.md` §3.3 (private bucket; public-read DEFERRED subsecti
 
 | Item | Successor |
 |------|-----------|
-| Project This Week client props (stop full `GamePrediction` RSC leak) | **W8-C** |
-| Split `EXPECTED_METRIC_IDS` out of `demo-states.ts` | **W8-SPLIT-DEMO** |
+| Project This Week client props (stop full `GamePrediction` RSC leak) | **W8-C — closed in W8-D** |
+| Split `EXPECTED_METRIC_IDS` out of `demo-states.ts` | **W8-SPLIT-DEMO — closed in W8-D** |
 | Public-read R2 (projected artifacts only) | **W8-R2-PUBLIC** |
 | Operator delete/clean synthetic R2 prefixes | **Operator** (not a code task) |
-| Sync DESIGN §4.1 + `check-tokens.mjs` tertiary hexes to AA values | **W8-TOKENS-SPEC** |
+| Sync DESIGN §4.1 + `check-tokens.mjs` tertiary hexes to AA values | **W8-TOKENS-SPEC — closed in W8-D** |
 | About identity / contact / repo URL placeholders | **W8-B** (operator-blocked) |
+| Screen-reader pass (Results table + trajectory equivalent) | **W8-SR** |
 
 ---
 
@@ -311,9 +320,20 @@ $ cd webapp/site
 $ npm test          # 111 passed (incl. gallery-gate, market-fields, payload-leak)
 $ npm run lint      # clean
 $ npm run build     # clean
-$ # betting-language grep: PASS (zero matches)
+$ # betting-language grep: see W8-D D5.1 for command + full output
 ```
 
 ---
 
-*End of W8-A.*
+## W8-D completion (2026-08-17)
+
+Appended from the successor that actually closed this file. Details: `docs/notes/webapp-w8d.md`.
+
+- This Week client payload is a projected `ThisWeekGame` DTO; production `/` greps show 0 hits for `p_cover_home`, `p_over`, `conviction_basis`, and the rest of the non-allowlist.
+- `demo-states` is no longer imported by any production route.
+- `check-tokens.mjs` is wired into `npm test` and asserts AA 4.5:1 ratios; DESIGN §4.1 tertiary hexes match `tokens.css`.
+- a11y re-run on `next start` at 320/390/desktop, both themes: 0 axe violations. L6 wording corrected above.
+- W8-A by-reference acceptance items (grep, §3.3, field list, R2 inventory) are pasted in W8-D.
+- L3 **OPERATOR ACCEPTED RISK** — operator text appended verbatim to `docs/notes/webapp-w6.md`.
+
+*End of W8-A (closed by W8-D).*

@@ -7,12 +7,13 @@ import { GameRow } from "@/components/GameRow/GameRow";
 import { SlateGroupHeader } from "@/components/SlateGroupHeader/SlateGroupHeader";
 import { SortControl } from "@/components/SortControl/SortControl";
 import { ThisWeekHeader } from "@/components/ThisWeekHeader/ThisWeekHeader";
-import type { GamePrediction, RefreshKind } from "@/lib/artifacts/types";
+import type { RefreshKind } from "@/lib/artifacts/types";
 import {
   DEFAULT_SLATE_ORDER,
   groupSlate,
   parseSlateOrder,
   type SlateOrder,
+  type ThisWeekClientGame,
 } from "@/lib/this-week/sort";
 
 import styles from "./ThisWeekSlate.module.css";
@@ -22,7 +23,7 @@ interface ThisWeekSlateProps {
   week: number;
   publishedAt: string;
   refreshKind: RefreshKind;
-  games: GamePrediction[];
+  games: ThisWeekClientGame[];
   initialOrder?: SlateOrder;
   /** When true (This Week route), order is mirrored to ?order= without a refetch. */
   syncUrl?: boolean;

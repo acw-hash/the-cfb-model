@@ -3,13 +3,32 @@ import { IntervalBand } from "@/components/IntervalBand/IntervalBand";
 import { RevisedMarker } from "@/components/RevisedMarker/RevisedMarker";
 import { StaleBadge } from "@/components/StaleBadge/StaleBadge";
 import { TierChip } from "@/components/TierChip/TierChip";
-import type { GamePrediction } from "@/lib/artifacts/types";
+import type { GamePrediction, ThisWeekGame } from "@/lib/artifacts/types";
 import { formatKickoffLocal } from "@/lib/formatting/time";
 
 import styles from "./GameRow.module.css";
 
+type GameRowModel = Pick<
+  ThisWeekGame,
+  | "kickoff_utc"
+  | "away_team"
+  | "home_team"
+  | "neutral_site"
+  | "mu_margin"
+  | "sigma_margin"
+  | "margin_interval_lo"
+  | "margin_interval_hi"
+  | "null_reason"
+  | "conviction_tier"
+  | "conviction_label"
+  | "tier_revised_since_primary"
+  | "tier_primary"
+  | "stale_stamp"
+  | "stale_sources"
+>;
+
 interface GameRowProps {
-  game: GamePrediction;
+  game: GameRowModel | GamePrediction;
 }
 
 /** Scores-app density game row (§4.3). */

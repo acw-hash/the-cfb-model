@@ -30,8 +30,8 @@ import {
   cloneTrackRecordMissingMetric,
   cloneUngradedStatuses,
   emptyLiveResults,
-  EXPECTED_METRIC_IDS,
 } from "@/lib/results/demo-states";
+import { EXPECTED_METRIC_IDS } from "@/lib/results/metrics";
 import { GRADE_STATUS_LABEL, UNGRADED_STATUSES } from "@/lib/results/grade-status";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

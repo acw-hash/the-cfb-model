@@ -5,6 +5,7 @@ import { ThisWeekSlate } from "@/components/ThisWeekSlate/ThisWeekSlate";
 import { loadArtifact } from "@/lib/artifacts/loader";
 import { isSchemaVersionSupported } from "@/lib/artifacts/schema-version";
 import type { MetaArtifact, WeekPredictions } from "@/lib/artifacts/types";
+import { projectThisWeekGames } from "@/lib/this-week/project";
 import { DEFAULT_SLATE_ORDER } from "@/lib/this-week/sort";
 
 import styles from "./this-week.module.css";
@@ -60,7 +61,7 @@ export default async function ThisWeekPage(): Promise<React.ReactElement> {
         week={meta.week}
         publishedAt={meta.published_at}
         refreshKind={meta.refresh_kind}
-        games={week.games}
+        games={projectThisWeekGames(week.games)}
         initialOrder={DEFAULT_SLATE_ORDER}
         syncUrl
       />

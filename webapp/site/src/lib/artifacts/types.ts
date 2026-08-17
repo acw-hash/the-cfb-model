@@ -23,6 +23,33 @@ export interface ConvictionBasis {
   raw_tier: ConvictionTier;
 }
 
+/**
+ * Client DTO for This Week. Field allowlist is the consumption table in
+ * docs/notes/webapp-w8d.md (D1.1) — every key is read by ThisWeekSlate or a
+ * descendant (including client-side sort). Projected in the Server Component;
+ * do not pass GamePrediction across that boundary.
+ */
+export interface ThisWeekGame {
+  game_id: string;
+  home_team: string;
+  away_team: string;
+  kickoff_utc: string;
+  neutral_site: boolean;
+  mu_margin: number | null;
+  sigma_margin: number | null;
+  margin_interval_lo: number | null;
+  margin_interval_hi: number | null;
+  null_reason: string | null;
+  conviction_tier: ConvictionTier | null;
+  conviction_label: string | null;
+  tier_primary: ConvictionTier | null;
+  tier_revised_since_primary: boolean;
+  stale_stamp: string | null;
+  stale_sources: StaleSource[];
+  /** Derived from conviction_basis.p_favored. Null if the basis is absent. */
+  p_favored: number | null;
+}
+
 export interface GamePrediction {
   game_id: string;
   season: number;

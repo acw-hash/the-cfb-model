@@ -1,7 +1,7 @@
 import { Figure } from "@/components/Figure/Figure";
 import type { TrackRecord, TrackRecordMetric } from "@/lib/artifacts/types";
 import { NO_SINGLE_NUMBER_COPY } from "@/lib/results/copy";
-import { EXPECTED_METRIC_IDS, metricById } from "@/lib/results/demo-states";
+import { EXPECTED_METRIC_IDS, metricById } from "@/lib/results/metrics";
 
 import { MetricRow } from "./MetricRow";
 
