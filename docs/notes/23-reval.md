@@ -2,6 +2,10 @@
 
 **Date:** 2026-08-17  
 **Status:** DECISION — documentation only. No site restamp in this task.  
+**W9-R Amendment 1 (2026-08-17, pre-Phase 1):** §2 / verdict emphasis
+softened to the accurate log-loss comparison (**0.78–0.93 vs 0.693**, not
+“all ≫ 0.693”). Restamp metric notes recorded below the 13-id table.
+Site still cites 23-readout until W9-R Phase 1.  
 **W9-G amendment (2026-08-17):** the first W9-A pass carried two ATS
 grading defects: (1) `attach_metric_cis` scored NaN `p_ats_home` as an away
 pick, so 2019 CIs used n=743 against a rate on n=657; (2) `_p_ats_gaussian`
@@ -127,11 +131,12 @@ sample included invented missing-σ probabilities; after W9-G the guard does
 | fundamental | W9G_REGRADE | 0.779 | 0.931 |
 | A2 | W9G_REGRADE | 0.831 | 0.935 |
 
-The miss is universal on this pair: model ATS log-loss ≈ **0.78–0.94**, all ≫
-0.693. Core fundamental band **0.78–0.93**. W9-A’s 1.35 / 1.44 2019 figures
-were the invented hard-edge rows (p∈{0.001, 0.999}); they are not a
-calibration finding. Remaining 2019 (0.779) is **not** ≈ snapshot 0.931, so
-the band is two regime numbers, not one number plus an artifact.
+Fundamental ATS log-loss is **0.78–0.93 vs 0.693** (2019 0.779, snapshots
+0.931). A2 on the same pair is 0.831 / 0.935, also above 0.693. W9-A’s
+1.35 / 1.44 2019 figures were the invented hard-edge rows (p∈{0.001,
+0.999}); they are not a calibration finding. Remaining 2019 (0.779) is
+**not** ≈ snapshot 0.931, so the band is two regime numbers, not one
+number plus an artifact.
 
 **CRPS vs de-vigged market baseline:** **NOT COMPUTED** (same gap as
 23-readout §2).
@@ -283,9 +288,9 @@ wrong), not a third defect.
 Point-prediction machinery remains **credible** (weekly MAE curve still
 declines through mid-season, MAE/CRPS sane, A2 Clause A confirms in-season
 learning) but **no edge vs the close is demonstrated** (fundamental snapshot
-ATS 48.9% [47.5%, 50.5%]; 2019 49.9% [46.9%, 52.3%]; log-loss loses to 0.693;
-CLV unmeasurable) and **two §1.6 instruments remain unmeasurable** (CLV; honest
-OU via possessions).
+ATS 48.9% [47.5%, 50.5%]; 2019 49.9% [46.9%, 52.3%]; log-loss 0.78–0.93 vs
+0.693; CLV unmeasurable) and **two §1.6 instruments remain unmeasurable**
+(CLV; honest OU via possessions).
 
 The honest Tuesday clock did **not** move this label off `NOT CURRENTLY FIT TO
 BET`. Snapshot ATS receded from 50.7% toward 49%, which strengthens rather than
@@ -354,6 +359,20 @@ Site still shows **old** until a restamp task.
 | `scorecard_fund_ats` | MISSED (50.7% / 51.3%) | MISSED (48.9% / 49.9%) |
 | `scorecard_fund_ou` | MISSED / uninterpretable | MISSED / uninterpretable |
 | `scorecard_logloss` | MISSED 0.82–1.04 vs 0.693 | MISSED 0.78–0.93 vs 0.693 |
+
+### Sample-basis notes (verbatim for `/results` restamp)
+
+Wherever n moved from the previously published figure. One sentence each;
+no history narration. 2019 weeks 2–4 are a partially degraded cohort per
+ADR 0014 (stated once).
+
+- `mae_margin_fund` / `crps_margin_fund`: 90 rows (2019 weeks 2–4) carry no
+  credible ensemble member and are not scored; on the matched sample point
+  accuracy is essentially unchanged.
+- `fund_ats_2019`: sample excludes rows where the model recorded no ATS
+  probability; no probability is imputed.
+- `fund_ou_2019`, `crps_*`: same basis (rows without a recorded probability
+  or a usable σ are not scored; nothing is imputed).
 
 **Champion / registry.** Serialized from this fundamental run; promoted
 `force=False`, `manual_approve=True`, registry **v2** champion. W9-M truncated

@@ -1,13 +1,13 @@
 /**
- * Lay-reader verdict body — faithful to track_record.verdict / 23-readout §7,
+ * Lay-reader verdict body — faithful to track_record.verdict / 23-reval §7,
  * without inventing or softening numbers. DESIGN §5.3 also requires the artifact
  * plain_language paragraph on the page (shown separately as the recorded finding).
  */
 export const VERDICT_LAY_SUMMARY = [
   "Point predictions are credible: the rating engine learns in-season, and the recorded error scores are in a sane range.",
   "No betting edge has been demonstrated against the closing line.",
-  "Against-the-spread results sit around 50%, and their confidence intervals include 50%.",
-  "Probabilistic scores lose to the market baseline.",
+  "Against-the-spread results are 48.9% [47.5%, 50.5%] on snapshots and 49.9% [46.9%, 52.3%] in 2019; both intervals include 50%.",
+  "Log-loss is 0.78–0.93 versus the market baseline 0.693. CLV and honest over/under remain unmeasurable.",
 ].join(" ");
 
 /** Explicit on-page statement that there is no single accuracy headline. */

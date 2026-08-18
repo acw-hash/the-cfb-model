@@ -50,17 +50,17 @@ function loadResults(): ResultsSeason {
 }
 
 describe("track-record formatting — no meaning-changing rounding", () => {
-  it("keeps 50.7 as 50.7%, not about 51%", () => {
-    expect(formatRecordedPercent(50.7)).toBe("50.7%");
-    expect(formatRecordedCi(48.7, 52.7, "percent")).toBe("[48.7%, 52.7%]");
+  it("keeps 48.9 as 48.9%, not about 49%", () => {
+    expect(formatRecordedPercent(48.9)).toBe("48.9%");
+    expect(formatRecordedCi(47.5, 50.5, "percent")).toBe("[47.5%, 50.5%]");
   });
 
   it("keeps MAE/CRPS decimals as recorded", () => {
     const track = loadTrack();
     const mae = track.metrics.find((m) => m.id === "mae_margin_fund")!;
-    expect(mae.value).toBe(14.85);
+    expect(mae.value).toBe(14.53);
     const html = renderToStaticMarkup(<MetricRow metric={mae} expectedId={mae.id} />);
-    expect(html).toContain("14.85");
+    expect(html).toContain("14.53");
     expect(html).not.toMatch(/\b15\b/);
     expect(html).not.toContain("about 15");
   });
@@ -71,7 +71,7 @@ describe("CI-required — rate cannot render without interval", () => {
     const broken: TrackRecordMetric = {
       id: "broken_ats",
       label: "Broken ATS",
-      value: 50.7,
+      value: 48.9,
       unit: "percent",
       ci_lower: null,
       ci_upper: null,

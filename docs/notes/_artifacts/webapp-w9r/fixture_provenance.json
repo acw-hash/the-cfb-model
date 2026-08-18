@@ -1,0 +1,18 @@
+{
+  "input_parquet": "data/registry/artifacts/v2/week_predictions.parquet",
+  "mtime_utc": "2026-08-17T20:41:49.102940+00:00",
+  "size": 53523,
+  "run_id": "task23_fundamental_reduced_v3",
+  "model_version": "production-v0_reduced_v3",
+  "n": 56,
+  "as_of": "2024-09-24T10:00:00Z",
+  "registry_champion_version": 2,
+  "equivalent_week_parquet": "data/backtests/task23_fundamental_reduced_v3/full/weeks/season=2024_week=5.parquet",
+  "week_parquet_mtime_utc": "2026-08-17T20:41:46.028408+00:00",
+  "interval_hits": {
+    "old_margin": {"true": 48, "false": 7, "null": 1},
+    "new_margin": {"true": 48, "false": 7, "null": 1},
+    "flipped_game_ids": ["401636883", "401641018"],
+    "total_interval_hit": null
+  }
+}

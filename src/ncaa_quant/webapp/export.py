@@ -147,6 +147,9 @@ ODDS_FIELD_DENYLIST: frozenset[str] = frozenset(
 DEFAULT_VINTAGE_LABEL = "REGRADED_V2"
 DEFAULT_ENSEMBLE_SCOPE_LABEL = "REDUCED_PER_ADR_0013"
 DEFAULT_FEATURE_TIME_LABEL = "FEATURE_TIME=TUESDAY_DECISION"
+TRACK_RECORD_VINTAGE_LABEL = "W9A_REVAL"
+FIXTURE_WEEK5_AS_OF = datetime(2024, 9, 24, 10, 0, 0, tzinfo=UTC)
+FIXTURE_WALKFORWARD_PATH = "data/registry/artifacts/v2/week_predictions.parquet"
 
 REFRESH_KIND_PRECEDENCE: dict[str, int] = {
     RefreshKind.T_MINUS_1H: 4,
@@ -754,48 +757,51 @@ def build_meta(
 def build_track_record(
     *, published_at: datetime | None = None, fixture: bool = False
 ) -> dict[str, Any]:
-    """Frozen 23-readout metrics — verbatim, no recomputation."""
+    """Frozen 23-reval metrics — verbatim from the amended memo, no recomputation."""
     ts = _iso_utc(published_at or datetime(2026, 8, 13, tzinfo=UTC))
     metrics: list[dict[str, Any]] = [
         {
             "id": "fund_ats_snapshots",
             "label": "Fundamental ATS snapshots 2021–24",
-            "value": 50.7,
+            "value": 48.9,
             "unit": "percent",
-            "ci_lower": 48.7,
-            "ci_upper": 52.7,
+            "ci_lower": 47.5,
+            "ci_upper": 50.5,
             "ci_kind": "bootstrap_95",
             "n": 3496,
             "regime": "snapshots 2021–24",
-            "vintage": "REGRADED_V2",
+            "vintage": "W9G_REGRADE",
             "run": "fundamental",
             "notes": None,
         },
         {
             "id": "fund_ats_2019",
             "label": "Fundamental ATS CFBD 2019",
-            "value": 51.3,
+            "value": 49.9,
             "unit": "percent",
-            "ci_lower": 48.3,
-            "ci_upper": 54.3,
+            "ci_lower": 46.9,
+            "ci_upper": 52.3,
             "ci_kind": "bootstrap_95",
-            "n": 743,
+            "n": 553,
             "regime": "CFBD 2019",
-            "vintage": "REGRADED_V2",
+            "vintage": "W9G_REGRADE",
             "run": "fundamental",
-            "notes": None,
+            "notes": (
+                "sample excludes rows where the model recorded no ATS "
+                "probability; no probability is imputed."
+            ),
         },
         {
             "id": "fund_ou_snapshots",
             "label": "Fundamental OU snapshots 2021–24",
-            "value": 52.3,
+            "value": 51.5,
             "unit": "percent",
             "ci_lower": 49.7,
-            "ci_upper": 54.8,
+            "ci_upper": 53.5,
             "ci_kind": "bootstrap_95",
             "n": 3136,
             "regime": "snapshots 2021–24",
-            "vintage": "REGRADED_V2",
+            "vintage": "W9A_REVAL",
             "run": "fundamental",
             "notes": (
                 "Possessions structurally null outside partial 2023; "
@@ -805,84 +811,99 @@ def build_track_record(
         {
             "id": "fund_ou_2019",
             "label": "Fundamental OU CFBD 2019",
-            "value": 50.9,
+            "value": 51.4,
             "unit": "percent",
-            "ci_lower": 46.6,
-            "ci_upper": 55.4,
+            "ci_lower": 46.5,
+            "ci_upper": 55.3,
             "ci_kind": "bootstrap_95",
-            "n": 747,
+            "n": 551,
             "regime": "CFBD 2019",
-            "vintage": "REGRADED_V2",
+            "vintage": "W9A_REVAL",
             "run": "fundamental",
-            "notes": None,
+            "notes": (
+                "same basis (rows without a recorded probability "
+                "or a usable σ are not scored; nothing is imputed)."
+            ),
         },
         {
             "id": "mae_margin_fund",
             "label": "MAE margin continual (fundamental)",
-            "value": 14.85,
+            "value": 14.53,
             "unit": "points",
             "ci_lower": None,
             "ci_upper": None,
             "ci_kind": "none",
-            "n": 4375,
+            "n": 4285,
             "regime": "all-season",
-            "vintage": "REGRADED_V2",
+            "vintage": "W9A_REVAL",
             "run": "fundamental",
-            "notes": "vs A2 frozen 16.45 (Δ +1.60)",
+            "notes": (
+                "90 rows (2019 weeks 2–4) carry no credible ensemble member "
+                "and are not scored; on the matched sample point accuracy is "
+                "essentially unchanged. 2019 weeks 2–4 are a partially degraded "
+                "cohort per ADR 0014."
+            ),
         },
         {
             "id": "mae_margin_a2",
             "label": "MAE margin A2 frozen",
-            "value": 16.45,
+            "value": 15.51,
             "unit": "points",
             "ci_lower": None,
             "ci_upper": None,
             "ci_kind": "none",
-            "n": 4375,
+            "n": 4290,
             "regime": "all-season",
-            "vintage": "REGRADED_V2",
+            "vintage": "W9A_REVAL",
             "run": "A2",
             "notes": None,
         },
         {
             "id": "crps_margin_fund",
             "label": "CRPS margin continual (fundamental)",
-            "value": 10.68,
+            "value": 10.02,
             "unit": "points",
             "ci_lower": None,
             "ci_upper": None,
             "ci_kind": "none",
-            "n": 4375,
+            "n": 4175,
             "regime": "all-season",
-            "vintage": "REGRADED_V2",
+            "vintage": "W9A_REVAL",
             "run": "fundamental",
-            "notes": "vs A2 frozen 11.87 (Δ +1.20)",
+            "notes": (
+                "90 rows (2019 weeks 2–4) carry no credible ensemble member "
+                "and are not scored; on the matched sample point accuracy is "
+                "essentially unchanged."
+            ),
         },
         {
             "id": "crps_margin_a2",
             "label": "CRPS margin A2 frozen",
-            "value": 11.87,
+            "value": 10.75,
             "unit": "points",
             "ci_lower": None,
             "ci_upper": None,
             "ci_kind": "none",
-            "n": 4375,
+            "n": 4175,
             "regime": "all-season",
-            "vintage": "REGRADED_V2",
+            "vintage": "W9A_REVAL",
             "run": "A2",
-            "notes": None,
+            "notes": (
+                "same basis (rows without a recorded probability "
+                "or a usable σ are not scored; nothing is imputed)."
+            ),
         },
         {
             "id": "ats_logloss_band",
-            "label": "ATS log-loss band (REGRADED_V2 core)",
-            "value": "0.82–1.04",
+            "label": "ATS log-loss band (fundamental)",
+            "value": "0.78–0.93",
             "unit": "ratio",
             "ci_lower": None,
             "ci_upper": None,
             "ci_kind": "none",
             "n": None,
             "regime": "2019 + snapshots 2021–24",
-            "vintage": "REGRADED_V2",
+            "vintage": "W9G_REGRADE",
             "run": "fundamental",
             "notes": "vs market baseline 0.693",
         },
@@ -896,7 +917,7 @@ def build_track_record(
             "ci_kind": "none",
             "n": None,
             "regime": None,
-            "vintage": "REGRADED_V2",
+            "vintage": "W9A_REVAL",
             "run": None,
             "notes": "NOT COMPUTED — no bets/settle path",
         },
@@ -910,9 +931,12 @@ def build_track_record(
             "ci_kind": "none",
             "n": None,
             "regime": "snapshots + 2019",
-            "vintage": "REGRADED_V2",
+            "vintage": "W9G_REGRADE",
             "run": "fundamental",
-            "notes": "Snapshots 50.7% [48.7%, 52.7%]; 2019 51.3% [48.3%, 54.3%]",
+            "notes": (
+                "Snapshots 48.9% [47.5%, 50.5%] (n=3496); 2019 49.9% "
+                "[46.9%, 52.3%] (n=553) — neither CI clears 51.5%"
+            ),
         },
         {
             "id": "scorecard_fund_ou",
@@ -924,10 +948,12 @@ def build_track_record(
             "ci_kind": "none",
             "n": None,
             "regime": "snapshots + 2019",
-            "vintage": "REGRADED_V2",
+            "vintage": "W9A_REVAL",
             "run": "fundamental",
             "notes": (
-                "MISSED / uninterpretable — possessions structurally null outside partial 2023"
+                "MISSED / uninterpretable — Snapshots 51.5% [49.7%, 53.5%] "
+                "(CI includes 51.5%); 2019 51.4% — possessions structurally "
+                "null outside partial 2023"
             ),
         },
         {
@@ -940,26 +966,26 @@ def build_track_record(
             "ci_kind": "none",
             "n": None,
             "regime": None,
-            "vintage": "REGRADED_V2",
+            "vintage": "W9G_REGRADE",
             "run": None,
-            "notes": "ATS LL 0.82–1.04 vs market 0.693 (universal)",
+            "notes": "ATS LL 0.78–0.93 (fundamental) vs market 0.693",
         },
     ]
     artifact: dict[str, Any] = {
         "schema_version": SCHEMA_VERSION,
         "published_at": ts,
-        "source_memo": "docs/notes/23-readout.md",
+        "source_memo": "docs/notes/23-reval.md",
         "ensemble_scope_label": DEFAULT_ENSEMBLE_SCOPE_LABEL,
-        "vintage_labels": ["REGRADED_V2", "RERUN_V2"],
+        "vintage_labels": [TRACK_RECORD_VINTAGE_LABEL],
         "verdict": {
             "label": "NOT CURRENTLY FIT TO BET",
             "plain_language": (
-                "Point-prediction machinery is credible (weekly MAE curve passes, "
-                "MAE/CRPS sane, A2 Clause A confirms in-season learning on the rating "
-                "engine) but no edge vs the close is demonstrated (ATS straddles ~50% on "
-                "fundamental REGRADED_V2; log-loss loses universally to 0.693; CLV "
-                "unmeasurable) and two §1.6 instruments remain unmeasurable (CLV; honest "
-                "OU via possessions)."
+                "Point-prediction machinery remains credible (weekly MAE curve still "
+                "declines through mid-season, MAE/CRPS sane, A2 Clause A confirms in-season "
+                "learning) but no edge vs the close is demonstrated (fundamental snapshot "
+                "ATS 48.9% [47.5%, 50.5%]; 2019 49.9% [46.9%, 52.3%]; log-loss 0.78–0.93 vs "
+                "0.693; CLV unmeasurable) and two §1.6 instruments remain unmeasurable "
+                "(CLV; honest OU via possessions)."
             ),
         },
         "metrics": metrics,
@@ -1244,10 +1270,7 @@ def generate_fixture_week_artifacts(
     out_dir = Path(output_dir or cfg.webapp.fixture_artifacts_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    wf_path = Path(
-        walkforward_path
-        or "data/backtests/task23_fundamental_reduced_v2/full/weeks/season=2024_week=5.parquet"
-    )
+    wf_path = Path(walkforward_path or FIXTURE_WALKFORWARD_PATH)
     if not wf_path.is_file():
         msg = f"walkforward fixture source missing: {wf_path}"
         raise FileNotFoundError(msg)
@@ -1269,8 +1292,10 @@ def generate_fixture_week_artifacts(
     filter_path = Path(cfg.paths.data_dir) / "artifacts" / "state_space" / "filter_history.parquet"
     filter_history = pd.read_parquet(filter_path) if filter_path.is_file() else pd.DataFrame()
 
-    published_at = datetime(2024, 9, 24, 6, 0, 0, tzinfo=UTC)
+    published_at = FIXTURE_WEEK5_AS_OF
     prediction_rows: list[dict[str, Any]] = wf.to_dict(orient="records")
+    model_version = str(wf["model_version"].iloc[0])
+    run_id = str(wf["run_id"].iloc[0])
 
     tier_store = TierStateStore(Path(cfg.webapp.tier_state_path))
     week_preds = build_week_predictions(
@@ -1282,10 +1307,11 @@ def generate_fixture_week_artifacts(
         schedule_by_game=sched,
         model_identity={
             "registry_name": "ncaa-quant",
-            "champion_version": 3,
-            "model_version": str(wf["model_version"].iloc[0]),
-            "run_id": str(wf["run_id"].iloc[0]),
+            "champion_version": 2,
+            "model_version": model_version,
+            "run_id": run_id,
         },
+        vintage_label=TRACK_RECORD_VINTAGE_LABEL,
         tier_store=tier_store,
         stale_max_age_hours=float(cfg.pipeline.stale_odds_max_age_hours),
         fixture=True,
@@ -1295,8 +1321,15 @@ def generate_fixture_week_artifacts(
         week=week,
         refresh_kind=RefreshKind.TUESDAY_PRIMARY,
         published_at=published_at,
+        vintage_label=TRACK_RECORD_VINTAGE_LABEL,
         fixture=True,
     )
+    meta["champion_model"] = {
+        "registry_name": "ncaa-quant",
+        "champion_version": 2,
+        "model_version": model_version,
+        "registered_at": "2026-08-17T20:41:49Z",
+    }
     track = build_track_record(published_at=published_at, fixture=True)
     ratings = build_team_ratings(
         season=season,

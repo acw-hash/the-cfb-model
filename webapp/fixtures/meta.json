@@ -6,24 +6,24 @@
     "week_predictions": "latest/week_predictions.json"
   },
   "champion_model": {
-    "champion_version": 3,
-    "model_version": "production-v0_reduced_v1",
-    "registered_at": "2024-08-01T12:00:00Z",
+    "champion_version": 2,
+    "model_version": "production-v0_reduced_v3",
+    "registered_at": "2026-08-17T20:41:49Z",
     "registry_name": "ncaa-quant"
   },
   "ensemble_scope_label": "REDUCED_PER_ADR_0013",
   "feature_time_label": "FEATURE_TIME=TUESDAY_DECISION",
   "fixture": true,
-  "next_expected_publish_utc": "2024-09-26T06:00:00Z",
+  "next_expected_publish_utc": "2024-09-26T10:00:00Z",
   "publish_schedule": {
     "postgame_ratings": "Sun 06:00 UTC",
     "primary": "Tue 06:00 UTC",
     "refresh": "Thu\u2013Sat 06:00 UTC"
   },
-  "published_at": "2024-09-24T06:00:00Z",
+  "published_at": "2024-09-24T10:00:00Z",
   "refresh_kind": "tuesday_primary",
-  "schema_version": "1.1.0",
+  "schema_version": "1.2.0",
   "season": 2024,
-  "vintage_label": "REGRADED_V2",
+  "vintage_label": "W9A_REVAL",
   "week": 5
 }

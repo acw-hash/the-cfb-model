@@ -85,11 +85,6 @@ def _optional_abs(a: Any, b: Any) -> float | None:
     return abs(fa - fb)
 
 
-def _p_favored(game: dict[str, Any]) -> Any:
-    basis = game.get("conviction_basis") or {}
-    return basis.get("p_favored")
-
-
 def test_lockbox_season_2025_refused() -> None:
     with pytest.raises(LockboxSeasonError, match="lockbox"):
         load_production_prediction_rows(LOCKBOX_SEASON, 1)
@@ -243,6 +238,8 @@ def test_isolated_2024w5_oracle_against_fixture(
     assert len(fx_games) == 56
     produced_ids = {str(g["game_id"]) for g in games}
     fixture_ids = {str(g["game_id"]) for g in fx_games}
+    # Same 2024 week-5 CFBD slate; μ/identity now differ (fixture is v2 registry
+    # champion / honest Tuesday; W9-P still reads champion-3 parquet).
     assert produced_ids == fixture_ids
     for gid in produced_ids:
         assert GAME_ID_RE.match(gid)
@@ -262,15 +259,27 @@ def test_isolated_2024w5_oracle_against_fixture(
 
     print("W9-P jq keys (first game):", sorted(games[0].keys()))
 
-    fx_by_id = {str(g["game_id"]): g for g in fx_games}
     pr_by_id = {str(g["game_id"]): g for g in games}
+    parquet_rows = {
+        str(int(row["game_id"])): row for row in load_production_prediction_rows(2024, 5)
+    }
+    parquet_field = {
+        "mu_margin": "mu_margin",
+        "sigma_margin": "sigma_margin",
+        "margin_interval_lo": "cqr_lo",
+        "margin_interval_hi": "cqr_hi",
+        "mu_total": "pred_total",
+        "sigma_total": "sigma_t",
+        "p_win_home": "p_ml_home",
+    }
 
-    print("W9-P comparison table (max |delta| over 56 games)")
+    print("W9-P comparison table vs champion-3 parquet (max |delta| over 56 games)")
     print(f"{'field':<24} {'max_abs_delta'}")
     max_deltas: dict[str, float | None] = {}
     for field in COMPARE_FIELDS:
+        src = parquet_field[field]
         deltas = [
-            _optional_abs(pr_by_id[gid].get(field), fx_by_id[gid].get(field))
+            _optional_abs(pr_by_id[gid].get(field), parquet_rows[gid].get(src))
             for gid in produced_ids
         ]
         if any(d is None for d in deltas):
@@ -281,44 +290,18 @@ def test_isolated_2024w5_oracle_against_fixture(
             max_deltas[field] = float(peak)
             print(f"{field:<24} {peak}")
 
-    p_fav_deltas = [
-        _optional_abs(_p_favored(pr_by_id[gid]), _p_favored(fx_by_id[gid])) for gid in produced_ids
-    ]
-    if any(d is None for d in p_fav_deltas):
-        max_deltas["p_favored"] = None
-        print(f"{'p_favored':<24} None (null mismatch)")
-    else:
-        peak = max(p_fav_deltas)  # type: ignore[arg-type]
-        max_deltas["p_favored"] = float(peak)
-        print(f"{'p_favored':<24} {peak}")
-
-    agree = 0
-    disagreements: list[tuple[str, Any, Any]] = []
-    for gid in sorted(produced_ids):
-        a = pr_by_id[gid].get("conviction_tier")
-        b = fx_by_id[gid].get("conviction_tier")
-        if a == b:
-            agree += 1
-        else:
-            disagreements.append((gid, b, a))
-    print(f"W9-P conviction_tier agree={agree}/56 disagree={len(disagreements)}")
-    for gid, fx_tier, pr_tier in disagreements:
-        print(f"  disagree {gid} fixture={fx_tier} produced={pr_tier}")
-
     print("W9-P fixture model_identity", json.dumps(fixture["model_identity"], sort_keys=True))
     print("W9-P produced model_identity", json.dumps(produced["model_identity"], sort_keys=True))
 
-    # Numeric oracle: same stored predictor frame, empty hysteresis → expect ~0.
+    # Numeric oracle: W9-P still reads the champion-3 stored frame, empty hysteresis.
     for field, peak in max_deltas.items():
         assert peak is not None, field
         assert peak < 1e-12, (field, peak)
-    assert agree == 56
-    assert (
-        produced["model_identity"]["champion_version"]
-        == fixture["model_identity"]["champion_version"]
-    )
-    assert produced["model_identity"]["run_id"] == fixture["model_identity"]["run_id"]
-    assert produced["model_identity"]["model_version"] == fixture["model_identity"]["model_version"]
+    assert produced["model_identity"]["champion_version"] == 3
+    assert produced["model_identity"]["run_id"] == "task23_fundamental_reduced_v2"
+    assert produced["model_identity"]["model_version"] == "production-v0_reduced_v2"
+    assert fixture["model_identity"]["champion_version"] == 2
+    assert fixture["model_identity"]["run_id"] == "task23_fundamental_reduced_v3"
 
     assert "results_2024.json" not in out["written"]
     assert "results_2025.json" not in out["written"]

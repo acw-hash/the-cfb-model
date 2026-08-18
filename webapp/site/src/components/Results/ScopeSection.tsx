@@ -11,7 +11,7 @@ export function ScopeSection(): React.ReactElement {
       <h2 className={styles.title}>Scope</h2>
       <p className={styles.copy}>{SCOPE_COPY}</p>
       <p className={styles.links}>
-        Methodology detail lives in the project notes (<code>docs/notes/23-readout.md</code>
+        Methodology detail lives in the project notes (<code>docs/notes/23-reval.md</code>
         ). Public summary: <Link href="/about">About</Link>.
       </p>
     </section>

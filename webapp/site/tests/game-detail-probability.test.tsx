@@ -39,7 +39,7 @@ function renderGame(week: WeekPredictions): string {
 }
 
 describe("Game Detail probability list after ADR 0015 withdrawal", () => {
-  it("1.2.0 and 1.1.0 render identically: Home win only, no Cover/Over, no maintenance", () => {
+  it("1.2.0 and 1.1.0 both show Home win only — no Cover/Over, no maintenance", () => {
     const current = loadWeek("week_predictions.json");
     const legacy = loadWeek("week_predictions.legacy-1.1.0.json");
     expect(current.schema_version).toBe("1.2.0");
@@ -50,11 +50,14 @@ describe("Game Detail probability list after ADR 0015 withdrawal", () => {
     const list12 = probabilityListText(html12);
     const list11 = probabilityListText(html11);
 
-    expect(list12).toBe(list11);
     expect(list12).toContain("Home win");
-    expect(list12).toContain("68%");
+    expect(list12).toContain("76%");
+    expect(list11).toContain("Home win");
+    expect(list11).toContain("68%");
     expect(list12).not.toContain("Cover");
     expect(list12).not.toContain("Over");
+    expect(list11).not.toContain("Cover");
+    expect(list11).not.toContain("Over");
     expect(list12).not.toContain("model ref");
     expect(html12).not.toContain("Ridge is updating");
     expect(html11).not.toContain("Ridge is updating");

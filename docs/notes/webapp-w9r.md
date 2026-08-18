@@ -1,11 +1,13 @@
 # W9-R — restamp `/results` from 23-reval; regenerate fixtures
 
 **Date:** 2026-08-17  
-**Status:** STOPPED after Phase 0. No restamp, no fixture write. Phase 0.3
-was a grading defect; **resolved by W9-G** (`docs/notes/webapp-w9g.md`)
-without restamping. Phase 1 remains not started.  
-**Authority:** `docs/notes/23-reval.md` (`fdef4f0`); `docs/notes/webapp-w9v.md`
-(`157bc7d`); `docs/notes/23-readout.md` (FINAL, not rewritten).
+**Status:** Phase 1 DONE (restamp + fixture regen). Amendment 1 applied.
+Phase 0.3 was a grading defect; **resolved by W9-G** (`docs/notes/webapp-w9g.md`).
+Production `latest/` was **not** rewritten (R2 write forbidden; stays 1.1.0
+until the first live publish).  
+**Authority:** amended `docs/notes/23-reval.md` (post-`517926e`, plus
+Amendment 1 §2 / verdict / notes); `docs/notes/webapp-w9v.md` (`157bc7d`);
+`docs/notes/23-readout.md` (FINAL, not rewritten).
 
 Phase 0 required all four items to clear before any literal is copied. Item
 0.3 was a grading/reporting defect on the 2019 ATS intervals (and a second
@@ -34,6 +36,10 @@ rate. The defective *code* is shared (`attach_metric_cis`); the
 contaminated *published numbers* are CFBD-2019 ATS CIs only (fundamental
 and A2). That is still enough to refuse the restamp of `fund_ats_2019`
 and of the 2019 ATS CIs copied into §3.
+
+**Lifted by W9-G + Amendment 1.** The 2019 ATS / log-loss figures in
+amended `23-reval.md` are the regrade. Source quality no longer blocks
+Phase 1; Phase 1 is still a separate step and has not started.
 
 ---
 
@@ -297,16 +303,173 @@ mtime 2026-08-17T22:23:55Z, input mtime 22:11:32Z.
 
 ---
 
+## Amendment 1 (pre-Phase 1)
+
+Applied 2026-08-17. Does not start the restamp. Constraints for Phase 1:
+
+1. **Source.** Every restamp literal is the amended `23-reval.md` (post-
+   `517926e` plus this amendment), not the W9-A first pass.
+   `fund_ats_2019` = 49.9% [46.9%, 52.3%] n=553;
+   `ats_logloss_band` = 0.78–0.93 vs 0.693;
+   `scorecard_fund_ats` = MISSED (48.9% / 49.9%);
+   `scorecard_logloss` = MISSED 0.78–0.93 vs 0.693.
+   First-pass 47.8% n=657 / 0.93–1.35 as *current* published figures is a
+   STOP.
+2. **Memo first.** §2 no longer says “all ≫ 0.693”. The accurate
+   comparison is fundamental **0.78–0.93 vs 0.693**. Verdict
+   `plain_language` cites snapshot ATS 48.9% [47.5%, 50.5%]; 2019 49.9%
+   [46.9%, 52.3%]; log-loss 0.78–0.93 vs 0.693. Label unchanged:
+   **NOT CURRENTLY FIT TO BET**. Phase 1 copies that paragraph; it does
+   not invent a second one.
+3. **Metric notes** (verbatim in `23-reval.md` under the 13-id table).
+   One plain sentence each, no history narration. 2019 weeks 2–4 are a
+   partially degraded cohort per ADR 0014 (stated once).
+   - `mae_margin_fund` / `crps_margin_fund`: 90 rows (2019 weeks 2–4)
+     carry no credible ensemble member and are not scored; on the matched
+     sample point accuracy is essentially unchanged.
+   - `fund_ats_2019`: sample excludes rows where the model recorded no
+     ATS probability; no probability is imputed.
+   - `fund_ou_2019`, `crps_*`: same basis (rows without a recorded
+     probability or a usable σ are not scored; nothing is imputed).
+4. **Literal-equality tests** assert against those amended memo values.
+   A test that compares a restamp field to a W9-A first-pass number is a
+   STOP.
+
 ## Phase 1
 
-Not started. `build_track_record`, `copy.ts`, fixtures, tests, and
-`make test` / `npm test` / `npm run build` / deploy curls were not run as
-acceptance for a restamp that did not happen.
+Restamped `/results` from amended `23-reval.md` (post-`517926e` + Amendment 1).
+No refit, no regrade, no registry change, no R2 write. 23-readout.md untouched.
 
-The W9-G regrade (not refit) is done: ATS CIs use `isfinite(p) & isfinite(y)`,
-and missing-σ rows stay ungradable for ATS. Successor restamp copies
-amended `23-reval.md` §1 / §3 / §5, not the W9-A first-pass 2019 ATS /
-log-loss literals.
+### Restamp diff (13 ids)
 
-No hyperparameters, ADR 0014 thresholds, or CQR were changed. 23-readout.md
-untouched. No R2 write.
+Old = committed `build_track_record` / REGRADED_V2. New = amended memo.
+
+| id | old | new |
+|---|---|---|
+| `fund_ats_snapshots` | 50.7% [48.7%, 52.7%] n=3496 REGRADED_V2 | 48.9% [47.5%, 50.5%] n=3496 W9G_REGRADE |
+| `fund_ats_2019` | 51.3% [48.3%, 54.3%] n=743 | 49.9% [46.9%, 52.3%] n=553 W9G_REGRADE |
+| `fund_ou_snapshots` | 52.3% [49.7%, 54.8%] n=3136 | 51.5% [49.7%, 53.5%] n=3136 W9A_REVAL |
+| `fund_ou_2019` | 50.9% [46.6%, 55.4%] n=747 | 51.4% [46.5%, 55.3%] n=551 W9A_REVAL |
+| `mae_margin_fund` | 14.85 n=4375 | 14.53 n=4285 W9A_REVAL |
+| `mae_margin_a2` | 16.45 n=4375 | 15.51 n=4290 W9A_REVAL |
+| `crps_margin_fund` | 10.68 n=4375 | 10.02 n=4175 W9A_REVAL |
+| `crps_margin_a2` | 11.87 n=4375 | 10.75 n=4175 W9A_REVAL |
+| `ats_logloss_band` | 0.82–1.04 vs 0.693 | 0.78–0.93 vs 0.693 |
+| `scorecard_clv` | UNMEASURABLE | UNMEASURABLE |
+| `scorecard_fund_ats` | MISSED (50.7% / 51.3%) | MISSED (48.9% / 49.9%) |
+| `scorecard_fund_ou` | MISSED / uninterpretable | MISSED / uninterpretable |
+| `scorecard_logloss` | MISSED 0.82–1.04 vs 0.693 | MISSED 0.78–0.93 vs 0.693 |
+
+`vintage_labels` = `["W9A_REVAL"]`. `ensemble_scope_label` unchanged
+(`REDUCED_PER_ADR_0013`). `source_memo` = `docs/notes/23-reval.md`.
+Verdict **label** unchanged: `NOT CURRENTLY FIT TO BET`.
+`plain_language` cites snapshot ATS 48.9% [47.5%, 50.5%]; 2019 49.9%
+[46.9%, 52.3%]; log-loss 0.78–0.93 vs 0.693; CLV and honest OU unmeasurable.
+
+W9-A first-pass 47.8% n=657 / 0.93–1.35 is not a current published value
+in `export.py`, `copy.ts`, or the regenerated fixtures.
+
+### Fixture provenance
+
+```
+input parquet:
+  data/registry/artifacts/v2/week_predictions.parquet
+  mtime_utc=2026-08-17T20:41:49.102940+00:00
+  size=53523
+  run_id=task23_fundamental_reduced_v3
+  model_version=production-v0_reduced_v3
+  n=56
+  as_of=2024-09-24T10:00:00Z
+  registry champion_version=2
+
+equivalent week parquet (byte-size match, earlier mtime):
+  data/backtests/task23_fundamental_reduced_v3/full/weeks/season=2024_week=5.parquet
+  mtime_utc=2026-08-17T20:41:46.028408+00:00
+  size=53523
+```
+
+`generate_fixture_week_artifacts` now defaults to the v2 registry parquet
+and stamps `published_at` = `2024-09-24T10:00:00Z` (the parquet `as_of`).
+`week_predictions.json` schema 1.2.0; withdrawn keys absent.
+`track_record.json` schema 1.2.0 (was 1.1.0).
+`results_2024.json` regenerated against the new bands.
+`week_predictions.legacy-1.1.0.json` unchanged.
+`team_ratings_2024.json` not regenerated (filter_history is not this champion).
+`meta.json` restamped to the same as_of / vintage / champion 2 so This Week
+header matches the week object.
+
+Interval hits (per-game only; no aggregate published):
+
+```
+old margin: true=48 false=7 null=1
+new margin: true=48 false=7 null=1
+flips: 401636883, 401641018  (2 games; offsetting)
+total_interval_hit: all null both vintages
+```
+
+Same 48/55 rate. Two games flipped and cancelled. Not a band-width defect.
+
+Game `401628373`: `published_at=2024-09-24T10:00:00Z` <
+`kickoff_utc=2024-09-28T19:30:00Z`. ProvenanceStrip: `W9A_REVAL` /
+`REDUCED_PER_ADR_0013` / `FEATURE_TIME=TUESDAY_DECISION` — the Tuesday
+decision clock is now the actual feature `as_of`.
+
+### Tests / build
+
+```
+make test
+========= 887 passed, 1 deselected, 32 warnings in 295.66s (0:04:55) ==========
+Required test coverage of 80% reached. Total coverage: 80.14%
+
+cd webapp/site && npm test
+ Test Files  21 passed (21)
+      Tests  129 passed (129)
+
+npm run build — routes present: / , /about , /results , /game/[gameId]
+```
+
+W9-P numeric oracle no longer compares produced μ to the public fixture
+(that fixture is now v3 / honest Tuesday). It compares to the champion-3
+parquet `predict_fn` still loads. Same 56 CFBD ids.
+
+### Grep gate (W0 union; not adjusted)
+
+```
+rg -n -i --pcre2 "best bet|yes bet|\bplay\b|edge vs market|\bunits\b|lock it in|must bet|recommended bet" webapp/site/src/lib/results/copy.ts webapp/site/src/components/Results/ScopeSection.tsx
+union_copy_exit=1
+
+rg -n -i --pcre2 "best bet|yes bet|edge vs market|lock it in|must bet|recommended bet" webapp/site/src
+w8d_src_exit=1
+```
+
+Empty stdout. Ripgrep exit 1 = no matches. Gate did **not** flag the
+restamped `plain_language` / `VERDICT_LAY_SUMMARY`. W0 union list still
+unreconciled (W9-1).
+
+### Production
+
+R2 write / revalidate POST forbidden. `latest/` stays 1.1.0. Local
+fixtures and this commit are the restamp; production HTML will not show
+48.9 / 49.9 / 14.53 until a later sanctioned fixture push.
+
+```
+curl.exe -s https://the-cfb-model.vercel.app/results | rg -o "48\.9|49\.9|14\.53"
+(empty)
+
+curl.exe -s https://the-cfb-model.vercel.app/results | rg -c "50\.7|51\.3|14\.85|47\.8|1\.35"
+1
+
+curl.exe -s https://the-cfb-model.vercel.app/results | rg -o "NOT CURRENTLY FIT TO BET"
+NOT CURRENTLY FIT TO BET
+NOT CURRENTLY FIT TO BET
+
+curl.exe -s https://the-cfb-model.vercel.app/ | rg -o "FIXTURE"
+FIXTURE
+FIXTURE
+```
+
+New figures absent; old REGRADED_V2 substring still present (count 1);
+verdict intact; FIXTURE banner still up. Matches “do not write R2.”
+
+No hyperparameters, ADR 0014 thresholds, or CQR were changed.
+23-readout.md untouched.

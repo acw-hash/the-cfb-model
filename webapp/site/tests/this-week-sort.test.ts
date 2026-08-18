@@ -241,13 +241,12 @@ describe("groupByKickoffDay", () => {
 });
 
 describe("groupByConviction", () => {
-  it("places the fixture's single strong_lean in its own top group", () => {
+  it("places the fixture strong_lean games in the top group", () => {
     const week = loadFixture();
     const groups = groupByConviction(week.games);
     const strong = groups[0];
     expect(strong.id).toBe("strong_lean");
-    expect(strong.games).toHaveLength(1);
-    expect(strong.games[0].game_id).toBe("401628378");
+    expect(strong.games).toHaveLength(9);
     expect(groups.some((g) => g.games.length === 0)).toBe(false);
   });
 

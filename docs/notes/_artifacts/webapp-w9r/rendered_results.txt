@@ -1,0 +1,22 @@
+Recorded results
+There is no single accuracy number for this model. Each metric below stands on its own, with its sample size and confidence interval when one was recorded.
+Scope REDUCED_PER_ADR_0013 · W9A_REVAL
+
+Fundamental ATS snapshots 2021–24  48.9%  [47.5%, 50.5%]  n 3496 · snapshots 2021–24 · W9G_REGRADE
+Fundamental ATS CFBD 2019          49.9%  [46.9%, 52.3%]  n 553 · CFBD 2019 · W9G_REGRADE
+  note: sample excludes rows where the model recorded no ATS probability; no probability is imputed.
+Fundamental OU snapshots 2021–24   51.5%  [49.7%, 53.5%]  n 3136 · W9A_REVAL
+Fundamental OU CFBD 2019           51.4%  [46.5%, 55.3%]  n 551 · W9A_REVAL
+MAE margin continual (fundamental) 14.53  n 4285 · W9A_REVAL
+MAE margin A2 frozen               15.51  n 4290 · W9A_REVAL
+CRPS margin continual (fundamental) 10.02 n 4175 · W9A_REVAL
+CRPS margin A2 frozen              10.75  n 4175 · W9A_REVAL
+ATS log-loss band (fundamental)    0.78–0.93  vs market baseline 0.693
+scorecard_clv                      UNMEASURABLE
+scorecard_fund_ats                 MISSED (48.9% / 49.9%)
+scorecard_fund_ou                  MISSED / uninterpretable
+scorecard_logloss                  MISSED 0.78–0.93 vs 0.693
+
+Verdict: NOT CURRENTLY FIT TO BET
+Provenance 401628373: W9A_REVAL / REDUCED_PER_ADR_0013 / FEATURE_TIME=TUESDAY_DECISION
+published_at=2024-09-24T10:00:00Z  kickoff=2024-09-28T19:30:00Z
