@@ -35,6 +35,7 @@
       "mu_total": 51.22490019675949,
       "neutral_site": true,
       "null_reason": null,
+      "p_cover_home": 0.55,
       "p_win_home": 0.7594805826718973,
       "p_win_home_credible": true,
       "published_at": "2024-09-24T10:00:00Z",
