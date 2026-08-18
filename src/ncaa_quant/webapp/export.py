@@ -1008,27 +1008,32 @@ def build_team_ratings(
         for row in teams.itertuples(index=False)
         if hasattr(row, "team_id") and hasattr(row, "school")
     }
-    hist = filter_history[filter_history["season"] == season].copy()
+    hist = (
+        pd.DataFrame()
+        if "season" not in filter_history.columns
+        else filter_history[filter_history["season"] == season].copy()
+    )
     teams_out: dict[str, Any] = {}
-    for team_id, group in hist.groupby("team_id"):
-        tid = int(team_id)
-        weeks = []
-        for row in group.sort_values("week").itertuples(index=False):
-            weeks.append(
-                {
-                    "week": int(row.week),
-                    "as_of_utc": _iso_utc(getattr(row, "event_time", None)),
-                    "off_epa": _optional_float(getattr(row, "off_epa", None)),
-                    "def_epa": _optional_float(getattr(row, "def_epa", None)),
-                    "pace": _optional_float(getattr(row, "pace", None)),
-                    "off_sd": _optional_float(getattr(row, "sd_off_epa", None)),
-                    "def_sd": _optional_float(getattr(row, "sd_def_epa", None)),
-                }
-            )
-        teams_out[str(tid)] = {
-            "school": school_by_id.get(tid, f"Team {tid}"),
-            "weeks": weeks,
-        }
+    if "team_id" in hist.columns:
+        for team_id, group in hist.groupby("team_id"):
+            tid = int(team_id)
+            weeks = []
+            for row in group.sort_values("week").itertuples(index=False):
+                weeks.append(
+                    {
+                        "week": int(row.week),
+                        "as_of_utc": _iso_utc(getattr(row, "event_time", None)),
+                        "off_epa": _optional_float(getattr(row, "off_epa", None)),
+                        "def_epa": _optional_float(getattr(row, "def_epa", None)),
+                        "pace": _optional_float(getattr(row, "pace", None)),
+                        "off_sd": _optional_float(getattr(row, "sd_off_epa", None)),
+                        "def_sd": _optional_float(getattr(row, "sd_def_epa", None)),
+                    }
+                )
+            teams_out[str(tid)] = {
+                "school": school_by_id.get(tid, f"Team {tid}"),
+                "weeks": weeks,
+            }
     artifact: dict[str, Any] = {
         "schema_version": SCHEMA_VERSION,
         "season": season,

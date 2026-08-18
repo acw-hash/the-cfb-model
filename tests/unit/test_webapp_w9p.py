@@ -11,9 +11,10 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+import pandas as pd
 import pytest
 
-from ncaa_quant.config import AppConfig, WebappConfig
+from ncaa_quant.config import AppConfig, PathsConfig, WebappConfig
 from ncaa_quant.pipelines.notifications import RecordingNotifier
 from ncaa_quant.pipelines.predict import (
     LOCKBOX_SEASON,
@@ -91,6 +92,166 @@ def test_lockbox_season_2025_refused() -> None:
         load_production_prediction_rows(LOCKBOX_SEASON, 1)
 
 
+def _write_champion_week_parquet(tmp_path: Path) -> Path:
+    path = tmp_path / "season=2024_week=5.parquet"
+    pd.DataFrame(
+        [
+            {
+                "game_id": 401628373,
+                "season": 2024,
+                "week": 5,
+                "pred_margin": 4.2,
+                "sigma_m": 14.0,
+                "p_ml_home": 0.61,
+                "model_version": "production-v0_reduced_v2",
+                "run_id": "task23_fundamental_reduced_v2",
+            }
+        ]
+    ).to_parquet(path, index=False)
+    return path
+
+
+def test_load_production_prediction_rows_from_tmp_parquet(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    path = _write_champion_week_parquet(tmp_path)
+    monkeypatch.setattr(
+        "ncaa_quant.pipelines.predict.production_week_predictions_path",
+        lambda season, week: path,
+    )
+    rows = load_production_prediction_rows(2024, 5)
+    assert len(rows) == 1
+    assert str(rows[0]["game_id"]) == "401628373"
+    assert math.isfinite(float(rows[0]["mu_margin"]))
+    assert "pred_margin" in rows[0]
+    assert "sigma_m" in rows[0]
+
+
+def test_allowlist_bite_on_synthetic_wired_game(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    path = _write_champion_week_parquet(tmp_path)
+    monkeypatch.setattr(
+        "ncaa_quant.pipelines.predict.production_week_predictions_path",
+        lambda season, week: path,
+    )
+    rows = load_production_prediction_rows(2024, 5)
+    game = build_game_prediction(
+        rows[0],
+        {
+            "game_id": str(rows[0]["game_id"]),
+            "home_team": "Home",
+            "away_team": "Away",
+            "home_team_id": 1,
+            "away_team_id": 2,
+            "kickoff_utc": "2024-09-28T16:00:00Z",
+            "neutral_site": False,
+            "conference_game": False,
+        },
+        season=2024,
+        week=5,
+        published_at=datetime(2024, 9, 24, 6, 0, 0, tzinfo=UTC),
+        refresh_kind=RefreshKind.TUESDAY_PRIMARY,
+        vintage_label="REGRADED_V2",
+        ensemble_scope_label="REDUCED_PER_ADR_0013",
+        feature_time_label="FEATURE_TIME=TUESDAY_DECISION",
+        previous_tier=None,
+        tier_primary=None,
+    )
+    assert_game_prediction_allowlist(game)
+    poisoned = dict(game)
+    poisoned["unsanctioned_edge"] = 0.03
+    with pytest.raises(PublishedKeyAllowlistError, match="unsanctioned_edge"):
+        assert_game_prediction_allowlist(poisoned)
+
+
+def test_execute_predict_publish_uses_tmp_oracle(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    path = _write_champion_week_parquet(tmp_path)
+    monkeypatch.setattr(
+        "ncaa_quant.pipelines.predict.production_week_predictions_path",
+        lambda season, week: path,
+    )
+    cfg = AppConfig(
+        webapp=WebappConfig(
+            export_enabled=False,
+            tier_state_path=str(tmp_path / "tier_state.json"),
+            tier_changes_path=str(tmp_path / "tier_changes.jsonl"),
+        )
+    )
+    result = execute_predict_publish(
+        season=2024,
+        week=5,
+        refresh_kind=RefreshKind.TUESDAY_PRIMARY,
+        config=cfg,
+        notifier=RecordingNotifier(),
+        predict_fn=oracle_predict_fn(2024, 5),
+    )
+    assert len(result["prediction_rows"]) == 1
+    assert result.get("webapp_export") is None
+    assert Counter(int(r["season"]) for r in result["prediction_rows"]) == {2024: 1}
+
+
+def test_run_isolated_week_export_from_tmp(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    path = _write_champion_week_parquet(tmp_path)
+    monkeypatch.setattr(
+        "ncaa_quant.pipelines.predict.production_week_predictions_path",
+        lambda season, week: path,
+    )
+    staged = tmp_path / "staged"
+    games_dir = staged / "games" / "season=2024" / "week=5"
+    teams_dir = staged / "teams" / "season=2024"
+    games_dir.mkdir(parents=True)
+    teams_dir.mkdir(parents=True)
+    kickoff = pd.Timestamp("2024-09-28T19:30:00Z")
+    pd.DataFrame(
+        [
+            {
+                "game_id": 401628373,
+                "season": 2024,
+                "week": 5,
+                "home_team_id": 245,
+                "away_team_id": 8,
+                "start_date": kickoff,
+                "event_time": kickoff,
+                "neutral_site": False,
+                "conference_game": True,
+                "home_points": 21,
+                "away_points": 17,
+                "completed": True,
+            }
+        ]
+    ).to_parquet(games_dir / "part.parquet", index=False)
+    pd.DataFrame(
+        [
+            {"team_id": 245, "school": "Texas A&M"},
+            {"team_id": 8, "school": "Arkansas"},
+        ]
+    ).to_parquet(teams_dir / "part.parquet", index=False)
+    cfg = AppConfig(
+        paths=PathsConfig(staged_dir=str(staged), data_dir=str(tmp_path / "data")),
+        webapp=WebappConfig(export_enabled=False),
+    )
+    out = run_isolated_week_export(
+        season=2024,
+        week=5,
+        refresh_kind=RefreshKind.TUESDAY_PRIMARY,
+        output_dir=tmp_path / "artifacts",
+        state_dir=tmp_path / "isolated_state",
+        config=cfg,
+        notifier=RecordingNotifier(),
+        predict_fn=oracle_predict_fn(2024, 5),
+    )
+    week_path = tmp_path / "artifacts" / "week_predictions.json"
+    assert week_path.is_file()
+    produced = json.loads(week_path.read_text(encoding="utf-8"))
+    assert produced["games"][0]["game_id"] == "401628373"
+    assert out["export_enabled"] is False
+    assert out["export"]["push"] is None
+
+
+@pytest.mark.workstation
 def test_wired_rows_have_production_and_stamp_aliases() -> None:
     rows = load_production_prediction_rows(2024, 5)
     assert len(rows) == 56
@@ -147,6 +308,7 @@ def test_sigma_refused_aliases_preserve_null_probabilities() -> None:
     assert game["p_win_home"] != 0
 
 
+@pytest.mark.workstation
 def test_allowlist_bite_on_wired_game() -> None:
     rows = load_production_prediction_rows(2024, 5)
     game = build_game_prediction(
@@ -179,6 +341,7 @@ def test_allowlist_bite_on_wired_game() -> None:
     assert_game_prediction_allowlist(game)
 
 
+@pytest.mark.workstation
 def test_isolated_2024w5_oracle_against_fixture(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
@@ -321,6 +484,7 @@ def test_isolated_2024w5_oracle_against_fixture(
     assert "p_ml_home" in raw[0]
 
 
+@pytest.mark.workstation
 def test_execute_predict_publish_uses_wired_default(tmp_path: Path) -> None:
     cfg = AppConfig(
         webapp=WebappConfig(

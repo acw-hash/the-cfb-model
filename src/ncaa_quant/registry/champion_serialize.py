@@ -140,8 +140,12 @@ def isolation_state_paths(repo_root: Path | None = None) -> list[Path]:
         root / "data" / "artifacts" / "expected_possessions" / "live.json",
     ]
     week_dir = root / "data" / "backtests" / "task23_fundamental_reduced_v2" / "full" / "weeks"
+    week_parquet = week_dir / "season=2024_week=5.parquet"
+    paths.append(week_parquet)
     if week_dir.is_dir():
-        paths.extend(sorted(week_dir.glob("*.parquet")))
+        for parquet in sorted(week_dir.glob("*.parquet")):
+            if parquet not in paths:
+                paths.append(parquet)
     return paths
 
 

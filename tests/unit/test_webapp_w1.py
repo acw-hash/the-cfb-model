@@ -9,9 +9,10 @@ from pathlib import Path
 from typing import Any
 
 import jsonschema
+import pandas as pd
 import pytest
 
-from ncaa_quant.config import AppConfig, WebappConfig
+from ncaa_quant.config import AppConfig, PathsConfig, WebappConfig
 from ncaa_quant.pipelines.notifications import AlertKind, RecordingNotifier
 from ncaa_quant.pipelines.predict import RefreshKind, execute_predict_publish
 from ncaa_quant.webapp.export import (
@@ -25,8 +26,14 @@ from ncaa_quant.webapp.export import (
     export_publish_artifacts,
     generate_fixture_week_artifacts,
     raw_tier_from_p_favored,
+    tier_distribution,
 )
-from ncaa_quant.webapp.grade import GradeExportError, assert_live_season
+from ncaa_quant.webapp.grade import (
+    GradeExportError,
+    assert_live_season,
+    build_results_season,
+    grade_export,
+)
 from ncaa_quant.webapp.push import META_FILENAME, push_artifacts_to_r2
 
 SCHEMA_DIR = Path(__file__).resolve().parents[2] / "src" / "ncaa_quant" / "webapp" / "schemas"
@@ -162,13 +169,116 @@ def test_w1a_old_boundaries_no_longer_apply() -> None:
     assert raw_tier_from_p_favored(0.65) != "strong_lean"
 
 
-def test_odds_denylist_on_fixture_artifacts(tmp_path: Path) -> None:
-    cfg = AppConfig(webapp=WebappConfig(fixture_artifacts_dir=str(tmp_path / "fixtures")))
-    out = generate_fixture_week_artifacts(config=cfg, output_dir=tmp_path / "fixtures")
+COMMITTED_FIXTURE_FILES = (
+    "week_predictions.json",
+    "track_record.json",
+    "meta.json",
+    "results_2024.json",
+    "team_ratings_2024.json",
+)
+
+
+def _write_synthetic_fixture_sources(tmp_path: Path) -> tuple[Path, AppConfig]:
+    """Walkforward parquet + staged schedule under tmp — no gitignored data/."""
+    staged = tmp_path / "staged"
+    games_dir = staged / "games" / "season=2024" / "week=5"
+    teams_dir = staged / "teams" / "season=2024"
+    games_dir.mkdir(parents=True)
+    teams_dir.mkdir(parents=True)
+    data_dir = tmp_path / "data"
+    hist_dir = data_dir / "artifacts" / "state_space"
+    hist_dir.mkdir(parents=True)
+    kickoff = pd.Timestamp("2024-09-28T19:30:00Z")
+    pd.DataFrame(
+        [
+            {
+                "game_id": 401628373,
+                "season": 2024,
+                "week": 5,
+                "home_team_id": 245,
+                "away_team_id": 8,
+                "start_date": kickoff,
+                "event_time": kickoff,
+                "neutral_site": False,
+                "conference_game": True,
+                "home_points": 21,
+                "away_points": 17,
+                "completed": True,
+            }
+        ]
+    ).to_parquet(games_dir / "part.parquet", index=False)
+    pd.DataFrame(
+        [
+            {"team_id": 245, "school": "Texas A&M"},
+            {"team_id": 8, "school": "Arkansas"},
+        ]
+    ).to_parquet(teams_dir / "part.parquet", index=False)
+    pd.DataFrame(
+        [
+            {
+                "team_id": 245,
+                "season": 2024,
+                "week": 1,
+                "event_time": pd.Timestamp("2024-08-31T19:00:00Z"),
+                "off_epa": 0.1,
+                "def_epa": -0.05,
+                "pace": 70.0,
+                "sd_off_epa": 0.02,
+                "sd_def_epa": 0.02,
+            }
+        ]
+    ).to_parquet(hist_dir / "filter_history.parquet", index=False)
+    wf_path = tmp_path / "week_predictions.parquet"
+    pd.DataFrame(
+        [
+            {
+                "game_id": 401628373,
+                "pred_margin": 3.0,
+                "sigma_m": 14.0,
+                "sigma_m_is_missing": False,
+                "p_ml_home": 0.62,
+                "p_ml_home_is_missing": False,
+                "model_version": "production-v0_reduced_v3",
+                "run_id": "synthetic_ci",
+                "home_points": 21,
+                "away_points": 17,
+            }
+        ]
+    ).to_parquet(wf_path, index=False)
+    cfg = AppConfig(
+        paths=PathsConfig(data_dir=str(data_dir), staged_dir=str(staged)),
+        webapp=WebappConfig(
+            fixture_artifacts_dir=str(tmp_path / "fx"),
+            tier_state_path=str(tmp_path / "tier.json"),
+        ),
+    )
+    return wf_path, cfg
+
+
+def test_odds_denylist_on_fixture_artifacts() -> None:
+    hits: list[str] = []
+    for name in COMMITTED_FIXTURE_FILES:
+        payload = json.loads((FIXTURE_DIR / name).read_text(encoding="utf-8"))
+        hits.extend(assert_no_denylisted_fields(payload))
+    assert hits == [], f"denylist violations: {hits}"
+
+
+def test_generate_fixture_week_artifacts_from_synthetic_sources(tmp_path: Path) -> None:
+    wf_path, cfg = _write_synthetic_fixture_sources(tmp_path)
+    out = generate_fixture_week_artifacts(
+        config=cfg,
+        output_dir=tmp_path / "fx",
+        walkforward_path=wf_path,
+    )
     hits: list[str] = []
     for _name, payload in out["artifacts"].items():
         hits.extend(assert_no_denylisted_fields(payload))
-    assert hits == [], f"denylist violations: {hits}"
+    assert hits == []
+    week = out["artifacts"]["week_predictions.json"]
+    assert week["games"][0]["game_id"] == "401628373"
+    assert "results_2024.json" in out["artifacts"]
+    ratings = out["artifacts"]["team_ratings_2024.json"]
+    assert "245" in ratings["teams"]
 
 
 def test_denylist_grep_evidence() -> None:
@@ -345,21 +455,32 @@ def test_bet_candidate_fields_not_in_export(tmp_path: Path) -> None:
     assert hits == []
 
 
-def test_schema_validation_sample_records(tmp_path: Path) -> None:
-    cfg = AppConfig(webapp=WebappConfig(fixture_artifacts_dir=str(tmp_path / "fx")))
-    out = generate_fixture_week_artifacts(config=cfg, output_dir=tmp_path / "fx")
-    artifacts = out["artifacts"]
-    _validate(artifacts["week_predictions.json"], "week_predictions.schema.json")
-    _validate(artifacts["meta.json"], "meta.schema.json")
-    _validate(artifacts["track_record.json"], "track_record.schema.json")
-    _validate(artifacts["results_2024.json"], "results_season.schema.json")
-    _validate(artifacts["team_ratings_2024.json"], "team_ratings.schema.json")
+def test_schema_validation_sample_records() -> None:
+    _validate(
+        json.loads((FIXTURE_DIR / "week_predictions.json").read_text(encoding="utf-8")),
+        "week_predictions.schema.json",
+    )
+    _validate(
+        json.loads((FIXTURE_DIR / "meta.json").read_text(encoding="utf-8")),
+        "meta.schema.json",
+    )
+    _validate(
+        json.loads((FIXTURE_DIR / "track_record.json").read_text(encoding="utf-8")),
+        "track_record.schema.json",
+    )
+    _validate(
+        json.loads((FIXTURE_DIR / "results_2024.json").read_text(encoding="utf-8")),
+        "results_season.schema.json",
+    )
+    _validate(
+        json.loads((FIXTURE_DIR / "team_ratings_2024.json").read_text(encoding="utf-8")),
+        "team_ratings.schema.json",
+    )
 
 
-def test_tier_distribution_report(tmp_path: Path) -> None:
-    cfg = AppConfig(webapp=WebappConfig(fixture_artifacts_dir=str(tmp_path / "fx")))
-    out = generate_fixture_week_artifacts(config=cfg, output_dir=tmp_path / "fx")
-    dist = out["tier_distribution"]
+def test_tier_distribution_report() -> None:
+    week = json.loads((FIXTURE_DIR / "week_predictions.json").read_text(encoding="utf-8"))
+    dist = tier_distribution(week["games"])
     assert dist["total"] > 0
     assert set(dist["counts"]) == {"strong_lean", "clear_lean", "lean", "toss_up", "suppressed"}
 
@@ -437,3 +558,304 @@ def test_compute_conviction_suppression_on_stale_age() -> None:
     }
     out = compute_conviction(row, home_team="Home", away_team="Away", previous_tier=None)
     assert out["conviction_tier"] is None
+
+
+def test_export_publish_artifacts_with_injected_schedule(tmp_path: Path) -> None:
+    staged = tmp_path / "staged"
+    teams_dir = staged / "teams" / "season=2026"
+    teams_dir.mkdir(parents=True)
+    pd.DataFrame(
+        [
+            {"team_id": 1, "school": "Home"},
+            {"team_id": 2, "school": "Away"},
+        ]
+    ).to_parquet(teams_dir / "part.parquet", index=False)
+    cfg = AppConfig(
+        paths=PathsConfig(staged_dir=str(staged), data_dir=str(tmp_path / "data")),
+        webapp=WebappConfig(
+            export_enabled=False,
+            tier_state_path=str(tmp_path / "tier.json"),
+            tier_changes_path=str(tmp_path / "tier_changes.jsonl"),
+        ),
+    )
+    published_at = datetime(2026, 9, 1, 10, 0, tzinfo=UTC)
+    publish = {
+        "season": 2026,
+        "week": 1,
+        "refresh_kind": RefreshKind.TUESDAY_PRIMARY,
+        "predictions": [
+            {"game_id": "401000001", "mu_margin": 3.0, "sigma_margin": 14.0, "is_stale": False}
+        ],
+        "prediction_rows": [
+            {
+                "game_id": "401000001",
+                "pred_margin": 3.0,
+                "sigma_m": 14.0,
+                "sigma_m_is_missing": False,
+                "p_ml_home": 0.62,
+                "p_ml_home_is_missing": False,
+            }
+        ],
+        "stale": {"is_stale": False, "combined_stamp": None, "sources": []},
+    }
+    schedule = {
+        "401000001": {
+            "game_id": "401000001",
+            "home_team": "Home",
+            "away_team": "Away",
+            "home_team_id": 1,
+            "away_team_id": 2,
+            "kickoff_utc": "2026-09-05T16:00:00Z",
+            "neutral_site": False,
+            "conference_game": False,
+        }
+    }
+    hist = pd.DataFrame(
+        [
+            {
+                "team_id": 1,
+                "season": 2026,
+                "week": 1,
+                "event_time": pd.Timestamp("2026-08-30T19:00:00Z"),
+                "off_epa": 0.1,
+                "def_epa": -0.05,
+                "pace": 70.0,
+                "sd_off_epa": 0.02,
+                "sd_def_epa": 0.02,
+            }
+        ]
+    )
+    out = export_publish_artifacts(
+        publish,
+        config=cfg,
+        published_at=published_at,
+        schedule_by_game=schedule,
+        filter_history=hist,
+        push=False,
+    )
+    week = json.loads(out["artifacts"]["week_predictions.json"])
+    assert week["games"][0]["game_id"] == "401000001"
+    assert out["push"] is None
+    assert assert_no_denylisted_fields(week) == []
+    ratings = json.loads(out["artifacts"]["team_ratings_2026.json"])
+    assert "1" in ratings["teams"]
+
+
+def test_build_results_season_honest_absence_statuses() -> None:
+    published_at = datetime(2026, 9, 1, 10, 0, tzinfo=UTC)
+    kickoff = datetime(2026, 9, 5, 16, 0, tzinfo=UTC)
+    publish_history = [
+        {
+            "refresh_kind": "tuesday_primary",
+            "published_at": "2026-09-01T10:00:00Z",
+            "games": [
+                {
+                    "game_id": "1",
+                    "published_at": "2026-09-01T10:00:00Z",
+                    "mu_margin": 3.0,
+                    "sigma_margin": 14.0,
+                    "margin_interval_lo": -10.0,
+                    "margin_interval_hi": 16.0,
+                    "margin_interval_nominal": 0.8,
+                    "mu_total": 50.0,
+                    "total_interval_lo": 30.0,
+                    "total_interval_hi": 70.0,
+                    "total_interval_nominal": 0.8,
+                    "p_win_home": 0.62,
+                    "conviction_tier": "lean",
+                    "conviction_team": "Home",
+                    "conviction_label": "Lean",
+                }
+            ],
+        }
+    ]
+    schedule = {
+        "1": {
+            "game_id": "1",
+            "week": 1,
+            "home_team": "Home",
+            "away_team": "Away",
+            "kickoff_utc": kickoff,
+            "completed": True,
+            "home_points": 24,
+            "away_points": 17,
+        },
+        "2": {
+            "game_id": "2",
+            "week": 1,
+            "home_team": "A",
+            "away_team": "B",
+            "kickoff_utc": kickoff,
+            "completed": False,
+        },
+        "3": {
+            "game_id": "3",
+            "week": 1,
+            "home_team": "C",
+            "away_team": "D",
+            "kickoff_utc": kickoff,
+            "completed": True,
+            "home_points": None,
+            "away_points": None,
+        },
+        "4": {
+            "game_id": "4",
+            "week": 1,
+            "home_team": "E",
+            "away_team": "F",
+            "completed": True,
+            "home_points": 10,
+            "away_points": 7,
+        },
+        "5": {
+            "game_id": "5",
+            "week": 1,
+            "home_team": "G",
+            "away_team": "H",
+            "kickoff_utc": kickoff,
+            "completed": True,
+            "home_points": 14,
+            "away_points": 10,
+        },
+    }
+    out = build_results_season(
+        season=2026,
+        published_at=published_at,
+        completed_games=None,
+        schedule_by_game=schedule,
+        publish_history=publish_history,
+    )
+    by_id = {str(g["game_id"]): g["grade_status"] for g in out["games"]}
+    assert by_id["1"] == "graded"
+    assert by_id["2"] == "game_not_final"
+    assert by_id["3"] == "postgame_missing"
+    assert by_id["4"] == "postgame_missing"
+    assert by_id["5"] == "no_pre_kickoff_publish"
+
+
+def test_grade_export_with_tmp_staged(tmp_path: Path) -> None:
+    staged = tmp_path / "staged"
+    games_dir = staged / "games" / "season=2026" / "week=1"
+    teams_dir = staged / "teams" / "season=2026"
+    games_dir.mkdir(parents=True)
+    teams_dir.mkdir(parents=True)
+    kickoff = pd.Timestamp("2026-09-05T16:00:00Z")
+    pd.DataFrame(
+        [
+            {
+                "game_id": 401000001,
+                "season": 2026,
+                "week": 1,
+                "home_team_id": 1,
+                "away_team_id": 2,
+                "start_date": kickoff,
+                "event_time": kickoff,
+                "neutral_site": False,
+                "conference_game": False,
+                "home_points": 21,
+                "away_points": 17,
+                "completed": True,
+            }
+        ]
+    ).to_parquet(games_dir / "part.parquet", index=False)
+    pd.DataFrame(
+        [
+            {"team_id": 1, "school": "Home"},
+            {"team_id": 2, "school": "Away"},
+        ]
+    ).to_parquet(teams_dir / "part.parquet", index=False)
+    empty_week = staged / "games" / "season=2026" / "week=2"
+    empty_week.mkdir(parents=True)
+    pd.DataFrame(
+        {
+            "game_id": pd.Series(dtype="int64"),
+            "season": pd.Series(dtype="int64"),
+            "week": pd.Series(dtype="int64"),
+            "home_team_id": pd.Series(dtype="int64"),
+            "away_team_id": pd.Series(dtype="int64"),
+            "start_date": pd.Series(dtype="datetime64[ns, UTC]"),
+            "event_time": pd.Series(dtype="datetime64[ns, UTC]"),
+            "neutral_site": pd.Series(dtype="bool"),
+            "conference_game": pd.Series(dtype="bool"),
+            "home_points": pd.Series(dtype="float64"),
+            "away_points": pd.Series(dtype="float64"),
+            "completed": pd.Series(dtype="bool"),
+        }
+    ).to_parquet(empty_week / "part.parquet", index=False)
+    cfg = AppConfig(paths=PathsConfig(staged_dir=str(staged), data_dir=str(tmp_path / "data")))
+    published_at = datetime(2026, 9, 1, 10, 0, tzinfo=UTC)
+    history = [
+        {
+            "refresh_kind": "tuesday_primary",
+            "published_at": "2026-09-01T10:00:00Z",
+            "games": [
+                {
+                    "game_id": "401000001",
+                    "published_at": "2026-09-01T10:00:00Z",
+                    "mu_margin": 3.0,
+                    "sigma_margin": 14.0,
+                    "p_win_home": 0.6,
+                }
+            ],
+        }
+    ]
+    out = grade_export(
+        season=2026,
+        published_at=published_at,
+        publish_history=history,
+        config=cfg,
+    )
+    assert out["season"] == 2026
+    assert out["games"][0]["grade_status"] == "graded"
+
+
+def test_export_publish_artifacts_stale_stamp(tmp_path: Path) -> None:
+    cfg = AppConfig(
+        webapp=WebappConfig(
+            export_enabled=False,
+            tier_state_path=str(tmp_path / "tier.json"),
+            tier_changes_path=str(tmp_path / "tier_changes.jsonl"),
+        )
+    )
+    publish = {
+        "season": 2026,
+        "week": 1,
+        "refresh_kind": RefreshKind.TUESDAY_PRIMARY,
+        "predictions": [{"game_id": "401000002", "mu_margin": 1.0, "sigma_margin": 14.0}],
+        "prediction_rows": [
+            {
+                "game_id": "401000002",
+                "pred_margin": 1.0,
+                "sigma_m": 14.0,
+                "p_ml_home": 0.55,
+            }
+        ],
+        "stale": {
+            "is_stale": True,
+            "combined_stamp": "STALE(odds, 7.0h)",
+            "sources": [
+                {"source": "odds", "age_hours": 7.0, "last_good_at": "2026-09-01T03:00:00Z"}
+            ],
+        },
+    }
+    schedule = {
+        "401000002": {
+            "game_id": "401000002",
+            "home_team": "Home",
+            "away_team": "Away",
+            "home_team_id": 1,
+            "away_team_id": 2,
+            "kickoff_utc": "2026-09-05T16:00:00Z",
+            "neutral_site": False,
+            "conference_game": False,
+        }
+    }
+    out = export_publish_artifacts(
+        publish,
+        config=cfg,
+        published_at=datetime(2026, 9, 1, 10, 0, tzinfo=UTC),
+        schedule_by_game=schedule,
+        push=False,
+    )
+    week = json.loads(out["artifacts"]["week_predictions.json"])
+    assert week["games"][0]["is_stale"] is True

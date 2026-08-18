@@ -1,7 +1,7 @@
 # W9-1 — make the guards binding
 
 **Date:** 2026-08-18  
-**Status:** Complete, with STOP #1 on the repo-wide union grep (not narrowed; not wired as a green CI job).  
+**Status:** Complete. Amendment 1 (same date) supersedes STOP #1: two union-grep runners, and pytest CI is green without lake secrets.  
 **Authority:** `docs/notes/webapp-w8d.md`; `docs/notes/webapp-w9push.md` (`7d7fea5`); `docs/notes/webapp-w9r.md`; W0 grep list in `docs/notes/webapp-spec.md`; DESIGN §6; ADR 0018.
 
 Test and deploy plumbing only. No product behavior, copy, artifacts, schemas, fixtures, or model-code change (prettier whitespace on three already-committed site files so `npm run lint` is green under lockfile Prettier 3.9.6). No R2 write, no revalidation POST, no Prefect, no `data.end_season` change.
@@ -292,4 +292,127 @@ Token diff-check PASSED
 
 ---
 
-*End of W9-1.*
+*End of original W9-1 (STOP #1 on the repo-wide union grep).*
+
+---
+
+# Amendment 1 — two union-grep runners; pytest CI green
+
+**Date:** 2026-08-18  
+**Authority:** Amendment 1 to W9-1. Union pattern unchanged from §5 above. Do not narrow.
+
+Test and deploy plumbing plus the minimum CI-path hardening so GitHub pytest can reach `--cov-fail-under=80` without gitignored `data/`. No R2 write, no revalidation POST, no Prefect, no `data.end_season` change, no secret committed.
+
+---
+
+## A. Union grep — two runners, same pattern
+
+`scripts/check_betting_language.py` takes a mode:
+
+| Mode | Scope | Fail rule | Wired in |
+|------|--------|-----------|----------|
+| `published` | Explicit `PUBLISHED_COPY_SURFACES` only | Any hit, or an unlisted `copy.ts` / `copy.tsx` under `webapp/site/src`, or a listed path missing | `.github/workflows/ci.yml` quality job; `npm run check:copy` inside `npm run guard` and `.github/workflows/site.yml` |
+| `ratchet` | `git ls-files` (repo-wide) | Any of matches / lines / files **greater than** the constants in the script | `.github/workflows/ci.yml` quality job (after published) |
+
+Published surface list (Python; adding a copy module without adding it here fails):
+
+- `webapp/site/src/lib/about/copy.ts`
+- `webapp/site/src/lib/results/copy.ts`
+- `webapp/site/src/lib/game-detail/absence.ts`
+- `webapp/site/src/lib/game-detail/provenance.ts`
+- `src/ncaa_quant/webapp/export.py` (verdict / metrics strings reach `track_record.json`)
+- committed fixtures: `week_predictions.json`, `track_record.json`, `meta.json`, `results_2024.json`, `team_ratings_2024.json`
+
+Not listed: `week_predictions.legacy-1.1.0.json` (withdrawn schema, not a published artifact).
+
+Vercel `buildCommand` is `npm run guard` with project root `webapp/site/`. That tree has no Python and cannot see repo-root fixtures, so `webapp/site/scripts/check-published-copy.mjs` enumerates the four `src/lib/...` surfaces only (same union, same unlisted-copy inventory). `export.py` and fixtures stay on the Python published runner in the `ci` workflow.
+
+### Baseline pin (in the script, not here as the source of truth)
+
+W9-1 recon (`rg --pcre2`, before the checker and these notes landed): **283 matches / 217 lines / 67 files**. That is not the ratchet ceiling.
+
+`git ls-files` + Python `finditer` counts **matches** (a line can contribute more than one) and includes this checker, tests that quote the union, and notes that quote the union. Pinning 283 would fail every SHA. After Amendment 1 files (guard tests + site checker that contain the pattern): **323 / 229 / 72**. The fail-ceiling lives as `BASELINE_MATCHES` / `BASELINE_LINES` / `BASELINE_FILES` in `scripts/check_betting_language.py`. Existing tracked hits do not fail; only an increase does.
+
+### Bite tests (A)
+
+1. Appended a prohibited phrase to `webapp/site/src/lib/about/copy.ts`. Published runner: exit 1 (`matches=1`). Revert: exit 0 (`matches=0`).
+2. Intent-to-add `docs/notes/_w91_a1_ratchet_bite.md` with a new union hit. Ratchet: exit 1 (counts +1 on each of matches / lines / files). File removed; ratchet: exit 0 at the then-current ceiling.
+3. Node `npm run check:copy` is the site-side published runner (same copy-module bite).
+
+---
+
+## B. Pytest CI — why it was red; how it is green
+
+Last green `ci` workflow on this repo: `1dd439f` (2026-08-13). Red from W7 (`c32f290`) through W9-1 (`c16f6a4`). `make test` stayed green on the workstation because gitignored `data/` is present.
+
+Original CI command (through W9-1): `uv run pytest -m "not live"` — same marker as `make test`, plus ruff/mypy, plus `--cov-fail-under=80` from `pyproject.toml`. Not a CFBD-key failure. One live test is already excluded. GitHub has no `.env`, no `CFBD_API_KEY`, and no lake.
+
+Data-less reproduction (worktree, empty staged/backtests/registry, no `.env`), **before** this amendment, `pytest -m "not live"`:
+
+8 failed, 904 passed, 5 skipped, coverage **78.81%**.
+
+| Test | Cause |
+|------|--------|
+| `test_webapp_w1.py::test_odds_denylist_on_fixture_artifacts` | `generate_fixture_week_artifacts` read `data/registry/artifacts/v2/week_predictions.parquet` |
+| `test_schema_validation_sample_records` | same |
+| `test_tier_distribution_report` | same |
+| `test_webapp_w9m.py::test_isolation_paths_include_w9p_state_files` | `isolation_state_paths` globbed week parquets only if the directory existed |
+| `test_webapp_w9p.py` (four tests) | `data/backtests/task23_fundamental_reduced_v2/full/weeks/season=2024_week=5.parquet` |
+
+Five other tests already `skip` without staged data (2019 ATS, d2 predictions, odds teams, W1 staged export). Locally they **run**, which is why workstation coverage was ~80.33%.
+
+### Blocking job vs non-blocking job
+
+- **quality / Pytest:** `uv run pytest -m "not live and not workstation"`. Must be green. No secrets. Uses committed `webapp/fixtures` and tmp parquets written by tests.
+- **workstation-data (non-blocking):** `continue-on-error: true`, `uv run pytest -m workstation -o addopts=`. Needs gitignored champion week parquet (and, for other skips, staged 2019 / task23 predictions). A red result here is expected on GitHub and must not fail the workflow. No CFBD/Odds key is required for these tests; they read files, they do not call APIs. `make test` is still `pytest -m "not live"` so workstation tests run locally when the lake is present.
+
+Marker: `workstation: needs gitignored data/ artifacts; excluded from GitHub pytest` in `pyproject.toml`.
+
+### Code that made the blocking job green
+
+- W1 denylist / schema / tier-dist assert against **committed** fixtures. New tests build artifacts from synthetic walkforward + tmp staged schedule / teams / filter history.
+- Four W9-P lake tests marked `workstation`. CI replacements: tmp parquet + monkeypatch of `production_week_predictions_path`; synthetic allowlist bite; `execute_predict_publish` / `run_isolated_week_export` against tmp staged 2024 week 5.
+- `isolation_state_paths` always includes `season=2024_week=5.parquet` (ABSENT is a valid hash).
+- `build_team_ratings` no longer assumes `season` / `team_id` columns on an empty frame.
+
+Data-less worktree after the above: **922 passed, 5 skipped, 5 deselected**, coverage **80.11%** (`--cov-fail-under=80`).
+
+Green blocking pytest does **not** need `CFBD_API_KEY`, `ODDS_API_KEY`, or a populated `data/` tree. The non-blocking job needs the lake files named above; do not commit them.
+
+### Bite test (B) — export allowlist
+
+Local analog (W9-1 §8): `p_cover_home` on fixture game 0 fails `test_committed_fixtures_pass_push_allowlist` (`PublishedKeyAllowlistError`); zero `put_object`. Revert passes.
+
+GitHub analog (acceptance): after this amendment is on a clean SHA, poison the fixture allowlist, show `ci` red, revert, show `ci` green. Recorded on that SHA's Actions tab — not in this paragraph as a fake URL.
+
+---
+
+## Acceptance counts (Amendment 1)
+
+```
+data-less: pytest -m "not live and not workstation"
+==== 922 passed, 5 skipped, 5 deselected, 32 warnings in 254.98s ====
+Required test coverage of 80% reached. Total coverage: 80.11%
+
+make test (workstation lake present)
+========= 931 passed, 1 deselected, 32 warnings in 273.69s ==========
+Required test coverage of 80% reached. Total coverage: 80.50%
+
+published: union_grep published matches=0 lines=0 files=0 surfaces=10  EXIT=0
+ratchet after Amendment 1 extras: 323/229/72  EXIT=0
+```
+
+`uv run mypy` green. `uv run ruff check/format` green. `npm run check:copy` green (`matches=0 surfaces=4`).
+
+---
+
+## Ambiguities / decisions (Amendment 1)
+
+1. **283 vs the script pin.** The amendment named 283/217/67. That was the rg recon. The ratchet uses `git ls-files` + `finditer` and therefore a higher ceiling, stored in the script. Comment in the script still records 283.
+2. **Two published runners.** Node cannot scan `export.py` or `webapp/fixtures`. Python CI does. An unlisted `copy.ts` fails both.
+3. **Empty `filter_history` columns.** Guarding missing `season` / `team_id` is CI-path hardening, not a live-export behavior change when the lake file is present.
+4. **`continue-on-error`.** GitHub may still paint the workstation job red; the workflow succeeds if `quality` is green.
+
+---
+
+*End of W9-1 Amendment 1.*
