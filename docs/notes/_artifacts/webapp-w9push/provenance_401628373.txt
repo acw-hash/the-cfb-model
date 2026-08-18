@@ -1,0 +1,17 @@
+Provenance (GET https://the-cfb-model.vercel.app/game/401628373 after revalidation)
+
+Vintage: W9A_REVAL
+  Which graded training run produced these numbers.
+
+Ensemble: REDUCED_PER_ADR_0013
+  Which models were combined. Reduced means a smaller set than the full experimental ensemble.
+
+Feature time: FEATURE_TIME=TUESDAY_DECISION
+  When inputs were frozen. Tuesday decision means later information is not in this forecast.
+
+Published: Sep 24, 2024, 10:00 AM UTC  (relative: 692d ago)
+Refresh: Tuesday primary
+
+Served as_of / published_at: 2024-09-24T10:00:00Z
+Game 401628373 kickoff_utc:     2024-09-28T19:30:00Z
+published_at < kickoff: true  (Tuesday decision clock is before Saturday kickoff)

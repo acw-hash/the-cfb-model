@@ -1,0 +1,132 @@
+{
+  "mode": "rollback-sandbox",
+  "source_dir": "docs/notes/_artifacts/webapp-w9push/latest-pre",
+  "publish_scope": "sandbox",
+  "push_started_utc": "2026-08-18T01:08:53Z",
+  "elapsed_s": 3.468,
+  "bucket": "ridge-artifacts",
+  "upload_order": [
+    "results_2024.json",
+    "team_ratings_2024.json",
+    "track_record.json",
+    "week_predictions.json",
+    "meta.json"
+  ],
+  "meta_last": true,
+  "content_hashes": {
+    "results_2024.json": "ccf8d8bbdf9ec79b41c2428ee94d79350ff6c955249621007a216eb7da94a8c7",
+    "team_ratings_2024.json": "6c15eed9d203f0c1fcd4d96caf2832ab3fbc841cc4a2cdd008c92836d27939ca",
+    "track_record.json": "5ac8a644cbb31d8cb50a8facaf9c1114a60d323f9fa6c0c4009a2c21ceb8a9d6",
+    "week_predictions.json": "d0736af934ab254219add3f38ac0967257debbe6b4561bb25650116402055567",
+    "meta.json": "3e03dd6722e43749d1207872efec7687974368af12ec2b4b073d863bce293acf"
+  },
+  "uploads": [
+    {
+      "key": "sandbox/v1/2024/w5/tuesday_primary/results_2024.json",
+      "sha256": "ccf8d8bbdf9ec79b41c2428ee94d79350ff6c955249621007a216eb7da94a8c7",
+      "bytes": 59717,
+      "elapsed_ms": 311
+    },
+    {
+      "key": "sandbox/latest/results_2024.json",
+      "sha256": "ccf8d8bbdf9ec79b41c2428ee94d79350ff6c955249621007a216eb7da94a8c7",
+      "bytes": 59717,
+      "elapsed_ms": 453
+    },
+    {
+      "key": "sandbox/v1/2024/w5/tuesday_primary/team_ratings_2024.json",
+      "sha256": "6c15eed9d203f0c1fcd4d96caf2832ab3fbc841cc4a2cdd008c92836d27939ca",
+      "bytes": 991908,
+      "elapsed_ms": 546
+    },
+    {
+      "key": "sandbox/latest/team_ratings_2024.json",
+      "sha256": "6c15eed9d203f0c1fcd4d96caf2832ab3fbc841cc4a2cdd008c92836d27939ca",
+      "bytes": 991908,
+      "elapsed_ms": 563
+    },
+    {
+      "key": "sandbox/v1/2024/w5/tuesday_primary/track_record.json",
+      "sha256": "5ac8a644cbb31d8cb50a8facaf9c1114a60d323f9fa6c0c4009a2c21ceb8a9d6",
+      "bytes": 5624,
+      "elapsed_ms": 186
+    },
+    {
+      "key": "sandbox/latest/track_record.json",
+      "sha256": "5ac8a644cbb31d8cb50a8facaf9c1114a60d323f9fa6c0c4009a2c21ceb8a9d6",
+      "bytes": 5624,
+      "elapsed_ms": 203
+    },
+    {
+      "key": "sandbox/v1/2024/w5/tuesday_primary/week_predictions.json",
+      "sha256": "d0736af934ab254219add3f38ac0967257debbe6b4561bb25650116402055567",
+      "bytes": 107264,
+      "elapsed_ms": 218
+    },
+    {
+      "key": "sandbox/latest/week_predictions.json",
+      "sha256": "d0736af934ab254219add3f38ac0967257debbe6b4561bb25650116402055567",
+      "bytes": 107264,
+      "elapsed_ms": 218
+    },
+    {
+      "key": "sandbox/v1/2024/w5/tuesday_primary/meta.json",
+      "sha256": "3e03dd6722e43749d1207872efec7687974368af12ec2b4b073d863bce293acf",
+      "bytes": 925,
+      "elapsed_ms": 281
+    },
+    {
+      "key": "sandbox/latest/meta.json",
+      "sha256": "3e03dd6722e43749d1207872efec7687974368af12ec2b4b073d863bce293acf",
+      "bytes": 925,
+      "elapsed_ms": 186
+    }
+  ],
+  "revalidation": null,
+  "fixture_flags": {
+    "week_predictions.json": true,
+    "track_record.json": true,
+    "results_2024.json": true,
+    "team_ratings_2024.json": true,
+    "meta.json": true
+  },
+  "source_sha256": {
+    "week_predictions.json": "d0736af934ab254219add3f38ac0967257debbe6b4561bb25650116402055567",
+    "track_record.json": "5ac8a644cbb31d8cb50a8facaf9c1114a60d323f9fa6c0c4009a2c21ceb8a9d6",
+    "results_2024.json": "ccf8d8bbdf9ec79b41c2428ee94d79350ff6c955249621007a216eb7da94a8c7",
+    "team_ratings_2024.json": "6c15eed9d203f0c1fcd4d96caf2832ab3fbc841cc4a2cdd008c92836d27939ca",
+    "meta.json": "3e03dd6722e43749d1207872efec7687974368af12ec2b4b073d863bce293acf"
+  },
+  "allowlist": {
+    "ran": false,
+    "passed": null,
+    "reason": "not invoked on sandbox/rollback; push.py does not call it. rollback-live must skip the 1.2.0 allowlist because the backup is schema 1.1.0 and still carries withdrawn keys"
+  },
+  "cfbd_id_guard": {
+    "ran": false,
+    "passed": null,
+    "reason": "validate_live_publish_game_ids not called (publish_scope != live)",
+    "pattern": "^[0-9]{6,12}$"
+  },
+  "round_trip": {
+    "key": "sandbox/latest/week_predictions.json",
+    "bytes": 107264,
+    "sha256": "d0736af934ab254219add3f38ac0967257debbe6b4561bb25650116402055567",
+    "schema_version": "1.1.0",
+    "fixture": true,
+    "published_at": "2024-09-24T06:00:00Z",
+    "as_of": "2024-09-24T06:00:00Z",
+    "n_games": 56,
+    "withdrawn_key_counts": {
+      "p_cover_home": 56,
+      "p_cover_home_credible": 56,
+      "p_over": 56,
+      "p_over_credible": 56,
+      "p_ats_home": 0,
+      "p_ou_over": 0
+    },
+    "game0_id": "401628373",
+    "game0_kickoff_utc": "2024-09-28T19:30:00Z",
+    "game0_published_at": "2024-09-24T06:00:00Z"
+  }
+}

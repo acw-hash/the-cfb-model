@@ -1,0 +1,17 @@
+HTTP/1.1 200 OK
+Age: 0
+Cache-Control: private, no-cache, no-store, max-age=0, must-revalidate
+Content-Type: text/html; charset=utf-8
+Date: Tue, 18 Aug 2026 01:03:25 GMT
+Link: </_next/static/css/2bb2cfcba402eeba.css>; rel=preload; as="style", </_next/static/css/c595fc0e395fb2a7.css>; rel=preload; as="style", </_next/static/css/5781bb77463506f7.css>; rel=preload; as="style"
+Referrer-Policy: no-referrer
+Server: Vercel
+Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+Vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch
+X-Frame-Options: DENY
+X-Matched-Path: /about
+X-Powered-By: Next.js
+X-Robots-Tag: noindex, nofollow, noarchive
+X-Vercel-Cache: MISS
+X-Vercel-Id: cle1::iad1::2p2xh-1787015005628-abd21478ac1e
+

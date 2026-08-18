@@ -1,0 +1,43 @@
+{
+  "captured_at_utc": "2026-08-18T01:03:26Z",
+  "bucket": "ridge-artifacts",
+  "prefix": "latest/",
+  "object_count": 5,
+  "objects": [
+    {
+      "key": "latest/meta.json",
+      "local_path": "docs/notes/_artifacts/webapp-w9push/latest-pre/meta.json",
+      "bytes": 925,
+      "sha256": "3e03dd6722e43749d1207872efec7687974368af12ec2b4b073d863bce293acf",
+      "last_modified_utc": "2026-08-14T22:21:34Z"
+    },
+    {
+      "key": "latest/results_2024.json",
+      "local_path": "docs/notes/_artifacts/webapp-w9push/latest-pre/results_2024.json",
+      "bytes": 59717,
+      "sha256": "ccf8d8bbdf9ec79b41c2428ee94d79350ff6c955249621007a216eb7da94a8c7",
+      "last_modified_utc": "2026-08-14T22:21:32Z"
+    },
+    {
+      "key": "latest/team_ratings_2024.json",
+      "local_path": "docs/notes/_artifacts/webapp-w9push/latest-pre/team_ratings_2024.json",
+      "bytes": 991908,
+      "sha256": "6c15eed9d203f0c1fcd4d96caf2832ab3fbc841cc4a2cdd008c92836d27939ca",
+      "last_modified_utc": "2026-08-14T22:21:33Z"
+    },
+    {
+      "key": "latest/track_record.json",
+      "local_path": "docs/notes/_artifacts/webapp-w9push/latest-pre/track_record.json",
+      "bytes": 5624,
+      "sha256": "5ac8a644cbb31d8cb50a8facaf9c1114a60d323f9fa6c0c4009a2c21ceb8a9d6",
+      "last_modified_utc": "2026-08-14T22:21:33Z"
+    },
+    {
+      "key": "latest/week_predictions.json",
+      "local_path": "docs/notes/_artifacts/webapp-w9push/latest-pre/week_predictions.json",
+      "bytes": 107264,
+      "sha256": "d0736af934ab254219add3f38ac0967257debbe6b4561bb25650116402055567",
+      "last_modified_utc": "2026-08-14T22:21:34Z"
+    }
+  ]
+}

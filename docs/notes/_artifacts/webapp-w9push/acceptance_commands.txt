@@ -1,0 +1,52 @@
+W9-PUSH production acceptance 2026-08-18T01:09:55Z
+
+=== curl -s https://the-cfb-model.vercel.app/results | rg -o '48\.9|49\.9|14\.53|0\.78' ===
+48.9
+49.9
+0.78
+48.9
+49.9
+14.53
+0.78
+48.9
+49.9
+0.78
+48.9
+49.9
+0.78
+48.9
+49.9
+14.53
+0.78
+48.9
+49.9
+0.78
+
+=== curl -s https://the-cfb-model.vercel.app/results | rg -c '50\.7|51\.3|14\.85|47\.8|1\.35' ===
+0
+
+=== curl -s https://the-cfb-model.vercel.app/results | rg -o 'NOT CURRENTLY FIT TO BET' ===
+NOT CURRENTLY FIT TO BET
+NOT CURRENTLY FIT TO BET
+
+=== curl -s https://the-cfb-model.vercel.app/ | rg -o 'FIXTURE' ===
+FIXTURE
+FIXTURE
+
+=== curl -sI https://the-cfb-model.vercel.app/about | rg -i 'x-robots-tag' ===
+X-Robots-Tag: noindex, nofollow, noarchive
+
+=== withdrawn names on / ===
+p_cover_home: 0
+p_over: 0
+p_ats_home: 0
+p_ou_over: 0
+
+=== curl -s https://the-cfb-model.vercel.app/game/401628373 | rg -c 'p_cover_home' ===
+0
+
+=== curl -s .../game/401628373 | rg -o '0\.42531' ===
+(no match)
+
+=== curl -s .../game/401628373 | rg -o '0\.44672924450891227' ===
+(no match)
