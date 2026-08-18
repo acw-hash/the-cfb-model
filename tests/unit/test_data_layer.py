@@ -169,6 +169,21 @@ def test_schema_event_after_ingest_raises() -> None:
     assert "event_time_le_ingested_at" in str(exc_info.value)
 
 
+def test_schema_unplayed_event_after_ingest_allowed() -> None:
+    """ADR 0016: unplayed schedule rows may carry kickoff+duration after ingest."""
+    df = _games_df(
+        completed=False,
+        home_points=None,
+        away_points=None,
+        start_date=_ts("2026-09-05T16:00:00"),
+        event_time=_ts("2026-09-05T21:00:00"),
+        ingested_at=_ts("2026-08-18T12:00:00"),
+    )
+    validated = GamesSchema.validate(df, lazy=True)
+    assert bool(validated.iloc[0]["completed"]) is False
+    assert validated.iloc[0]["event_time"] > validated.iloc[0]["ingested_at"]
+
+
 def test_validate_table_unknown_raises() -> None:
     with pytest.raises(KeyError, match="unknown table"):
         validate_table("not_a_table", _games_df())

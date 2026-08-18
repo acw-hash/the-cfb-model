@@ -259,6 +259,17 @@ def test_future_event_time_caught() -> None:
     assert findings[0].expectation == "temporal_sanity_event_time_le_ingested_at"
 
 
+def test_future_event_time_unplayed_allowed() -> None:
+    games = _games_frame(
+        completed=False,
+        home_points=None,
+        away_points=None,
+        event_time=INGESTED + timedelta(hours=1),
+    )
+    findings = check_temporal_sanity(games)
+    assert findings == []
+
+
 def test_mismatched_box_final_caught() -> None:
     games = _games_frame(home_points=28, away_points=14)
     box = _box_frame(

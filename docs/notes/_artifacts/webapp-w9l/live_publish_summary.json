@@ -1,0 +1,127 @@
+{
+  "n_games_predicted": 91,
+  "mu_range": [
+    -17.28043869516495,
+    49.81114999198216
+  ],
+  "sigma_range": [
+    15.108849749286234,
+    23.314505612601618
+  ],
+  "conviction_tier_distribution": {
+    "strong_lean": 70,
+    "clear_lean": 13,
+    "toss_up": 3,
+    "lean": 5
+  },
+  "n_null_tier_suppressed": 0,
+  "n_sigma_refused": 0,
+  "as_of": "2026-09-01T10:00:00+00:00",
+  "n_week": 99,
+  "n_excluded": 8,
+  "model_identity": {
+    "champion_version": 3,
+    "model_version": "production-v0_reduced_v3",
+    "registry_name": "ncaa-quant",
+    "run_id": "task23_fundamental_reduced_v3"
+  },
+  "feature_time_label": "FEATURE_TIME=TUESDAY_DECISION",
+  "export_enabled": false,
+  "pred_hash_a": "5d714e90f97dc91c4b95c364b757349ef3b730062fcdb0f201f2dcee09588a0e",
+  "pred_hash_b": "5d714e90f97dc91c4b95c364b757349ef3b730062fcdb0f201f2dcee09588a0e",
+  "rating_digest_a": "96e8030a9c413a14b84175a4690921f7dce9de5b300234f7e7c110f7eb35e859",
+  "rating_digest_b": "96e8030a9c413a14b84175a4690921f7dce9de5b300234f7e7c110f7eb35e859",
+  "quantile_crossing_2026": [
+    "quantile crossing detected; sorting predictions ascending"
+  ],
+  "w5_compare": {
+    "n_live": 56,
+    "n_oracle": 56,
+    "n_common": 56,
+    "fields": {
+      "mu_margin": {
+        "n": 56,
+        "min": 0.20841547726252418,
+        "median": 9.64324056166315,
+        "p90": 17.630094311444463,
+        "max": 34.33996390184401
+      },
+      "sigma_margin": {
+        "n": 56,
+        "min": 0.014782767757115067,
+        "median": 2.9960276227615648,
+        "p90": 4.791453693844559,
+        "max": 9.812468843001884
+      },
+      "p_ml_home": {
+        "n": 56,
+        "min": 0.001883599112400991,
+        "median": 0.163494301890391,
+        "p90": 0.24443920225667648,
+        "max": 0.3004027793112398
+      }
+    },
+    "note": "Amendment 1 withdrew expect-0.0; champion-method vs stored parquet",
+    "quantile_crossing_warnings": [
+      "quantile crossing detected; sorting predictions ascending"
+    ],
+    "rating_digest": "accd0e67a6520f28d01d2755368d08e7b27ec32c0f13d76df71751c8d8d2be5c"
+  },
+  "reingest": {
+    "n_2026_games": 888,
+    "n_week1": 99,
+    "n_clamped_event_time_eq_ingested_at": 0,
+    "as_of": "2026-09-01T10:00:00+00:00",
+    "n_excluded_kickoff_before_as_of": 8,
+    "n_publish": 91,
+    "early_game_ids": [
+      "401866408",
+      "401864494",
+      "401864577",
+      "401858201",
+      "401858202",
+      "401856766",
+      "401864570",
+      "401862693"
+    ],
+    "event_time_min": "2026-08-29T21:00:00+00:00",
+    "event_time_max": "2026-09-08T04:30:00+00:00",
+    "kickoff_min": "2026-08-29T16:00:00+00:00",
+    "historical_week1_note": "2024 week 1 was 146; 2025 week 1 was 142; CFBD 2026-08-18 still 99"
+  },
+  "residual_27": {
+    "n_week1_2021_2024": 545,
+    "n_as_of_after_kickoff": 27,
+    "by_season": {
+      "2021": 5,
+      "2022": 11,
+      "2023": 7,
+      "2024": 4
+    },
+    "successor": "W9-L-residual-week1-straddle-metrics",
+    "revalidation_reopened": false,
+    "ats_all_week1": {
+      "n": 516,
+      "ats": 0.4689922480620155,
+      "logloss": 0.8958919335781123
+    },
+    "ats_straddle": {
+      "n": 27,
+      "ats": 0.8148148148148148,
+      "logloss": 0.49325746614810667
+    },
+    "ats_week1_without_straddle": {
+      "n": 489,
+      "ats": 0.4498977505112474,
+      "logloss": 0.9181232845405053
+    }
+  },
+  "isolation_note": "live_publish.py hashes isolation files before and after and raises if any change. The run wrote this summary (elapsed 621.8s) without raising. filter_history and expected_possessions match W9-I/W9-P (cc1e9a94 / e1101588). The hashes below are the workstation files at notes write-up; hysteresis/ledger are gitignored and may drift across tasks.",
+  "isolation_workstation_sha256": {
+    "data/webapp/tier_state.json": "7af22a94c976c48c20cb1c4d087c49870006d97a171616f637c66c16e9115381",
+    "data/webapp/tier_changes.jsonl": "1ed9a73d423a23b1cc8f264b3689416de3509ef489e5a0ea95ef0cc03ab365ea",
+    "data/pipeline_state/idempotency.json": "fc7c76043110a9f88bc28991a25b0caba6958156216d04589e7e659c06b5d7ed",
+    "data/artifacts/state_space/filter_history.parquet": "cc1e9a947cfbb074c0bad6b148b96df523f6ec607b7b53ddec1c9f776aa78814",
+    "data/artifacts/expected_possessions/live.json": "e1101588c1bdb77b38a63a635802467793d2cf341537fe8311e2e2a312676df1"
+  }
+}

@@ -59,6 +59,7 @@ As-of queries keep rows with ``event_time < as_of`` only.
 from __future__ import annotations
 
 import math
+import time
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field, replace
 from datetime import UTC, datetime
@@ -67,8 +68,11 @@ from typing import Any, Final, Literal
 import numpy as np
 import pandas as pd  # type: ignore[import-untyped]
 
+from ncaa_quant.utils.logging import get_logger
 from ncaa_quant.utils.seeding import set_global_seed
 from ncaa_quant.utils.timeutils import as_of_bound, to_utc
+
+log = get_logger(__name__)
 
 # ---------------------------------------------------------------------------
 # Dimension catalogs
@@ -1155,9 +1159,23 @@ def run_filter(
 
     noise_week: tuple[int, int] | None = None
     prev_season = None
-    for row in obs.itertuples(index=False):
+    n_obs = int(len(obs))
+    t_filter = time.perf_counter()
+    last_progress_week: tuple[int, int] | None = None
+    log.info("run_filter_start", n_obs=n_obs, record_weekly=bool(record_weekly))
+    for i, row in enumerate(obs.itertuples(index=False), start=1):
         season = int(row.season)
         week = int(row.week)
+        if last_progress_week != (season, week):
+            log.info(
+                "run_filter_progress",
+                i=i,
+                n_obs=n_obs,
+                season=season,
+                week=week,
+                elapsed_sec=round(time.perf_counter() - t_filter, 1),
+            )
+            last_progress_week = (season, week)
         if prev_season is None or season > prev_season:
             if prev_season is not None and season > prev_season:
                 hfa = league.hfa_global_marginal()
@@ -1272,6 +1290,11 @@ def run_filter(
             }
         )
 
+    log.info(
+        "run_filter_done",
+        n_obs=n_obs,
+        elapsed_sec=round(time.perf_counter() - t_filter, 1),
+    )
     history = pd.DataFrame(history_rows)
     if record_weekly and not history.empty:
         weekly = (

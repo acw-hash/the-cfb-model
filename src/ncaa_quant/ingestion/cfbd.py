@@ -901,12 +901,6 @@ def normalize_games_payload(
         )
         event_time = knowable.event_time
         estimated = knowable.estimated
-        # Unplayed future games: kickoff+duration is after ingested_at. The
-        # knowable fact at ingest is the schedule, not the result. DESIGN §8
-        # forbids event_time > ingested_at; start_date still carries kickoff.
-        if not completed and event_time > ingested:
-            event_time = ingested
-            estimated = True
         rows.append(
             {
                 "game_id": game_id,

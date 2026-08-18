@@ -49,10 +49,13 @@ class StagedPitAuditResult:
 
 
 def check_temporal_sanity(df: pd.DataFrame) -> list[CheckFinding]:
-    """Fail on any row where ``event_time > ingested_at``.
+    """Fail on completed rows where ``event_time > ingested_at``.
 
     Units: both timestamps are timezone-aware UTC. Equality is allowed
-    (``event_time <= ingested_at``).
+    (``event_time <= ingested_at``). Unplayed ``games`` rows
+    (``completed == False``) may carry kickoff+duration after ingest
+    (ADR 0016) and are excluded. Tables without ``completed`` are checked
+    in full.
     """
     if df.empty:
         return []
@@ -70,6 +73,9 @@ def check_temporal_sanity(df: pd.DataFrame) -> list[CheckFinding]:
     event = pd.to_datetime(df["event_time"], utc=True)
     ingested = pd.to_datetime(df["ingested_at"], utc=True)
     bad_mask = event > ingested
+    if "completed" in df.columns:
+        completed = df["completed"].fillna(False).astype(bool)
+        bad_mask = bad_mask & completed
     if not bad_mask.any():
         return []
     bad = df.loc[bad_mask]
@@ -77,7 +83,7 @@ def check_temporal_sanity(df: pd.DataFrame) -> list[CheckFinding]:
         CheckFinding(
             expectation="temporal_sanity_event_time_le_ingested_at",
             severity="fail",
-            message=f"{int(bad_mask.sum())} rows with event_time > ingested_at",
+            message=f"{int(bad_mask.sum())} completed rows with event_time > ingested_at",
             sample_rows=_sample_records(bad),
             n_failures=int(bad_mask.sum()),
         )

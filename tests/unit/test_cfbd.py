@@ -210,8 +210,8 @@ def test_normalize_games_completion_timestamp_not_estimated() -> None:
     assert bool(df.iloc[0]["event_time_estimated"]) is False
 
 
-def test_normalize_unplayed_future_game_event_time_not_after_ingest() -> None:
-    """Live schedule rows must satisfy DESIGN §8; kickoff stays on start_date."""
+def test_normalize_unplayed_future_game_keeps_kickoff_duration() -> None:
+    """Unplayed rows keep event_time = kickoff+duration (ADR 0016)."""
     from ncaa_quant.data.schemas import GamesSchema
 
     kickoff = datetime(2026, 9, 5, 16, 0, 0, tzinfo=UTC)
@@ -231,8 +231,8 @@ def test_normalize_unplayed_future_game_event_time_not_after_ingest() -> None:
     assert len(df) == 1
     assert bool(df.iloc[0]["completed"]) is False
     assert df.iloc[0]["start_date"] == kickoff
-    assert df.iloc[0]["event_time"] == ingested
-    assert df.iloc[0]["event_time"] <= df.iloc[0]["ingested_at"]
+    assert df.iloc[0]["event_time"] == kickoff + GAME_DURATION
+    assert df.iloc[0]["event_time"] > df.iloc[0]["ingested_at"]
     assert bool(df.iloc[0]["event_time_estimated"]) is True
     GamesSchema.validate(df, lazy=True)
 

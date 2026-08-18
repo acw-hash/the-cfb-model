@@ -1,0 +1,310 @@
+{
+  "d1_2024_week5": {
+    "n_games": 56,
+    "completed_true": 55,
+    "event_time_min": "2024-09-27T03:00:00+00:00",
+    "event_time_max": "2024-09-29T06:30:00+00:00",
+    "start_date_min": "2024-09-26T23:30:00+00:00",
+    "start_date_max": "2024-09-29T03:00:00+00:00",
+    "as_of": "2024-09-24T10:00:00+00:00",
+    "expected": "2024-09-24T10:00:00+00:00",
+    "matches_expected": true,
+    "modal_et_monday": "2024-09-23T00:00:00+00:00",
+    "tuesday": "2024-09-24T10:00:00+00:00"
+  },
+  "d2_v3_week1": {
+    "policy": "single_week_as_of",
+    "source": "C:/Users/alecw/Projects/the-cfb-model/data/backtests/task23_fundamental_reduced_v3/full/predictions.parquet",
+    "n_week1_rows_2021_2024": 545,
+    "max_unique_as_of_within_season": 1,
+    "seasons": [
+      {
+        "season": 2021,
+        "n_pred_rows": 127,
+        "n_unique_as_of": 1,
+        "as_of_values": [
+          "2021-08-31T10:00:00+00:00"
+        ],
+        "n_kickoff_before_as_of": 5,
+        "n_kickoff_on_or_after_as_of": 122,
+        "kickoff_min": "2021-08-28T17:20:00+00:00",
+        "kickoff_max": "2022-01-11T01:00:00+00:00"
+      },
+      {
+        "season": 2022,
+        "n_pred_rows": 136,
+        "n_unique_as_of": 1,
+        "as_of_values": [
+          "2022-08-30T10:00:00+00:00"
+        ],
+        "n_kickoff_before_as_of": 11,
+        "n_kickoff_on_or_after_as_of": 125,
+        "kickoff_min": "2022-08-27T16:00:00+00:00",
+        "kickoff_max": "2023-01-10T00:30:00+00:00"
+      },
+      {
+        "season": 2023,
+        "n_pred_rows": 136,
+        "n_unique_as_of": 1,
+        "as_of_values": [
+          "2023-08-29T10:00:00+00:00"
+        ],
+        "n_kickoff_before_as_of": 7,
+        "n_kickoff_on_or_after_as_of": 129,
+        "kickoff_min": "2023-08-26T18:30:00+00:00",
+        "kickoff_max": "2024-01-09T00:30:00+00:00"
+      },
+      {
+        "season": 2024,
+        "n_pred_rows": 146,
+        "n_unique_as_of": 1,
+        "as_of_values": [
+          "2024-08-27T10:00:00+00:00"
+        ],
+        "n_kickoff_before_as_of": 4,
+        "n_kickoff_on_or_after_as_of": 142,
+        "kickoff_min": "2024-08-24T16:00:00+00:00",
+        "kickoff_max": "2025-01-21T00:30:00+00:00"
+      }
+    ],
+    "n_early_kickoff_rows": 27,
+    "early_kickoff_sample": [
+      {
+        "season": 2021,
+        "game_id": 401282714,
+        "kickoff": "2021-08-28T17:20:00+00:00",
+        "as_of": "2021-08-31T10:00:00+00:00",
+        "home_team_id": null
+      },
+      {
+        "season": 2021,
+        "game_id": 401286187,
+        "kickoff": "2021-08-28T18:00:00+00:00",
+        "as_of": "2021-08-31T10:00:00+00:00",
+        "home_team_id": null
+      },
+      {
+        "season": 2021,
+        "game_id": 401309833,
+        "kickoff": "2021-08-28T19:30:00+00:00",
+        "as_of": "2021-08-31T10:00:00+00:00",
+        "home_team_id": null
+      },
+      {
+        "season": 2021,
+        "game_id": 401282049,
+        "kickoff": "2021-08-29T01:30:00+00:00",
+        "as_of": "2021-08-31T10:00:00+00:00",
+        "home_team_id": null
+      },
+      {
+        "season": 2021,
+        "game_id": 401310693,
+        "kickoff": "2021-08-29T02:00:00+00:00",
+        "as_of": "2021-08-31T10:00:00+00:00",
+        "home_team_id": null
+      },
+      {
+        "season": 2022,
+        "game_id": 401426532,
+        "kickoff": "2022-08-27T16:00:00+00:00",
+        "as_of": "2022-08-30T10:00:00+00:00",
+        "home_team_id": null
+      },
+      {
+        "season": 2022,
+        "game_id": 401405059,
+        "kickoff": "2022-08-27T16:30:00+00:00",
+        "as_of": "2022-08-30T10:00:00+00:00",
+        "home_team_id": null
+      },
+      {
+        "season": 2022,
+        "game_id": 401413256,
+        "kickoff": "2022-08-27T19:30:00+00:00",
+        "as_of": "2022-08-30T10:00:00+00:00",
+        "home_team_id": null
+      },
+      {
+        "season": 2022,
+        "game_id": 401404146,
+        "kickoff": "2022-08-27T20:00:00+00:00",
+        "as_of": "2022-08-30T10:00:00+00:00",
+        "home_team_id": null
+      },
+      {
+        "season": 2022,
+        "game_id": 401405058,
+        "kickoff": "2022-08-27T20:00:00+00:00",
+        "as_of": "2022-08-30T10:00:00+00:00",
+        "home_team_id": null
+      },
+      {
+        "season": 2022,
+        "game_id": 401411090,
+        "kickoff": "2022-08-27T21:00:00+00:00",
+        "as_of": "2022-08-30T10:00:00+00:00",
+        "home_team_id": null
+      },
+      {
+        "season": 2022,
+        "game_id": 401426530,
+        "kickoff": "2022-08-27T23:00:00+00:00",
+        "as_of": "2022-08-30T10:00:00+00:00",
+        "home_team_id": null
+      },
+      {
+        "season": 2022,
+        "game_id": 401411091,
+        "kickoff": "2022-08-28T00:15:00+00:00",
+        "as_of": "2022-08-30T10:00:00+00:00",
+        "home_team_id": null
+      },
+      {
+        "season": 2022,
+        "game_id": 401426531,
+        "kickoff": "2022-08-28T01:00:00+00:00",
+        "as_of": "2022-08-30T10:00:00+00:00",
+        "home_team_id": null
+      },
+      {
+        "season": 2022,
+        "game_id": 401409235,
+        "kickoff": "2022-08-28T02:00:00+00:00",
+        "as_of": "2022-08-30T10:00:00+00:00",
+        "home_team_id": null
+      },
+      {
+        "season": 2022,
+        "game_id": 401403853,
+        "kickoff": "2022-08-28T02:30:00+00:00",
+        "as_of": "2022-08-30T10:00:00+00:00",
+        "home_team_id": null
+      },
+      {
+        "season": 2023,
+        "game_id": 401525434,
+        "kickoff": "2023-08-26T18:30:00+00:00",
+        "as_of": "2023-08-29T10:00:00+00:00",
+        "home_team_id": null
+      },
+      {
+        "season": 2023,
+        "game_id": 401520145,
+        "kickoff": "2023-08-26T21:30:00+00:00",
+        "as_of": "2023-08-29T10:00:00+00:00",
+        "home_team_id": null
+      },
+      {
+        "season": 2023,
+        "game_id": 401525450,
+        "kickoff": "2023-08-26T23:00:00+00:00",
+        "as_of": "2023-08-29T10:00:00+00:00",
+        "home_team_id": null
+      },
+      {
+        "season": 2023,
+        "game_id": 401532392,
+        "kickoff": "2023-08-26T23:00:00+00:00",
+        "as_of": "2023-08-29T10:00:00+00:00",
+        "home_team_id": null
+      },
+      {
+        "season": 2023,
+        "game_id": 401520147,
+        "kickoff": "2023-08-26T23:30:00+00:00",
+        "as_of": "2023-08-29T10:00:00+00:00",
+        "home_team_id": null
+      },
+      {
+        "season": 2023,
+        "game_id": 401523986,
+        "kickoff": "2023-08-27T00:00:00+00:00",
+        "as_of": "2023-08-29T10:00:00+00:00",
+        "home_team_id": null
+      },
+      {
+        "season": 2023,
+        "game_id": 401520146,
+        "kickoff": "2023-08-27T01:00:00+00:00",
+        "as_of": "2023-08-29T10:00:00+00:00",
+        "home_team_id": null
+      },
+      {
+        "season": 2024,
+        "game_id": 401635525,
+        "kickoff": "2024-08-24T16:00:00+00:00",
+        "as_of": "2024-08-27T10:00:00+00:00",
+        "home_team_id": null
+      },
+      {
+        "season": 2024,
+        "game_id": 401643697,
+        "kickoff": "2024-08-24T20:00:00+00:00",
+        "as_of": "2024-08-27T10:00:00+00:00",
+        "home_team_id": null
+      },
+      {
+        "season": 2024,
+        "game_id": 401643696,
+        "kickoff": "2024-08-25T00:00:00+00:00",
+        "as_of": "2024-08-27T10:00:00+00:00",
+        "home_team_id": null
+      },
+      {
+        "season": 2024,
+        "game_id": 401643858,
+        "kickoff": "2024-08-25T03:59:00+00:00",
+        "as_of": "2024-08-27T10:00:00+00:00",
+        "home_team_id": null
+      }
+    ],
+    "note": "WalkForwardHarness stamps one week_decision_as_of per (season, week) onto every prediction row (walkforward.py). Per-game slot_close lives only in resolve_lines_for_games / feature_as_of_for_game (market path). Champion v3 is fundamental (market_features=False)."
+  },
+  "d2_2026_week1_calendar": {
+    "n": 99,
+    "staged_event_time_nunique": 1,
+    "staged_event_eq_ingested": 99,
+    "as_of_staged_clamped_event_time": "2026-08-18T10:00:00+00:00",
+    "as_of_unclamped_kickoff_plus_duration": "2026-09-01T10:00:00+00:00",
+    "as_of_from_start_date": "2026-09-01T10:00:00+00:00",
+    "n_kickoff_before_unclamped_as_of": 8,
+    "n_kickoff_before_start_date_as_of": 8,
+    "kickoff_min": "2026-08-29T16:00:00+00:00",
+    "kickoff_max": "2026-09-07T23:30:00+00:00",
+    "early_kickoffs": [
+      {
+        "game_id": 401856766,
+        "kickoff": "2026-08-29T16:00:00+00:00"
+      },
+      {
+        "game_id": 401864494,
+        "kickoff": "2026-08-29T19:00:00+00:00"
+      },
+      {
+        "game_id": 401858202,
+        "kickoff": "2026-08-29T19:30:00+00:00"
+      },
+      {
+        "game_id": 401864577,
+        "kickoff": "2026-08-29T21:30:00+00:00"
+      },
+      {
+        "game_id": 401866408,
+        "kickoff": "2026-08-29T22:30:00+00:00"
+      },
+      {
+        "game_id": 401858201,
+        "kickoff": "2026-08-29T23:00:00+00:00"
+      },
+      {
+        "game_id": 401864570,
+        "kickoff": "2026-08-29T23:00:00+00:00"
+      },
+      {
+        "game_id": 401862693,
+        "kickoff": "2026-08-30T02:00:00+00:00"
+      }
+    ]
+  }
+}

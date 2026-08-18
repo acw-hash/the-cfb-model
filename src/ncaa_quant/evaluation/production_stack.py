@@ -272,6 +272,17 @@ class StateSpaceRatingEngine:
                 config=self.ss_config,
                 prior_config=self.prior_config,
             )
+            season_in_frame = False
+            if "season" in self.priors_frame.columns:
+                season_in_frame = bool(
+                    (self.priors_frame["season"].astype(int) == int(season)).any()
+                )
+            if not season_in_frame:
+                # No Task-15 rows for this season. Return empty so run_filter
+                # season-regresses from the previous posterior. Filling cold-start
+                # priors here would wipe 2024→2025 continuity on the live path
+                # (W9-L Amendment 2: 2025 is Kalman state, not a fitted-prior year).
+                return {}
             for tid in team_ids:
                 if int(tid) not in states:
                     # Missing prior inputs: widen variance (never false confidence).

@@ -21,6 +21,7 @@ from ncaa_quant.pipelines.predict import (
     RefreshKind,
     execute_predict_publish,
     load_production_prediction_rows,
+    oracle_predict_fn,
     production_week_predictions_path,
     run_isolated_week_export,
 )
@@ -203,6 +204,7 @@ def test_isolated_2024w5_oracle_against_fixture(
         state_dir=state_dir,
         config=cfg,
         notifier=notifier,
+        predict_fn=oracle_predict_fn(2024, 5),
     )
     captured = capsys.readouterr()
     log_text = captured.out + captured.err
@@ -312,7 +314,7 @@ def test_isolated_2024w5_oracle_against_fixture(
     assert "grade_export" not in log_text
     assert not (state_dir / "pipeline_state" / "idempotency.json").is_file()
 
-    # Default predict_fn (no injection) produced production columns.
+    # Oracle parquet entry point produced production columns.
     raw = out["result"]["prediction_rows"]
     assert len(raw) == 56
     assert "pred_margin" in raw[0]
@@ -333,6 +335,7 @@ def test_execute_predict_publish_uses_wired_default(tmp_path: Path) -> None:
         refresh_kind=RefreshKind.TUESDAY_PRIMARY,
         config=cfg,
         notifier=RecordingNotifier(),
+        predict_fn=oracle_predict_fn(2024, 5),
     )
     assert len(result["prediction_rows"]) == 56
     assert result.get("webapp_export") is None

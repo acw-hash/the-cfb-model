@@ -1,9 +1,11 @@
 """Pandera DataFrameModels for staged CFB entities.
 
 Every fact and reference table carries UTC ``event_time`` (when the row's
-information became knowable) and ``ingested_at``, with
-``event_time <= ingested_at``. Range checks follow DESIGN §8 step 2 where
-applicable: ``0 <= points <= 100``, ``|spread| < 70``, totals in ``[20, 100]``.
+information became knowable) and ``ingested_at``. Completed facts require
+``event_time <= ingested_at``. Unplayed ``games`` rows keep
+``event_time = kickoff + duration``, which may post-date ingest (ADR 0016).
+Range checks follow DESIGN §8 step 2 where applicable: ``0 <= points <= 100``,
+``|spread| < 70``, totals in ``[20, 100]``.
 
 **Canonical game identity (AUDIT-6):** CFBD's stable numeric ``game_id`` is the
 only canonical game key across sources. Odds API (and other non-CFBD) event ids
@@ -34,8 +36,17 @@ class _TimedModel(pa.DataFrameModel):
     def event_time_le_ingested_at(  # type: ignore[misc]
         cls, df: pd.DataFrame
     ) -> pd.Series:
-        """DESIGN §8: no event_time may post-date ingestion."""
-        return df["event_time"] <= df["ingested_at"]
+        """DESIGN §8 / ADR 0016: completed rows may not post-date ingestion.
+
+        Unplayed ``games`` rows (``completed == False``) keep kickoff+duration
+        on ``event_time`` and are excluded from this check. Other timed tables
+        have no ``completed`` column and are checked in full.
+        """
+        ok = df["event_time"] <= df["ingested_at"]
+        if "completed" not in df.columns:
+            return ok
+        completed = df["completed"].fillna(False).astype(bool)
+        return (~completed) | ok
 
     class Config:
         strict = True

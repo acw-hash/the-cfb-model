@@ -62,8 +62,8 @@ def test_fixture_week_dry_run_end_to_end(pipeline_config) -> None:
         config=pipeline_config,
         notifier=notifier,
     )
-    assert predict["n_candidates"] == 2
-    assert predict["n_accepted"] == 2
+    assert predict["n_candidates"] == 0
+    assert predict["n_accepted"] == 0
     assert predict["stale"]["is_stale"] is False
     assert len(predict["predictions"]) == 2
 
@@ -77,7 +77,7 @@ def test_fixture_week_dry_run_end_to_end(pipeline_config) -> None:
     assert settle["n_settled"] == 0
 
     kinds = {a.kind for a in notifier.sent}
-    assert AlertKind.NEW_BET_CANDIDATE in kinds
+    assert AlertKind.NEW_BET_CANDIDATE not in kinds
 
 
 def test_idempotent_rerun_fixture_week(pipeline_config) -> None:

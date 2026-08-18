@@ -1,0 +1,104 @@
+{
+  "timings_s": {
+    "load_games": 0.9920616999734193,
+    "load_teams": 0.027196999988518655,
+    "load_advanced": 1.3786628000088967,
+    "advanced_obs_build": 0.01811990002170205,
+    "run_filter_advanced_weekly_false": 235.92223259998718,
+    "run_filter_advanced_weekly_true": 234.0024565999629,
+    "load_priors": 0.01378629996906966,
+    "load_plays": 1.9866671999916434,
+    "apply_garbage_time_copy": 0.5267622999963351,
+    "build_observations_from_staged_plays": 1.495665900001768,
+    "run_filter_plays_weekly_false": 190.84176340000704,
+    "run_filter_plays_weekly_true": 189.87371790001635,
+    "update_after_games_w1_w4": 11.361358699970879
+  },
+  "hang_initialize_season_2026_advanced": {
+    "label": "advanced_init_2026",
+    "timings_s": {
+      "priors_target_season": 0.00020569999469444156,
+      "python_event_time_loop": 0.0164504999993369,
+      "n_obs_rows": 5997.0,
+      "n_hist_rows": 5997.0,
+      "preseason_states_all_seasons": 0.23959900002228096,
+      "n_preseason_seasons": 8.0,
+      "run_filter_record_weekly_true": 225.8453937000013,
+      "n_history_rows": 21967.0,
+      "_ingest_history": 0.0071017000009305775,
+      "total": 226.11024000000907
+    },
+    "n_hist": 5997,
+    "n_history_rows": 21967,
+    "n_states": 136
+  },
+  "hang_initialize_season_2024_plays": {
+    "label": "plays_init_2024",
+    "timings_s": {
+      "priors_target_season": 0.10080549999838695,
+      "python_event_time_loop": 0.014179899997543544,
+      "n_obs_rows": 5064.0,
+      "n_hist_rows": 4152.0,
+      "preseason_states_all_seasons": 0.21549490001052618,
+      "n_preseason_seasons": 6.0,
+      "run_filter_record_weekly_true": 156.74748499999987,
+      "n_history_rows": 15271.0,
+      "_ingest_history": 0.005974299972876906,
+      "total": 157.08575730002485
+    },
+    "n_hist": 4152,
+    "n_history_rows": 15271,
+    "n_states": 231
+  },
+  "notes": [],
+  "delta": {
+    "n_games": 56,
+    "n_t14": 56,
+    "n_champ": 56,
+    "as_of": "2024-09-24T10:00:00+00:00",
+    "mu_margin_abs_delta": {
+      "n": 56,
+      "min": 0.101544494720617,
+      "median": 5.588631245097648,
+      "p90": 12.208567878856439,
+      "max": 36.746513299860084
+    },
+    "sigma_margin_abs_delta": {
+      "n": 56,
+      "min": 0.2070065798401437,
+      "median": 2.408203686944523,
+      "p90": 4.582197368678626,
+      "max": 6.1017172139877225
+    },
+    "p_ml_home_abs_delta": {
+      "n": 56,
+      "min": 0.00043771542502135663,
+      "median": 0.07544834010052504,
+      "p90": 0.2911473171242935,
+      "max": 0.5068727954559393
+    },
+    "conviction_tier_agreement": {
+      "n_agree": 28,
+      "n": 56,
+      "frac": 0.5,
+      "t14_counts": {
+        "clear_lean": 27,
+        "strong_lean": 15,
+        "lean": 10,
+        "toss_up": 4
+      },
+      "champ_counts": {
+        "clear_lean": 30,
+        "strong_lean": 10,
+        "lean": 9,
+        "toss_up": 7
+      }
+    },
+    "sources": {
+      "task14": "C:/Users/alecw/Projects/the-cfb-model/data/artifacts/state_space/filter_history.parquet",
+      "champion": "StateSpaceRatingEngine.initialize_season(2024)+update_after_games(weeks 1-4); plays-first GT obs; fitted priors; default StateSpaceConfig"
+    }
+  },
+  "as_of_2024_w5_calendar": "2024-09-24T10:00:00+00:00",
+  "as_of_2026_w1_for_hang": "2026-09-01T10:00:00+00:00"
+}
