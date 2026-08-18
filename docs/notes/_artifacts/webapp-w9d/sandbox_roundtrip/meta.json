@@ -1,0 +1,28 @@
+{
+  "artifact_pointers": {
+    "results_current_season": "latest/results_2026.json",
+    "team_ratings": "latest/team_ratings_2026.json",
+    "track_record": "latest/track_record.json",
+    "week_predictions": "latest/week_predictions.json"
+  },
+  "champion_model": {
+    "champion_version": 3,
+    "model_version": "production-v0_reduced_v1",
+    "registered_at": "2024-08-01T12:00:00Z",
+    "registry_name": "ncaa-quant"
+  },
+  "ensemble_scope_label": "REDUCED_PER_ADR_0013",
+  "feature_time_label": "FEATURE_TIME=TUESDAY_DECISION",
+  "next_expected_publish_utc": "2026-08-20T22:01:05Z",
+  "publish_schedule": {
+    "postgame_ratings": "Sun 06:00 UTC",
+    "primary": "Tue 06:00 UTC",
+    "refresh": "Thu\u2013Sat 06:00 UTC"
+  },
+  "published_at": "2026-08-18T22:01:05Z",
+  "refresh_kind": "tuesday_primary",
+  "schema_version": "1.2.0",
+  "season": 2026,
+  "vintage_label": "REGRADED_V2",
+  "week": 1
+}

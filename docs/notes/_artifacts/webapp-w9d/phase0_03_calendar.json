@@ -1,0 +1,70 @@
+{
+  "now_utc": "2026-08-18T21:41:37.139005+00:00",
+  "calendar_as_of": "2026-09-01T10:00:00+00:00",
+  "calendar_as_of_et": "2026-09-01T06:00:00-04:00",
+  "tuesday_0600_et": "2026-09-01T10:00:00+00:00",
+  "saturday_0600_et": "2026-09-05T10:00:00+00:00",
+  "intended_publish_datetime_utc": "2026-09-01T10:00:00+00:00",
+  "intended_publish_equals_as_of": true,
+  "config_cron_tuesday": "0 6 * * 2",
+  "cron_interpreted_2026_09_01_0600Z": "2026-09-01T06:00:00+00:00",
+  "cron_vs_calendar_hours": 4.0,
+  "next_expected_publish_if_published_at_as_of": "2026-09-03T10:00:00Z",
+  "n_week1_games": 99,
+  "n_kickoff_before_as_of": 8,
+  "early_games": [
+    {
+      "game_id": "401866408",
+      "kickoff_utc": "2026-08-29T22:30:00+00:00"
+    },
+    {
+      "game_id": "401864494",
+      "kickoff_utc": "2026-08-29T19:00:00+00:00"
+    },
+    {
+      "game_id": "401864577",
+      "kickoff_utc": "2026-08-29T21:30:00+00:00"
+    },
+    {
+      "game_id": "401858201",
+      "kickoff_utc": "2026-08-29T23:00:00+00:00"
+    },
+    {
+      "game_id": "401858202",
+      "kickoff_utc": "2026-08-29T19:30:00+00:00"
+    },
+    {
+      "game_id": "401856766",
+      "kickoff_utc": "2026-08-29T16:00:00+00:00"
+    },
+    {
+      "game_id": "401864570",
+      "kickoff_utc": "2026-08-29T23:00:00+00:00"
+    },
+    {
+      "game_id": "401862693",
+      "kickoff_utc": "2026-08-30T02:00:00+00:00"
+    }
+  ],
+  "kickoff_min": "2026-08-29T16:00:00+00:00",
+  "kickoff_max": "2026-09-07T23:30:00+00:00",
+  "opening_weekend_before_publish": true,
+  "site_between_now_and_publish": "Production latest/ currently serves 2024 fixture week-5 data (fixture=True, season=2024, week=5, n=56). No 2026 artifact is on latest/. Between now and the Tuesday week-1 publish the public site therefore continues to show 2024 fixture data, including through the opening weekend (games kick off 2026-08-29, before as_of).",
+  "production_latest_readonly": {
+    "meta_schema_version": "1.2.0",
+    "meta_fixture": true,
+    "meta_season": 2024,
+    "meta_week": 5,
+    "meta_published_at": "2024-09-24T10:00:00Z",
+    "week_n_games": 56,
+    "week_fixture": true,
+    "read_only": true
+  },
+  "override_used": false,
+  "wf_clock": {
+    "as_of_weekday": 1,
+    "as_of_hour": 6,
+    "as_of_minute": 0,
+    "as_of_tz": "America/New_York"
+  }
+}

@@ -30,12 +30,12 @@ UNION = re.compile(
 )
 
 # W9-1 recon (rg --pcre2, before the checker/notes landed): 283 / 217 / 67.
-# git ls-files + Python finditer at Amendment 2: exact live counts, not a
+# git ls-files + Python finditer at W9-D: exact live counts, not a
 # padded ceiling. Fail if any count differs. Re-measure after editing this
 # file or notes that quote the union.
-BASELINE_MATCHES = 323
-BASELINE_LINES = 229
-BASELINE_FILES = 72
+BASELINE_MATCHES = 348
+BASELINE_LINES = 237
+BASELINE_FILES = 74
 
 BINARY_SUFFIXES = {
     ".png",

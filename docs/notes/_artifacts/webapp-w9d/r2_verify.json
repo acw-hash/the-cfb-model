@@ -1,0 +1,97 @@
+{
+  "listing": {
+    "sandbox/latest/": [
+      "sandbox/latest/meta.json",
+      "sandbox/latest/results_2024.json",
+      "sandbox/latest/team_ratings_2024.json",
+      "sandbox/latest/team_ratings_2026.json",
+      "sandbox/latest/track_record.json",
+      "sandbox/latest/week_predictions.json"
+    ],
+    "sandbox/v1/2026/w1/tuesday_primary/": [
+      "sandbox/v1/2026/w1/tuesday_primary/meta.json",
+      "sandbox/v1/2026/w1/tuesday_primary/team_ratings_2026.json",
+      "sandbox/v1/2026/w1/tuesday_primary/track_record.json",
+      "sandbox/v1/2026/w1/tuesday_primary/week_predictions.json"
+    ],
+    "latest/": [
+      "latest/meta.json",
+      "latest/results_2024.json",
+      "latest/team_ratings_2024.json",
+      "latest/track_record.json",
+      "latest/week_predictions.json"
+    ]
+  },
+  "objects": {
+    "week_predictions.json": {
+      "bytes": 162562,
+      "schema_version": "1.2.0",
+      "fixture": false,
+      "fixture_key_present": false,
+      "n_games": 91,
+      "all_ids_cfbd_shape": true,
+      "n_ids_failing_shape": 0,
+      "withdrawn_key_counts": {
+        "p_cover_home": 0,
+        "p_over": 0,
+        "p_ats_home": 0,
+        "p_ou_over": 0,
+        "p_cover_home_credible": 0,
+        "p_over_credible": 0
+      },
+      "kickoff_min": "2026-09-03T22:00:00+00:00",
+      "kickoff_max": "2026-09-07T23:30:00+00:00",
+      "as_of_precedes_every_kickoff": true,
+      "n_kickoff_before_as_of": 0,
+      "published_at": "2026-08-18T22:01:05Z",
+      "feature_time_label": "FEATURE_TIME=TUESDAY_DECISION",
+      "model_identity": {
+        "champion_version": 3,
+        "model_version": "production-v0_reduced_v3",
+        "registry_name": "ncaa-quant",
+        "run_id": "task23_fundamental_reduced_v3"
+      },
+      "sample_ids": [
+        "401858424",
+        "401864495",
+        "401858210",
+        "401856776",
+        "401858433"
+      ]
+    },
+    "track_record.json": {
+      "bytes": 6303,
+      "schema_version": "1.2.0",
+      "fixture": false,
+      "fixture_key_present": false
+    },
+    "meta.json": {
+      "bytes": 906,
+      "schema_version": "1.2.0",
+      "fixture": false,
+      "fixture_key_present": false,
+      "season": 2026,
+      "week": 1,
+      "published_at": "2026-08-18T22:01:05Z",
+      "next_expected_publish_utc": "2026-08-20T22:01:05Z",
+      "refresh_kind": "tuesday_primary"
+    },
+    "team_ratings_2026.json": {
+      "bytes": 107,
+      "schema_version": "1.2.0",
+      "fixture": false,
+      "fixture_key_present": false
+    }
+  },
+  "results_2026": {
+    "present": false,
+    "error": "NoSuchKey"
+  },
+  "production_latest_untouched_listing": [
+    "latest/meta.json",
+    "latest/results_2024.json",
+    "latest/team_ratings_2024.json",
+    "latest/track_record.json",
+    "latest/week_predictions.json"
+  ]
+}

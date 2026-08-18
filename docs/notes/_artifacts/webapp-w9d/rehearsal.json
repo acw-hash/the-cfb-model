@@ -1,0 +1,61 @@
+{
+  "timings": {
+    "rating_filter_sec": 235.24407870002324,
+    "execute_predict_publish_sec": 243.27642870001728,
+    "predict_after_ratings_sec": 8.03234999999404,
+    "export_sec": 0.03073890000814572,
+    "push_sec": 2.5411524000228383
+  },
+  "n_prediction_rows": 91,
+  "push": {
+    "bucket": "ridge-artifacts",
+    "upload_order": [
+      "team_ratings_2026.json",
+      "track_record.json",
+      "week_predictions.json",
+      "meta.json"
+    ],
+    "keys": [
+      "sandbox/v1/2026/w1/tuesday_primary/team_ratings_2026.json",
+      "sandbox/latest/team_ratings_2026.json",
+      "sandbox/v1/2026/w1/tuesday_primary/track_record.json",
+      "sandbox/latest/track_record.json",
+      "sandbox/v1/2026/w1/tuesday_primary/week_predictions.json",
+      "sandbox/latest/week_predictions.json",
+      "sandbox/v1/2026/w1/tuesday_primary/meta.json",
+      "sandbox/latest/meta.json"
+    ],
+    "content_hashes": {
+      "team_ratings_2026.json": "db5d568fcf2ac3b0b3a4f8eb1cc070040b6b4f798150728448c63ef720499eac",
+      "track_record.json": "4ccf0d9074b28cf5895cb98ac367d5e7985bf2aaf30eb07daa3312801ba50d83",
+      "week_predictions.json": "627610842b67d7eb04665a1b99438545ad646ee245db0423a8fcc7017a54a579",
+      "meta.json": "ab6d228190030b026244acba118bca15e7d26d9aa1ea655b5363da7c1e34dc60"
+    },
+    "meta_last": true,
+    "revalidation": null
+  },
+  "isolation_before": {
+    "tier_state": "66596cbc1a974c12c77820d60e819c6844f0624a360b649262576df0c832ba0d",
+    "tier_changes": "341c070dd32fd303c7e36c574a05e9addd4fd6602960d16c1b1919cbf6eb120d",
+    "idempotency": "ee51e24e2d4357ef419f5bd1258f6bdaa01920962ce0fa969b1011d804f59bfa",
+    "possessions": "e1101588c1bdb77b38a63a635802467793d2cf341537fe8311e2e2a312676df1"
+  },
+  "isolation_after": {
+    "tier_state": "66596cbc1a974c12c77820d60e819c6844f0624a360b649262576df0c832ba0d",
+    "tier_changes": "341c070dd32fd303c7e36c574a05e9addd4fd6602960d16c1b1919cbf6eb120d",
+    "idempotency": "ee51e24e2d4357ef419f5bd1258f6bdaa01920962ce0fa969b1011d804f59bfa",
+    "possessions": "e1101588c1bdb77b38a63a635802467793d2cf341537fe8311e2e2a312676df1"
+  },
+  "isolation_changed": [],
+  "redirected_tier_state": "C:\\Users\\alecw\\Projects\\the-cfb-model\\docs\\notes\\_artifacts\\webapp-w9d\\rehearsal_state\\tier_state.json",
+  "redirected_tier_changes": "C:\\Users\\alecw\\Projects\\the-cfb-model\\docs\\notes\\_artifacts\\webapp-w9d\\rehearsal_state\\tier_changes.jsonl",
+  "redirected_idempotency_dir": "C:\\Users\\alecw\\Projects\\the-cfb-model\\docs\\notes\\_artifacts\\webapp-w9d\\rehearsal_state\\pipeline_state",
+  "allowlist_drill": {
+    "raised": true,
+    "exception": "PublishedKeyAllowlistError",
+    "message": "unpublished keys in week_predictions.json.games[0]: ['unsanctioned_edge']",
+    "put_calls": 0
+  },
+  "inner_export_enabled": false,
+  "workstation_export_enabled": true
+}

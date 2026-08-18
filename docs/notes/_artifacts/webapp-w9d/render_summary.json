@@ -1,0 +1,30 @@
+{
+  "this_week": {
+    "url": "http://127.0.0.1:3010/",
+    "status": 200,
+    "n_chars": 8557,
+    "has_fixture_banner": false,
+    "has_maintenance": false
+  },
+  "game_detail": {
+    "url": "http://127.0.0.1:3010/game/401858424",
+    "status": 200,
+    "n_chars": 1277,
+    "has_fixture_banner": false,
+    "has_maintenance": false
+  },
+  "results": {
+    "url": "http://127.0.0.1:3010/results",
+    "status": 200,
+    "n_chars": 4692,
+    "has_fixture_banner": false,
+    "has_maintenance": false
+  },
+  "about": {
+    "url": "http://127.0.0.1:3010/about",
+    "status": 200,
+    "n_chars": 4451,
+    "has_fixture_banner": false,
+    "has_maintenance": false
+  }
+}

@@ -1,0 +1,140 @@
+{
+  "0.1": {
+    "2026_w1": {
+      "n_rows": 91,
+      "n_rows_raw_unordered": 4,
+      "fraction_raw_unordered": 0.04395604395604396,
+      "n_adjacent_decrease": 4,
+      "n_q10_changed_by_sort": 3,
+      "n_q90_changed_by_sort": 2,
+      "n_raw_q10_gt_q90": 0,
+      "cqr_nominal": 0.8,
+      "cqr_quantile_pair": [
+        0.1,
+        0.9
+      ],
+      "cqr_threshold": 6.8371215750064245,
+      "published_lo_shift_vs_unsorted": {
+        "min": 0.0,
+        "median": 0.0,
+        "p90": 0.0,
+        "max": 1.5463068513565048,
+        "mean": 0.03133021276823056
+      },
+      "published_hi_shift_vs_unsorted": {
+        "min": 0.0,
+        "median": 0.0,
+        "p90": 0.0,
+        "max": 2.9368319418740043,
+        "mean": 0.036468135874747315
+      },
+      "published_width_shift_vs_unsorted": {
+        "min": 0.0,
+        "median": 0.0,
+        "p90": 0.0,
+        "max": 4.483138793230502,
+        "mean": 0.0677983486429776
+      },
+      "n_published_lo_changed": 3,
+      "n_published_hi_changed": 2,
+      "q05_shift": {
+        "min": 0.0,
+        "median": 0.0,
+        "p90": 0.0,
+        "max": 1.5463068513565048,
+        "mean": 0.03133021276823055
+      },
+      "q95_shift": {
+        "min": 0.0,
+        "median": 0.0,
+        "p90": 0.0,
+        "max": 2.9368319418740043,
+        "mean": 0.036468135874747315
+      },
+      "universal": false,
+      "total_interval_note": "total_interval_* are null on the published GamePrediction; there is no total quantile head, so sort does not change totals.",
+      "elapsed_sec": 275.015997,
+      "n_predict_rows": 91,
+      "n_captures_this_call": 1,
+      "batch_warning_flag": true
+    },
+    "2024_w5": {
+      "n_rows": 56,
+      "n_rows_raw_unordered": 4,
+      "fraction_raw_unordered": 0.07142857142857142,
+      "n_adjacent_decrease": 4,
+      "n_q10_changed_by_sort": 1,
+      "n_q90_changed_by_sort": 3,
+      "n_raw_q10_gt_q90": 0,
+      "cqr_nominal": 0.8,
+      "cqr_quantile_pair": [
+        0.1,
+        0.9
+      ],
+      "cqr_threshold": 6.8371215750064245,
+      "published_lo_shift_vs_unsorted": {
+        "min": 0.0,
+        "median": 0.0,
+        "p90": 0.0,
+        "max": 0.34066233131763113,
+        "mean": 0.00608325591638627
+      },
+      "published_hi_shift_vs_unsorted": {
+        "min": 0.0,
+        "median": 0.0,
+        "p90": 0.0,
+        "max": 0.20729932213879465,
+        "mean": 0.005953533503181825
+      },
+      "published_width_shift_vs_unsorted": {
+        "min": 0.0,
+        "median": 0.0,
+        "p90": 0.0,
+        "max": 0.34066233131763113,
+        "mean": 0.012036789419568095
+      },
+      "n_published_lo_changed": 1,
+      "n_published_hi_changed": 3,
+      "q05_shift": {
+        "min": 0.0,
+        "median": 0.0,
+        "p90": 0.0,
+        "max": 0.34066233131763823,
+        "mean": 0.006083255916386397
+      },
+      "q95_shift": {
+        "min": 0.0,
+        "median": 0.0,
+        "p90": 0.0,
+        "max": 0.20729932213879465,
+        "mean": 0.005953533503181825
+      },
+      "universal": false,
+      "total_interval_note": "total_interval_* are null on the published GamePrediction; there is no total quantile head, so sort does not change totals.",
+      "elapsed_sec": 165.134579,
+      "n_predict_rows": 56,
+      "n_captures_this_call": 1,
+      "batch_warning_flag": true
+    }
+  },
+  "0.2": {
+    "label": "cfbd_incompleteness",
+    "n_api_fbs_week1": 99,
+    "n_staged_week1": 99,
+    "n_no_classification_week1": 389,
+    "n_no_class_home_fbs": 99,
+    "historical_week1": {
+      "2024": 146,
+      "2025": 142
+    },
+    "expected_to_grow_before_kickoff": true,
+    "reingest_indicated": false,
+    "note": "classification=fbs is the ingest query. A shortfall vs 2024/2025 with matching API and staged counts is CFBD schedule timing, not a partition or classification bug."
+  },
+  "0.3": {
+    "as_of": "2026-09-01T10:00:00+00:00",
+    "intended_publish": "2026-09-01T10:00:00+00:00",
+    "n_kickoff_before_as_of": 8,
+    "site": "Production latest/ currently serves 2024 fixture week-5 data (fixture=True, season=2024, week=5, n=56). No 2026 artifact is on latest/. Between now and the Tuesday week-1 publish the public site therefore continues to show 2024 fixture data, including through the opening weekend (games kick off 2026-08-29, before as_of)."
+  }
+}
