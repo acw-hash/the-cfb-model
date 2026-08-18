@@ -25,6 +25,8 @@ from ncaa_quant.webapp.push import (
     trigger_on_demand_revalidation,
 )
 
+FIXTURE_DIR = Path(__file__).resolve().parents[2] / "webapp" / "fixtures"
+
 
 class FakeS3:
     def __init__(self) -> None:
@@ -149,7 +151,7 @@ def test_push_revalidation_failure_is_nonfatal(
     transport = httpx.MockTransport(handler)
     with httpx.Client(transport=transport) as http:
         result = push_artifacts_to_r2(
-            {META_FILENAME: '{"schema_version":"1.1.0"}\n'},
+            {META_FILENAME: (FIXTURE_DIR / "meta.json").read_text(encoding="utf-8")},
             season=2026,
             week=1,
             refresh_kind="tuesday_primary",
@@ -178,7 +180,7 @@ def test_push_skips_revalidation_when_url_unset(monkeypatch: pytest.MonkeyPatch)
         )
     )
     result = push_artifacts_to_r2(
-        {META_FILENAME: "{}\n"},
+        {META_FILENAME: (FIXTURE_DIR / "meta.json").read_text(encoding="utf-8")},
         season=2026,
         week=1,
         refresh_kind="tuesday_primary",
@@ -292,8 +294,10 @@ def test_push_calls_revalidation_after_meta(
     with httpx.Client(transport=transport) as http:
         result = push_artifacts_to_r2(
             {
-                "week_predictions.json": "{}\n",
-                META_FILENAME: "{}\n",
+                "week_predictions.json": (FIXTURE_DIR / "week_predictions.json").read_text(
+                    encoding="utf-8"
+                ),
+                META_FILENAME: (FIXTURE_DIR / "meta.json").read_text(encoding="utf-8"),
             },
             season=2026,
             week=1,
@@ -360,7 +364,7 @@ def test_load_config_resolves_webapp_from_dotenv_without_shell_exports(
 
     # Stock push path: config=None → load_config(). Empty bucket raises R2PushError.
     result = push_artifacts_to_r2(
-        {META_FILENAME: "{}\n"},
+        {META_FILENAME: (FIXTURE_DIR / "meta.json").read_text(encoding="utf-8")},
         season=2026,
         week=1,
         refresh_kind="tuesday_primary",
@@ -416,9 +420,8 @@ def test_fixture_helper_export_enabled_uses_sandbox_not_latest(
         "prediction_rows": [{"game_id": "g-fix-1", "mu_margin": 1.0, "sigma_margin": 14.0}],
         "stale": {"is_stale": False},
     }
-    synthetic_week = (
-        '{"games":[{"game_id":"g-fix-1"},{"game_id":"g-fix-2"}],"schema_version":"1.1.0"}\n'
-    )
+    week_text = (FIXTURE_DIR / "week_predictions.json").read_text(encoding="utf-8")
+    meta_text = (FIXTURE_DIR / "meta.json").read_text(encoding="utf-8")
 
     monkeypatch.setattr(
         "ncaa_quant.pipelines.predict.run_predict_publish",
@@ -428,8 +431,8 @@ def test_fixture_helper_export_enabled_uses_sandbox_not_latest(
         "ncaa_quant.webapp.export.export_publish_artifacts",
         lambda *_a, **_kw: {
             "artifacts": {
-                "week_predictions.json": synthetic_week,
-                META_FILENAME: '{"schema_version":"1.1.0"}\n',
+                "week_predictions.json": week_text,
+                META_FILENAME: meta_text,
             }
         },
     )
@@ -451,12 +454,13 @@ def test_fixture_helper_export_enabled_uses_sandbox_not_latest(
 
 def test_live_push_refuses_synthetic_game_ids(monkeypatch: pytest.MonkeyPatch) -> None:
     cfg = _push_env(monkeypatch)
-    synthetic = (
-        '{"games":[{"game_id":"g-fix-1"},{"game_id":"401628373"}],"schema_version":"1.1.0"}\n'
-    )
+    week = json.loads((FIXTURE_DIR / "week_predictions.json").read_text(encoding="utf-8"))
+    week["games"][0]["game_id"] = "g-fix-1"
+    synthetic = json.dumps(week) + "\n"
+    meta = (FIXTURE_DIR / "meta.json").read_text(encoding="utf-8")
     with pytest.raises(R2PushError, match="refused live publish.*g-fix-1"):
         push_artifacts_to_r2(
-            {"week_predictions.json": synthetic, META_FILENAME: "{}\n"},
+            {"week_predictions.json": synthetic, META_FILENAME: meta},
             season=2024,
             week=5,
             refresh_kind="tuesday_primary",
@@ -471,14 +475,14 @@ def test_live_push_refuses_synthetic_game_ids(monkeypatch: pytest.MonkeyPatch) -
 def test_live_push_succeeds_with_real_fixture_game_ids(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    fixture_path = Path("webapp/fixtures/week_predictions.json")
-    week_predictions = fixture_path.read_text(encoding="utf-8")
+    week_predictions = (FIXTURE_DIR / "week_predictions.json").read_text(encoding="utf-8")
+    meta = (FIXTURE_DIR / "meta.json").read_text(encoding="utf-8")
     cfg = _push_env(monkeypatch)
     s3 = FakeS3()
     result = push_artifacts_to_r2(
         {
             "week_predictions.json": week_predictions,
-            META_FILENAME: '{"schema_version":"1.1.0"}\n',
+            META_FILENAME: meta,
         },
         season=2024,
         week=5,

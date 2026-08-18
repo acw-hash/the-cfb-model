@@ -126,4 +126,3 @@ export function assertConsumedOrWithdrawn(game: object): void {
     throw new Error(`game key is neither consumed nor withdrawn: ${neither.sort().join(", ")}`);
   }
 }
-

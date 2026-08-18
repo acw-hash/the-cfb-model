@@ -480,6 +480,8 @@ flowchart LR
 4. **Next.js** — Server Components fetch from R2 public URL (or Cloudflare Worker proxy if bucket is private-with-signed-edge); cache with ISR.
 5. **Pages** render read-only views; no mutation endpoints in v1.
 
+**Site suite (W9-1):** GitHub Actions `.github/workflows/site.yml` runs `npm ci`, `npm run typecheck`, `npm run lint`, `npm run test`, `npm run build` on every push and PR that touches `webapp/site/**`. Vercel `buildCommand` is `npm run guard` (typecheck + lint + test + `next build`). A failing guard fails the deploy, not only a local run. `installCommand` is `npm ci`.
+
 **Revalidation strategy:**
 
 | Mechanism | When |

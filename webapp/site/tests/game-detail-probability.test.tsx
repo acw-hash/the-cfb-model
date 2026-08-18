@@ -30,11 +30,7 @@ function renderGame(week: WeekPredictions): string {
   const source = week.games.find((g) => g.game_id === "401628373");
   expect(source).toBeDefined();
   return renderToStaticMarkup(
-    <GameDetail
-      game={projectGameDetailGame(source!)}
-      homeSeries={[]}
-      awaySeries={[]}
-    />,
+    <GameDetail game={projectGameDetailGame(source!)} homeSeries={[]} awaySeries={[]} />,
   );
 }
 

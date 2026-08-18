@@ -40,10 +40,7 @@ describe("published key allowlist (ADR 0015)", () => {
   it("1.1.0 extra keys are only WITHDRAWN_FIELDS; remaining keys are published", () => {
     const week = loadWeek("week_predictions.legacy-1.1.0.json");
     expect(week.schema_version).toBe("1.1.0");
-    const allowed = new Set<string>([
-      ...PUBLISHED_GAME_PREDICTION_KEYS,
-      ...WITHDRAWN_FIELDS,
-    ]);
+    const allowed = new Set<string>([...PUBLISHED_GAME_PREDICTION_KEYS, ...WITHDRAWN_FIELDS]);
     for (const game of week.games) {
       const keys = Object.keys(game);
       const extra = keys.filter((k) => !allowed.has(k));

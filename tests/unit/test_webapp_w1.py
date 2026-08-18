@@ -31,6 +31,7 @@ from ncaa_quant.webapp.push import META_FILENAME, push_artifacts_to_r2
 
 SCHEMA_DIR = Path(__file__).resolve().parents[2] / "src" / "ncaa_quant" / "webapp" / "schemas"
 REPO_ROOT = Path(__file__).resolve().parents[2]
+FIXTURE_DIR = REPO_ROOT / "webapp" / "fixtures"
 
 
 def _validate(instance: dict[str, Any], schema_name: str) -> None:
@@ -195,9 +196,11 @@ def test_push_meta_uploads_last(tmp_path: Path, monkeypatch: pytest.MonkeyPatch)
     )
     client = FakeS3()
     artifacts = {
-        "week_predictions.json": '{"games":[]}\n',
-        "track_record.json": '{"metrics":[]}\n',
-        META_FILENAME: '{"schema_version":"1.0.0"}\n',
+        "week_predictions.json": (FIXTURE_DIR / "week_predictions.json").read_text(
+            encoding="utf-8"
+        ),
+        "track_record.json": (FIXTURE_DIR / "track_record.json").read_text(encoding="utf-8"),
+        META_FILENAME: (FIXTURE_DIR / "meta.json").read_text(encoding="utf-8"),
     }
     result = push_artifacts_to_r2(
         artifacts,
@@ -225,7 +228,7 @@ def test_idempotent_repush_same_content(tmp_path: Path, monkeypatch: pytest.Monk
         )
     )
     client = FakeS3()
-    body = '{"schema_version":"1.0.0"}\n'
+    body = (FIXTURE_DIR / "meta.json").read_text(encoding="utf-8")
     artifacts = {META_FILENAME: body}
     first = push_artifacts_to_r2(
         artifacts,

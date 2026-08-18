@@ -15,6 +15,10 @@ from tenacity import retry, stop_after_attempt, wait_exponential
 from ncaa_quant.config import AppConfig, load_config, load_secrets
 from ncaa_quant.pipelines.notifications import AlertKind, Notifier, build_notifier, notify
 from ncaa_quant.utils.logging import get_logger
+from ncaa_quant.webapp.export import (
+    PUBLISHED_GAME_PREDICTION_KEYS,
+    PublishedKeyAllowlistError,
+)
 
 log = get_logger(__name__)
 
@@ -75,6 +79,307 @@ class S3Client(Protocol):
 
 class R2PushError(RuntimeError):
     """Raised when artifact push to R2 fails."""
+
+
+_RESULTS_FILENAME = re.compile(r"^results_[0-9]{4}\.json$")
+_RATINGS_FILENAME = re.compile(r"^team_ratings_[0-9]{4}\.json$")
+_TEAM_ID_KEY = re.compile(r"^[0-9]+$")
+
+_OPTIONAL_FIXTURE: frozenset[str] = frozenset({"fixture"})
+
+_META_KEYS: frozenset[str] = frozenset(
+    {
+        "schema_version",
+        "published_at",
+        "season",
+        "week",
+        "refresh_kind",
+        "next_expected_publish_utc",
+        "champion_model",
+        "publish_schedule",
+        "artifact_pointers",
+        "feature_time_label",
+        "ensemble_scope_label",
+        "vintage_label",
+    }
+)
+_CHAMPION_MODEL_KEYS: frozenset[str] = frozenset(
+    {"registry_name", "champion_version", "model_version", "registered_at"}
+)
+_PUBLISH_SCHEDULE_KEYS: frozenset[str] = frozenset({"primary", "refresh", "postgame_ratings"})
+_ARTIFACT_POINTER_KEYS: frozenset[str] = frozenset(
+    {"week_predictions", "track_record", "results_current_season", "team_ratings"}
+)
+
+_WEEK_KEYS: frozenset[str] = frozenset(
+    {
+        "schema_version",
+        "season",
+        "week",
+        "refresh_kind",
+        "published_at",
+        "feature_time_label",
+        "ensemble_scope_label",
+        "vintage_label",
+        "model_identity",
+        "publish_stale",
+        "games",
+    }
+)
+_MODEL_IDENTITY_KEYS: frozenset[str] = frozenset(
+    {"registry_name", "champion_version", "model_version", "run_id"}
+)
+_PUBLISH_STALE_KEYS: frozenset[str] = frozenset({"is_stale", "combined_stamp", "sources"})
+_STALE_SOURCE_KEYS: frozenset[str] = frozenset({"source", "age_hours", "last_good_at"})
+_CONVICTION_BASIS_KEYS: frozenset[str] = frozenset(
+    {
+        "p_favored",
+        "p_win_home",
+        "mu_margin",
+        "sigma_margin",
+        "mu_sigma_ratio",
+        "favored_side",
+        "hysteresis_applied",
+        "previous_tier",
+        "raw_tier",
+    }
+)
+
+_TRACK_KEYS: frozenset[str] = frozenset(
+    {
+        "schema_version",
+        "published_at",
+        "source_memo",
+        "verdict",
+        "metrics",
+        "ensemble_scope_label",
+        "vintage_labels",
+    }
+)
+_VERDICT_KEYS: frozenset[str] = frozenset({"label", "plain_language"})
+_METRIC_KEYS: frozenset[str] = frozenset(
+    {
+        "id",
+        "label",
+        "value",
+        "unit",
+        "ci_lower",
+        "ci_upper",
+        "ci_kind",
+        "n",
+        "notes",
+        "regime",
+        "vintage",
+        "run",
+    }
+)
+
+_RESULTS_KEYS: frozenset[str] = frozenset(
+    {"schema_version", "season", "published_at", "grading_rule", "games"}
+)
+_GRADED_GAME_KEYS: frozenset[str] = frozenset(
+    {
+        "game_id",
+        "week",
+        "kickoff_utc",
+        "home_team",
+        "away_team",
+        "home_points",
+        "away_points",
+        "actual_margin",
+        "actual_total",
+        "graded_from",
+        "mu_margin",
+        "sigma_margin",
+        "margin_interval_lo",
+        "margin_interval_hi",
+        "margin_interval_nominal",
+        "mu_total",
+        "total_interval_lo",
+        "total_interval_hi",
+        "total_interval_nominal",
+        "p_win_home",
+        "conviction_tier",
+        "conviction_team",
+        "conviction_label",
+        "margin_interval_hit",
+        "total_interval_hit",
+        "home_win",
+        "p_win_home_realized",
+        "grade_status",
+    }
+)
+_GRADED_FROM_KEYS: frozenset[str] = frozenset({"refresh_kind", "published_at"})
+
+_RATINGS_KEYS: frozenset[str] = frozenset({"schema_version", "season", "published_at", "teams"})
+_TEAM_ENTRY_KEYS: frozenset[str] = frozenset({"school", "weeks"})
+_TEAM_WEEK_KEYS: frozenset[str] = frozenset(
+    {"week", "as_of_utc", "off_epa", "def_epa", "pace", "off_sd", "def_sd"}
+)
+
+
+def _assert_exact_keys(
+    obj: Mapping[str, Any],
+    *,
+    required: frozenset[str],
+    optional: frozenset[str] = frozenset(),
+    path: str,
+) -> None:
+    present = set(obj.keys())
+    extra = present - required - optional
+    missing = required - present
+    if extra:
+        msg = f"unpublished keys in {path}: {sorted(extra)}"
+        raise PublishedKeyAllowlistError(msg)
+    if missing:
+        msg = f"published {path} missing required keys: {sorted(missing)}"
+        raise PublishedKeyAllowlistError(msg)
+
+
+def _require_object(value: Any, path: str) -> Mapping[str, Any]:
+    if not isinstance(value, dict):
+        msg = f"{path} is not an object"
+        raise PublishedKeyAllowlistError(msg)
+    return value
+
+
+def _assert_stale_sources(value: Any, path: str) -> None:
+    if not isinstance(value, list):
+        msg = f"{path} is not an array"
+        raise PublishedKeyAllowlistError(msg)
+    for i, item in enumerate(value):
+        src = _require_object(item, f"{path}[{i}]")
+        _assert_exact_keys(src, required=_STALE_SOURCE_KEYS, path=f"{path}[{i}]")
+
+
+def _assert_game_prediction_object(game: Mapping[str, Any], path: str) -> None:
+    _assert_exact_keys(game, required=PUBLISHED_GAME_PREDICTION_KEYS, path=path)
+    basis = game.get("conviction_basis")
+    if basis is not None:
+        nested = _require_object(basis, f"{path}.conviction_basis")
+        _assert_exact_keys(nested, required=_CONVICTION_BASIS_KEYS, path=f"{path}.conviction_basis")
+    _assert_stale_sources(game.get("stale_sources"), f"{path}.stale_sources")
+
+
+def _assert_meta(payload: Mapping[str, Any], filename: str) -> None:
+    _assert_exact_keys(payload, required=_META_KEYS, optional=_OPTIONAL_FIXTURE, path=filename)
+    champion = _require_object(payload.get("champion_model"), f"{filename}.champion_model")
+    _assert_exact_keys(champion, required=_CHAMPION_MODEL_KEYS, path=f"{filename}.champion_model")
+    schedule = _require_object(payload.get("publish_schedule"), f"{filename}.publish_schedule")
+    _assert_exact_keys(
+        schedule, required=_PUBLISH_SCHEDULE_KEYS, path=f"{filename}.publish_schedule"
+    )
+    pointers = _require_object(payload.get("artifact_pointers"), f"{filename}.artifact_pointers")
+    _assert_exact_keys(
+        pointers, required=_ARTIFACT_POINTER_KEYS, path=f"{filename}.artifact_pointers"
+    )
+
+
+def _assert_week_predictions(payload: Mapping[str, Any], filename: str) -> None:
+    _assert_exact_keys(payload, required=_WEEK_KEYS, optional=_OPTIONAL_FIXTURE, path=filename)
+    identity = _require_object(payload.get("model_identity"), f"{filename}.model_identity")
+    _assert_exact_keys(identity, required=_MODEL_IDENTITY_KEYS, path=f"{filename}.model_identity")
+    stale = _require_object(payload.get("publish_stale"), f"{filename}.publish_stale")
+    _assert_exact_keys(stale, required=_PUBLISH_STALE_KEYS, path=f"{filename}.publish_stale")
+    _assert_stale_sources(stale.get("sources"), f"{filename}.publish_stale.sources")
+    games = payload.get("games")
+    if not isinstance(games, list):
+        msg = f"{filename}.games is not an array"
+        raise PublishedKeyAllowlistError(msg)
+    for i, game in enumerate(games):
+        row = _require_object(game, f"{filename}.games[{i}]")
+        _assert_game_prediction_object(row, f"{filename}.games[{i}]")
+
+
+def _assert_track_record(payload: Mapping[str, Any], filename: str) -> None:
+    _assert_exact_keys(payload, required=_TRACK_KEYS, optional=_OPTIONAL_FIXTURE, path=filename)
+    verdict = _require_object(payload.get("verdict"), f"{filename}.verdict")
+    _assert_exact_keys(verdict, required=_VERDICT_KEYS, path=f"{filename}.verdict")
+    metrics = payload.get("metrics")
+    if not isinstance(metrics, list):
+        msg = f"{filename}.metrics is not an array"
+        raise PublishedKeyAllowlistError(msg)
+    for i, metric in enumerate(metrics):
+        row = _require_object(metric, f"{filename}.metrics[{i}]")
+        _assert_exact_keys(row, required=_METRIC_KEYS, path=f"{filename}.metrics[{i}]")
+
+
+def _assert_results(payload: Mapping[str, Any], filename: str) -> None:
+    _assert_exact_keys(payload, required=_RESULTS_KEYS, optional=_OPTIONAL_FIXTURE, path=filename)
+    games = payload.get("games")
+    if not isinstance(games, list):
+        msg = f"{filename}.games is not an array"
+        raise PublishedKeyAllowlistError(msg)
+    for i, game in enumerate(games):
+        row = _require_object(game, f"{filename}.games[{i}]")
+        _assert_exact_keys(row, required=_GRADED_GAME_KEYS, path=f"{filename}.games[{i}]")
+        graded_from = row.get("graded_from")
+        if graded_from is not None:
+            nested = _require_object(graded_from, f"{filename}.games[{i}].graded_from")
+            _assert_exact_keys(
+                nested, required=_GRADED_FROM_KEYS, path=f"{filename}.games[{i}].graded_from"
+            )
+
+
+def _assert_team_ratings(payload: Mapping[str, Any], filename: str) -> None:
+    _assert_exact_keys(payload, required=_RATINGS_KEYS, optional=_OPTIONAL_FIXTURE, path=filename)
+    teams = _require_object(payload.get("teams"), f"{filename}.teams")
+    for team_id, entry in teams.items():
+        if not _TEAM_ID_KEY.fullmatch(str(team_id)):
+            msg = f"unpublished keys in {filename}.teams: {[str(team_id)]}"
+            raise PublishedKeyAllowlistError(msg)
+        team_path = f"{filename}.teams.{team_id}"
+        team = _require_object(entry, team_path)
+        _assert_exact_keys(team, required=_TEAM_ENTRY_KEYS, path=team_path)
+        weeks = team.get("weeks")
+        if not isinstance(weeks, list):
+            msg = f"{team_path}.weeks is not an array"
+            raise PublishedKeyAllowlistError(msg)
+        for i, week in enumerate(weeks):
+            snap = _require_object(week, f"{team_path}.weeks[{i}]")
+            _assert_exact_keys(snap, required=_TEAM_WEEK_KEYS, path=f"{team_path}.weeks[{i}]")
+
+
+def _artifact_kind(filename: str) -> str:
+    if filename == "week_predictions.json":
+        return "week_predictions"
+    if filename == "track_record.json":
+        return "track_record"
+    if filename == META_FILENAME:
+        return "meta"
+    if _RESULTS_FILENAME.fullmatch(filename):
+        return "results"
+    if _RATINGS_FILENAME.fullmatch(filename):
+        return "team_ratings"
+    msg = f"unpublished artifact filename: {filename}"
+    raise PublishedKeyAllowlistError(msg)
+
+
+def assert_push_artifact_allowlists(artifacts: Mapping[str, str | bytes]) -> None:
+    """Refuse any write whose objects carry keys outside the sanctioned set.
+
+    Exact allowlist per artifact type — unknown keys fail. Runs on every
+    ``push_artifacts_to_r2`` call, including sandbox and operator restore.
+    """
+    for filename, content in artifacts.items():
+        kind = _artifact_kind(filename)
+        text = content.decode("utf-8") if isinstance(content, bytes) else content
+        try:
+            payload = json.loads(text)
+        except json.JSONDecodeError as exc:
+            msg = f"invalid JSON in {filename}: {exc}"
+            raise PublishedKeyAllowlistError(msg) from exc
+        obj = _require_object(payload, filename)
+        if kind == "week_predictions":
+            _assert_week_predictions(obj, filename)
+        elif kind == "track_record":
+            _assert_track_record(obj, filename)
+        elif kind == "meta":
+            _assert_meta(obj, filename)
+        elif kind == "results":
+            _assert_results(obj, filename)
+        else:
+            _assert_team_ratings(obj, filename)
 
 
 def artifact_object_keys(
@@ -237,7 +542,10 @@ def push_artifacts_to_r2(
     After ``meta.json`` lands (last), triggers on-demand revalidation when
     ``webapp.revalidate_url`` is configured. Revalidation failure is best-effort:
     it alerts via the notifier and does not fail the push.
+
+    Key allowlist runs on every call (live, sandbox, restore) before any upload.
     """
+    assert_push_artifact_allowlists(artifacts)
     cfg = config or load_config()
     secrets = load_secrets()
     bucket = cfg.webapp.r2_bucket

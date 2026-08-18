@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run && node scripts/check-tokens.mjs",
     "check:tokens": "node scripts/check-tokens.mjs",
+    "guard": "npm run typecheck && npm run lint && npm run test && npm run build",
     "format": "prettier --write ."
   },
   "dependencies": {
