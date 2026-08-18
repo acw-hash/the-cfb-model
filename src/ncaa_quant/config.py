@@ -41,7 +41,7 @@ class DataConfig(BaseModel):
     """Ingestion and feature-construction parameters."""
 
     start_season: int = 2014
-    end_season: int = 2025
+    end_season: int = 2026
     garbage_wp_low: float = 0.02
     garbage_wp_high: float = 0.98
     ewma_half_life_efficiency: float = 6.5

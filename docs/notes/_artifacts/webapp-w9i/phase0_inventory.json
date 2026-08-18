@@ -1,0 +1,834 @@
+{
+  "inspected_at": "2026-08-18T11:44:33Z",
+  "policy": "hygiene counts and operational inventory; no 2025 metrics",
+  "games": {
+    "2024": {
+      "season": 2024,
+      "dir_exists": true,
+      "week_dirs": [
+        "week=1",
+        "week=10",
+        "week=11",
+        "week=12",
+        "week=13",
+        "week=14",
+        "week=15",
+        "week=16",
+        "week=2",
+        "week=3",
+        "week=4",
+        "week=5",
+        "week=6",
+        "week=7",
+        "week=8",
+        "week=9"
+      ],
+      "n_rows": 920,
+      "columns": [
+        "away_points",
+        "away_team_id",
+        "completed",
+        "conference_game",
+        "event_time",
+        "event_time_estimated",
+        "game_id",
+        "home_points",
+        "home_team_id",
+        "ingested_at",
+        "neutral_site",
+        "season",
+        "season_type",
+        "source_version",
+        "start_date",
+        "venue_id",
+        "week"
+      ],
+      "n_by_week": {
+        "1": 146,
+        "2": 78,
+        "3": 63,
+        "4": 64,
+        "5": 56,
+        "6": 49,
+        "7": 52,
+        "8": 59,
+        "9": 57,
+        "10": 49,
+        "11": 50,
+        "12": 55,
+        "13": 65,
+        "14": 67,
+        "15": 9,
+        "16": 1
+      },
+      "season_type": {
+        "regular": 874,
+        "postseason": 46
+      },
+      "completed_true": 919,
+      "completed_false": 1,
+      "completed_na": 0,
+      "completed_by_week": {
+        "1": {
+          "n": 146,
+          "completed_true": 146,
+          "completed_false": 0
+        },
+        "2": {
+          "n": 78,
+          "completed_true": 78,
+          "completed_false": 0
+        },
+        "3": {
+          "n": 63,
+          "completed_true": 63,
+          "completed_false": 0
+        },
+        "4": {
+          "n": 64,
+          "completed_true": 64,
+          "completed_false": 0
+        },
+        "5": {
+          "n": 56,
+          "completed_true": 55,
+          "completed_false": 1
+        },
+        "6": {
+          "n": 49,
+          "completed_true": 49,
+          "completed_false": 0
+        },
+        "7": {
+          "n": 52,
+          "completed_true": 52,
+          "completed_false": 0
+        },
+        "8": {
+          "n": 59,
+          "completed_true": 59,
+          "completed_false": 0
+        },
+        "9": {
+          "n": 57,
+          "completed_true": 57,
+          "completed_false": 0
+        },
+        "10": {
+          "n": 49,
+          "completed_true": 49,
+          "completed_false": 0
+        },
+        "11": {
+          "n": 50,
+          "completed_true": 50,
+          "completed_false": 0
+        },
+        "12": {
+          "n": 55,
+          "completed_true": 55,
+          "completed_false": 0
+        },
+        "13": {
+          "n": 65,
+          "completed_true": 65,
+          "completed_false": 0
+        },
+        "14": {
+          "n": 67,
+          "completed_true": 67,
+          "completed_false": 0
+        },
+        "15": {
+          "n": 9,
+          "completed_true": 9,
+          "completed_false": 0
+        },
+        "16": {
+          "n": 1,
+          "completed_true": 1,
+          "completed_false": 0
+        }
+      },
+      "event_time_min": "2024-08-24 19:30:00+00:00",
+      "event_time_max": "2025-01-21 04:00:00+00:00",
+      "event_time_max_completed": "2025-01-21 04:00:00+00:00",
+      "has_both_scores": 919,
+      "missing_score": 1,
+      "missing_score_by_week": {
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 1,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0,
+        "10": 0,
+        "11": 0,
+        "12": 0,
+        "13": 0,
+        "14": 0,
+        "15": 0,
+        "16": 0
+      },
+      "newest_part": "C:/Users/alecw/Projects/the-cfb-model/data/staged/games/season=2024/week=6/part.parquet",
+      "newest_mtime": "2026-08-07T17:13:20Z"
+    },
+    "2025": {
+      "season": 2025,
+      "dir_exists": true,
+      "week_dirs": [
+        "week=1",
+        "week=10",
+        "week=11",
+        "week=12",
+        "week=13",
+        "week=14",
+        "week=15",
+        "week=16",
+        "week=2",
+        "week=3",
+        "week=4",
+        "week=5",
+        "week=6",
+        "week=7",
+        "week=8",
+        "week=9"
+      ],
+      "n_rows": 934,
+      "columns": [
+        "away_points",
+        "away_team_id",
+        "completed",
+        "conference_game",
+        "event_time",
+        "event_time_estimated",
+        "game_id",
+        "home_points",
+        "home_team_id",
+        "ingested_at",
+        "neutral_site",
+        "season",
+        "season_type",
+        "source_version",
+        "start_date",
+        "venue_id",
+        "week"
+      ],
+      "n_by_week": {
+        "1": 142,
+        "2": 83,
+        "3": 70,
+        "4": 62,
+        "5": 53,
+        "6": 51,
+        "7": 56,
+        "8": 60,
+        "9": 53,
+        "10": 52,
+        "11": 52,
+        "12": 59,
+        "13": 64,
+        "14": 67,
+        "15": 9,
+        "16": 1
+      },
+      "season_type": {
+        "regular": 888,
+        "postseason": 46
+      },
+      "completed_true": 934,
+      "completed_false": 0,
+      "completed_na": 0,
+      "completed_by_week": {
+        "1": {
+          "n": 142,
+          "completed_true": 142,
+          "completed_false": 0
+        },
+        "2": {
+          "n": 83,
+          "completed_true": 83,
+          "completed_false": 0
+        },
+        "3": {
+          "n": 70,
+          "completed_true": 70,
+          "completed_false": 0
+        },
+        "4": {
+          "n": 62,
+          "completed_true": 62,
+          "completed_false": 0
+        },
+        "5": {
+          "n": 53,
+          "completed_true": 53,
+          "completed_false": 0
+        },
+        "6": {
+          "n": 51,
+          "completed_true": 51,
+          "completed_false": 0
+        },
+        "7": {
+          "n": 56,
+          "completed_true": 56,
+          "completed_false": 0
+        },
+        "8": {
+          "n": 60,
+          "completed_true": 60,
+          "completed_false": 0
+        },
+        "9": {
+          "n": 53,
+          "completed_true": 53,
+          "completed_false": 0
+        },
+        "10": {
+          "n": 52,
+          "completed_true": 52,
+          "completed_false": 0
+        },
+        "11": {
+          "n": 52,
+          "completed_true": 52,
+          "completed_false": 0
+        },
+        "12": {
+          "n": 59,
+          "completed_true": 59,
+          "completed_false": 0
+        },
+        "13": {
+          "n": 64,
+          "completed_true": 64,
+          "completed_false": 0
+        },
+        "14": {
+          "n": 67,
+          "completed_true": 67,
+          "completed_false": 0
+        },
+        "15": {
+          "n": 9,
+          "completed_true": 9,
+          "completed_false": 0
+        },
+        "16": {
+          "n": 1,
+          "completed_true": 1,
+          "completed_false": 0
+        }
+      },
+      "event_time_min": "2025-08-23 19:30:00+00:00",
+      "event_time_max": "2026-01-20 04:00:00+00:00",
+      "event_time_max_completed": "2026-01-20 04:00:00+00:00",
+      "has_both_scores": 934,
+      "missing_score": 0,
+      "missing_score_by_week": {
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0,
+        "10": 0,
+        "11": 0,
+        "12": 0,
+        "13": 0,
+        "14": 0,
+        "15": 0,
+        "16": 0
+      },
+      "newest_part": "C:/Users/alecw/Projects/the-cfb-model/data/staged/games/season=2025/week=1/part.parquet",
+      "newest_mtime": "2026-08-07T17:13:20Z"
+    },
+    "2026": {
+      "season": 2026,
+      "dir_exists": false,
+      "week_dirs": []
+    }
+  },
+  "teams": {
+    "2024": {
+      "table": "teams",
+      "season": 2024,
+      "exists": true,
+      "mtime": "2026-08-05T14:04:28Z",
+      "n": 679,
+      "bytes": 22461
+    },
+    "2025": {
+      "table": "teams",
+      "season": 2025,
+      "exists": true,
+      "mtime": "2026-08-05T14:05:28Z",
+      "n": 681,
+      "bytes": 22549
+    },
+    "2026": {
+      "table": "teams",
+      "season": 2026,
+      "exists": false,
+      "mtime": null,
+      "n": 0
+    }
+  },
+  "venues": {
+    "2024": {
+      "table": "venues",
+      "season": 2024,
+      "exists": true,
+      "mtime": "2026-08-07T17:07:05Z",
+      "n": 844,
+      "bytes": 54238
+    },
+    "2025": {
+      "table": "venues",
+      "season": 2025,
+      "exists": true,
+      "mtime": "2026-08-07T17:07:05Z",
+      "n": 844,
+      "bytes": 54238
+    },
+    "2026": {
+      "table": "venues",
+      "season": 2026,
+      "exists": false,
+      "mtime": null,
+      "n": 0
+    }
+  },
+  "obs_hygiene_2025": {
+    "advanced_box": {
+      "table": "advanced_box",
+      "season": 2025,
+      "dir_exists": true,
+      "n_week_parts": 16,
+      "n_rows": 3302,
+      "weeks": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "n_by_week": {
+        "1": 375,
+        "10": 220,
+        "11": 229,
+        "12": 240,
+        "13": 244,
+        "14": 156,
+        "15": 36,
+        "16": 10,
+        "2": 233,
+        "3": 241,
+        "4": 229,
+        "5": 214,
+        "6": 214,
+        "7": 219,
+        "8": 218,
+        "9": 224
+      }
+    },
+    "plays": {
+      "table": "plays",
+      "season": 2025,
+      "dir_exists": true,
+      "n_week_parts": 16,
+      "n_rows": 166057,
+      "weeks": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "n_by_week": {
+        "1": 24830,
+        "10": 9217,
+        "11": 9357,
+        "12": 10393,
+        "13": 11479,
+        "14": 11908,
+        "15": 1602,
+        "16": 140,
+        "2": 15147,
+        "3": 12320,
+        "4": 10919,
+        "5": 9438,
+        "6": 8892,
+        "7": 9950,
+        "8": 10838,
+        "9": 9627
+      }
+    },
+    "drives": {
+      "table": "drives",
+      "season": 2025,
+      "dir_exists": false
+    }
+  },
+  "obs_hygiene_2024": {
+    "advanced_box": {
+      "table": "advanced_box",
+      "season": 2024,
+      "dir_exists": true,
+      "n_week_parts": 16,
+      "n_rows": 3201,
+      "weeks": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "n_by_week": {
+        "1": 364,
+        "10": 206,
+        "11": 218,
+        "12": 222,
+        "13": 242,
+        "14": 152,
+        "15": 36,
+        "16": 10,
+        "2": 255,
+        "3": 224,
+        "4": 223,
+        "5": 199,
+        "6": 201,
+        "7": 205,
+        "8": 224,
+        "9": 220
+      }
+    },
+    "plays": {
+      "table": "plays",
+      "season": 2024,
+      "dir_exists": true,
+      "n_week_parts": 16,
+      "n_rows": 162726,
+      "weeks": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "n_by_week": {
+        "1": 25407,
+        "10": 8882,
+        "11": 8847,
+        "12": 9842,
+        "13": 11527,
+        "14": 11961,
+        "15": 1546,
+        "16": 146,
+        "2": 13706,
+        "3": 10987,
+        "4": 11389,
+        "5": 9760,
+        "6": 8654,
+        "7": 9415,
+        "8": 10519,
+        "9": 10138
+      }
+    },
+    "drives": {
+      "table": "drives",
+      "season": 2024,
+      "dir_exists": false
+    }
+  },
+  "filter_history": {
+    "path": "C:/Users/alecw/Projects/the-cfb-model/data/artifacts/state_space/filter_history.parquet",
+    "exists": true,
+    "mtime": "2026-08-10T19:10:49Z",
+    "bytes": 2760832,
+    "n_rows": 37869,
+    "columns": [
+      "team_id",
+      "season",
+      "week",
+      "game_id",
+      "event_time",
+      "kind",
+      "off_epa",
+      "sd_off_epa",
+      "def_epa",
+      "sd_def_epa",
+      "st_value",
+      "sd_st_value",
+      "pace",
+      "sd_pace",
+      "cov"
+    ],
+    "seasons": [
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+    ],
+    "n_by_season": {
+      "2014": 3126,
+      "2015": 3178,
+      "2016": 3139,
+      "2017": 3206,
+      "2018": 3229,
+      "2019": 3254,
+      "2020": 2203,
+      "2021": 3243,
+      "2022": 3258,
+      "2023": 3317,
+      "2024": 3330,
+      "2025": 3386
+    },
+    "n_2025": 3386,
+    "n_2025_by_week": {
+      "1": 372,
+      "2": 266,
+      "3": 234,
+      "4": 226,
+      "5": 208,
+      "6": 202,
+      "7": 224,
+      "8": 238,
+      "9": 212,
+      "10": 208,
+      "11": 206,
+      "12": 234,
+      "13": 248,
+      "14": 268,
+      "15": 36,
+      "16": 4
+    },
+    "2025_event_time_min": "2025-08-23 19:30:00+00:00",
+    "2025_event_time_max": "2026-01-20 04:00:00+00:00",
+    "n_2024": 3330,
+    "team_col": "team_id",
+    "rating_cols": [
+      "off_epa",
+      "sd_off_epa",
+      "def_epa",
+      "sd_def_epa",
+      "st_value",
+      "sd_st_value",
+      "pace",
+      "sd_pace"
+    ],
+    "n_teams_both_years": 136,
+    "off_epa_delta_eoy2025_minus_eoy2024": {
+      "n": 136,
+      "n_identical": 0,
+      "n_moved": 136,
+      "min": -0.3393247185013935,
+      "max": 0.29671941825481984,
+      "median_abs": 0.08317453055559718
+    },
+    "sample_team_off_epa": [
+      {
+        "team_id": 2623,
+        "off_epa_eoy2024": -0.060077934712246234,
+        "off_epa_eoy2025": 0.028774128979612828
+      },
+      {
+        "team_id": 70,
+        "off_epa_eoy2024": -0.11384259473251553,
+        "off_epa_eoy2025": -0.03563223304125484
+      },
+      {
+        "team_id": 2199,
+        "off_epa_eoy2024": -0.11849156457742178,
+        "off_epa_eoy2025": -0.012582008091541523
+      },
+      {
+        "team_id": 2309,
+        "off_epa_eoy2024": -0.2666030253952401,
+        "off_epa_eoy2025": -0.04427369418021708
+      },
+      {
+        "team_id": 2006,
+        "off_epa_eoy2024": -0.08485914240251068,
+        "off_epa_eoy2025": -0.17156972157794456
+      },
+      {
+        "team_id": 275,
+        "off_epa_eoy2024": -0.034585248973362015,
+        "off_epa_eoy2025": -0.07137574379379608
+      },
+      {
+        "team_id": 204,
+        "off_epa_eoy2024": -0.12173266387392291,
+        "off_epa_eoy2025": -0.2529982840289643
+      },
+      {
+        "team_id": 2050,
+        "off_epa_eoy2024": -0.04991172307483847,
+        "off_epa_eoy2025": -0.26595671641922514
+      }
+    ]
+  },
+  "v3_week1": {
+    "path": "C:/Users/alecw/Projects/the-cfb-model/data/backtests/task23_fundamental_reduced_v3/full/predictions.parquet",
+    "exists": true,
+    "n": 4944,
+    "seasons": [
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024
+    ],
+    "n_2025": 0,
+    "w1_2021_2024_n": 545,
+    "w1_by_season": {
+      "2021": 127,
+      "2022": 136,
+      "2023": 136,
+      "2024": 146
+    },
+    "w1_null_reason_counts": {
+      "None": 545
+    },
+    "w1_mu": {
+      "n": 545,
+      "n_finite": 545,
+      "min": -29.20043724593039,
+      "max": 46.87281661630492
+    },
+    "w1_sigma": {
+      "n_finite": 545,
+      "n_missing": 0,
+      "min": 11.37730485466391,
+      "max": 28.684370257437898
+    },
+    "w1_feat_cols_n": 0,
+    "n_2019_w1": 0,
+    "n_2019": 763
+  },
+  "other": {
+    "registry_index": {
+      "path": "C:/Users/alecw/Projects/the-cfb-model/data/registry/registry_index.json",
+      "exists": true,
+      "mtime": "2026-08-17T20:41:49Z",
+      "bytes": 4231
+    },
+    "v2_ensemble": {
+      "path": "C:/Users/alecw/Projects/the-cfb-model/data/registry/artifacts/v2/production_ensemble.pkl",
+      "exists": true,
+      "mtime": "2026-08-17T20:41:49Z",
+      "bytes": 8772060
+    },
+    "v2_manifest": {
+      "path": "C:/Users/alecw/Projects/the-cfb-model/data/registry/artifacts/v2/manifest.json",
+      "exists": true,
+      "mtime": "2026-08-17T20:41:49Z",
+      "bytes": 826
+    },
+    "v2_rating_snapshot": {
+      "path": "C:/Users/alecw/Projects/the-cfb-model/data/registry/artifacts/v2/rating_snapshot.json",
+      "exists": true,
+      "mtime": "2026-08-17T20:41:49Z",
+      "bytes": 73970
+    },
+    "possessions_live": {
+      "path": "C:/Users/alecw/Projects/the-cfb-model/data/artifacts/expected_possessions/live.json",
+      "exists": true,
+      "mtime": "2026-08-10T19:04:19Z",
+      "bytes": 406
+    },
+    "tier_state": {
+      "path": "C:/Users/alecw/Projects/the-cfb-model/data/webapp/tier_state.json",
+      "exists": true,
+      "mtime": "2026-08-18T00:39:18Z",
+      "bytes": 4061
+    },
+    "tier_changes": {
+      "path": "C:/Users/alecw/Projects/the-cfb-model/data/webapp/tier_changes.jsonl",
+      "exists": true,
+      "mtime": "2026-08-18T00:39:17Z",
+      "bytes": 18054
+    },
+    "idempotency": {
+      "path": "C:/Users/alecw/Projects/the-cfb-model/data/pipeline_state/idempotency.json",
+      "exists": true,
+      "mtime": "2026-08-18T00:38:28Z",
+      "bytes": 8285
+    },
+    "priors": {
+      "path": "C:/Users/alecw/Projects/the-cfb-model/data/tmp/priors_acceptance_15/week1_priors.parquet",
+      "exists": true,
+      "mtime": "2026-08-05T00:44:56Z",
+      "bytes": 37266
+    },
+    "champion3_w5": {
+      "path": "C:/Users/alecw/Projects/the-cfb-model/data/backtests/task23_fundamental_reduced_v2/full/weeks/season=2024_week=5.parquet",
+      "exists": true,
+      "mtime": "2026-08-11T19:19:59Z",
+      "bytes": 50860
+    },
+    "calibrator_paths": [],
+    "raw_games_s2026": []
+  }
+}

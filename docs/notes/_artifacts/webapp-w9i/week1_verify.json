@@ -1,0 +1,93 @@
+{
+  "inspected_at": "2026-08-18T11:57:18Z",
+  "data_end_season": 2026,
+  "season_of_now": 2026,
+  "week_of_now": 0,
+  "publish_flow_default_week": 1,
+  "week_dirs": [
+    "week=1",
+    "week=10",
+    "week=11",
+    "week=12",
+    "week=13",
+    "week=15",
+    "week=2",
+    "week=3",
+    "week=4",
+    "week=5",
+    "week=6",
+    "week=7",
+    "week=8",
+    "week=9"
+  ],
+  "n_by_week": {
+    "1": 99,
+    "10": 63,
+    "11": 67,
+    "12": 70,
+    "13": 65,
+    "15": 1,
+    "2": 86,
+    "3": 75,
+    "4": 71,
+    "5": 59,
+    "6": 58,
+    "7": 62,
+    "8": 56,
+    "9": 56
+  },
+  "week0": {
+    "exists": false,
+    "n": 0
+  },
+  "week1": {
+    "n": 99,
+    "date_range": {
+      "start_date_min": "2026-08-29 16:00:00+00:00",
+      "start_date_max": "2026-09-07 23:30:00+00:00",
+      "n_null_start_date": 0,
+      "n_kickoff_future": 99,
+      "n_kickoff_past": 0,
+      "start_date_tz": "UTC",
+      "event_time_is_ingest_clamp_for_unplayed": true,
+      "event_time_min": "2026-08-18 11:56:21.534027+00:00",
+      "event_time_max": "2026-08-18 11:56:21.534027+00:00"
+    },
+    "five_ids": [
+      "401858424",
+      "401866408",
+      "401864494",
+      "401864495",
+      "401858210"
+    ],
+    "five_kickoffs_utc": [
+      "2026-09-04 01:00:00+00:00",
+      "2026-08-29 22:30:00+00:00",
+      "2026-08-29 19:00:00+00:00",
+      "2026-09-04 22:30:00+00:00",
+      "2026-09-06 02:30:00+00:00"
+    ],
+    "all_ids_match_cfbd_shape": true,
+    "pattern": "^[0-9]{6,12}$",
+    "n_ids_checked": 99,
+    "n_ids_failing": 0,
+    "unresolved_home": [],
+    "unresolved_away": [],
+    "n_unresolved_home": 0,
+    "n_unresolved_away": 0,
+    "season_type": {
+      "regular": 99
+    }
+  },
+  "teams_2026": {
+    "exists": true,
+    "n": 684
+  },
+  "venues_2026": {
+    "exists": true,
+    "n": 852
+  },
+  "tz_notes": [
+    "kickoff = start_date (UTC). Unplayed event_time clamped to ingested_at (DESIGN \u00a78)."
+  ]
+}

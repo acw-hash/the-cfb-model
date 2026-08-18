@@ -891,11 +891,22 @@ def normalize_games_payload(
             week = week_of(start, season)
         season_type_raw = str(item.get("season_type") or item.get("seasonType") or "regular")
         season_type = "postseason" if "post" in season_type_raw.casefold() else "regular"
+        completed = bool(
+            _as_bool(item.get("completed")) if item.get("completed") is not None else False
+        )
         knowable = resolve_game_event_time(
             start,
             completion=_parse_completion_timestamp(item),
             overtime=game_went_overtime(item),
         )
+        event_time = knowable.event_time
+        estimated = knowable.estimated
+        # Unplayed future games: kickoff+duration is after ingested_at. The
+        # knowable fact at ingest is the schedule, not the result. DESIGN §8
+        # forbids event_time > ingested_at; start_date still carries kickoff.
+        if not completed and event_time > ingested:
+            event_time = ingested
+            estimated = True
         rows.append(
             {
                 "game_id": game_id,
@@ -924,12 +935,10 @@ def normalize_games_payload(
                     or False
                 ),
                 "venue_id": _as_int(item.get("venue_id") or item.get("venueId")),
-                "completed": bool(
-                    _as_bool(item.get("completed")) if item.get("completed") is not None else False
-                ),
-                "event_time_estimated": knowable.estimated,
+                "completed": completed,
+                "event_time_estimated": estimated,
                 "source_version": source_version,
-                "event_time": knowable.event_time,
+                "event_time": event_time,
                 "ingested_at": ingested,
             }
         )

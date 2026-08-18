@@ -2,7 +2,9 @@ data:
   # First season with usable PBP quality (DESIGN §3.1).
   start_season: 2014
   # PLACEHOLDER — bump each offseason; not named as a fixed value in the spec.
-  end_season: 2025
+  # Live season is 2026 (W9-I). This constant clamps run_cfbd_incremental
+  # via min(end_season, season_of(now)); explicit --seasons backfill is not clamped.
+  end_season: 2026
   # Garbage-time WP thresholds (DESIGN §4.2).
   garbage_wp_low: 0.02
   garbage_wp_high: 0.98

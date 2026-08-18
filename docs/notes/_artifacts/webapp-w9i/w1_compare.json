@@ -1,0 +1,149 @@
+{
+  "v3_w1_n": 580,
+  "v3_w1_seasons": [
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+  ],
+  "by_season": {
+    "2020": {
+      "n": 35,
+      "mu_min": -21.813075341816674,
+      "mu_max": 29.03519914905316,
+      "abs_mu_gt_19": 7,
+      "abs_mu_gt_30": 0,
+      "p_gt_085": 4,
+      "p_lt_015": 1,
+      "strong_like": 5
+    },
+    "2021": {
+      "n": 127,
+      "mu_min": -29.20043724593039,
+      "mu_max": 46.87281661630492,
+      "abs_mu_gt_19": 38,
+      "abs_mu_gt_30": 12,
+      "p_gt_085": 33,
+      "p_lt_015": 5,
+      "strong_like": 38
+    },
+    "2022": {
+      "n": 136,
+      "mu_min": -19.499960325131784,
+      "mu_max": 43.76392672352499,
+      "abs_mu_gt_19": 43,
+      "abs_mu_gt_30": 16,
+      "p_gt_085": 42,
+      "p_lt_015": 2,
+      "strong_like": 44
+    },
+    "2023": {
+      "n": 136,
+      "mu_min": -20.36105616877609,
+      "mu_max": 44.357972807851986,
+      "abs_mu_gt_19": 52,
+      "abs_mu_gt_30": 30,
+      "p_gt_085": 50,
+      "p_lt_015": 2,
+      "strong_like": 52
+    },
+    "2024": {
+      "n": 146,
+      "mu_min": -18.49655351178659,
+      "mu_max": 45.50790029525261,
+      "abs_mu_gt_19": 62,
+      "abs_mu_gt_30": 26,
+      "p_gt_085": 76,
+      "p_lt_015": 3,
+      "strong_like": 79
+    }
+  },
+  "v3_w1_mu": {
+    "min": -29.20043724593039,
+    "max": 46.87281661630492
+  },
+  "v3_w1_sigma": {
+    "min": 11.37730485466391,
+    "max": 29.283081172620662,
+    "finite": 580
+  },
+  "v3_w1_p_ml": {
+    "gt_085": 205,
+    "lt_015": 13,
+    "strong_like": 218,
+    "n": 580
+  },
+  "dry_2026_w1": {
+    "n": 99,
+    "p_gt_085": 72,
+    "p_lt_015": 1,
+    "strong_like": 73,
+    "abs_mu_gt_19": 63,
+    "abs_mu_gt_30": 49,
+    "tiers": {
+      "strong_lean": 73,
+      "clear_lean": 17,
+      "toss_up": 2,
+      "lean": 7
+    },
+    "largest_abs_mu": [
+      {
+        "game_id": "401856773",
+        "matchup": "Northern Arizona @ Arizona",
+        "mu": 48.61001623762129,
+        "p_win_home": 0.9947524628699855,
+        "tier": "strong_lean"
+      },
+      {
+        "game_id": "401858431",
+        "matchup": "South Dakota State @ Northwestern",
+        "mu": 48.083955727289904,
+        "p_win_home": 0.9937625394884569,
+        "tier": "strong_lean"
+      },
+      {
+        "game_id": "401856658",
+        "matchup": "Tennessee State @ Georgia",
+        "mu": 48.02983251368848,
+        "p_win_home": 0.9922889985710068,
+        "tier": "strong_lean"
+      },
+      {
+        "game_id": "401862701",
+        "matchup": "Bryant @ Army",
+        "mu": 47.84285785699886,
+        "p_win_home": 0.9943941923812324,
+        "tier": "strong_lean"
+      },
+      {
+        "game_id": "401856663",
+        "matchup": "Arkansas-Pine Bluff @ Missouri",
+        "mu": 47.21346803153773,
+        "p_win_home": 0.9916461933357429,
+        "tier": "strong_lean"
+      },
+      {
+        "game_id": "401856635",
+        "matchup": "North Alabama @ Arkansas",
+        "mu": 47.11775895292368,
+        "p_win_home": 0.994716572736842,
+        "tier": "strong_lean"
+      },
+      {
+        "game_id": "401860879",
+        "matchup": "Portland State @ San Diego State",
+        "mu": 46.76784764021487,
+        "p_win_home": 0.9948702406750255,
+        "tier": "strong_lean"
+      },
+      {
+        "game_id": "401856775",
+        "matchup": "Utah Tech @ BYU",
+        "mu": 46.73000027252348,
+        "p_win_home": 0.988012671936478,
+        "tier": "strong_lean"
+      }
+    ]
+  }
+}

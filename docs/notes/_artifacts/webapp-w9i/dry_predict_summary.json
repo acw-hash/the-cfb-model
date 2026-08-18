@@ -1,0 +1,30 @@
+{
+  "n_games_predicted": 99,
+  "mu_range": [
+    -16.97190126008196,
+    48.61001623762129
+  ],
+  "sigma_range": [
+    15.200248885097194,
+    23.772736777775233
+  ],
+  "conviction_tier_distribution": {
+    "strong_lean": 73,
+    "clear_lean": 17,
+    "toss_up": 2,
+    "lean": 7
+  },
+  "n_null_tier_suppressed": 0,
+  "n_sigma_refused": 0,
+  "n_null_reason_rows": 0,
+  "as_of": "2026-09-01T10:00:00+00:00",
+  "model_identity": {
+    "champion_version": 3,
+    "model_version": "production-v0_reduced_v3",
+    "registry_name": "ncaa-quant",
+    "run_id": "task23_fundamental_reduced_v3"
+  },
+  "expected_possessions_nan": 99,
+  "rating_n_moved": 137,
+  "rating_n_identical": 0
+}

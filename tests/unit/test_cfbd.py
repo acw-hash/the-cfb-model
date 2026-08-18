@@ -210,6 +210,33 @@ def test_normalize_games_completion_timestamp_not_estimated() -> None:
     assert bool(df.iloc[0]["event_time_estimated"]) is False
 
 
+def test_normalize_unplayed_future_game_event_time_not_after_ingest() -> None:
+    """Live schedule rows must satisfy DESIGN §8; kickoff stays on start_date."""
+    from ncaa_quant.data.schemas import GamesSchema
+
+    kickoff = datetime(2026, 9, 5, 16, 0, 0, tzinfo=UTC)
+    ingested = datetime(2026, 8, 18, 12, 0, 0, tzinfo=UTC)
+    payload = [
+        {
+            **GAMES_PAYLOAD[0],
+            "id": 401856766,
+            "season": 2026,
+            "start_date": "2026-09-05T16:00:00.000Z",
+            "completed": False,
+            "home_points": None,
+            "away_points": None,
+        }
+    ]
+    df = normalize_games_payload(payload, ingested_at=ingested)
+    assert len(df) == 1
+    assert bool(df.iloc[0]["completed"]) is False
+    assert df.iloc[0]["start_date"] == kickoff
+    assert df.iloc[0]["event_time"] == ingested
+    assert df.iloc[0]["event_time"] <= df.iloc[0]["ingested_at"]
+    assert bool(df.iloc[0]["event_time_estimated"]) is True
+    GamesSchema.validate(df, lazy=True)
+
+
 def test_normalize_teams_and_talent(team_map: dict[str, str]) -> None:
     teams = normalize_teams_payload(
         TEAMS_PAYLOAD, season=2023, ingested_at=INGESTED, team_map=team_map
