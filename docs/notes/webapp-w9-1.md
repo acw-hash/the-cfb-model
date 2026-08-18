@@ -1,7 +1,7 @@
 # W9-1 — make the guards binding
 
 **Date:** 2026-08-18  
-**Status:** Complete. Amendment 1 (same date) supersedes STOP #1: two union-grep runners, and pytest CI is green without lake secrets.  
+**Status:** Complete. Amendment 2 (same date): ratchet pin is the exact live `git ls-files` count; workstation lake tests are a human pre-publish gate, not a CI job.  
 **Authority:** `docs/notes/webapp-w8d.md`; `docs/notes/webapp-w9push.md` (`7d7fea5`); `docs/notes/webapp-w9r.md`; W0 grep list in `docs/notes/webapp-spec.md`; DESIGN §6; ADR 0018.
 
 Test and deploy plumbing only. No product behavior, copy, artifacts, schemas, fixtures, or model-code change (prettier whitespace on three already-committed site files so `npm run lint` is green under lockfile Prettier 3.9.6). No R2 write, no revalidation POST, no Prefect, no `data.end_season` change.
@@ -416,3 +416,71 @@ ratchet after Amendment 1 extras: 323/229/72  EXIT=0
 ---
 
 *End of W9-1 Amendment 1.*
+
+---
+
+# Amendment 2 — exact ratchet pin; workstation tests are a human gate
+
+**Date:** 2026-08-18  
+**Authority:** Amendment 2 to W9-1.
+
+---
+
+## 1. Exact pin
+
+Live `git ls-files` + Python `finditer` at this amendment, before the bite:
+
+```
+323 matches
+229 lines
+72 files
+```
+
+Those three numbers are the pin in `scripts/check_betting_language.py`. The runner fails if any count **differs** (not only if it rises). A pin set above the live count is itself a failure (`test_ratchet_padded_pin_fails`).
+
+W9-1 `rg` recon 283/217/67 remains a historical note only.
+
+### Bite
+
+Intent-to-add a docs file with one new union hit:
+
+```
+union_grep ratchet matches=324/323 lines=230/229 files=73/72
+union-grep ratchet failed: matches 324 != 323; lines 230 != 229; files 73 != 72
+EXIT=1
+```
+
+File removed:
+
+```
+union_grep ratchet matches=323/323 lines=229/229 files=72/72
+EXIT=0
+```
+
+---
+
+## 2. Workstation tests leave CI
+
+Removed the `continue-on-error` `workstation-data` job from `.github/workflows/ci.yml`. Quality still runs `pytest -m "not live and not workstation"`. The `@pytest.mark.workstation` marker stays on the four W9-P lake tests. `make test` is still `pytest -m "not live"` (marker included).
+
+Required human gate: `docs/runbooks/pre_publish.md`. Before every live R2 write, run `make test` on the workstation (lake present) and paste the summary. Do not publish if those four tests skip or fail.
+
+---
+
+## Acceptance counts (Amendment 2)
+
+```
+union_grep ratchet matches=323/323 lines=229/229 files=72/72  EXIT=0
+
+uv run pytest -m workstation -o addopts= --tb=short
+===================== 4 passed, 929 deselected in 14.96s ======================
+
+make test
+uv run pytest -m "not live"
+========= 932 passed, 1 deselected, 32 warnings in 290.73s ==========
+Required test coverage of 80% reached. Total coverage: 80.50%
+```
+
+---
+
+*End of W9-1 Amendment 2.*

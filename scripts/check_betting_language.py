@@ -10,8 +10,8 @@ Two runners:
 * ``published`` — blocking. Full union over the explicit published-copy
   surface list. An unlisted ``copy.ts`` / ``copy.tsx`` under
   ``webapp/site/src`` is itself a failure.
-* ``ratchet`` — repo-wide over ``git ls-files``. Existing matches do not
-  fail; any count above the pinned baseline does.
+* ``ratchet`` — repo-wide over ``git ls-files``. Counts must equal the
+  pin in this file (not a ceiling above the live count). Any drift fails.
 """
 
 from __future__ import annotations
@@ -30,9 +30,9 @@ UNION = re.compile(
 )
 
 # W9-1 recon (rg --pcre2, before the checker/notes landed): 283 / 217 / 67.
-# git ls-files + Python finditer counts matches (not rg lines) and includes
-# this checker, tests that quote the union, and notes that quote the union.
-# Pinning 283 would fail every SHA. Fail if any count increases past this pin.
+# git ls-files + Python finditer at Amendment 2: exact live counts, not a
+# padded ceiling. Fail if any count differs. Re-measure after editing this
+# file or notes that quote the union.
 BASELINE_MATCHES = 323
 BASELINE_LINES = 229
 BASELINE_FILES = 72
@@ -205,16 +205,16 @@ def check_ratchet(root: Path) -> int:
         f"files={result.files}/{BASELINE_FILES}",
         file=sys.stderr,
     )
-    over: list[str] = []
-    if result.matches > BASELINE_MATCHES:
-        over.append(f"matches {result.matches} > {BASELINE_MATCHES}")
-    if result.lines > BASELINE_LINES:
-        over.append(f"lines {result.lines} > {BASELINE_LINES}")
-    if result.files > BASELINE_FILES:
-        over.append(f"files {result.files} > {BASELINE_FILES}")
-    if over:
+    drift: list[str] = []
+    if result.matches != BASELINE_MATCHES:
+        drift.append(f"matches {result.matches} != {BASELINE_MATCHES}")
+    if result.lines != BASELINE_LINES:
+        drift.append(f"lines {result.lines} != {BASELINE_LINES}")
+    if result.files != BASELINE_FILES:
+        drift.append(f"files {result.files} != {BASELINE_FILES}")
+    if drift:
         _print_hits(result.hits)
-        print("union-grep ratchet failed: " + "; ".join(over), file=sys.stderr)
+        print("union-grep ratchet failed: " + "; ".join(drift), file=sys.stderr)
         return 1
     return 0
 
@@ -225,7 +225,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument(
         "mode",
         choices=("published", "ratchet"),
-        help="published = blocking copy surfaces; ratchet = repo-wide ceiling",
+        help="published = blocking copy surfaces; ratchet = repo-wide exact pin",
     )
     args = parser.parse_args(argv)
     root = _repo_root()

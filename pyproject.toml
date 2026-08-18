@@ -90,7 +90,7 @@ addopts = "--cov=src --cov-fail-under=80"
 pythonpath = ["src", "."]
 markers = [
     "live: hits the network; excluded from CI and default make test",
-    "workstation: needs gitignored data/ artifacts; excluded from GitHub pytest",
+    "workstation: needs gitignored data/ artifacts; excluded from GitHub pytest; required in docs/runbooks/pre_publish.md",
 ]
 
 [tool.coverage.run]

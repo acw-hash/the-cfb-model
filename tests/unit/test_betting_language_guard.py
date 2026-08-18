@@ -51,13 +51,19 @@ def test_betting_language_in_copy_module_fails(tmp_path: Path) -> None:
     assert guard.check_published(tmp_path) == 1
 
 
-def test_ratchet_existing_counts_do_not_fail() -> None:
+def test_ratchet_matches_exact_pin() -> None:
     guard = _load_guard()
     result = guard.scan_paths(REPO_ROOT, guard.tracked_files(REPO_ROOT))
-    assert result.matches <= guard.BASELINE_MATCHES
-    assert result.lines <= guard.BASELINE_LINES
-    assert result.files <= guard.BASELINE_FILES
+    assert result.matches == guard.BASELINE_MATCHES
+    assert result.lines == guard.BASELINE_LINES
+    assert result.files == guard.BASELINE_FILES
     assert guard.check_ratchet(REPO_ROOT) == 0
+
+
+def test_ratchet_padded_pin_fails(monkeypatch: pytest.MonkeyPatch) -> None:
+    guard = _load_guard()
+    monkeypatch.setattr(guard, "BASELINE_MATCHES", guard.BASELINE_MATCHES + 1)
+    assert guard.check_ratchet(REPO_ROOT) == 1
 
 
 def test_ratchet_new_docs_play_fails(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

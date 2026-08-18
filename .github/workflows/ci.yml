@@ -35,25 +35,3 @@ jobs:
 
       - name: Repo-wide union-grep ratchet
         run: uv run python scripts/check_betting_language.py ratchet
-
-  workstation:
-    # Non-blocking. These tests read gitignored workstation artifacts
-    # (champion week parquet, filter_history, staged 2019, etc.). GitHub
-    # runners have no data/ lake and no CFBD/Odds secrets; a red job here
-    # is expected and must not fail the workflow.
-    name: workstation-data (non-blocking)
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-        with:
-          python-version: "3.11"
-
-      - name: Sync dependencies
-        run: uv sync --group dev
-
-      - name: Pytest (workstation data)
-        run: uv run pytest -m workstation -o addopts= --tb=short

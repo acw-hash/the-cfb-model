@@ -1,0 +1,158 @@
+W9-1 BITE TESTS
+
+======== 1 PAYLOAD FAIL EXIT=1 ========
+
+
+======== 1 PAYLOAD PASS EXIT=0 ========
+
+ RUN  v2.1.9 C:/Users/alecw/Projects/the-cfb-model/webapp/site
+
+ âœ“ tests/this-week-project.test.ts (5 tests) 47ms
+ âœ“ tests/payload-leak.test.tsx (3 tests) 205ms
+
+ Test Files  2 passed (2)
+      Tests  8 passed (8)
+   Start at  11:39:49
+   Duration  1.12s (transform 231ms, setup 0ms, collect 457ms, tests 252ms, environment 0ms, prepare 314ms)
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+======== 2 GALLERY FAIL EXIT=1 ========
+
+
+======== 2 GALLERY PASS EXIT=0 ========
+
+ RUN  v2.1.9 C:/Users/alecw/Projects/the-cfb-model/webapp/site
+
+ âœ“ tests/gallery-gate.test.ts (2 tests) 4ms
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  11:39:54
+   Duration  579ms (transform 41ms, setup 0ms, collect 101ms, tests 4ms, environment 0ms, prepare 148ms)
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+======== 3 DEMO-STATES FAIL EXIT=1 ========
+
+
+======== 3 DEMO-STATES PASS EXIT=0 ========
+
+ RUN  v2.1.9 C:/Users/alecw/Projects/the-cfb-model/webapp/site
+
+ âœ“ tests/no-demo-states-in-production-routes.test.ts (1 test) 59ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  11:39:59
+   Duration  532ms (transform 43ms, setup 0ms, collect 38ms, tests 59ms, environment 0ms, prepare 139ms)
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+======== 4 TOKEN FAIL EXIT=1 ========
+Token diff-check FAILED:
+light --text-tertiary: expected #75757a, got #aeaeb2
+contrast light --text-tertiary/--bg-primary: 2.21:1 < AA 4.5:1
+
+======== 4 TOKEN PASS EXIT=0 ========
+Token diff-check PASSED â€” all Â§4.1/Â§4.2 values match tokens.css
+Contrast ratios (AA normal 4.5:1):
+  light --text-primary/--bg-primary: 16.83:1 (>= 4.5)
+  light --text-secondary/--bg-primary: 5.07:1 (>= 4.5)
+  light --text-tertiary/--bg-primary: 4.58:1 (>= 4.5)
+  light --accent/--bg-primary: 4.70:1 (>= 4.5)
+  light --semantic-stale/--bg-primary: 5.07:1 (>= 4.5)
+  light --text-primary/--bg-secondary: 15.46:1 (>= 4.5)
+  light --text-secondary/--bg-secondary: 4.66:1 (>= 4.5)
+  dark --text-primary/--bg-primary: 19.29:1 (>= 4.5)
+  dark --text-secondary/--bg-primary: 7.31:1 (>= 4.5)
+  dark --text-tertiary/--bg-primary: 6.44:1 (>= 4.5)
+  dark --accent/--bg-primary: 5.76:1 (>= 4.5)
+  light banner text / semantic-stale: 5.07:1 (>= 4.5)
+
+======== 5 CONSUMED-OR-WITHDRAWN FAIL EXIT=1 ========
+
+
+======== 5 CONSUMED-OR-WITHDRAWN PASS EXIT=0 ========
+
+ RUN  v2.1.9 C:/Users/alecw/Projects/the-cfb-model/webapp/site
+
+ âœ“ tests/published-keys.test.ts (6 tests) 26ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  11:40:04
+   Duration  561ms (transform 76ms, setup 0ms, collect 86ms, tests 26ms, environment 0ms, prepare 164ms)
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+======== 6 FIXTURE AS_OF FAIL EXIT=1 ========
+FF                                                                       [100%]
+================================== FAILURES ===================================
+______________ test_fixture_401628373_as_of_precedes_its_kickoff ______________
+tests\unit\test_webapp_w9r.py:240: in test_fixture_401628373_as_of_precedes_its_kickoff
+    assert game["kickoff_utc"] == "2024-09-28T19:30:00Z"
+E   AssertionError: assert '2024-09-24T09:00:00Z' == '2024-09-28T19:30:00Z'
+E     
+E     - 2024-09-28T19:30:00Z
+E     ?          ^ ^  ^
+E     + 2024-09-24T09:00:00Z
+E     ?          ^ ^  ^
+_____________ test_week_predictions_as_of_precedes_every_kickoff ______________
+tests\unit\test_webapp_w9r.py:228: in test_week_predictions_as_of_precedes_every_kickoff
+    assert published < kickoff, (
+E   AssertionError: 401628373: 2024-09-24T10:00:00+00:00 >= 2024-09-24T09:00:00+00:00
+E   assert datetime.datetime(2024, 9, 24, 10, 0, tzinfo=datetime.timezone.utc) < datetime.datetime(2024, 9, 24, 9, 0, tzinfo=datetime.timezone.utc)
+=========================== short test summary info ===========================
+FAILED tests/unit/test_webapp_w9r.py::test_fixture_401628373_as_of_precedes_its_kickoff
+FAILED tests/unit/test_webapp_w9r.py::test_week_predictions_as_of_precedes_every_kickoff
+2 failed in 8.84s
+
+======== 6 FIXTURE AS_OF PASS EXIT=0 ========
+..                                                                       [100%]
+2 passed in 7.71s
+
+======== 7 UNION GREP SITE-SRC BASELINE (expect no matches, rg exit 1) EXIT=1 ========
+
+
+======== 7 UNION GREP SITE-SRC FAIL (injected best bet) EXIT=0 ========
+webapp/site/src\lib\results\copy.ts:8:  "best bet / recommended bet. No betting edge has been demonstrated against the closing line.",
+
+======== 7 UNION GREP SITE-SRC PASS AFTER REVERT (expect no matches) EXIT=1 ========
+
+
+======== 7 UNION GREP REPO-WIDE (STOP: existing copy, expect fail) EXIT=1 ========
+.cursorrules:30:- Type-annotate everything public. Docstrings state units and time semantics.
+Traceback (most recent call last):
+  File "C:\Users\alecw\Projects\the-cfb-model\scripts\check_betting_language.py", line 83, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "C:\Users\alecw\Projects\the-cfb-model\scripts\check_betting_language.py", line 74, in main
+    print(hit)
+  File "C:\Users\alecw\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u2265' in position 113: character maps to <undefined>
+
+======== 8 PUSH ALLOWLIST FAIL EXIT=1 ========
+F                                                                        [100%]
+================================== FAILURES ===================================
+_________________ test_committed_fixtures_pass_push_allowlist _________________
+tests\unit\test_webapp_w91.py:66: in test_committed_fixtures_pass_push_allowlist
+    assert_push_artifact_allowlists(_restore_artifacts())
+src\ncaa_quant\webapp\push.py:374: in assert_push_artifact_allowlists
+    _assert_week_predictions(obj, filename)
+src\ncaa_quant\webapp\push.py:291: in _assert_week_predictions
+    _assert_game_prediction_object(row, f"{filename}.games[{i}]")
+src\ncaa_quant\webapp\push.py:256: in _assert_game_prediction_object
+    _assert_exact_keys(game, required=PUBLISHED_GAME_PREDICTION_KEYS, path=path)
+src\ncaa_quant\webapp\push.py:233: in _assert_exact_keys
+    raise PublishedKeyAllowlistError(msg)
+E   ncaa_quant.webapp.export.PublishedKeyAllowlistError: unpublished keys in week_predictions.json.games[0]: ['p_cover_home']
+=========================== short test summary info ===========================
+FAILED tests/unit/test_webapp_w91.py::test_committed_fixtures_pass_push_allowlist
+1 failed in 8.66s
+
+======== 8 PUSH ALLOWLIST PASS EXIT=0 ========
+.                                                                        [100%]
+1 passed in 8.11s
