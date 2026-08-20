@@ -307,12 +307,16 @@ def live_predict_rows(
     pred = predictor.predict(features)
     run_id = str(champ.run_id)
     model_version = str(wf.model_version)
+    champion_version = int(champ.version)
+    registered_at = str(champ.registered_at)
     rows: list[dict[str, Any]] = []
     for rec in pred.to_dict(orient="records"):
         rec["season"] = int(season)
         rec["week"] = int(week)
         rec["run_id"] = run_id
         rec["model_version"] = model_version
+        rec["champion_version"] = champion_version
+        rec["registered_at"] = registered_at
         rec["as_of"] = as_of.isoformat()
         rec["rating_digest"] = digest
         rows.append(_alias_stamp_columns(rec))

@@ -5,9 +5,13 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 import type { TeamRatingEntry, TeamRatings, WeekPredictions } from "@/lib/artifacts/types";
-import { TOTAL_INTERVAL_ABSENT_REASON } from "@/lib/game-detail/absence";
+import {
+  TOTAL_INTERVAL_ABSENT_REASON,
+  MARGIN_INTERVAL_ABSENT_REASON,
+} from "@/lib/game-detail/absence";
 import { probabilityIsCredible } from "@/lib/game-detail/credibility";
 import {
+  cloneNullMarginInterval,
   cloneNullTotalInterval,
   cloneRatingsMissingWeek,
   cloneSuppressedSigma,
@@ -185,6 +189,16 @@ describe("W4-5 doctored clones", () => {
     expect(clone.total_interval_lo).toBeNull();
     expect(clone.total_interval_hi).toBeNull();
     expect(TOTAL_INTERVAL_ABSENT_REASON.length).toBeGreaterThan(0);
+  });
+
+  it("null margin interval clone keeps μ and leaves bounds null", () => {
+    const week = loadWeek();
+    const source = week.games[0];
+    const clone = cloneNullMarginInterval(source);
+    expect(clone.mu_margin).toBe(source.mu_margin);
+    expect(clone.margin_interval_lo).toBeNull();
+    expect(clone.margin_interval_hi).toBeNull();
+    expect(MARGIN_INTERVAL_ABSENT_REASON.length).toBeGreaterThan(0);
   });
 });
 

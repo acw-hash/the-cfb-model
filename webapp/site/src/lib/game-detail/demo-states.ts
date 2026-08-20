@@ -31,6 +31,16 @@ export function cloneNullTotalInterval(game: GamePrediction): GamePrediction {
   };
 }
 
+/** Margin μ remains; interval fields null (W9-D Amendment 2 coherence gate). */
+export function cloneNullMarginInterval(game: GamePrediction): GamePrediction {
+  return {
+    ...game,
+    margin_interval_lo: null,
+    margin_interval_hi: null,
+    margin_interval_nominal: null,
+  };
+}
+
 /**
  * Drop a mid-season week from both teams' in-memory rating series.
  * Used to prove the chart gaps instead of interpolating.

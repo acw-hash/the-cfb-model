@@ -1,5 +1,8 @@
 import type { GamePrediction } from "@/lib/artifacts/types";
-import { TOTAL_INTERVAL_ABSENT_REASON } from "@/lib/game-detail/absence";
+import {
+  MARGIN_INTERVAL_ABSENT_REASON,
+  TOTAL_INTERVAL_ABSENT_REASON,
+} from "@/lib/game-detail/absence";
 import type { RatingPoint } from "@/lib/game-detail/ratings";
 
 import { ForecastBlock } from "./ForecastBlock";
@@ -37,6 +40,11 @@ export function GameDetail({ game, homeSeries, awaySeries }: GameDetailProps): R
         nominal={game.margin_interval_nominal}
         signed
         nullReason={game.null_reason}
+        intervalAbsentReason={
+          game.margin_interval_lo == null || game.margin_interval_hi == null
+            ? MARGIN_INTERVAL_ABSENT_REASON
+            : undefined
+        }
       />
       <ForecastBlock
         label="Total"

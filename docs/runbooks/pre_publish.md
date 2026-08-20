@@ -59,3 +59,9 @@ These are operator facts from the sandbox dress rehearsal. They do not change th
 **What is live until Tuesday.** Production `latest/` remains the 2024 fixture week-5 set (`fixture: true`) until the attended live push. The public site therefore shows 2024 fixture data through opening weekend (first 2026 kickoffs 2026-08-29). Operator decision, not a defect.
 
 **Quantile crossing.** The batch warning is not “every row.” On this rehearsal: 4/91 (4.4%) 2026 week-1 rows unordered before sort; published 80% CQR bounds moved on at most 3 rows (max |Δ| 2.94 points). No model change in this runbook.
+
+**Provenance vintage (Amendment 1).** Per-game `vintage_label` is derived from the producing `run_id`. A v3-champion artifact (`task23_fundamental_reduced_v3`) must read `W9A_REVAL`, never `REGRADED_V2`. An unknown `run_id` refuses export.
+
+**Provenance vintage (Amendment 1).** Per-game `vintage_label` is derived from the producing `run_id`. A v3-champion artifact (`task23_fundamental_reduced_v3`) must read `W9A_REVAL`, never `REGRADED_V2`. An unknown `run_id` refuses export.
+
+**Margin interval coherence (Amendment 2).** Export publishes `margin_interval_*` only where sorted pre-CQR `q10 < μ < q90`. Otherwise JSON null; This Week omits the band; Game Detail shows "Interval not computed". No `|μ|` cutoff and no asymmetry suppress. 2026 week-1 rehearsal: **19 / 91** suppressed; **0 / 4,743** on the v3 backtest analysis set. **46/91** position outliers on the ungated slate are a monitoring item for the first four live weeks, not a publish stop. CQR refit on real quantile heads is W9-CQR (post-launch). Do not restamp `/results` with the 0.874 coverage number until after week 1.

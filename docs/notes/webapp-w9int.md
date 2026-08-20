@@ -1,7 +1,9 @@
 # W9-INT — empirical coverage of published margin intervals
 
 **Date:** 2026-08-19  
-**Status:** Complete. Measurement only. No construction change.  
+**Status:** Complete. Measurement only. No construction change. Coverage
+**0.874** (n=4,743) is the 23-readout cell that was UNMEASURABLE; it is
+**not** on `/results` until a post-week-1 restamp (W9-D Amendment 2).  
 **Authority:** `docs/notes/webapp-w9d.md` Amendment 1; `docs/notes/23-reval.md` §5
 (calibration slope UNMEASURABLE); DESIGN §2.6; ADR 0014; product decision 2
 (uncertainty is first-class, nulls are honest absence).
@@ -333,3 +335,20 @@ Required test coverage of 80% reached. Total coverage: 80.51%
 ```
 
 No src/tests change in this task. The suite is the current tree.
+
+## Pointer (W9-D Amendment 2) — do not restamp `/results` yet
+
+W9-INT measured published-construction coverage **0.874** (4,147 / 4,743)
+against nominal 0.80. 23-readout / 23-reval listed calibration slope /
+interval coverage as **UNMEASURABLE**. That number exists now. Putting it
+on `/results` is a restamp task **after week 1**, not part of the first
+live publish. W9-CQR (post-launch) uses this table as its baseline:
+
+| construction | coverage |
+|---|---:|
+| published sorted q10/q90 ± 6.837 | **0.874** |
+| raw heads (no CQR add) | **0.752** |
+| μ ± 1.28σ | **0.815** |
+
+Coherence `q10 < μ < q90` on this analysis set is **4,743 / 4,743**. The
+W9-D Amendment 2 export gate therefore changes nothing historical.

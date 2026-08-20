@@ -1,0 +1,29 @@
+{
+  "cqr_thr_80": 6.8371215750064245,
+  "sandbox": [
+    {
+      "kept_pos_median": 0.5628529532413525,
+      "n": 91,
+      "n_kept": 72,
+      "n_null_before": 0,
+      "n_skewed_kept_outside_[0.25,0.75]": 27,
+      "n_suppressed": 19,
+      "path": "C:\\Users\\alecw\\Projects\\the-cfb-model\\docs\\notes\\_artifacts\\webapp-w9d\\sandbox_roundtrip\\week_predictions.json"
+    },
+    {
+      "kept_pos_median": 0.5628529532413525,
+      "n": 91,
+      "n_kept": 72,
+      "n_null_before": 0,
+      "n_skewed_kept_outside_[0.25,0.75]": 27,
+      "n_suppressed": 19,
+      "path": "C:\\Users\\alecw\\Projects\\the-cfb-model\\docs\\notes\\_artifacts\\webapp-w9d\\sandbox_export\\week_predictions.json"
+    }
+  ],
+  "v3_backtest": {
+    "n_eligible": 4743,
+    "n_incoherent": 0,
+    "path": "C:\\Users\\alecw\\Projects\\the-cfb-model\\data\\backtests\\task23_fundamental_reduced_v3\\full\\predictions.parquet",
+    "present": true
+  }
+}
