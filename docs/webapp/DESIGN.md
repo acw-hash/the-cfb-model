@@ -612,13 +612,17 @@ No team-color theming in v1. No gradient backgrounds.
 
 ### 4.3 Component patterns
 
-**Game row** — horizontal, scores-app density:
+**Game row** — scores-app density; forecast column stacks μ and interval on separate lines:
 ```
-[Kickoff]  Away @ Home  ·  +4.2 [−8, +17]  ·  Lean Home  ·  [Revised?]
+[Kickoff]  Away @ Home
+           +4.2
+           [−8, +17]
+           Lean Home · [Revised?]
 ```
 - Left: kickoff time (local + UTC tooltip)
-- Center: teams (away @ home), neutral-site icon if set
-- Right: N1 margin + N2 interval band inline; tier chip; optional revised dot
+- Center: teams (away @ home), B2 weight; neutral-site icon if set
+- Right (forecast column): N1 margin μ on its own line; N2 interval `[lo, hi]` on the line below (brackets `--text-tertiary`, bounds `--text-secondary`); when bounds are null, `—` at Primary weight on the interval line per §1.8
+- Below forecast: tier chip, optional revised dot, per-game stale badge on a separate `.meta` row — not inline with the interval
 - Divider: `--border-subtle`; no card shadow
 
 **Interval band** — text-only `μ [lo, hi]`; no error-bar graphics, no shaded chart junk.

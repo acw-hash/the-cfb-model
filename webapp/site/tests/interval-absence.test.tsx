@@ -63,7 +63,7 @@ describe("W10-UI — §1.8 honest interval absence", () => {
     expect(html).toContain(ABSENT);
     expect(html).toContain(MARGIN_INTERVAL_ABSENT_REASON);
     expect(html).toContain(TOTAL_INTERVAL_ABSENT_REASON);
-    expect(html).not.toMatch(/<p[^>]*>[\s\S]*Interval not computed/);
+    expect(html).toContain("Interval not computed");
     const muText = formatMargin(clone.mu_margin, clone.sigma_margin);
     expect(muText).not.toBeNull();
     expect(html).toContain(muText!);

@@ -2,12 +2,15 @@
 
 **Date:** 2026-08-19
 **Branch:** `w10-ui` (off `main`; not merged)
-**Status:** **COMPLETE** (2026-08-19). Operator decisions recorded; implementation shipped on `w10-ui`.**Authority:** `docs/webapp/DESIGN.md` §1.8, §4, §5, §6; `docs/notes/webapp-w2.md`,
-`w3.md`, `w6.md`, `w7.md`.
+**Status:** **IMPLEMENTED — ACCEPTANCE INCOMPLETE.** Operator decisions closed and code
+shipped on `w10-ui` (2026-08-19). Outstanding before merge: §4 visual review with §4.4
+anti-pattern list (operator verdict). Not merged.
+**Authority:** `docs/webapp/DESIGN.md` §1.8, §4, §5, §6; `docs/notes/webapp-w2.md`,
+`w3.md`, `w6.md`, `w7.md`; TASKS.md cross-cutting acceptance (all UI tasks).
 
-**Commit order note:** this document is written **before** any change under
-`webapp/site/src/**`. Hierarchy first so every subsequent change can be argued
-against it.
+**Commit order note (§1 only):** the hierarchy statement in §1 predates implementation;
+every subsequent UI change is argued against it. §2 decision blocks and §5 evidence were
+added after code shipped.
 
 ---
 
@@ -30,12 +33,10 @@ Three tiers. This is the whole argument; everything below is consequence.
 
 ### Two consequences stated up front
 
-1. **Team names must get smaller or lighter.** They are the largest, heaviest element in the
-   row today (T3 17/22/600 vs N1 17/22/500). Confirmed in `tokens.css` and `GameRow.module.css`.
+1. **Team names must get smaller or lighter.** They were the largest, heaviest element in the
+   row pre-W10-UI (T3 17/22/600 vs N1 17/22/500). Shipped: T3 → B2 (15/20/400).
 2. **Honest absence is Primary, not Tertiary.** When `margin_interval_*` is null, the "—" sits
-   in the Primary slot at Primary weight. It does not shrink into a footnote and the row does
-   not reflow around the gap. **Current code does not do this on `/`:** `IntervalBand` omits
-   the band entirely when bounds are null and leaves μ at N1 with no "—" slot (see V1).
+   in the Primary slot at Primary weight. **Was true pre-W10-UI; fixed 2026-08-19 — see §5.**
 
 ### Per-surface application
 
@@ -48,8 +49,8 @@ Three tiers. This is the whole argument; everything below is consequence.
 | `/about` | body prose at readable measure | section headings | attribution, provenance |
 
 Note the deliberate inversion on `/results` Tab B: the **verdict paragraph is Primary**, above
-the metrics table. After V6, "the §1.4 paragraph" means `track_record.verdict.plain_language`,
-not the webapp-authored lay summary.
+the metrics table. "The §1.4 paragraph" means `track_record.verdict.plain_language`, not the
+webapp-authored lay summary.
 
 ---
 
@@ -61,10 +62,8 @@ not the webapp-authored lay summary.
 
 Team names in the `/` game row demote T3 (17/22/600) → B2 (15/20/400). Forecast figure
 stays N1 (17/22/500). Hierarchy by demotion, per the §1 rule.
-Confirmed: `tokens.css` matches DESIGN §4.2 exactly. T3 (team names) is 17/22/**600**;
-N1 (headline margin) is 17/22/**500**. The flat row is §4 rendered correctly.
 
-**Proposed amendment** (not written into DESIGN.md):
+<details><summary>NOT ADOPTED — proposed §4.2 D1/D2 display-scale amendment</summary>
 
 | Scale | Size / line | Weight | Tracking | Use |
 |-------|-------------|--------|----------|-----|
@@ -74,41 +73,39 @@ N1 (headline margin) is 17/22/**500**. The flat row is §4 rendered correctly.
 | T3 | **15px / 20px** | 600 | 0 | Team names (game row) — *reduced from 17px* |
 | N2 | 15px / 20px | 400 | 0 | Interval bounds, probabilities |
 
-**Cheaper alternatives:**
+Cheaper alternatives recorded for the operator: **(A)** re-weight only (chosen); **(B)** D1 only.
 
-- **(A)** Amend nothing; keep N1 for the number, drop team names to B2 (15/20/400). Hierarchy
-  without a display figure. Fails DELIVERABLE 2 as worded.
-- **(B)** Amend §4.2 for D1 only, not D2. Game Detail already has vertical room.
+</details>
 
 ### 2.2 — STOP #2 (b). Rendered `IntervalBand` is forbidden by §4.3.
 
-**Decision: C — typographic. No §4.3 amendment.**
+**Decision: C — typographic. No §4.3 amendment to the interval-band bullet.**
 
 Keep `IntervalBand` text-only: μ at N1; bounds at N2 `--text-secondary`; brackets
 `--text-tertiary`; interval on its own line beneath the number. No hairline, marker, rule,
 fill, axis, or grid.
-DESIGN §4.3, verbatim: **Interval band** — text-only `μ [lo, hi]`; no error-bar graphics.
 
-V1: `GameRow` **does** render `IntervalBand`. That component is the text-only band
-(`μ` as N1 + `[lo, hi]` as N2). Bracketed text is the spec, not unused code.
+**Diagram follow-up (2026-08-19):** decision C specified "interval on its own line," which the
+pre-W10 single-row §4.3 diagram could not express. The game-row pattern diagram in
+`DESIGN.md` §4.3 was amended post-ship to describe the multi-line layout (μ line, interval
+line, `.meta` row). The `**Interval band** — text-only \`μ [lo, hi]\`; no error-bar
+graphics, no shaded chart junk` bullet remains byte-identical. Precedent: ADR 0015 (code wins;
+spec amended to describe implementation).
 
-A thin rule with a marker at μ **is** an error bar. Direct contradiction.
+<details><summary>NOT ADOPTED — proposed §4.3 hairline-rule amendment</summary>
 
-**Proposed amendment to §4.3** (not written): hairline rule, marker at μ, bounds in N2,
-max 120px, no fill/axis/grid; null → "—" per §1.8, row height unchanged.
+Hairline rule spanning `[lo, hi]` with marker at μ, bounds in N2, max 120px, no fill/axis/grid;
+null → "—" per §1.8.
 
-**Recommended alternative (C):** keep §4.3 unamended; `μ` at D1 (if 2.1 allows), bounds at
-N2 `--text-secondary`, brackets `--text-tertiary`, interval on its own line under the number.
+</details>
 
 ### 2.3 — STOP #2 (c). §4.1 use-column, date-group headers.
 
 **Decision: yes — §4.1 use-column edit.**
 
 `--bg-secondary` Use column updated to `Table zebra; disclaimer block (§6.1 per W6)`.
-Token values unchanged. `SlateGroupHeader` retires the filled-slab group-header use.
-`SlateGroupHeader.module.css` uses `background: var(--bg-secondary)`. DELIVERABLE 3 would
-replace filled slabs with hairline + space. Token **values** unchanged; use column would
-become "Table zebra; disclaimer block (§6.1 per W6)". Lowest risk of the three.
+Token values unchanged. `SlateGroupHeader` retires the filled-slab group-header use (hairline
++ whitespace shipped).
 
 ### 2.4 — STOP #1. First-visit disclaimer.
 
@@ -117,28 +114,10 @@ become "Table zebra; disclaimer block (§6.1 per W6)". Lowest risk of the three.
 Add `ridge-disclaimer-seen` written on mount (alongside existing `ridge-disclaimer-dismissed`
 on dismiss). Full §6.1 block on the first page of a session; thereafter footer + `/about`.
 §6.1 / §6.2 strings byte-identical.
-**Option 0 (done):** not a broken `sessionStorage` check.
 
-- `FirstVisitDisclaimer` reads/writes `ridge-disclaimer-dismissed` in `sessionStorage`.
-- Mounted in `app/layout.tsx` under the header on **every route** until dismissed.
-- After dismiss, `visible` is false and the key is set; reload in the same tab stays dismissed.
-- New tab / new session shows it again (per-tab `sessionStorage`).
-- If the reader never taps "Dismiss for this session", the block occupies the first viewport
-  on every page **by design**, not by a bug.
-
-Type note vs W6: W6 recorded the banner as B1. The **About** `#disclaimer` block is B1
-(`AboutPage.module.css` `.disclaimerBlock`). The **first-visit banner body is B2**
-(`FirstVisitDisclaimer.module.css` `.body`). Strings remain `disclaimerForYear` →
-`DISCLAIMER_TEMPLATE` (§6.1).
-
-| Option | Change |
-|--------|--------|
-| **1. Unchanged** | Keep site-wide until dismiss |
-| **2. First page of a session only** | Full block once; thereafter footer + `/about` |
-| **3. Compact bar** | Not recommended (reverses W6) |
-
-**Recommendation: Option 2** if the viewport complaint survives Option 0 (it does: the
-banner is large until dismiss, on every route). §6.1 / §6.2 strings stay byte-identical.
+Option 0 (pre-implementation): `sessionStorage` dismissal worked; the viewport complaint was
+site-wide repetition until dismiss, not a broken check. Option 2 addresses that without
+shrinking the legal surface.
 
 ### 2.5 — STOP #4. `/results` paragraphs — invert DELIVERABLE 4.
 
@@ -147,18 +126,6 @@ banner is large until dismiss, on every route). §6.1 / §6.2 strings stay byte-
 `verdict.plain_language` (§1.4 / §5.3 verbatim) at primary weight (B1 `--text-primary`).
 `VERDICT_LAY_SUMMARY` collapsed in a disclosure — verbatim, in the DOM, one tap. Verdict
 label `NOT CURRENTLY FIT TO BET` stays exact.
-`VerdictBlock.tsx`:
-
-1. **Lay summary (primary weight, B1 `--text-primary`):** `VERDICT_LAY_SUMMARY` in
-   `lib/results/copy.ts` — webapp-authored paraphrase of the 23-reval finding.
-2. **Recorded finding (secondary, B2 `--text-secondary`):** `verdict.plain_language` from
-   `track_record.json` — the §1.4 / §5.3 verbatim paragraph.
-
-Collapsing "Recorded finding" would hide the paragraph §5.3 requires displayed and leave
-the paraphrase at primary weight. Forbidden by the task and by W5 (unrounded, unsoftened).
-
-**Correct move if hierarchy on Tab B proceeds:** keep `verdict.plain_language` at primary
-weight; collapse the *lay* summary (verbatim in the disclosure, in the DOM, one tap).
 
 ---
 
@@ -172,34 +139,60 @@ declined the §4.2 type-scale amendment, so DELIVERABLE 2 is reworded:
 > Interval band stays text-only per §4.3 (decision C): μ and bounds stacked typographically,
 > not graphically.
 
-**Deferred:** D1 (28/30/600) and D2 (40/42/600) display scales pending captured before/after
-evidence at 390px. Revisit only if re-weight-only hierarchy fails visual review.
+**Deferred:** D1 (28/30/600) and D2 (40/42/600) display scales pending operator visual review
+with captures (§5). Revisit if re-weight-only hierarchy fails at 390px.
 
 ---
 
 ## 3. Scope clarification — null-heavy slate
 
 DELIVERABLE 8 fixture slate with ~20% null `conviction_tier` / `margin_interval_*` lives
-under `webapp/site/tests/**` (sanctioned), labeled `"fixture": true`. No writes to
-`webapp/fixtures/`. Sort coverage extends `tests/this-week-sort.test.ts` (W7-SORTFIX
-null-last). Not implemented this pass.
+under `webapp/site/tests/fixtures/week_predictions_null_heavy.json`, labeled `"fixture": true`.
+No writes to `webapp/fixtures/`. Sort coverage in `tests/this-week-sort.test.ts` (W7-SORTFIX
+null-last).
 
 ---
 
-## 4. Verification (repo present)
+## 4. Verification — V1–V6 recorded 2026-08-19 pre-implementation. V1 and V5 describe state since changed — see §5.
 
-| # | Item | Result |
-|---|------|--------|
-| **V1** | Which component renders `/` interval | **`IntervalBand`**, used by `GameRow` line 60. Text-only N1 μ + N2 `[lo, hi]`. When bounds are null, the range `Figure` is omitted (μ only). Game Detail `ForecastBlock` shows "Interval not computed" in a separate `<p>`, not a Primary "—". |
-| **V2** | `/about` body color | **`--text-primary`** (`.body` in `AboutPage.module.css`). Not `--semantic-stale`. Warm rust/amber is not leaking into About body. |
-| **V3** | `tabular-nums lining-nums` | **`Figure`** always applies it (`typography.module.css` `.figure`). Formatted numbers on `/`, Game Detail, Results metrics go through `Figure`. Team names are T3 headings, not figures. |
-| **V4** | §6.1 / §6.2 string bytes | **Not mutated this task** (no copy edits). Source: `DISCLAIMER_TEMPLATE`, `RESPONSIBLE_GAMBLING_COPY` in `lib/about/copy.ts`. |
-| **V5** | `sessionStorage` dismissal | **Works as specified** (Option 0 clean). Site-wide until dismiss. See §2.4. |
-| **V6** | Which `/results` paragraph is §1.4 | **Recorded finding = `verdict.plain_language`.** Lay paragraph is `VERDICT_LAY_SUMMARY`. STOP #4, second case. |
+| # | Item | Result (2026-08-19 pre-ship) |
+|---|------|------------------------------|
+| **V1** | Which component renders `/` interval | **`IntervalBand`**, used by `GameRow`. Text-only N1 μ + N2 `[lo, hi]`. When bounds were null, the range `Figure` was omitted (μ only). Game Detail `ForecastBlock` showed "Interval not computed" in a separate `<p>`, not a Primary "—". |
+| **V2** | `/about` body color | **`--text-primary`** (`.body` in `AboutPage.module.css`). Not `--semantic-stale`. |
+| **V3** | `tabular-nums lining-nums` | **`Figure`** always applies it. Formatted numbers go through `Figure`. |
+| **V4** | §6.1 / §6.2 string bytes | **Not mutated.** Source: `DISCLAIMER_TEMPLATE`, `RESPONSIBLE_GAMBLING_COPY`. |
+| **V5** | `sessionStorage` dismissal | **Worked as specified (Option 0 clean).** Site-wide until dismiss. Option 2 shipped afterward. |
+| **V6** | Which `/results` paragraph is §1.4 | **Recorded finding = `verdict.plain_language`.** Lay paragraph is `VERDICT_LAY_SUMMARY`. Inverted in ship. |
 
 ---
 
-## 5. Evidence
+## 5. Evidence — captures recorded; §4 operator review pending
+
+Captures: `docs/notes/_artifacts/webapp-w10-ui/screenshots/` (2026-08-19, `next dev` port
+3562, `ARTIFACT_SOURCE=local`, `ARTIFACT_BASE_PATH=webapp/fixtures`). Production
+`next start` returned 500 on `/results` and `/game/[id]` with `.env.local` R2 config; dev +
+fixtures used instead.
+
+### Betting-language grep gate (cross-cutting rule 4)
+
+Command (POSIX; Windows run used `rg` with identical patterns):
+
+```
+cd webapp/site && grep -rniE \
+  '\b(bet|pick|edge|wager|value|play|lock|fade|hammer|units?|parlay|kelly|clv)\b' \
+  src/ | grep -vE '(does not|not currently|no edge|responsible|gambler|1-800)'
+```
+
+Full output: `docs/notes/_artifacts/webapp-w10-ui/betting-grep-gate.txt`
+
+**Verdict: PASS.** No unexpected recommendation framing in user-facing copy.
+
+| Hit class | Examples | Disposition |
+|-----------|----------|-------------|
+| TypeScript identifiers | `Pick<`, `value`, `unit`, `.value` CSS | Code false positives — not copy |
+| `/about` negation copy | "not a pick", "No picks", "no implied edge claims" | Sanctioned §6 / honesty commitments |
+| Lay summary (disclosure) | `VERDICT_LAY_SUMMARY`: "No betting edge…", "CLV…" | Collapsed disclosure; faithful 23-reval paraphrase, not recommendation framing |
+| Verdict paragraph | `verdict.plain_language` (artifact) | Sanctioned §1.4 / §5.3 verbatim |
 
 ### Acceptance commands
 
@@ -218,31 +211,64 @@ Token diff-check and contrast ratios: PASS (via `npm run test` → `check-tokens
 | Step | Change |
 |------|--------|
 | §4.1 | `--bg-secondary` use column → table zebra + disclaimer block |
+| §4.3 diagram | Game-row pattern updated to multi-line layout (interval-band bullet unchanged) |
 | 2.1 (A) | Game row team names T3 → B2; N1 forecast unchanged |
 | 2.2 (C) | `IntervalBand` stacked typographic band; brackets tertiary, bounds secondary |
-| §1.8 | Null interval renders `—` at Primary weight; fixed `min-height` on interval line |
+| §1.8 `/` | Null interval renders `—` at Primary weight; fixed `min-height` on interval line |
+| §1.8 Game Detail | `ForecastBlock`: `—` at Primary weight + rendered "Interval not computed — {reason}" (not `title=` only) |
 | D3 | `SlateGroupHeader` hairline + space (no filled slab) |
 | 2.4 | `ridge-disclaimer-seen` on mount; banner first page of session only |
 | 2.5 | `verdict.plain_language` primary; lay summary in `<details>` |
-| D8 | `tests/fixtures/week_predictions_null_heavy.json` (11/56 null rows) |
+| D8 | `tests/fixtures/week_predictions_null_heavy.json` (11/56 null rows) + sort tests |
 
-### Required screenshot matrix (pending)
-
-Screenshots not captured in this session — harness ready at
-`tests/capture-this-week-screenshots.mjs` et al.
+### Screenshot matrix
 
 | Surface | 390 light | 390 dark | Desktop light | Desktop dark |
 |---------|-----------|----------|---------------|--------------|
-| `/` | PENDING | PENDING | PENDING | PENDING |
-| `/game/<id>` | PENDING | PENDING | PENDING | PENDING |
-| `/results` (Tab A) | PENDING | PENDING | PENDING | PENDING |
-| `/results` (Tab B) | PENDING | PENDING | PENDING | PENDING |
-| `/about` | PENDING | PENDING | PENDING | PENDING |
-| Zero-banner state | PENDING | — | PENDING | — |
-| Null-heavy slate | PENDING | — | PENDING | — |
-| `/?order=conviction` with nulls | PENDING | — | PENDING | — |
+| `/` | PASS `home-mobile-light.png` | PASS `home-mobile-dark.png` | PASS `home-desktop-light.png` | PASS `home-desktop-dark.png` |
+| `/game/<id>` | PASS `game-detail-mobile-light.png` (gallery states) | PASS `game-detail-mobile-dark.png` | PASS `game-detail-desktop-light.png` | PASS `game-detail-desktop-dark.png` |
+| `/results` Tab A | PASS `results-tab-a-mobile-light.png` | PASS `results-tab-a-mobile-dark.png` | PASS `results-tab-a-desktop-light.png` | PASS `results-tab-a-desktop-dark.png` |
+| `/results` Tab B | PASS `results-tab-b-mobile-light.png` | PASS `results-tab-b-mobile-dark.png` | PASS `results-tab-b-desktop-light.png` | PASS `results-tab-b-desktop-dark.png` |
+| `/about` | PASS `about-mobile-light.png` | PASS `about-mobile-dark.png` | PASS `about-desktop-light.png` | PASS `about-desktop-dark.png` |
+| Zero-banner state | PASS `zero-banner-mobile-light.png` | — | PASS `zero-banner-desktop-light.png` | — |
+| Null-heavy slate | PASS `null-heavy-slate-mobile-light.png` | — | PASS `null-heavy-slate-desktop-light.png` (empty-top gallery proxy) | — |
+| `/?order=conviction` with nulls | PASS `conviction-sort-mobile-light.png` | — | — | — |
 
-Betting-language grep gate: PENDING (manual). `git diff --stat` vs SANCTIONED EDITS: green.
+### Row height / density (390px, post-W10 fixture slate)
+
+Measured on `/` with Playwright (`row-height-metrics.json`):
+
+| Metric | Value |
+|--------|-------|
+| Row count | 56 |
+| Row height (each) | 107px (uniform) |
+| Total slate height | 6260px |
+| Pre-W10 baseline | **Not captured in this pass** |
+
+**Self-assess (not operator PASS):** multi-line rows trade vertical space for hierarchy. The
+slate still scans as a single column list; 107px/row × 56 is long but not broken. Density
+vs pre-W10 cannot be quantified without a before capture.
+
+### Re-weight-only hierarchy (390px)
+
+**Self-assess (not operator PASS):** in `home-mobile-light.png`, N1 forecast figures in the
+right column read before B2 team names in the left column — a modest delta (17/500 vs 15/400).
+Whether that is enough to win first read is an **operator call**; captures are attached for
+§2.6 D1/D2 trigger evaluation.
+
+### §4.4 anti-pattern checklist (agent self-assess — operator verdict pending)
+
+| Item | Self-assess | Screenshot |
+|------|-------------|------------|
+| no default-shadcn aesthetic | PASS | `home-mobile-light.png` |
+| no purple-gradient heroes | PASS | all captures |
+| no emoji cards | PASS | all captures |
+| no wall-of-widgets | PASS | `home-mobile-light.png` |
+| no gratuitous glassmorphism | PASS | all captures |
+| no filler marketing copy | PASS | `about-mobile-light.png` |
+
+**§4 visual review: PENDING operator verdict.** Agent self-assess is not acceptance.
+
 ---
 
 *End of W10-UI notes.*
