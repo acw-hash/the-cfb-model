@@ -43,6 +43,7 @@ export function ForecastBlock({
   intervalAbsentReason,
 }: ForecastBlockProps): React.ReactElement {
   const muVariant = billing === "primary" ? "n1" : "n2";
+  const intervalVariant = billing === "primary" ? "n1" : "n2";
   const blockClass = billing === "primary" ? styles.primary : styles.secondary;
 
   if (mu == null) {
@@ -66,6 +67,9 @@ export function ForecastBlock({
   const sigmaText = formatSigma(sigma);
   const hasBand = parts != null && parts.lo != null && parts.hi != null;
   const coverage = hasBand ? formatNominalCoverage(nominal) : null;
+  const absentTitle = intervalAbsentReason
+    ? `Interval not computed — ${intervalAbsentReason}`
+    : "Interval not computed";
 
   return (
     <section className={`${styles.block} ${blockClass}`}>
@@ -74,11 +78,30 @@ export function ForecastBlock({
         <Figure variant={muVariant} className={styles.mu}>
           {muText}
         </Figure>
-        {hasBand && parts != null && parts.lo != null && parts.hi != null ? (
-          <Figure variant="n2" className={styles.range}>
-            [{parts.lo}, {parts.hi}]
-          </Figure>
-        ) : null}
+        <span className={styles.intervalLine} data-testid="forecast-interval-line">
+          {hasBand && parts != null && parts.lo != null && parts.hi != null ? (
+            <>
+              <span className={styles.bracket}>[</span>
+              <Figure variant="n2" className={styles.range}>
+                {parts.lo}
+              </Figure>
+              <span className={styles.boundSep}>, </span>
+              <Figure variant="n2" className={styles.range}>
+                {parts.hi}
+              </Figure>
+              <span className={styles.bracket}>]</span>
+            </>
+          ) : (
+            <Figure
+              variant={intervalVariant}
+              className={styles.absent}
+              title={absentTitle}
+              data-testid="forecast-interval-absent"
+            >
+              {renderAbsent()}
+            </Figure>
+          )}
+        </span>
         {sigmaText ? (
           <Figure variant="n2" className={styles.sigma}>
             {sigmaText}
@@ -88,14 +111,6 @@ export function ForecastBlock({
       {hasBand && coverage ? (
         <p className={styles.coverage}>
           <Figure variant="c2">{coverage}</Figure> nominal coverage
-        </p>
-      ) : null}
-      {!hasBand ? (
-        <p className={styles.absence} title={intervalAbsentReason ?? undefined}>
-          Interval not computed
-          {intervalAbsentReason ? (
-            <span className={styles.reason}> — {intervalAbsentReason}</span>
-          ) : null}
         </p>
       ) : null}
     </section>

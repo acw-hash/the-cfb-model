@@ -7,6 +7,7 @@ interface FigureProps {
   variant?: TypographyVariant;
   className?: string;
   title?: string;
+  "data-testid"?: string;
 }
 
 /**
@@ -18,10 +19,11 @@ export function Figure({
   variant = "n1",
   className,
   title,
+  "data-testid": dataTestId,
 }: FigureProps): React.ReactElement {
   const classes = [styles.figure, styles[variant], className].filter(Boolean).join(" ");
   return (
-    <span className={classes} title={title}>
+    <span className={classes} title={title} data-testid={dataTestId}>
       {children}
     </span>
   );
