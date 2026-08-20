@@ -2,10 +2,18 @@
   font-variant-numeric: tabular-nums lining-nums;
 }
 
+.d1 {
+  font-size: var(--type-d1-size);
+  line-height: var(--type-d1-line);
+  font-weight: var(--type-d1-weight);
+  letter-spacing: var(--type-d1-tracking);
+}
+
 .t1 {
   font-size: var(--type-t1-size);
   line-height: var(--type-t1-line);
   font-weight: var(--type-t1-weight);
+  letter-spacing: var(--type-t1-tracking);
 }
 
 .t2 {

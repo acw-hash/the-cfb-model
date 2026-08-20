@@ -31,34 +31,39 @@ interface GameRowProps {
   game: GameRowModel | GamePrediction;
 }
 
-/** Scores-app density game row (§4.3). */
+/**
+ * D1 game row — Candidate A (operator 2026-08-20):
+ * stacked away / @ home (T3), Primary rail (D1 μ + N2 interval),
+ * kickoff · conviction on a compact third line (C2/C1). Uniform 77px at 390.
+ */
 export function GameRow({ game }: GameRowProps): React.ReactElement {
   const kickoff = formatKickoffLocal(game.kickoff_utc);
   const kickoffTitle = game.kickoff_utc == null ? undefined : `${kickoff.utc} UTC`;
-  const matchup = `${game.away_team} @ ${game.home_team}`;
 
   return (
-    <article className={styles.row}>
-      <div className={styles.kickoff}>
-        <Figure variant="c2" className={styles.kickoffTime} title={kickoffTitle}>
-          {kickoff.local}
-        </Figure>
-      </div>
-
-      <div className={styles.center}>
+    <article className={styles.row} data-testid="game-row" data-matchup-layout="stacked">
+      <div className={styles.left}>
         <h3 className={styles.matchup}>
-          {matchup}
-          {game.neutral_site ? (
-            <span className={styles.neutral} title="Neutral site">
-              N
+          <span className={styles.awayName}>{game.away_team}</span>
+          <span className={styles.homeName}>
+            <span className={styles.atSign} aria-hidden="true">
+              @{" "}
             </span>
-          ) : null}
+            {game.home_team}
+            {game.neutral_site ? (
+              <span className={styles.neutral} title="Neutral site">
+                N
+              </span>
+            ) : null}
+          </span>
         </h3>
-      </div>
-
-      <div className={styles.right}>
-        <IntervalBand game={game} />
         <div className={styles.meta}>
+          <Figure variant="c2" className={styles.kickoffTime} title={kickoffTitle}>
+            {kickoff.local}
+          </Figure>
+          <span className={styles.metaSep} aria-hidden="true">
+            ·
+          </span>
           <TierChip convictionTier={game.conviction_tier} convictionLabel={game.conviction_label} />
           <RevisedMarker
             tierRevisedSincePrimary={game.tier_revised_since_primary}
@@ -67,6 +72,10 @@ export function GameRow({ game }: GameRowProps): React.ReactElement {
           />
           <StaleBadge staleStamp={game.stale_stamp} sources={game.stale_sources} />
         </div>
+      </div>
+
+      <div className={styles.right}>
+        <IntervalBand game={game} />
       </div>
     </article>
   );

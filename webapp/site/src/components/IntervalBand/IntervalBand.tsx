@@ -16,7 +16,7 @@ interface IntervalBandProps {
   >;
 }
 
-/** N1 headline μ with quiet N2 `[lo, hi]` on its own line — no chart junk (§4.3). */
+/** D1 μ with quiet N2 `[lo, hi]` on its own line — Primary stack for `/` (§4.2 D1). */
 export function IntervalBand({ game }: IntervalBandProps): React.ReactElement {
   const { mu_margin, sigma_margin, margin_interval_lo, margin_interval_hi, null_reason } = game;
 
@@ -48,7 +48,7 @@ export function IntervalBand({ game }: IntervalBandProps): React.ReactElement {
 
   return (
     <span className={styles.wrap} data-testid="interval-band">
-      <Figure variant="n1" className={styles.mu}>
+      <Figure variant="d1" className={styles.mu}>
         {muText}
       </Figure>
       <span className={styles.intervalLine} data-testid="interval-line">
@@ -65,7 +65,7 @@ export function IntervalBand({ game }: IntervalBandProps): React.ReactElement {
             <span className={styles.bracket}>]</span>
           </>
         ) : (
-          <Figure variant="n1" className={styles.absent} data-testid="interval-absent">
+          <Figure variant="d1" className={styles.absent} data-testid="interval-absent">
             {renderAbsent()}
           </Figure>
         )}

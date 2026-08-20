@@ -46,13 +46,3 @@
 .muted {
   color: var(--text-tertiary);
 }
-
-@media (max-width: 640px) {
-  .wrap {
-    align-items: flex-start;
-  }
-
-  .intervalLine {
-    justify-content: flex-start;
-  }
-}

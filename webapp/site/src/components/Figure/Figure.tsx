@@ -1,6 +1,6 @@
 import styles from "./typography.module.css";
 
-type TypographyVariant = "t1" | "t2" | "t3" | "b1" | "b2" | "n1" | "n2" | "c1" | "c2";
+type TypographyVariant = "d1" | "t1" | "t2" | "t3" | "b1" | "b2" | "n1" | "n2" | "c1" | "c2";
 
 interface FigureProps {
   children: React.ReactNode;

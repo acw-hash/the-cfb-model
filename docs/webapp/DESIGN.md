@@ -585,17 +585,22 @@ No team-color theming in v1. No gradient backgrounds.
 
 **Stack:** `"SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif`
 
-| Scale | Size / line | Weight | Use |
-|-------|-------------|--------|-----|
-| T1 | 28px / 32px | 600 | Page title |
-| T2 | 20px / 24px | 600 | Section header |
-| T3 | 17px / 22px | 600 | Team names (game row) |
-| B1 | 17px / 22px | 400 | Body |
-| B2 | 15px / 20px | 400 | Secondary copy |
-| N1 | 17px / 22px | 500 | **Headline margin number** |
-| N2 | 15px / 20px | 400 | Intervals, probabilities |
-| C1 | 13px / 16px | 500 | Tier chip, badges |
-| C2 | 11px / 14px | 400 | Timestamps, provenance |
+Tracking applies at ≥28px only.
+
+| Scale | Size / line | Weight | Tracking | Use |
+|-------|-------------|--------|----------|-----|
+| **D1** | **28px / 30px** | **600** | **−0.02em** | **Forecast figure, `/` game row** |
+| T1 | 28px / 32px | 600 | −0.01em | Page title |
+| T2 | 20px / 24px | 600 | 0 | Section header |
+| T3 | **15px / 20px** | 600 | 0 | Team names (game row) — *reduced from 17px* |
+| B1 | 17px / 22px | 400 | 0 | Body |
+| B2 | 15px / 20px | 400 | 0 | Secondary copy |
+| N1 | 17px / 22px | 500 | 0 | Headline margin — *retained for Game Detail and `/results`* |
+| N2 | 15px / 20px | 400 | 0 | Interval bounds, probabilities |
+| C1 | 13px / 16px | 500 | 0 | Tier chip, badges |
+| C2 | 11px / 14px | 400 | 0 | Timestamps, provenance |
+
+**D2 is not adopted.** Game Detail keeps N1; vertical rank there comes from the section heading.
 
 **Tabular numerals:** `font-variant-numeric: tabular-nums lining-nums` on **every** figure element.
 
