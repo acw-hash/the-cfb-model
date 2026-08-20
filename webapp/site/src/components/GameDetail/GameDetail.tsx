@@ -61,13 +61,15 @@ export function GameDetail({ game, homeSeries, awaySeries }: GameDetailProps): R
         tierPrimary={game.tier_primary}
         tierRevisedSincePrimary={game.tier_revised_since_primary}
       />
-      <RatingTrajectoryChart
-        homeSchool={game.home_team}
-        awaySchool={game.away_team}
-        home={homeSeries}
-        away={awaySeries}
-        throughWeek={game.week}
-      />
+      {homeSeries.length > 0 || awaySeries.length > 0 ? (
+        <RatingTrajectoryChart
+          homeSchool={game.home_team}
+          awaySchool={game.away_team}
+          home={homeSeries}
+          away={awaySeries}
+          throughWeek={game.week}
+        />
+      ) : null}
       <ProvenanceStrip game={game} />
     </article>
   );

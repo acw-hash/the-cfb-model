@@ -11,9 +11,9 @@ import { DEFAULT_SLATE_ORDER } from "@/lib/this-week/sort";
 import styles from "./this-week.module.css";
 
 /**
- * ISR fallback 6h (§3). Primary freshness is on-demand revalidation after R2 push.
- * Publish cadence is Tue 06:00 primary and Thu–Sat 06:00 refresh — 21600s is the
- * spec's stated fallback so a missed webhook still loads the next slot.
+ * Dynamic via root layout (PROD-500). Page also no-store-fetches meta +
+ * week_predictions; revalidate export retained as documentation of the §3
+ * 6h fallback intent for a future ISR restore (PROD-500-ISR).
  */
 export const revalidate = 21600;
 

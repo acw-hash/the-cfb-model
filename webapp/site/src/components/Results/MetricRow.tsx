@@ -1,11 +1,11 @@
 import { Figure } from "@/components/Figure/Figure";
 import type { TrackRecordMetric } from "@/lib/artifacts/types";
 import {
-  assertRateHasCi,
   ciIncludesFifty,
   formatRecordedCi,
   formatRecordedNumber,
   formatRecordedPercent,
+  rateHasCi,
 } from "@/lib/formatting/track-record";
 import { MISSING_METRIC_COPY } from "@/lib/results/copy";
 
@@ -50,7 +50,22 @@ export function MetricRow({
     );
   }
 
-  assertRateHasCi(metric);
+  if (!rateHasCi(metric)) {
+    return (
+      <tr
+        className={styles.row}
+        data-testid={`metric-incomplete-${metric.id}`}
+        data-metric-id={metric.id}
+      >
+        <th scope="row" className={styles.label}>
+          {metric.label}
+        </th>
+        <td className={styles.absent} colSpan={3}>
+          {MISSING_METRIC_COPY}
+        </td>
+      </tr>
+    );
+  }
 
   const valueText = formatValue(metric);
   const hasCi = metric.ci_kind !== "none" && metric.ci_lower != null && metric.ci_upper != null;

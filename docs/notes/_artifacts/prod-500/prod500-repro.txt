@@ -1,0 +1,19 @@
+prod500-repro port=3098
+R2_BUCKET=ridge-artifacts
+
+/ -> HTTP 200
+/about -> HTTP 200
+/results -> HTTP 200
+/game/401628373 -> HTTP 200
+
+=== server stderr/stdout (tail) ===
+
+> ridge-site@0.1.0 start
+> next start -p 3098
+
+   ▲ Next.js 15.5.23
+   - Local:        http://localhost:3098
+   - Network:      http://192.168.1.170:3098
+
+ ✓ Starting...
+ ✓ Ready in 1038ms

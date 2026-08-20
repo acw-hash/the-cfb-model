@@ -27,13 +27,17 @@ export function ResultsPage({
   expectedMetricIds,
   emptyCopy,
 }: ResultsPageProps): React.ReactElement {
+  const verdict = track.verdict ?? {
+    label: "Recorded finding unavailable",
+    plain_language: "The track-record artifact did not include a verdict block.",
+  };
   return (
     <article className={styles.page} data-testid="results-page">
       <header className={styles.header}>
         <h1 className={styles.title}>Results</h1>
         <p className={styles.subtitle}>Track record</p>
       </header>
-      <VerdictBlock verdict={track.verdict} />
+      <VerdictBlock verdict={verdict} />
       <ResultsTabs initialTab={initialTab} syncUrl={syncUrl}>
         {{
           record: <TrackRecordSection track={track} expectedIds={expectedMetricIds} />,

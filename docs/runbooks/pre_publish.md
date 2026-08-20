@@ -29,6 +29,15 @@ uv run pytest -m workstation -o addopts= --tb=short
 
 Expect 4 passed. If they skip or fail, **do not publish**.
 
+## Revalidation hook scope (PROD-500)
+
+Root layout uses `force-dynamic` because every public route performs (or inherits)
+a `no-store` R2 fetch. W7-2 POST `/api/revalidate` still returns 200, but it is
+**inert for caching** on `/`, `/about`, `/results`, and `/game/[id]` — those
+routes always R2-fetch on each request. Do not expect the hook to change what
+visitors see; verify routes directly after publish if needed. ISR restore is
+post-launch (PROD-500-ISR), not a publish-blocking fix.
+
 ## Also before publish
 
 1. `uv run python scripts/check_betting_language.py published` — exit 0.

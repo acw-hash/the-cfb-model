@@ -1,6 +1,6 @@
 import { SUPPORTED_SCHEMA_MAJOR } from "./types";
 
-/** Parse semver major from artifact schema_version (§1.7). */
+/** Parse semver major from artifact schema_version (§1.7). Throws on invalid semver. */
 export function parseSchemaMajor(schemaVersion: string): number {
   const major = schemaVersion.split(".")[0];
   const parsed = Number.parseInt(major, 10);
@@ -11,6 +11,13 @@ export function parseSchemaMajor(schemaVersion: string): number {
 }
 
 /** True when artifact major version is supported by this frontend build. */
-export function isSchemaVersionSupported(schemaVersion: string): boolean {
-  return parseSchemaMajor(schemaVersion) === SUPPORTED_SCHEMA_MAJOR;
+export function isSchemaVersionSupported(schemaVersion: string | null | undefined): boolean {
+  if (schemaVersion == null || schemaVersion.trim() === "") {
+    return false;
+  }
+  try {
+    return parseSchemaMajor(schemaVersion) === SUPPORTED_SCHEMA_MAJOR;
+  } catch {
+    return false;
+  }
 }

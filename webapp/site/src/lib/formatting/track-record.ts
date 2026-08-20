@@ -46,17 +46,22 @@ export class MissingConfidenceIntervalError extends Error {
  * A percent rate is impossible to render without its CI beside it (W5-1).
  * Non-rate metrics (points, ratio bands, MISSED labels) are exempt when ci_kind is none.
  */
-export function assertRateHasCi(metric: TrackRecordMetric): void {
+export function rateHasCi(metric: TrackRecordMetric): boolean {
   if (metric.unit !== "percent" || typeof metric.value !== "number") {
-    return;
+    return true;
   }
-  if (
-    metric.ci_kind === "none" ||
-    metric.ci_lower == null ||
-    metric.ci_upper == null ||
-    !Number.isFinite(metric.ci_lower) ||
-    !Number.isFinite(metric.ci_upper)
-  ) {
+  return (
+    metric.ci_kind !== "none" &&
+    metric.ci_lower != null &&
+    metric.ci_upper != null &&
+    Number.isFinite(metric.ci_lower) &&
+    Number.isFinite(metric.ci_upper)
+  );
+}
+
+/** @deprecated Prefer rateHasCi — kept for tests documenting the W5-1 contract. */
+export function assertRateHasCi(metric: TrackRecordMetric): void {
+  if (!rateHasCi(metric)) {
     throw new MissingConfidenceIntervalError(metric.id);
   }
 }
