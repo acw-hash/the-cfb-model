@@ -2,9 +2,9 @@
 
 **Date:** 2026-08-19
 **Branch:** `w10-ui` (off `main`; not merged)
-**Status:** **IMPLEMENTED — ACCEPTANCE INCOMPLETE.** Operator decisions closed and code
-shipped on `w10-ui` (2026-08-19). Outstanding before merge: §4 visual review with §4.4
-anti-pattern list (operator verdict). Not merged.
+**Status:** **IMPLEMENTED — §4.4 CONDITIONAL FAIL — D1 REMEDIATION PENDING.**
+Decisions 1–5 authorized below. Decision 1 (D1 only) and Decision 3 (§5.2 copy) are build
+work on `w10-fix-kickoff` (off `f39efbc`). Decision 5 (PROD-500) merged to `main`. Not merged.
 **Authority:** `docs/webapp/DESIGN.md` §1.8, §4, §5, §6; `docs/notes/webapp-w2.md`,
 `w3.md`, `w6.md`, `w7.md`; TASKS.md cross-cutting acceptance (all UI tasks).
 
@@ -51,6 +51,99 @@ Three tiers. This is the whole argument; everything below is consequence.
 Note the deliberate inversion on `/results` Tab B: the **verdict paragraph is Primary**, above
 the metrics table. "The §1.4 paragraph" means `track_record.verdict.plain_language`, not the
 webapp-authored lay summary.
+
+---
+
+## 1.9 — Operator decision batch (2026-08-19)
+
+**Code freeze:** Fri 2026-08-28 · **Live publish:** Tue 2026-09-01
+
+### Not decisions — executed 2026-08-19
+
+| # | Action | Result |
+|---|--------|--------|
+| **A1** | Set `NCAA_QUANT_WEBAPP__EXPORT_ENABLED=false` in `.env` | Done. Stops `make test` from writing R2 objects (third incident class). Durable fix: test-guard task (autouse conftest + patched S3). |
+| **A2** | Extract 4 pre-W10 PNGs from HEAD before restore | Done → `docs/notes/_artifacts/webapp-w10-ui/pre-w10-baseline/` (411–415 KB each; W3 baseline from `1a944b6`). |
+| **A3** | Move W9 in-flight off `w10-ui` | Done → branch `w9-d` @ `95c85e1` (27 files). `w10-ui` restored to `f39efbc`; GameDetail collision with W10-FIX avoided. |
+
+### Decision 1 — Adopt D1/D2, or ship the re-weighted scale?
+
+**Answer: B — D1 only.** Re-weight-only hierarchy (decision A) fails first-read and density
+(see Decision 2). Adopt D1 (28/30, 600, −0.02em) for the `/` forecast figure; demote T3 team
+names to 15px. Target two-line row ~72–80px. Do **not** adopt D2 (40/42 Game Detail) — vertical
+room and section heading already establish rank there. Amends §4.2 only. Build on
+`w10-fix-kickoff`; re-capture before Mon Aug 24 slack window.
+
+### Decision 2 — §4.4 visual verdict
+
+Protocol run 2026-08-19 against captures in `docs/notes/_artifacts/webapp-w10-ui/screenshots/`.
+
+1. **First-read test** (`home-mobile-light.png`): eye lands on **team names** (left, B2 15/400)
+   before N1 forecast figures (right). **FAIL** — contradicts §1 Primary hierarchy statement.
+2. **Density test** (full 56-row slate): uniform **107px** rows × 56 = **5,992px** row body;
+   Playwright `slateHeightPx` **6,260** includes date-group headers (~268px overhead). Reads as a
+   **long list of tall cards**, not scores-app density (§4.3 benchmark ~60–70px). **FAIL**.
+3. **Six anti-pattern items** — all **PASS** (named screenshot each):
+
+| Item | Verdict | Screenshot |
+|------|---------|------------|
+| no default-shadcn aesthetic | PASS | `home-mobile-light.png` |
+| no purple-gradient heroes | PASS | `home-mobile-light.png` |
+| no emoji cards | PASS | `home-mobile-light.png` |
+| no wall-of-widgets | PASS | `home-mobile-light.png` |
+| no gratuitous glassmorphism | PASS | `home-mobile-light.png` |
+| no filler marketing copy | PASS | `about-mobile-light.png` |
+
+4. **Null-heavy slate** (`null-heavy-slate-mobile-light.png`): Primary-slot em-dash at N1 weight
+   reads **deliberate**, not broken. **PASS**.
+
+**Caveat recorded:** `/results` and `/game/[id]` §4.4 captures used `next dev` (fixtures) —
+verdict on those surfaces is a **dev-artifact only**. PROD-500 (Decision 5) has since landed
+`force-dynamic` so `next start` serves all four routes 200 post-revalidation; **D1's
+re-capture on `next start` retires this caveat.**
+
+**Verdict: CONDITIONAL — anti-patterns and null-absence PASS; first-read and density FAIL.**
+Triggers Decision 1 → B. DELIVERABLE 2 (re-weight-only) **does not pass** as worded.
+
+### Decision 3 — §5.2 copy gap: the three σ figures
+
+**Answer: B — §5.2 + `/about`.** Accept proposed copy verbatim on Game Detail; extend W6's
+existing conformal / σ-refusal section on `/about`. DESIGN amendment — operator-signed. Does
+not defer: visible arithmetic contradiction is unacceptable on this product.
+
+> The range is conformal, not Gaussian: it is calibrated to cover at the stated rate and is
+> typically wider than the standard deviation alone would imply. The win probability comes from a
+> recalibrated predictive distribution rather than from the displayed σ. These three figures
+> describe the same forecast from different calibrations and are not intended to reconcile
+> arithmetically.
+
+### Decision 4 — Retroactive authorization (operator-approved 2026-08-19)
+
+**Answer: Authorize.** Covers what already shipped **and** the incoming Decision 1 §4.2
+amendment (D1 display scale on `/`), not only the §4.1 / §4.3 edits already on disk.
+
+| Path | Authorization |
+|------|---------------|
+| `docs/webapp/DESIGN.md` §4.1 use-column + §4.3 game-row diagram | **Authorized** — accurate record of what shipped (ADR 0015 precedent). |
+| `docs/webapp/DESIGN.md` §4.2 (incoming D1 amendment) | **Authorized** — Decision 1 → B adopts D1 (28/30/600/−0.02em) for the `/` forecast figure; amends §4.2 only. Build on `w10-fix-kickoff`. |
+| `docs/notes/_artifacts/webapp-w10-ui/**` (committed captures, grep gate, metrics) | **Authorized — commit.** Sets auditable-evidence precedent over W6 ephemerality; repo weight accepted. `screenshots/` is the **re-weight-only round**; `pre-w10-baseline/` is the extracted W3 baseline. |
+| `docs/notes/webapp-w10-ui.md` (hyphenated vs `webapp-w10ui.md`) | **Authorized** — hyphenated convention canonical; `_artifacts/webapp-w10-ui/` already uses it. |
+
+### Decision 5 — Production 500 on `/results` and `/game/[id]`
+
+**Answer: A — Own it now.** Separate branch off `main`; bisect against W7 to establish whether
+predates W10. `src/lib/artifacts/**` is forbidden in W10 branches. Two of four public routes 500
+nine days before freeze — **launch blocker**. Cannot wait for W10 clearance.
+
+### Sequence (post-batch)
+
+1. ~~A1–A3~~ (done)
+2. Clean tree → branch `w10-fix-kickoff` off `f39efbc`
+3. Decision 5 task in parallel off `main`
+4. Decision 1 build + re-capture (D1)
+5. Decision 3 copy (§5.2 + `/about`)
+6. Notes: row-height arithmetic corrected (§5); test-guard task for A1 durable fix
+7. W9-D notes: stale `sandbox/latest` → versioned copy at `sandbox/v1/2026/w1/tuesday_primary/`
 
 ---
 
@@ -166,12 +259,19 @@ null-last).
 
 ---
 
-## 5. Evidence — captures recorded; §4 operator review pending
+## 5. Evidence — captures recorded; §4 operator review closed (Decision 2)
 
-Captures: `docs/notes/_artifacts/webapp-w10-ui/screenshots/` (2026-08-19, `next dev` port
-3562, `ARTIFACT_SOURCE=local`, `ARTIFACT_BASE_PATH=webapp/fixtures`). Production
-`next start` returned 500 on `/results` and `/game/[id]` with `.env.local` R2 config; dev +
-fixtures used instead.
+**Re-weight-only round:** `docs/notes/_artifacts/webapp-w10-ui/screenshots/` (2026-08-19,
+`next dev` port 3562, `ARTIFACT_SOURCE=local`, `ARTIFACT_BASE_PATH=webapp/fixtures`). These
+are the captures Decision 2 judged; they are **not** the D1 remediation set.
+
+**Pre-W10 baseline:** `docs/notes/_artifacts/webapp-w10-ui/pre-w10-baseline/` (extracted
+2026-08-19 from HEAD before restore; W3 @ `1a944b6`).
+
+`/results` and `/game/[id]` captures in the re-weight-only round used `next dev` because
+production `next start` then 500'd on those routes (Decision 5 / PROD-500). That launch
+blocker is fixed on `main`; D1 re-capture must use `next start` and retires the §4.4
+dev-artifact caveat.
 
 ### Betting-language grep gate (cross-cutting rule 4)
 
@@ -242,12 +342,13 @@ Measured on `/` with Playwright (`row-height-metrics.json`):
 |--------|-------|
 | Row count | 56 |
 | Row height (each) | 107px (uniform) |
-| Total slate height | 6260px |
-| Pre-W10 baseline | **Not captured in this pass** |
+| Row body height (107 × 56) | **5,992px** |
+| Playwright `slateHeightPx` | 6,260px (includes date-group header overhead ≈268px) |
+| Pre-W10 baseline | `pre-w10-baseline/` (extracted from HEAD 2026-08-19; W3 @ `1a944b6`) |
 
-**Self-assess (not operator PASS):** multi-line rows trade vertical space for hierarchy. The
-slate still scans as a single column list; 107px/row × 56 is long but not broken. Density
-vs pre-W10 cannot be quantified without a before capture.
+**Operator verdict (Decision 2):** multi-line rows trade vertical space for hierarchy but
+**fail density** (~2× Apple Sports benchmark). Re-weight-only **fails first-read**; D1 adoption
+authorized (Decision 1 → B).
 
 ### Re-weight-only hierarchy (390px)
 
@@ -256,18 +357,19 @@ right column read before B2 team names in the left column — a modest delta (17
 Whether that is enough to win first read is an **operator call**; captures are attached for
 §2.6 D1/D2 trigger evaluation.
 
-### §4.4 anti-pattern checklist (agent self-assess — operator verdict pending)
+### §4.4 anti-pattern checklist (operator verdict 2026-08-19)
 
-| Item | Self-assess | Screenshot |
-|------|-------------|------------|
+| Item | Verdict | Screenshot |
+|------|---------|------------|
 | no default-shadcn aesthetic | PASS | `home-mobile-light.png` |
-| no purple-gradient heroes | PASS | all captures |
-| no emoji cards | PASS | all captures |
+| no purple-gradient heroes | PASS | `home-mobile-light.png` |
+| no emoji cards | PASS | `home-mobile-light.png` |
 | no wall-of-widgets | PASS | `home-mobile-light.png` |
-| no gratuitous glassmorphism | PASS | all captures |
+| no gratuitous glassmorphism | PASS | `home-mobile-light.png` |
 | no filler marketing copy | PASS | `about-mobile-light.png` |
 
-**§4 visual review: PENDING operator verdict.** Agent self-assess is not acceptance.
+**§4 visual review: CLOSED.** Anti-patterns PASS; first-read and density FAIL → Decision 1 B.
+Full protocol in §1.9 Decision 2.
 
 ---
 
