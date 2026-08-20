@@ -2,9 +2,9 @@
 
 **Date:** 2026-08-19
 **Branch:** `w10-ui` (off `main`; not merged)
-**Status:** **IMPLEMENTED — §4.4 CONDITIONAL FAIL — D1 REMEDIATION PENDING.**
-Decisions 1–5 authorized below. Decision 1 (D1 only) and Decision 3 (§5.2 copy) are build
-work on `w10-fix-kickoff` (off `f39efbc`). Decision 5 (PROD-500) merged to `main`. Not merged.
+**Status:** **W10-D1-NAMES — Candidate A shipped (operator 2026-08-20).**
+Stacked away/@ home + third-line kickoff·chip; uniform **77px**. Soft-wrap (B) deleted.
+Awaiting §4.4 re-run Mon Aug 24. Not merged.
 **Authority:** `docs/webapp/DESIGN.md` §1.8, §4, §5, §6; `docs/notes/webapp-w2.md`,
 `w3.md`, `w6.md`, `w7.md`; TASKS.md cross-cutting acceptance (all UI tasks).
 
@@ -370,6 +370,222 @@ Whether that is enough to win first read is an **operator call**; captures are a
 
 **§4 visual review: CLOSED.** Anti-patterns PASS; first-read and density FAIL → Decision 1 B.
 Full protocol in §1.9 Decision 2.
+
+---
+
+## 6. W10-D1 — Adopt D1, rebuild the row (2026-08-20)
+
+**Deadline:** code + captures Fri 2026-08-21 · operator §4.4 Mon 2026-08-24 · buffer Wed
+2026-08-26 · freeze Fri 2026-08-28. Abort if §4.4 not passed by Wed Aug 26 → merge
+re-weight-only.
+
+### §4.2 amendment (authorized Decisions 1 + 4)
+
+Applied exactly as tabled: D1 28/30/600/−0.02em for `/` forecast; T3 reduced to 15/20/600;
+tracking column; N1 retained for Game Detail and `/results`. **D2 not adopted.**
+`git diff docs/webapp/DESIGN.md` touches §4.2 only.
+
+### Row structure shipped
+
+```
+┌──────────────────────────────────────────────────────┐
+│ Away @ Home                    (T3 15/600)  −5.0 (D1)│
+│ Sat … · Lean Home (C2/C1)            [lo, hi] (N2)   │
+└──────────────────────────────────────────────────────┘
+```
+
+Left = Secondary + Tertiary; right = Primary stack (scannable rail). Hierarchy: D1 μ wins
+first read over T3 names; interval stays Primary (N2 band / D1 `—` when null).
+
+### Density (390px, fixture slate, `next start`)
+
+Source: `docs/notes/_artifacts/webapp-w10-ui/screenshots-d1/row-height-metrics.json`
+
+| Metric | Value |
+|--------|-------|
+| Row count | 56 |
+| Row height (each) | **75px** uniform (target 72–80) |
+| Row body (75 × 56) | **4,200px** |
+| Group headers (3 × 37) | **111px** stated separately |
+| Playwright `slateHeightPx` | 4,311 |
+
+### Capture command
+
+All D1 screenshots: `node tests/capture-w10-d1.mjs` against **`next start`** (port 3101),
+`ARTIFACT_SOURCE=local`. **Not `next dev`.** Directory: `screenshots-d1/`. This retires the
+prior `/results` / `/game/[id]` next-dev caveat for the D1 round.
+
+### Three-round comparison
+
+| Round | Directory | Row height | First-read |
+|-------|-----------|------------|------------|
+| Pre-W10 baseline | `pre-w10-baseline/` | (W3 captures) | Team names dominant (T3 17/600) |
+| Re-weight-only | `screenshots/` | 107px | Still fails — names before N1 |
+| **D1** | `screenshots-d1/` | **75px** | D1 μ intended Primary; **blocked** by long-name STOP |
+
+### STOP — longest real 2026 team-name pair
+
+**Pair:** `Mississippi Valley State @ Sacramento State` (43 chars) from W9-I dry export
+2026 week 1 (`docs/notes/_artifacts/webapp-w9i/dry_export/week_predictions.json`).
+
+**Measurement at 390px / T3 15px / nowrap** (`long-name-probe.json`):
+
+| Field | Value |
+|-------|-------|
+| clientWidth | 234px |
+| scrollWidth | 298px |
+| wraps | false |
+| truncates | **true** (overflow into D1 rail; see `long-name-pair-mobile-light.png`) |
+
+T3 was **not** shrunk below 15px. Options for operator (do not implement here):
+
+1. **Allow matchup wrap** to a second line when `scrollWidth > clientWidth` — breaks uniform
+   75px for those rows only; may push overflow rows above 80px.
+2. **Ellipsis + `title=`** full name — Secondary text hidden; fails “no truncate.”
+3. **Full-bleed matchup** (μ moves under names) — abandons the side-by-side Primary rail.
+4. **Accept FCS overflow** until a later formatter/abbrev task — ship D1 for FBS-length names.
+5. **Narrow the figure column** (smaller D1 tracking only) — recovers ~10–20px, not 64px; cannot
+   clear 298 − 234 alone.
+
+### Absence
+
+`null-interval-row-mobile-light.png` (null-heavy slate, `next start`): Primary-slot `—` at D1
+weight visible. `interval-absence.test.tsx` regression guard retained (fails if reason returns
+to `title=` only on Game Detail).
+
+### §4.4 checklist re-run (D1 captures — provisional; long-name STOP blocks PASS)
+
+| Item | Verdict | Screenshot |
+|------|---------|------------|
+| no default-shadcn aesthetic | PASS | `screenshots-d1/home-mobile-light.png` |
+| no purple-gradient heroes | PASS | `screenshots-d1/home-mobile-light.png` |
+| no emoji cards | PASS | `screenshots-d1/home-mobile-light.png` |
+| no wall-of-widgets | PASS | `screenshots-d1/home-mobile-light.png` |
+| no gratuitous glassmorphism | PASS | `screenshots-d1/home-mobile-light.png` |
+| no filler marketing copy | PASS | `screenshots-d1/about-mobile-light.png` |
+
+**First-read / density:** density **met** (75px). First-read **cannot be claimed PASS** while
+long names collide with the D1 rail — operator §4.4 Mon Aug 24 after long-name decision.
+
+### Positive-evidence sentences (W6 format, D1 captures)
+
+1. **The forecast figure reads as the Primary element on the `/` row** — In
+   `screenshots-d1/home-mobile-light.png`, D1 28/600 μ sits on a right-aligned rail above the
+   N2 interval, larger and heavier than T3 15/600 team names on the left.
+2. **The slate reads as scores-app density, not a card stack** — Uniform **75px** rows
+   (4,200px body + 111px group headers) replace the re-weight-only 107px / 5,992px body
+   (`row-height-metrics.json`).
+3. **Honest absence stays visible in the Primary interval slot** — In
+   `screenshots-d1/null-interval-row-mobile-light.png`, the em-dash renders at D1 weight under
+   μ with no tooltip-only fallback.
+4. **Game Detail did not receive a display tier** — In
+   `screenshots-d1/game-detail-mobile-light.png`, margin μ remains N1; D2 was not introduced.
+5. **Production captures retire the next-dev caveat** — `/results` and `/game/[id]` shots in
+   `screenshots-d1/` were taken against `next start` (`CAPTURE.md`), not `next dev`.
+
+### Betting-language grep gate
+
+Re-run command identical to §5; output refreshed to
+`docs/notes/_artifacts/webapp-w10-ui/betting-grep-gate.txt` if dirty. Verdict expected PASS
+(no recommendation framing added by D1).
+
+### Density confirmation (clears one §4.4 failure)
+
+Fixture slate body **4,200px** (75 × 56) vs re-weight-only **5,992px** (107 × 56) is a
+**~30% reduction**. That likely clears the §4.4 **density** FAIL; **first-read** remains open
+until the operator picks a long-name candidate and re-runs §4.4 Mon Aug 24.
+
+### Sanctioned-edits path correction (operator-authorized)
+
+`src/lib/tokens.ts` **does not exist**. Live type scale for the §4.2 amendment is
+`webapp/site/src/styles/tokens.css` + `webapp/site/scripts/check-tokens.mjs`. Both were updated
+for D1/T3/tracking. W10-FIX and D3 inherit these paths — not `lib/tokens.ts`.
+
+---
+
+## 7. W10-D1-NAMES — long-name candidates (2026-08-20)
+
+**Switch:** URL query on `/` (client slate) — `?matchup=soft-wrap|stacked` and
+`?stackedMeta=third-line|time-gutter|chip-under-interval`. Default in tree for guards:
+`soft-wrap`. Losing candidate is delete-cheap (prop + CSS).
+
+### Phase 1 — measure (`long-name-probe-2.json`)
+
+2026 W1 dry export, 390px, T3 15px, matchup box **234px**. Slate has **99** rows (not 56).
+
+**Overflow count: 11 / 99**
+
+| Overflowing pair | pair scrollWidth |
+|------------------|------------------|
+| Mississippi Valley State @ Sacramento State | 298 |
+| Charleston Southern @ Georgia Southern | 282 |
+| Jacksonville State @ North Dakota State | 273 |
+| Southeast Missouri State @ Iowa State | 262 |
+| Sacramento State @ Eastern Michigan | 259 |
+| Eastern Kentucky @ Jacksonville State | 257 |
+| Northwestern State @ Louisiana Tech | 253 |
+| Florida International @ South Florida | 252 |
+| North Carolina A&T @ Georgia State | 248 |
+| South Dakota State @ Northwestern | 247 |
+| San José State @ Eastern Michigan | 236 |
+
+**Top five + stacked single-name widths (against 234px):**
+
+| Pair | pair SW | away SW | home SW | either name >234? |
+|------|---------|---------|---------|-------------------|
+| Mississippi Valley State @ Sacramento State | 298 | 156 | 119 | no |
+| Charleston Southern @ Georgia Southern | 282 | 139 | 120 | no |
+| Jacksonville State @ North Dakota State | 273 | 118 | 132 | no |
+| Southeast Missouri State @ Iowa State | 262 | 168 | 71 | no |
+| Sacramento State @ Eastern Michigan | 259 | 119 | 117 | no |
+
+**Candidate A viable:** yes — longest single name is Southeast Missouri State at **168px**.
+
+### Phase 2 — Candidate A meta placements (measured)
+
+| Placement | Uniform height | ≤80? |
+|-----------|----------------|------|
+| third-line (kickoff·chip C2) | **77px** | yes |
+| time-gutter (~55px left) | **77px** | yes (names still OK: 168 < ~179) |
+| chip-under-interval | **103px** | **no** |
+
+**Chose third-line** for A captures: tied shortest with time-gutter; keeps full matchup width
+(no 55px gutter tax). Stacked rows use 8px vertical pad (soft-wrap keeps 12px).
+
+### Phase 3 — operator comparison (`next start`, 390 light)
+
+| | Candidate A (stacked) | Candidate B (soft-wrap) |
+|---|---|---|
+| Uniform / mode row height | **77px** uniform | **75px** mode |
+| Rows deviating from mode | **0** | **10** at 85px |
+| Slate body (rows × height) | 77 × 99 = **7,623px**; headers **222px** separate | 7,525px body (mixed); headers **222px** |
+| Longest pair renders fully? | **yes** | **yes** |
+| Chip/kickoff placement | third-line C2 under stacked names | line-2 under matchup (D1 default) |
+
+Captures: `candidate-a-long-name-row-mobile-light.png`, `candidate-a-slate-mobile-light.png`,
+`candidate-a-null-interval-row-mobile-light.png`, and `candidate-b-*` equivalents.
+Metrics: `candidate-compare.json`. Phase 1 probe: `long-name-probe-2.json`.
+
+**Evidence retained (same role as re-weight-only `screenshots/`):** `candidate-b-*.png` and
+`long-name-probe-2.json` stay in `screenshots-d1/` as the audit trail for **why A was chosen** —
+not live UI. Soft-wrap code is gone from `webapp/site/src`; only these artifacts remain.
+
+**Cost — A:** Always three content bands (two name lines + meta); +2px vs D1 two-line fixture
+row; every row pays for the worst-case name.
+
+**Cost — B:** Keeps two-line density for 89/99 rows; 10 overflow rows jump to 85px; wrap break
+can fall after `@`, so visual parse of away/home is weaker than explicit stack.
+
+**STOP for operator:** pick A or B from captures before Mon §4.4. Do not treat either as shipped
+final until chosen.
+
+### Decision — Candidate A (operator 2026-08-20)
+
+**Shipped:** stacked matchup + third-line kickoff·chip. Soft-wrap (B), time-gutter, and
+chip-under-interval comparison switches **deleted**. Row is no longer URL-switchable.
+
+Uniform **77px** at 390; Primary rail unchanged; long names render fully
+(`candidate-a-long-name-row-mobile-light.png`).
 
 ---
 

@@ -1,0 +1,134 @@
+{
+  "viewportPx": 390,
+  "matchupBoxPx": 234,
+  "t3": "15px / 20px / 600",
+  "rowCount": 99,
+  "overflowCount": 11,
+  "overflowingPairs": [
+    {
+      "pair": "Jacksonville State @ North Dakota State",
+      "pairScrollWidth": 273,
+      "liveClientWidth": 234,
+      "liveScrollWidth": 273
+    },
+    {
+      "pair": "Sacramento State @ Eastern Michigan",
+      "pairScrollWidth": 259,
+      "liveClientWidth": 234,
+      "liveScrollWidth": 259
+    },
+    {
+      "pair": "San José State @ Eastern Michigan",
+      "pairScrollWidth": 236,
+      "liveClientWidth": 234,
+      "liveScrollWidth": 236
+    },
+    {
+      "pair": "North Carolina A&T @ Georgia State",
+      "pairScrollWidth": 248,
+      "liveClientWidth": 234,
+      "liveScrollWidth": 248
+    },
+    {
+      "pair": "Southeast Missouri State @ Iowa State",
+      "pairScrollWidth": 262,
+      "liveClientWidth": 234,
+      "liveScrollWidth": 262
+    },
+    {
+      "pair": "Florida International @ South Florida",
+      "pairScrollWidth": 252,
+      "liveClientWidth": 265,
+      "liveScrollWidth": 265
+    },
+    {
+      "pair": "Eastern Kentucky @ Jacksonville State",
+      "pairScrollWidth": 257,
+      "liveClientWidth": 234,
+      "liveScrollWidth": 257
+    },
+    {
+      "pair": "Charleston Southern @ Georgia Southern",
+      "pairScrollWidth": 282,
+      "liveClientWidth": 234,
+      "liveScrollWidth": 282
+    },
+    {
+      "pair": "Northwestern State @ Louisiana Tech",
+      "pairScrollWidth": 253,
+      "liveClientWidth": 234,
+      "liveScrollWidth": 253
+    },
+    {
+      "pair": "South Dakota State @ Northwestern",
+      "pairScrollWidth": 247,
+      "liveClientWidth": 242,
+      "liveScrollWidth": 247
+    },
+    {
+      "pair": "Mississippi Valley State @ Sacramento State",
+      "pairScrollWidth": 298,
+      "liveClientWidth": 234,
+      "liveScrollWidth": 298
+    }
+  ],
+  "topFiveLongest": [
+    {
+      "pair": "Mississippi Valley State @ Sacramento State",
+      "pairScrollWidth": 298,
+      "away": "Mississippi Valley State",
+      "home": "Sacramento State",
+      "awayScrollWidth": 156,
+      "homeScrollWidth": 119,
+      "awayOverflows234": false,
+      "homeOverflows234": false,
+      "eitherNameOverflows234": false
+    },
+    {
+      "pair": "Charleston Southern @ Georgia Southern",
+      "pairScrollWidth": 282,
+      "away": "Charleston Southern",
+      "home": "Georgia Southern",
+      "awayScrollWidth": 139,
+      "homeScrollWidth": 120,
+      "awayOverflows234": false,
+      "homeOverflows234": false,
+      "eitherNameOverflows234": false
+    },
+    {
+      "pair": "Jacksonville State @ North Dakota State",
+      "pairScrollWidth": 273,
+      "away": "Jacksonville State",
+      "home": "North Dakota State",
+      "awayScrollWidth": 118,
+      "homeScrollWidth": 132,
+      "awayOverflows234": false,
+      "homeOverflows234": false,
+      "eitherNameOverflows234": false
+    },
+    {
+      "pair": "Southeast Missouri State @ Iowa State",
+      "pairScrollWidth": 262,
+      "away": "Southeast Missouri State",
+      "home": "Iowa State",
+      "awayScrollWidth": 168,
+      "homeScrollWidth": 71,
+      "awayOverflows234": false,
+      "homeOverflows234": false,
+      "eitherNameOverflows234": false
+    },
+    {
+      "pair": "Sacramento State @ Eastern Michigan",
+      "pairScrollWidth": 259,
+      "away": "Sacramento State",
+      "home": "Eastern Michigan",
+      "awayScrollWidth": 119,
+      "homeScrollWidth": 117,
+      "awayOverflows234": false,
+      "homeOverflows234": false,
+      "eitherNameOverflows234": false
+    }
+  ],
+  "anySingleNameOverflows234": false,
+  "candidateAViable": true
+}

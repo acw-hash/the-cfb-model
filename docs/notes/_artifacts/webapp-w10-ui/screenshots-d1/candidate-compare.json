@@ -1,0 +1,122 @@
+{
+  "chosenStackedMeta": "third-line",
+  "placementMetrics": {
+    "third-line": {
+      "rowCount": 99,
+      "heightCounts": {
+        "77": 99
+      },
+      "modeHeightPx": 77,
+      "minRowPx": 77,
+      "maxRowPx": 77,
+      "deviantCount": 0,
+      "deviantHeights": [],
+      "rowBodyHeightPx": 7623,
+      "groupHeaderHeightPx": 222,
+      "under80": true
+    },
+    "time-gutter": {
+      "rowCount": 99,
+      "heightCounts": {
+        "77": 99
+      },
+      "modeHeightPx": 77,
+      "minRowPx": 77,
+      "maxRowPx": 77,
+      "deviantCount": 0,
+      "deviantHeights": [],
+      "rowBodyHeightPx": 7623,
+      "groupHeaderHeightPx": 222,
+      "under80": true
+    },
+    "chip-under-interval": {
+      "rowCount": 99,
+      "heightCounts": {
+        "103": 99
+      },
+      "modeHeightPx": 103,
+      "minRowPx": 103,
+      "maxRowPx": 103,
+      "deviantCount": 0,
+      "deviantHeights": [],
+      "rowBodyHeightPx": 10197,
+      "groupHeaderHeightPx": 222,
+      "under80": false
+    }
+  },
+  "candidateA": {
+    "rowCount": 99,
+    "heightCounts": {
+      "77": 99
+    },
+    "modeHeightPx": 77,
+    "minRowPx": 77,
+    "maxRowPx": 77,
+    "deviantCount": 0,
+    "deviantHeights": [],
+    "rowBodyHeightPx": 7623,
+    "groupHeaderHeightPx": 222,
+    "under80": true,
+    "longNameRow": {
+      "rowHeightPx": 77,
+      "truncatesAny": false,
+      "texts": [
+        {
+          "text": "Mississippi Valley State@ Sacramento State",
+          "clientWidth": 234,
+          "scrollWidth": 234,
+          "truncates": false
+        },
+        {
+          "text": "Mississippi Valley State",
+          "clientWidth": 234,
+          "scrollWidth": 234,
+          "truncates": false
+        },
+        {
+          "text": "@ Sacramento State",
+          "clientWidth": 234,
+          "scrollWidth": 234,
+          "truncates": false
+        },
+        {
+          "text": "@",
+          "clientWidth": 0,
+          "scrollWidth": 0,
+          "truncates": false
+        }
+      ]
+    },
+    "chipKickoffPlacement": "third-line"
+  },
+  "candidateB": {
+    "rowCount": 99,
+    "heightCounts": {
+      "75": 89,
+      "85": 10
+    },
+    "modeHeightPx": 75,
+    "minRowPx": 75,
+    "maxRowPx": 85,
+    "deviantCount": 10,
+    "deviantHeights": [
+      85
+    ],
+    "rowBodyHeightPx": 7525,
+    "groupHeaderHeightPx": 222,
+    "under80": true,
+    "longNameRow": {
+      "rowHeightPx": 85,
+      "truncatesAny": false,
+      "texts": [
+        {
+          "text": "Mississippi Valley State @ Sacramento State",
+          "clientWidth": 234,
+          "scrollWidth": 234,
+          "truncates": false
+        }
+      ]
+    },
+    "chipKickoffPlacement": "line-2 under matchup (unchanged from D1)"
+  }
+}
