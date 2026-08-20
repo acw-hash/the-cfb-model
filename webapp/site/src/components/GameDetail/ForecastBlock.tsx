@@ -67,9 +67,6 @@ export function ForecastBlock({
   const sigmaText = formatSigma(sigma);
   const hasBand = parts != null && parts.lo != null && parts.hi != null;
   const coverage = hasBand ? formatNominalCoverage(nominal) : null;
-  const absentTitle = intervalAbsentReason
-    ? `Interval not computed — ${intervalAbsentReason}`
-    : "Interval not computed";
 
   return (
     <section className={`${styles.block} ${blockClass}`}>
@@ -92,14 +89,21 @@ export function ForecastBlock({
               <span className={styles.bracket}>]</span>
             </>
           ) : (
-            <Figure
-              variant={intervalVariant}
-              className={styles.absent}
-              title={absentTitle}
-              data-testid="forecast-interval-absent"
-            >
-              {renderAbsent()}
-            </Figure>
+            <span className={styles.absentSlot}>
+              <Figure
+                variant={intervalVariant}
+                className={styles.absent}
+                data-testid="forecast-interval-absent"
+              >
+                {renderAbsent()}
+              </Figure>
+              <span className={styles.absentReason}>
+                Interval not computed
+                {intervalAbsentReason ? (
+                  <span className={styles.reason}> — {intervalAbsentReason}</span>
+                ) : null}
+              </span>
+            </span>
           )}
         </span>
         {sigmaText ? (

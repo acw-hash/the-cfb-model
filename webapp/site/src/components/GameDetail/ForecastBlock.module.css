@@ -57,6 +57,28 @@
   color: var(--text-primary);
 }
 
+.absentSlot {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+}
+
+.absentReason {
+  font-size: var(--type-b2-size);
+  line-height: var(--type-b2-line);
+  font-weight: var(--type-b2-weight);
+  color: var(--text-primary);
+}
+
+.secondary .absentReason {
+  color: var(--text-secondary);
+}
+
+.reason {
+  color: inherit;
+}
+
 .secondary .absent {
   color: var(--text-secondary);
 }

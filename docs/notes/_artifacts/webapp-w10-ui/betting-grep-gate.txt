@@ -1,0 +1,87 @@
+﻿src/components\IntervalBand\IntervalBand.tsx:13:  game: Pick<
+src/components\GameRow\GameRow.tsx:11:type GameRowModel = Pick<
+src/lib\this-week\sort.ts:126:  const year = parts.find((p) => p.type === "year")?.value ?? "0000";
+src/lib\this-week\sort.ts:127:  const month = parts.find((p) => p.type === "month")?.value ?? "01";
+src/lib\this-week\sort.ts:128:  const day = parts.find((p) => p.type === "day")?.value ?? "01";
+src/lib\this-week\sort.ts:211:export function parseSlateOrder(value: string | null | undefined): SlateOrder {
+src/lib\this-week\sort.ts:212:  return value === "conviction" ? "conviction" : DEFAULT_SLATE_ORDER;
+src/components\GameDetail\ProbabilityList.tsx:19:  const value = probabilityValue(game, "p_win_home");
+src/components\GameDetail\ProbabilityList.tsx:20:  const formatted = shown ? formatProbability(value) : null;
+src/components\GameDetail\ProbabilityList.tsx:29:            <Figure variant="n2" className={styles.value}>
+src/components\ThisWeekSlate\ThisWeekSlate.tsx:87:        <SortControl value={order} onChange={handleOrder} />
+src/components\GameDetail\ProbabilityList.module.css:36:.value {
+src/lib\game-detail\geometry.ts:97:    const value = start + i * step;
+src/lib\game-detail\geometry.ts:98:    ticks.push(Number(value.toPrecision(6)));
+src/components\GameDetail\ProvenanceStrip.module.css:33:.value {
+src/lib\results\demo-states.ts:18:  overrides: Partial<GradedGame> & Pick<GradedGame, "grade_status">,
+src/components\Results\TrackRecordSection.tsx:47:              <th scope="col">Value</th>
+src/components\GameDetail\ProvenanceStrip.tsx:16:    { gloss: PROVENANCE_GLOSS.vintage, value: game.vintage_label },
+src/components\GameDetail\ProvenanceStrip.tsx:17:    { gloss: PROVENANCE_GLOSS.ensemble, value: game.ensemble_scope_label },
+src/components\GameDetail\ProvenanceStrip.tsx:18:    { gloss: PROVENANCE_GLOSS.featureTime, value: game.feature_time_label },
+src/components\GameDetail\ProvenanceStrip.tsx:28:            <dd className={styles.value}>
+src/components\GameDetail\ProvenanceStrip.tsx:29:              <span className={styles.valueText}>{item.value}</span>
+src/components\SortControl\SortControl.tsx:6:  value: SlateOrder;
+src/components\SortControl\SortControl.tsx:16:export function SortControl({ value, onChange }: SortControlProps): React.ReactElement {
+src/components\SortControl\SortControl.tsx:29:          const selected = value === option.id;
+src/lib\results\copy.ts:8:  "No betting edge has been demonstrated against the closing line.",
+src/lib\results\copy.ts:10:  "Log-loss is 0.78???0.93 versus the market baseline 0.693. CLV and honest over/under remain unmeasurable.",
+src/components\Results\MetricRow.module.css:27:.value {
+src/components\Results\MetricRow.tsx:21:  if (typeof metric.value === "string") {
+src/components\Results\MetricRow.tsx:22:    return metric.value;
+src/components\Results\MetricRow.tsx:24:  if (metric.unit === "percent") {
+src/components\Results\MetricRow.tsx:25:    return formatRecordedPercent(metric.value);
+src/components\Results\MetricRow.tsx:27:  return formatRecordedNumber(metric.value);
+src/components\Results\MetricRow.tsx:30:/** One recorded metric row ??? value + CI required for rates; honest absence when missing. */
+src/components\Results\MetricRow.tsx:79:        <Figure variant="n1" className={styles.value}>
+src/components\Results\MetricRow.tsx:87:              {formatRecordedCi(metric.ci_lower!, metric.ci_upper!, metric.unit)}
+src/lib\formatting\track-record.ts:4: * Format a recorded numeric value without meaning-changing rounding.
+src/lib\formatting\track-record.ts:8:export function formatRecordedNumber(value: number): string {
+src/lib\formatting\track-record.ts:9:  if (!Number.isFinite(value)) {
+src/lib\formatting\track-record.ts:10:    throw new Error(`Non-finite track-record number: ${value}`);
+src/lib\formatting\track-record.ts:12:  if (Object.is(value, -0) || value === 0) {
+src/lib\formatting\track-record.ts:16:  return String(value);
+src/lib\formatting\track-record.ts:19:/** Percent rate as recorded ??? value is already on a 0???100 scale in the artifact. */
+src/lib\formatting\track-record.ts:20:export function formatRecordedPercent(value: number): string {
+src/lib\formatting\track-record.ts:21:  return `${formatRecordedNumber(value)}%`;
+src/lib\formatting\track-record.ts:28:  unit: TrackRecordMetric["unit"],
+src/lib\formatting\track-record.ts:32:  if (unit === "percent") {
+src/lib\formatting\track-record.ts:50:  if (metric.unit !== "percent" || typeof metric.value !== "number") {
+src/lib\formatting\track-record.ts:66:  if (metric.unit !== "percent") {
+src/lib\about\copy.ts:29:      "A conviction tier (Strong lean, Clear lean, Lean, or Toss-up) describes how decisive that forecast looks. It is a label on the forecast. It is not a pick, not a wager, and not advice to bet.",
+src/lib\about\copy.ts:30:      "When a value cannot be computed honestly ??? for example when predictive uncertainty is refused ??? the site shows that absence (????????? or ???not computed???). Missing is shown as missing.",
+src/lib\about\copy.ts:48:  "No picks, no suggested wagers, no implied edge claims.",
+src/lib\about\copy.ts:65:  "Forecasts with uncertainty ??? not betting recommendations. No lines, picks, or edge claims.";
+src/lib\formatting\numbers.ts:18:function clampDecimals(value: number, decimals: number): string {
+src/lib\formatting\numbers.ts:19:  return value.toFixed(decimals);
+src/lib\formatting\numbers.ts:22:function formatSigned(value: number, decimals: number): string {
+src/lib\formatting\numbers.ts:23:  const magnitude = clampDecimals(Math.abs(value), decimals);
+src/lib\formatting\numbers.ts:24:  if (value > 0) {
+src/lib\formatting\numbers.ts:27:  if (value < 0) {
+src/lib\formatting\numbers.ts:36:  value: number | null | undefined,
+src/lib\formatting\numbers.ts:39:  if (value == null) {
+src/lib\formatting\numbers.ts:43:  return formatSigned(value, decimals);
+src/lib\formatting\numbers.ts:47:export function formatSigma(value: number | null | undefined): string | null {
+src/lib\formatting\numbers.ts:48:  if (value == null) {
+src/lib\formatting\numbers.ts:51:  return `\u03c3 ${value.toFixed(1)}`;
+src/lib\formatting\numbers.ts:55:export function formatTotal(value: number | null | undefined): string | null {
+src/lib\formatting\numbers.ts:56:  if (value == null) {
+src/lib\formatting\numbers.ts:59:  return clampDecimals(value, 1);
+src/lib\formatting\numbers.ts:63:export function formatNominalCoverage(value: number | null | undefined): string | null {
+src/lib\formatting\numbers.ts:64:  return formatProbability(value);
+src/lib\formatting\numbers.ts:72:export function formatEpa(value: number | null | undefined): string | null {
+src/lib\formatting\numbers.ts:73:  if (value == null) {
+src/lib\formatting\numbers.ts:76:  return formatSigned(value, 2);
+src/lib\formatting\numbers.ts:80:export function formatProbability(value: number | null | undefined): string | null {
+src/lib\formatting\numbers.ts:81:  if (value == null) {
+src/lib\formatting\numbers.ts:84:  const pct = value * 100;
+src/lib\formatting\numbers.ts:144:export function formatActualMargin(value: number | null | undefined): string | null {
+src/lib\formatting\numbers.ts:145:  if (value == null) {
+src/lib\formatting\numbers.ts:148:  if (value > 0) {
+src/lib\formatting\numbers.ts:149:    return `+${value}`;
+src/lib\formatting\numbers.ts:151:  if (value < 0) {
+src/lib\formatting\numbers.ts:152:    return `${MINUS}${Math.abs(value)}`;
+src/lib\artifacts\types.ts:162:  value: number | string;
+src/lib\artifacts\types.ts:163:  unit: "percent" | "points" | "ratio" | "none";
+src/lib\artifacts\r2.ts:19:  const value = process.env[name]?.trim();
+src/lib\artifacts\r2.ts:20:  if (!value) {
+src/lib\artifacts\r2.ts:23:  return value;
