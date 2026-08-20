@@ -289,7 +289,7 @@ v1 uses `off_epa` and `def_epa` (4-dim Stage-1 block). Uncertainty bands use `of
 |------------|---------|--------------|
 | `mu_margin` | ADR 0014 null block (`null_reason` set) | "Forecast unavailable" + reason tooltip |
 | `sigma_margin` | σ refused (block-constant or missing) | Hide σ-dependent visuals; suppress tiers |
-| `margin_interval_*` | Conformal/quantile not emitted | Omit interval band |
+| `margin_interval_*` | Conformal/quantile not emitted, or pre-CQR heads fail `q10 < μ < q90` | Omit interval band (This Week); Game Detail "Interval not computed" |
 | `mu_total` | Total head null | Secondary column shows "—" |
 | `p_win_home` | σ-gated refusal | "not computed"; no probability bar |
 | `*_credible: false` | Field present but not trustworthy | Render value dimmed or hidden per field rules |
@@ -569,7 +569,7 @@ Benchmark: **Apple Sports** — clean, dense but calm, typography-driven, number
 | Token | Light | Dark | Use |
 |-------|-------|------|-----|
 | `--bg-primary` | `#FFFFFF` | `#000000` | Page background |
-| `--bg-secondary` | `#F5F5F7` | `#1C1C1E` | Group headers, table zebra |
+| `--bg-secondary` | `#F5F5F7` | `#1C1C1E` | Table zebra; disclaimer block (§6.1 per W6) |
 | `--text-primary` | `#1D1D1F` | `#F5F5F7` | Body, team names |
 | `--text-secondary` | `#6E6E73` | `#98989D` | Labels, kickoff time |
 | `--text-tertiary` | `#75757A` | `#8E8E93` | Provenance, footnotes |

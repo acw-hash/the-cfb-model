@@ -9,8 +9,8 @@ interface VerdictBlockProps {
 
 /**
  * NOT CURRENTLY FIT TO BET — finding tone, not apology (W5-2).
- * Label and artifact plain_language are verbatim from track_record.json.
- * Lay summary leads for scanning readers.
+ * Label and artifact plain_language are verbatim from track_record.json (§5.3).
+ * Lay summary is reachable in one tap via disclosure.
  */
 export function VerdictBlock({ verdict }: VerdictBlockProps): React.ReactElement {
   return (
@@ -19,11 +19,13 @@ export function VerdictBlock({ verdict }: VerdictBlockProps): React.ReactElement
       <h2 id="verdict-label" className={styles.label}>
         {verdict.label}
       </h2>
-      <p className={styles.lay}>{VERDICT_LAY_SUMMARY}</p>
-      <p className={styles.recorded}>
-        <span className={styles.recordedLabel}>Recorded finding</span>
+      <p className={styles.plain} data-testid="verdict-plain-language">
         {verdict.plain_language}
       </p>
+      <details className={styles.layDisclosure} data-testid="verdict-lay-disclosure">
+        <summary className={styles.laySummary}>Readable summary</summary>
+        <p className={styles.layBody}>{VERDICT_LAY_SUMMARY}</p>
+      </details>
     </section>
   );
 }

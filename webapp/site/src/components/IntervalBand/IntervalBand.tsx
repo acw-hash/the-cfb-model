@@ -16,7 +16,7 @@ interface IntervalBandProps {
   >;
 }
 
-/** N1 headline μ with quiet N2 `[lo, hi]` band — no chart junk (§4.3). */
+/** N1 headline μ with quiet N2 `[lo, hi]` on its own line — no chart junk (§4.3). */
 export function IntervalBand({ game }: IntervalBandProps): React.ReactElement {
   const { mu_margin, sigma_margin, margin_interval_lo, margin_interval_hi, null_reason } = game;
 
@@ -47,15 +47,29 @@ export function IntervalBand({ game }: IntervalBandProps): React.ReactElement {
   const hasBand = parts.lo != null && parts.hi != null;
 
   return (
-    <span className={styles.wrap}>
+    <span className={styles.wrap} data-testid="interval-band">
       <Figure variant="n1" className={styles.mu}>
         {muText}
       </Figure>
-      {hasBand ? (
-        <Figure variant="n2" className={styles.range}>
-          [{parts.lo}, {parts.hi}]
-        </Figure>
-      ) : null}
+      <span className={styles.intervalLine} data-testid="interval-line">
+        {hasBand ? (
+          <>
+            <span className={styles.bracket}>[</span>
+            <Figure variant="n2" className={styles.bound}>
+              {parts.lo}
+            </Figure>
+            <span className={styles.boundSep}>, </span>
+            <Figure variant="n2" className={styles.bound}>
+              {parts.hi}
+            </Figure>
+            <span className={styles.bracket}>]</span>
+          </>
+        ) : (
+          <Figure variant="n1" className={styles.absent} data-testid="interval-absent">
+            {renderAbsent()}
+          </Figure>
+        )}
+      </span>
     </span>
   );
 }

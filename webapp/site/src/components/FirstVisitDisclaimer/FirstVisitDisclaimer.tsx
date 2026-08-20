@@ -7,21 +7,24 @@ import { disclaimerForYear } from "@/lib/about/copy";
 
 import styles from "./FirstVisitDisclaimer.module.css";
 
-const STORAGE_KEY = "ridge-disclaimer-dismissed";
+const DISMISS_KEY = "ridge-disclaimer-dismissed";
+const SEEN_KEY = "ridge-disclaimer-seen";
 
 /**
- * §5.4 — disclaimer visible before the fold on first visit, dismissible per session.
- * Mounted site-wide under the header so a shared /game/ landing still surfaces it.
- * Full §6.1 text remains on /about#disclaimer after dismiss.
+ * §5.4 — full §6.1 disclaimer on the first page of a session only.
+ * `ridge-disclaimer-seen` is written on mount so deep-link navigation before dismiss
+ * still counts as shown. Dismiss hides the block for the rest of the session.
+ * Full §6.1 text remains on /about#disclaimer after the first page.
  */
 export function FirstVisitDisclaimer(): React.ReactElement | null {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     try {
-      if (sessionStorage.getItem(STORAGE_KEY) === "1") {
+      if (sessionStorage.getItem(SEEN_KEY) === "1") {
         return;
       }
+      sessionStorage.setItem(SEEN_KEY, "1");
     } catch {
       /* sessionStorage unavailable — still show once per mount */
     }
@@ -30,7 +33,7 @@ export function FirstVisitDisclaimer(): React.ReactElement | null {
 
   const dismiss = useCallback(() => {
     try {
-      sessionStorage.setItem(STORAGE_KEY, "1");
+      sessionStorage.setItem(DISMISS_KEY, "1");
     } catch {
       /* ignore */
     }
