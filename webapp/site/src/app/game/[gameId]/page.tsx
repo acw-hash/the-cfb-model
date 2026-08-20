@@ -11,7 +11,13 @@ import { projectGameDetailGame } from "@/lib/game-detail/project";
 /**
  * ISR fallback 6h (§3) — same as This Week. Primary freshness is on-demand
  * revalidation after R2 push.
+ *
+ * force-dynamic: R2 artifact fetch uses `cache: "no-store"`. Without this,
+ * a production build that could not pre-render game paths (no R2 creds at
+ * build time) throws "Page changed from static to dynamic at runtime" on
+ * first `/game/[id]` request under `next start` (PROD-500).
  */
+export const dynamic = "force-dynamic";
 export const revalidate = 21600;
 
 interface GamePageProps {

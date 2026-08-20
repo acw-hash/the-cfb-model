@@ -26,7 +26,7 @@ export function seriesForTeam(
   asOfUtc: string,
   throughWeek: number,
 ): RatingPoint[] {
-  if (!entry) {
+  if (!entry?.weeks?.length) {
     return [];
   }
   const asOfMs = Date.parse(asOfUtc);
@@ -59,7 +59,11 @@ function toPoint(row: TeamRatingWeek): RatingPoint {
 }
 
 export function lookupTeam(ratings: TeamRatings, teamId: number): TeamRatingEntry | undefined {
-  return ratings.teams[String(teamId)];
+  const teams = ratings.teams;
+  if (!teams) {
+    return undefined;
+  }
+  return teams[String(teamId)];
 }
 
 /**

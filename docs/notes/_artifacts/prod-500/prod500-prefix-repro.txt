@@ -1,0 +1,246 @@
+=== phase 1: first request (static cache) ===
+/ -> HTTP 200
+/about -> HTTP 200
+/results -> HTTP 200
+/game/401628373 -> HTTP 200
+
+=== phase 2: on-demand revalidate (simulates post-push) ===
+/api/revalidate -> HTTP 200 {"ok":true,"revalidated":true,"paths":["/","/results","/about","/game"],"at":"2026-08-20T01:24:20.713Z"}
+
+=== phase 3: post-revalidate requests ===
+/ -> HTTP 500
+/about -> HTTP 500
+/results -> HTTP 500
+/game/401628373 -> HTTP 500
+
+=== phase 4: RSC request headers (force server render) ===
+/results (RSC) -> HTTP 500
+/game/401628373 (RSC) -> HTTP 500
+
+=== server log ===
+
+> ridge-site@0.1.0 start
+> next start -p 3097
+
+   ▲ Next.js 15.5.23
+   - Local:        http://localhost:3097
+   - Network:      http://192.168.1.170:3097
+
+ ✓ Starting...
+ ✓ Ready in 933ms
+Error: Page changed from static to dynamic at runtime /, reason: no-store fetch https://18af8a92dace4a97249d7349324faafd.r2.cloudflarestorage.com/ridge-artifacts/latest/meta.json /
+see more here https://nextjs.org/docs/messages/app-static-to-dynamic-error
+    at r (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:28374)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:11780)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4619)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)
+    at i.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39425)
+    at e.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39959)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4147)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)
+ ⨯ Error: Page changed from static to dynamic at runtime /, reason: no-store fetch https://18af8a92dace4a97249d7349324faafd.r2.cloudflarestorage.com/ridge-artifacts/latest/meta.json /
+see more here https://nextjs.org/docs/messages/app-static-to-dynamic-error
+    at r (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:28374)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:11780)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4619)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)
+    at i.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39425)
+    at e.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39959)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4147)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)
+ ⨯ Error: Page changed from static to dynamic at runtime /, reason: no-store fetch https://18af8a92dace4a97249d7349324faafd.r2.cloudflarestorage.com/ridge-artifacts/latest/meta.json /
+see more here https://nextjs.org/docs/messages/app-static-to-dynamic-error
+    at r (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:28374)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:11780)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4619)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)
+    at i.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39425)
+    at e.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39959)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4147)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)
+Error: Page changed from static to dynamic at runtime /about, reason: revalidate: 0 fetch https://18af8a92dace4a97249d7349324faafd.r2.cloudflarestorage.com/ridge-artifacts/latest/meta.json /about
+see more here https://nextjs.org/docs/messages/app-static-to-dynamic-error
+    at r (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:28374)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:8881)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4619)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)
+    at i.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39425)
+    at e.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39959)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4147)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)
+ ⨯ Error: Page changed from static to dynamic at runtime /about, reason: revalidate: 0 fetch https://18af8a92dace4a97249d7349324faafd.r2.cloudflarestorage.com/ridge-artifacts/latest/meta.json /about
+see more here https://nextjs.org/docs/messages/app-static-to-dynamic-error
+    at r (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:28374)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:8881)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4619)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)
+    at i.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39425)
+    at e.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39959)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4147)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)
+ ⨯ Error: Page changed from static to dynamic at runtime /about, reason: revalidate: 0 fetch https://18af8a92dace4a97249d7349324faafd.r2.cloudflarestorage.com/ridge-artifacts/latest/meta.json /about
+see more here https://nextjs.org/docs/messages/app-static-to-dynamic-error
+    at r (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:28374)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:8881)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4619)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)
+    at i.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39425)
+    at e.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39959)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4147)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)
+Error: Page changed from static to dynamic at runtime /results, reason: no-store fetch https://18af8a92dace4a97249d7349324faafd.r2.cloudflarestorage.com/ridge-artifacts/latest/track_record.json /results
+see more here https://nextjs.org/docs/messages/app-static-to-dynamic-error
+    at r (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:28374)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:11780)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4619)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)
+    at i.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39425)
+    at e.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39959)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4147)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)
+ ⨯ Error: Page changed from static to dynamic at runtime /results, reason: no-store fetch https://18af8a92dace4a97249d7349324faafd.r2.cloudflarestorage.com/ridge-artifacts/latest/track_record.json /results
+see more here https://nextjs.org/docs/messages/app-static-to-dynamic-error
+    at r (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:28374)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:11780)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4619)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)
+    at i.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39425)
+    at e.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39959)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4147)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)
+ ⨯ Error: Page changed from static to dynamic at runtime /results, reason: no-store fetch https://18af8a92dace4a97249d7349324faafd.r2.cloudflarestorage.com/ridge-artifacts/latest/track_record.json /results
+see more here https://nextjs.org/docs/messages/app-static-to-dynamic-error
+    at r (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:28374)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:11780)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4619)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)
+    at i.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39425)
+    at e.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39959)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4147)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)
+Error: Page changed from static to dynamic at runtime /game/401628373, reason: no-store fetch https://18af8a92dace4a97249d7349324faafd.r2.cloudflarestorage.com/ridge-artifacts/latest/week_predictions.json /game/[gameId]
+see more here https://nextjs.org/docs/messages/app-static-to-dynamic-error
+    at r (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:28374)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:11780)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4619)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)
+    at i.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39425)
+    at e.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39959)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4147)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)
+ ⨯ Error: Page changed from static to dynamic at runtime /game/401628373, reason: no-store fetch https://18af8a92dace4a97249d7349324faafd.r2.cloudflarestorage.com/ridge-artifacts/latest/week_predictions.json /game/[gameId]
+see more here https://nextjs.org/docs/messages/app-static-to-dynamic-error
+    at r (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:28374)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:11780)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4619)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)
+    at i.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39425)
+    at e.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39959)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4147)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)
+ ⨯ Error: Page changed from static to dynamic at runtime /game/401628373, reason: no-store fetch https://18af8a92dace4a97249d7349324faafd.r2.cloudflarestorage.com/ridge-artifacts/latest/week_predictions.json /game/[gameId]
+see more here https://nextjs.org/docs/messages/app-static-to-dynamic-error
+    at r (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:28374)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:11780)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4619)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)
+    at i.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39425)
+    at e.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39959)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4147)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)
+Error: Page changed from static to dynamic at runtime /results, reason: no-store fetch https://18af8a92dace4a97249d7349324faafd.r2.cloudflarestorage.com/ridge-artifacts/latest/track_record.json /results
+see more here https://nextjs.org/docs/messages/app-static-to-dynamic-error
+    at r (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:28374)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:11780)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4619)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)
+    at i.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39425)
+    at e.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39959)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4147)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)
+ ⨯ Error: Page changed from static to dynamic at runtime /results, reason: no-store fetch https://18af8a92dace4a97249d7349324faafd.r2.cloudflarestorage.com/ridge-artifacts/latest/track_record.json /results
+see more here https://nextjs.org/docs/messages/app-static-to-dynamic-error
+    at r (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:28374)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:11780)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4619)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)
+    at i.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39425)
+    at e.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39959)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4147)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)
+ ⨯ Error: Page changed from static to dynamic at runtime /results, reason: no-store fetch https://18af8a92dace4a97249d7349324faafd.r2.cloudflarestorage.com/ridge-artifacts/latest/track_record.json /results
+see more here https://nextjs.org/docs/messages/app-static-to-dynamic-error
+    at r (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:28374)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:11780)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4619)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)
+    at i.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39425)
+    at e.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39959)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4147)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)
+Error: Page changed from static to dynamic at runtime /game/401628373, reason: no-store fetch https://18af8a92dace4a97249d7349324faafd.r2.cloudflarestorage.com/ridge-artifacts/latest/week_predictions.json /game/[gameId]
+see more here https://nextjs.org/docs/messages/app-static-to-dynamic-error
+    at r (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:28374)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:11780)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4619)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)
+    at i.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39425)
+    at e.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39959)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4147)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)
+ ⨯ Error: Page changed from static to dynamic at runtime /game/401628373, reason: no-store fetch https://18af8a92dace4a97249d7349324faafd.r2.cloudflarestorage.com/ridge-artifacts/latest/week_predictions.json /game/[gameId]
+see more here https://nextjs.org/docs/messages/app-static-to-dynamic-error
+    at r (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:28374)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:11780)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4619)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)
+    at i.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39425)
+    at e.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39959)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4147)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)
+ ⨯ Error: Page changed from static to dynamic at runtime /game/401628373, reason: no-store fetch https://18af8a92dace4a97249d7349324faafd.r2.cloudflarestorage.com/ridge-artifacts/latest/week_predictions.json /game/[gameId]
+see more here https://nextjs.org/docs/messages/app-static-to-dynamic-error
+    at r (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:28374)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:1:11780)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4619)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)
+    at i.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39425)
+    at e.startActiveSpan (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:39959)
+    at <unknown> (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:15:4147)
+    at e.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:30212)
+    at i.with (C:\Users\alecw\Projects\the-cfb-model\webapp\site\.next\server\chunks\331.js:22:24459)

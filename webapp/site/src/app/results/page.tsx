@@ -4,6 +4,8 @@ import { loadArtifact, loadResultsSeason } from "@/lib/artifacts/loader";
 import { isSchemaVersionSupported } from "@/lib/artifacts/schema-version";
 import type { MetaArtifact, ResultsSeason, TrackRecord } from "@/lib/artifacts/types";
 
+/** Same PROD-500 posture as `/game/[gameId]` — private R2 fetch is always dynamic. */
+export const dynamic = "force-dynamic";
 export const revalidate = 21600;
 
 export const metadata = {
@@ -17,10 +19,16 @@ export const metadata = {
  * for the current meta season when available — never season 2025.
  */
 export default async function ResultsRoute(): Promise<React.ReactElement> {
-  const [meta, track] = await Promise.all([
-    loadArtifact<MetaArtifact>("meta"),
-    loadArtifact<TrackRecord>("track_record"),
-  ]);
+  let meta: MetaArtifact;
+  let track: TrackRecord;
+  try {
+    [meta, track] = await Promise.all([
+      loadArtifact<MetaArtifact>("meta"),
+      loadArtifact<TrackRecord>("track_record"),
+    ]);
+  } catch {
+    return <MaintenanceState />;
+  }
 
   if (
     !isSchemaVersionSupported(meta.schema_version) ||
@@ -31,7 +39,11 @@ export default async function ResultsRoute(): Promise<React.ReactElement> {
 
   let results: ResultsSeason | null = null;
   if (meta.season !== 2025) {
-    results = await loadResultsSeason<ResultsSeason>(meta.season);
+    try {
+      results = await loadResultsSeason<ResultsSeason>(meta.season);
+    } catch {
+      results = null;
+    }
     if (results && !isSchemaVersionSupported(results.schema_version)) {
       return <MaintenanceState />;
     }

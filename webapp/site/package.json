@@ -9,6 +9,7 @@
     "lint": "eslint src && prettier --check .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run && node scripts/check-tokens.mjs",
+    "test:smoke": "node scripts/prod500-smoke.mjs",
     "check:tokens": "node scripts/check-tokens.mjs",
     "check:copy": "node scripts/check-published-copy.mjs",
     "guard": "npm run typecheck && npm run lint && npm run test && npm run check:copy && npm run build",

@@ -18,6 +18,7 @@ export function TrackRecordSection({
   track,
   expectedIds = EXPECTED_METRIC_IDS,
 }: TrackRecordSectionProps): React.ReactElement {
+  const metrics = track.metrics ?? [];
   return (
     <section className={styles.section} data-testid="track-record-section">
       <h2 className={styles.title} id="recorded-results-heading">
@@ -51,7 +52,7 @@ export function TrackRecordSection({
           </thead>
           <tbody>
             {expectedIds.map((id) => {
-              const metric: TrackRecordMetric | undefined = metricById(track.metrics, id);
+              const metric: TrackRecordMetric | undefined = metricById(metrics, id);
               return (
                 <MetricRow
                   key={id}

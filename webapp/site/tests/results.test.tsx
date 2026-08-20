@@ -14,10 +14,11 @@ import { TrackRecordSection } from "@/components/Results/TrackRecordSection";
 import { VerdictBlock } from "@/components/Results/VerdictBlock";
 import type { ResultsSeason, TrackRecord, TrackRecordMetric } from "@/lib/artifacts/types";
 import {
-  assertRateHasCi,
+  ciIncludesFifty,
   formatRecordedCi,
+  formatRecordedNumber,
   formatRecordedPercent,
-  MissingConfidenceIntervalError,
+  rateHasCi,
 } from "@/lib/formatting/track-record";
 import {
   FIXTURE_GRADES_COPY,
@@ -67,7 +68,7 @@ describe("track-record formatting — no meaning-changing rounding", () => {
 });
 
 describe("CI-required — rate cannot render without interval", () => {
-  it("assertRateHasCi throws when a percent rate lacks bounds", () => {
+  it("rateHasCi is false when a percent rate lacks bounds", () => {
     const broken: TrackRecordMetric = {
       id: "broken_ats",
       label: "Broken ATS",
@@ -82,10 +83,10 @@ describe("CI-required — rate cannot render without interval", () => {
       run: "fundamental",
       notes: null,
     };
-    expect(() => assertRateHasCi(broken)).toThrow(MissingConfidenceIntervalError);
+    expect(rateHasCi(broken)).toBe(false);
   });
 
-  it("MetricRow refuses to render a percent rate without CI", () => {
+  it("MetricRow renders honest absence for a percent rate without CI", () => {
     const broken: TrackRecordMetric = {
       id: "broken_ats",
       label: "Broken ATS",
@@ -100,9 +101,9 @@ describe("CI-required — rate cannot render without interval", () => {
       run: null,
       notes: null,
     };
-    expect(() =>
-      renderToStaticMarkup(<MetricRow metric={broken} expectedId="broken_ats" />),
-    ).toThrow(MissingConfidenceIntervalError);
+    const html = renderToStaticMarkup(<MetricRow metric={broken} expectedId="broken_ats" />);
+    expect(html).toContain('data-testid="metric-incomplete-broken_ats"');
+    expect(html).toContain("Not in the recorded artifact");
   });
 
   it("every percent rate in the fixture renders with its CI beside it", () => {

@@ -17,7 +17,13 @@ export const metadata = {
   description: "College football forecasts with uncertainty",
 };
 
-/** Time-based ISR fallback per §3 — 6h, matching the stated layout revalidate. */
+/**
+ * force-dynamic (PROD-500): layout always loads meta via R2 `cache: "no-store"`.
+ * A static/ISR layout regenerates into that fetch and throws
+ * "Page changed from static to dynamic at runtime" on every descendant route.
+ * Layout-level covers `/`, `/about`, `/results`, `/game/[id]` in one place.
+ */
+export const dynamic = "force-dynamic";
 export const revalidate = 21600;
 
 export default async function RootLayout({
