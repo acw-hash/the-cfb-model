@@ -151,6 +151,85 @@ TRACK_RECORD_VINTAGE_LABEL = "W9A_REVAL"
 FIXTURE_WEEK5_AS_OF = datetime(2024, 9, 24, 10, 0, 0, tzinfo=UTC)
 FIXTURE_WALKFORWARD_PATH = "data/registry/artifacts/v2/week_predictions.parquet"
 
+
+@dataclass(frozen=True)
+class RunProvenance:
+    """Graded-training-run labels for one producing walk-forward.
+
+    Per-game ``vintage_label`` is the walk-forward that produced μ/σ/intervals,
+    not a site-wide constant. W9-G restated ATS rates on the same v3 numbers;
+    it did not produce a new forecast run. Track-record ATS rows stay
+    ``W9G_REGRADE``.
+    """
+
+    vintage_label: str
+    ensemble_scope_label: str
+    feature_time_label: str
+
+
+class UnknownRunProvenanceError(ValueError):
+    """Producing ``run_id`` has no registered provenance labels."""
+
+
+#: Known producing runs. A future walk-forward must be registered here or
+#: export raises rather than stamping a stale vintage.
+PROVENANCE_BY_RUN_ID: dict[str, RunProvenance] = {
+    "task23_fundamental_reduced_v3": RunProvenance(
+        vintage_label="W9A_REVAL",
+        ensemble_scope_label=DEFAULT_ENSEMBLE_SCOPE_LABEL,
+        feature_time_label=DEFAULT_FEATURE_TIME_LABEL,
+    ),
+    "task23_fundamental_reduced_v2": RunProvenance(
+        vintage_label="REGRADED_V2",
+        ensemble_scope_label=DEFAULT_ENSEMBLE_SCOPE_LABEL,
+        feature_time_label=DEFAULT_FEATURE_TIME_LABEL,
+    ),
+}
+
+
+def provenance_for_run(run_id: str) -> RunProvenance:
+    """Return provenance labels for a producing walk-forward ``run_id``."""
+    key = str(run_id).strip()
+    if not key:
+        raise UnknownRunProvenanceError("empty run_id")
+    found = PROVENANCE_BY_RUN_ID.get(key)
+    if found is None:
+        msg = f"no provenance mapping for run_id={key!r}; register the producing run before export"
+        raise UnknownRunProvenanceError(msg)
+    return found
+
+
+def vintage_label_for_run(run_id: str) -> str:
+    """Return the per-game vintage for the walk-forward that produced the numbers."""
+    return provenance_for_run(run_id).vintage_label
+
+
+def _first_run_id(rows: Sequence[Mapping[str, Any]]) -> str | None:
+    if not rows:
+        return None
+    raw = rows[0].get("run_id")
+    if raw is None:
+        return None
+    key = str(raw).strip()
+    return key or None
+
+
+def _provenance_from_rows(rows: Sequence[Mapping[str, Any]]) -> RunProvenance:
+    """Derive labels from the producing run when ``run_id`` is present.
+
+    Stub rows with no ``run_id`` keep the historical defaults. A non-empty
+    unknown ``run_id`` raises so a future champion cannot inherit REGRADED_V2.
+    """
+    run_id = _first_run_id(rows)
+    if run_id is None:
+        return RunProvenance(
+            vintage_label=DEFAULT_VINTAGE_LABEL,
+            ensemble_scope_label=DEFAULT_ENSEMBLE_SCOPE_LABEL,
+            feature_time_label=DEFAULT_FEATURE_TIME_LABEL,
+        )
+    return provenance_for_run(run_id)
+
+
 REFRESH_KIND_PRECEDENCE: dict[str, int] = {
     RefreshKind.T_MINUS_1H: 4,
     RefreshKind.T_MINUS_6H: 3,
@@ -200,6 +279,88 @@ def _field(row: Mapping[str, Any], *names: str) -> Any:
         if name in row:
             return row[name]
     return None
+
+
+class IncoherentMarginIntervalError(ValueError):
+    """A published margin interval failed pre-CQR ``q10 < mu < q90``."""
+
+
+def sorted_margin_quantile_heads(
+    row: Mapping[str, Any],
+) -> tuple[float | None, float | None]:
+    """Return sorted LightGBM q10/q90 heads, or ``(None, None)`` if absent.
+
+    Sort is min/max of ``pred_margin_q10`` / ``pred_margin_q90``. This is the
+    pre-CQR band the live predict path conformalizes; it is not the published
+    ``cqr_lo`` / ``cqr_hi``.
+    """
+    q10 = _optional_float(_field(row, "pred_margin_q10"))
+    q90 = _optional_float(_field(row, "pred_margin_q90"))
+    if q10 is None or q90 is None:
+        return None, None
+    if q10 <= q90:
+        return q10, q90
+    return q90, q10
+
+
+def margin_quantile_heads_coherent(
+    mu: float | None,
+    q10: float | None,
+    q90: float | None,
+) -> bool:
+    """True iff finite sorted heads satisfy ``q10 < mu < q90`` (strict)."""
+    if mu is None or q10 is None or q90 is None:
+        return False
+    return q10 < mu < q90
+
+
+def apply_margin_interval_coherence_gate(
+    *,
+    mu: float | None,
+    q10: float | None,
+    q90: float | None,
+    lo: float | None,
+    hi: float | None,
+    nominal: float | None,
+) -> tuple[float | None, float | None, float | None]:
+    """Null ``margin_interval_*`` unless sorted q10 < mu < q90 before the CQR add.
+
+    No ``|mu|`` cutoff and no position/asymmetry gate. Missing heads are not a
+    failure: stub rows without quantile columns still publish their CQR bounds.
+    """
+    if lo is None and hi is None and nominal is None:
+        return None, None, None
+    if q10 is None or q90 is None:
+        return lo, hi, nominal
+    if margin_quantile_heads_coherent(mu, q10, q90):
+        return lo, hi, nominal
+    return None, None, None
+
+
+def assert_no_incoherent_margin_interval(
+    *,
+    mu: float | None,
+    q10: float | None,
+    q90: float | None,
+    lo: float | None,
+    hi: float | None,
+) -> None:
+    """Refuse to write a margin band when pre-CQR heads fail ``q10 < mu < q90``.
+
+    An incoherent band can never be written to an artifact. Missing heads cannot
+    prove incoherence and are not an assertion failure.
+    """
+    if lo is None and hi is None:
+        return
+    if q10 is None or q90 is None:
+        return
+    if margin_quantile_heads_coherent(mu, q10, q90):
+        return
+    msg = (
+        "incoherent margin interval: sorted q10 < mu < q90 does not hold "
+        f"(mu={mu}, q10={q10}, q90={q90}, lo={lo}, hi={hi})"
+    )
+    raise IncoherentMarginIntervalError(msg)
 
 
 def sigma_margin_credible(row: Mapping[str, Any]) -> bool:
@@ -467,7 +628,11 @@ def merge_prediction_rows(
 
 
 def _model_identity_from_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
-    """Pass walkforward ``run_id`` / ``model_version`` through when present."""
+    """Pass walkforward identity through when present on the producing rows.
+
+    Fallback ``champion_version`` / ``model_version`` are stub defaults used
+    only when the row did not carry those fields.
+    """
     identity: dict[str, Any] = {
         "registry_name": "ncaa-quant",
         "champion_version": 3,
@@ -481,6 +646,10 @@ def _model_identity_from_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, An
         identity["model_version"] = str(row["model_version"])
     if row.get("run_id") is not None:
         identity["run_id"] = str(row["run_id"])
+    if row.get("champion_version") is not None:
+        identity["champion_version"] = int(row["champion_version"])
+    if row.get("registered_at") is not None:
+        identity["registered_at"] = str(row["registered_at"])
     return identity
 
 
@@ -517,6 +686,27 @@ def build_game_prediction(
     if stale_sources is None and row.get("is_stale"):
         stale_sources = []
 
+    mu_margin = _optional_float(_field(row, "mu_margin", "pred_margin"))
+    q10, q90 = sorted_margin_quantile_heads(row)
+    margin_lo = _optional_float(_field(row, "margin_interval_lo", "cqr_lo", "pred_margin_q05"))
+    margin_hi = _optional_float(_field(row, "margin_interval_hi", "cqr_hi", "pred_margin_q95"))
+    margin_nominal = _optional_float(_field(row, "margin_interval_nominal", "cqr_nominal"))
+    margin_lo, margin_hi, margin_nominal = apply_margin_interval_coherence_gate(
+        mu=mu_margin,
+        q10=q10,
+        q90=q90,
+        lo=margin_lo,
+        hi=margin_hi,
+        nominal=margin_nominal,
+    )
+    assert_no_incoherent_margin_interval(
+        mu=mu_margin,
+        q10=q10,
+        q90=q90,
+        lo=margin_lo,
+        hi=margin_hi,
+    )
+
     game: dict[str, Any] = {
         "game_id": str(_field(row, "game_id") or schedule.get("game_id", "")),
         "season": season,
@@ -528,18 +718,12 @@ def build_game_prediction(
         "kickoff_utc": _iso_utc(schedule.get("kickoff_utc") or schedule.get("start_date")),
         "neutral_site": bool(schedule.get("neutral_site", False)),
         "conference_game": bool(schedule.get("conference_game", False)),
-        "mu_margin": _optional_float(_field(row, "mu_margin", "pred_margin")),
+        "mu_margin": mu_margin,
         "sigma_margin": _optional_float(_field(row, "sigma_margin", "sigma_m")),
         "sigma_margin_credible": sigma_margin_credible(row),
-        "margin_interval_lo": _optional_float(
-            _field(row, "margin_interval_lo", "cqr_lo", "pred_margin_q05")
-        ),
-        "margin_interval_hi": _optional_float(
-            _field(row, "margin_interval_hi", "cqr_hi", "pred_margin_q95")
-        ),
-        "margin_interval_nominal": _optional_float(
-            _field(row, "margin_interval_nominal", "cqr_nominal")
-        ),
+        "margin_interval_lo": margin_lo,
+        "margin_interval_hi": margin_hi,
+        "margin_interval_nominal": margin_nominal,
         "mu_total": _optional_float(_field(row, "mu_total", "pred_total")),
         "sigma_total": _optional_float(_field(row, "sigma_total", "sigma_t")),
         "sigma_total_credible": sigma_total_credible(row),
@@ -719,8 +903,13 @@ def build_meta(
     vintage_label: str = DEFAULT_VINTAGE_LABEL,
     ensemble_scope_label: str = DEFAULT_ENSEMBLE_SCOPE_LABEL,
     feature_time_label: str = DEFAULT_FEATURE_TIME_LABEL,
+    model_identity: Mapping[str, Any] | None = None,
     fixture: bool = False,
 ) -> dict[str, Any]:
+    identity = dict(model_identity or {})
+    champion_version = identity.get("champion_version")
+    model_version = identity.get("model_version")
+    registered_at = identity.get("registered_at")
     artifact: dict[str, Any] = {
         "schema_version": SCHEMA_VERSION,
         "published_at": _iso_utc(published_at),
@@ -729,10 +918,14 @@ def build_meta(
         "refresh_kind": refresh_kind,
         "next_expected_publish_utc": next_expected_publish_utc(published_at, refresh_kind),
         "champion_model": {
-            "registry_name": "ncaa-quant",
-            "champion_version": 3,
-            "model_version": "production-v0_reduced_v1",
-            "registered_at": "2024-08-01T12:00:00Z",
+            "registry_name": str(identity.get("registry_name") or "ncaa-quant"),
+            "champion_version": int(champion_version) if champion_version is not None else 3,
+            "model_version": (
+                str(model_version) if model_version is not None else "production-v0_reduced_v1"
+            ),
+            "registered_at": (
+                str(registered_at) if registered_at is not None else "2024-08-01T12:00:00Z"
+            ),
         },
         "publish_schedule": {
             "primary": "Tue 06:00 UTC",
@@ -1185,7 +1378,8 @@ def export_publish_artifacts(
             row.setdefault("stale_stamp", stale_ctx.get("combined_stamp"))
             row.setdefault("stale_sources", stale_ctx.get("sources") or [])
 
-    identity = _model_identity_from_rows(production_rows)
+    identity = _model_identity_from_rows(merged_rows)
+    provenance = _provenance_from_rows(merged_rows)
     week_preds = build_week_predictions(
         season=season,
         week=week,
@@ -1195,6 +1389,9 @@ def export_publish_artifacts(
         schedule_by_game=schedule_by_game,
         stale_context=stale_ctx,
         model_identity=identity,
+        vintage_label=provenance.vintage_label,
+        ensemble_scope_label=provenance.ensemble_scope_label,
+        feature_time_label=provenance.feature_time_label,
         tier_store=TierStateStore(Path(cfg.webapp.tier_state_path)),
         stale_max_age_hours=float(cfg.pipeline.stale_odds_max_age_hours),
         tier_changes_path=Path(cfg.webapp.tier_changes_path),
@@ -1205,6 +1402,10 @@ def export_publish_artifacts(
         week=week,
         refresh_kind=refresh_kind,
         published_at=clock,
+        vintage_label=provenance.vintage_label,
+        ensemble_scope_label=provenance.ensemble_scope_label,
+        feature_time_label=provenance.feature_time_label,
+        model_identity=identity,
     )
     track = build_track_record(published_at=clock)
 
@@ -1301,6 +1502,14 @@ def generate_fixture_week_artifacts(
     prediction_rows: list[dict[str, Any]] = wf.to_dict(orient="records")
     model_version = str(wf["model_version"].iloc[0])
     run_id = str(wf["run_id"].iloc[0])
+    provenance = provenance_for_run(run_id)
+    fixture_identity: dict[str, Any] = {
+        "registry_name": "ncaa-quant",
+        "champion_version": 2,
+        "model_version": model_version,
+        "run_id": run_id,
+        "registered_at": "2026-08-17T20:41:49Z",
+    }
 
     tier_store = TierStateStore(Path(cfg.webapp.tier_state_path))
     week_preds = build_week_predictions(
@@ -1310,13 +1519,10 @@ def generate_fixture_week_artifacts(
         published_at=published_at,
         prediction_rows=prediction_rows,
         schedule_by_game=sched,
-        model_identity={
-            "registry_name": "ncaa-quant",
-            "champion_version": 2,
-            "model_version": model_version,
-            "run_id": run_id,
-        },
-        vintage_label=TRACK_RECORD_VINTAGE_LABEL,
+        model_identity=fixture_identity,
+        vintage_label=provenance.vintage_label,
+        ensemble_scope_label=provenance.ensemble_scope_label,
+        feature_time_label=provenance.feature_time_label,
         tier_store=tier_store,
         stale_max_age_hours=float(cfg.pipeline.stale_odds_max_age_hours),
         fixture=True,
@@ -1326,15 +1532,12 @@ def generate_fixture_week_artifacts(
         week=week,
         refresh_kind=RefreshKind.TUESDAY_PRIMARY,
         published_at=published_at,
-        vintage_label=TRACK_RECORD_VINTAGE_LABEL,
+        vintage_label=provenance.vintage_label,
+        ensemble_scope_label=provenance.ensemble_scope_label,
+        feature_time_label=provenance.feature_time_label,
+        model_identity=fixture_identity,
         fixture=True,
     )
-    meta["champion_model"] = {
-        "registry_name": "ncaa-quant",
-        "champion_version": 2,
-        "model_version": model_version,
-        "registered_at": "2026-08-17T20:41:49Z",
-    }
     track = build_track_record(published_at=published_at, fixture=True)
     ratings = build_team_ratings(
         season=season,

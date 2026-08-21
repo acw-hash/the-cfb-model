@@ -23,7 +23,7 @@
   color: var(--text-primary);
 }
 
-.lay {
+.plain {
   margin: 0 0 var(--space-4);
   font-size: var(--type-b1-size);
   line-height: var(--type-b1-line);
@@ -32,18 +32,21 @@
   max-width: 40rem;
 }
 
-.recorded {
-  margin: 0;
-  font-size: var(--type-b2-size);
-  line-height: var(--type-b2-line);
-  color: var(--text-secondary);
+.layDisclosure {
   max-width: 40rem;
 }
 
-.recordedLabel {
-  display: block;
-  margin-bottom: var(--space-1);
-  font-size: var(--type-c2-size);
-  line-height: var(--type-c2-line);
-  color: var(--text-tertiary);
+.laySummary {
+  font-size: var(--type-c1-size);
+  line-height: var(--type-c1-line);
+  font-weight: var(--type-c1-weight);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.layBody {
+  margin: var(--space-2) 0 0;
+  font-size: var(--type-b2-size);
+  line-height: var(--type-b2-line);
+  color: var(--text-secondary);
 }

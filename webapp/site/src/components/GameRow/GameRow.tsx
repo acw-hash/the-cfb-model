@@ -58,13 +58,15 @@ export function GameRow({ game }: GameRowProps): React.ReactElement {
 
       <div className={styles.right}>
         <IntervalBand game={game} />
-        <TierChip convictionTier={game.conviction_tier} convictionLabel={game.conviction_label} />
-        <RevisedMarker
-          tierRevisedSincePrimary={game.tier_revised_since_primary}
-          convictionTier={game.conviction_tier}
-          tierPrimary={game.tier_primary}
-        />
-        <StaleBadge staleStamp={game.stale_stamp} sources={game.stale_sources} />
+        <div className={styles.meta}>
+          <TierChip convictionTier={game.conviction_tier} convictionLabel={game.conviction_label} />
+          <RevisedMarker
+            tierRevisedSincePrimary={game.tier_revised_since_primary}
+            convictionTier={game.conviction_tier}
+            tierPrimary={game.tier_primary}
+          />
+          <StaleBadge staleStamp={game.stale_stamp} sources={game.stale_sources} />
+        </div>
       </div>
     </article>
   );

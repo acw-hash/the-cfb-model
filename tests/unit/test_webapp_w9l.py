@@ -230,6 +230,7 @@ class _FakeChampion:
     version = 2
     run_id = "task23_fundamental_reduced_v3"
     artifact_dir = "."
+    registered_at = "2026-08-17T20:41:49Z"
 
 
 class _FakeRegistry:

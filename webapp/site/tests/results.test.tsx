@@ -162,12 +162,15 @@ describe("no aggregate — grep rendered output", () => {
 });
 
 describe("verdict and scope", () => {
-  it("renders NOT CURRENTLY FIT TO BET and lay + recorded copy", () => {
+  it("renders NOT CURRENTLY FIT TO BET with §1.4 plain_language primary and lay summary in disclosure", () => {
     const track = loadTrack();
     const html = renderToStaticMarkup(<VerdictBlock verdict={track.verdict} />);
     expect(html).toContain("NOT CURRENTLY FIT TO BET");
-    expect(html).toContain(VERDICT_LAY_SUMMARY);
+    expect(html).toContain('data-testid="verdict-plain-language"');
     expect(html).toContain(track.verdict.plain_language);
+    expect(html).toContain('data-testid="verdict-lay-disclosure"');
+    expect(html).toContain(VERDICT_LAY_SUMMARY);
+    expect(html).not.toContain("Recorded finding");
   });
 
   it("states scope: walk-forward, lockbox 2025, live 2026", () => {

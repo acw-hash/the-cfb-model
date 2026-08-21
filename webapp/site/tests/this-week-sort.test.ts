@@ -15,6 +15,8 @@ import {
   parseSlateOrder,
 } from "@/lib/this-week/sort";
 
+import { loadNullHeavyWeek } from "./null-heavy-slate";
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const FIXTURE_PATH = path.resolve(__dirname, "../../fixtures/week_predictions.json");
 
@@ -296,5 +298,37 @@ describe("null sort determinism", () => {
     const convictionTwice = [...games].sort(compareByConviction).map((g) => g.game_id);
     expect(convictionOnce).toEqual(convictionTwice);
     expect(convictionOnce).toEqual(["dated-a", "g-fix-1", "g-fix-2"]);
+  });
+});
+
+describe("null-heavy slate — W10-UI fixture", () => {
+  it("is labeled fixture and has roughly 20% null conviction and margin intervals", () => {
+    const week = loadNullHeavyWeek();
+    expect(week.fixture).toBe(true);
+    const nullConviction = week.games.filter((g) => g.conviction_tier == null).length;
+    const nullInterval = week.games.filter(
+      (g) => g.margin_interval_lo == null && g.margin_interval_hi == null,
+    ).length;
+    expect(nullConviction).toBeGreaterThanOrEqual(10);
+    expect(nullInterval).toBeGreaterThanOrEqual(10);
+    expect(nullConviction / week.games.length).toBeGreaterThanOrEqual(0.18);
+  });
+
+  it("does not throw when sorting by conviction with null tiers", () => {
+    const week = loadNullHeavyWeek();
+    expect(() => [...week.games].sort(compareByConviction)).not.toThrow();
+    const sorted = [...week.games].sort(compareByConviction);
+    const nullTier = sorted.filter((g) => g.conviction_tier == null);
+    const tiered = sorted.filter((g) => g.conviction_tier != null);
+    expect(sorted.slice(-nullTier.length).every((g) => g.conviction_tier == null)).toBe(true);
+    expect(tiered.length + nullTier.length).toBe(week.games.length);
+  });
+
+  it("does not throw when grouping by conviction with null tiers", () => {
+    const week = loadNullHeavyWeek();
+    expect(() => groupByConviction(week.games)).not.toThrow();
+    const groups = groupByConviction(week.games);
+    const ids = groups.flatMap((g) => g.games.map((game) => game.game_id));
+    expect(new Set(ids).size).toBe(week.games.length);
   });
 });

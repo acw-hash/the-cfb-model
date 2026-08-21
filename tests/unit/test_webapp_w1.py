@@ -239,7 +239,7 @@ def _write_synthetic_fixture_sources(tmp_path: Path) -> tuple[Path, AppConfig]:
                 "p_ml_home": 0.62,
                 "p_ml_home_is_missing": False,
                 "model_version": "production-v0_reduced_v3",
-                "run_id": "synthetic_ci",
+                "run_id": "task23_fundamental_reduced_v3",
                 "home_points": 21,
                 "away_points": 17,
             }
