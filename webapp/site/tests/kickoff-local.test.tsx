@@ -87,9 +87,7 @@ describe("kickoff surfaces share visitor-local formatting", () => {
         timeZone={tz}
       />,
     );
-    const gradedHtml = renderToStaticMarkup(
-      <GradedGameRow game={graded!} timeZone={tz} />,
-    );
+    const gradedHtml = renderToStaticMarkup(<GradedGameRow game={graded!} timeZone={tz} />);
 
     expect(row).toContain(expected);
     expect(detail).toContain(expected);
