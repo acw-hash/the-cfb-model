@@ -71,6 +71,4 @@ These are operator facts from the sandbox dress rehearsal. They do not change th
 
 **Provenance vintage (Amendment 1).** Per-game `vintage_label` is derived from the producing `run_id`. A v3-champion artifact (`task23_fundamental_reduced_v3`) must read `W9A_REVAL`, never `REGRADED_V2`. An unknown `run_id` refuses export.
 
-**Provenance vintage (Amendment 1).** Per-game `vintage_label` is derived from the producing `run_id`. A v3-champion artifact (`task23_fundamental_reduced_v3`) must read `W9A_REVAL`, never `REGRADED_V2`. An unknown `run_id` refuses export.
-
 **Margin interval coherence (Amendment 2).** Export publishes `margin_interval_*` only where sorted pre-CQR `q10 < μ < q90`. Otherwise JSON null; This Week omits the band; Game Detail shows "Interval not computed". No `|μ|` cutoff and no asymmetry suppress. 2026 week-1 rehearsal: **19 / 91** suppressed; **0 / 4,743** on the v3 backtest analysis set. **46/91** position outliers on the ungated slate are a monitoring item for the first four live weeks, not a publish stop. CQR refit on real quantile heads is W9-CQR (post-launch). Do not restamp `/results` with the 0.874 coverage number until after week 1.
