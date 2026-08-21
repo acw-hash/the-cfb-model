@@ -53,6 +53,44 @@ Task arithmetic `942+9=951` predates the required new history test; **952** is t
 - `test_incoherent_band_assertion_bite`
 - `test_history_line_carries_post_gate_null_bands`
 
-## Dry run / `make test`
+## `make test`
 
-*(filled after runs)*
+```
+make test
+# → uv run pytest -m "not live"
+# ========= 952 passed, 1 deselected, 32 warnings in 305.57s (0:05:05) ==========
+# Required test coverage of 80% reached. Total coverage: 80.53%
+```
+
+## Dry run (export gated, `push=False`, temp history)
+
+Operator `as_of=2026-08-25T10:00:00Z`:
+
+- 99 games; all eight early ids present
+- **15** suppressed bands (same ids as VERIFY-2)
+- `as_of_source=operator`, `schema_version=1.3.0`, `vintage_label=W9A_REVAL`
+- one history line; `history == week_predictions`; `push is None`; `export_enabled=False`
+
+## `git diff --stat` vs post-w9-d main (`5e60a5f`)
+
+| path | attribution |
+|---|---|
+| `docs/adr/0017-…md` | w9-pub1 |
+| `docs/notes/webapp-w9pub1.md` | w9-pub1 |
+| `docs/notes/webapp-w9pub1-resolve.md` | **resolution** |
+| `src/ncaa_quant/config.py` | w9-pub1 |
+| `src/ncaa_quant/pipelines/predict.py` | w9-pub1 + **resolution** (kept w9-d champion stamps) |
+| `src/ncaa_quant/webapp/export.py` | w9-pub1 + **resolution** (kept w9-d provenance; history post-gate) |
+| `src/ncaa_quant/webapp/grade.py` | w9-pub1 |
+| `src/ncaa_quant/webapp/publish_history.py` | w9-pub1 |
+| `src/ncaa_quant/webapp/push.py` | w9-pub1 |
+| `tests/integration/test_pipelines_e2e.py` | w9-pub1 |
+| `tests/unit/test_webapp_w1.py` | w9-pub1 |
+| `tests/unit/test_webapp_w8c.py` | w9-pub1 |
+| `tests/unit/test_webapp_w9p.py` | w9-pub1 |
+| `tests/unit/test_webapp_w9pub1.py` | w9-pub1 + **resolution** (new history-null test; v3 `run_id`) |
+| `tests/unit/test_webapp_w9r.py` | w9-pub1 |
+
+w9-d code already on base (`export` gate, vintage); not re-listed.
+
+**Ready for operator merge to `main` when accepted.** Not merged to main in this task.
