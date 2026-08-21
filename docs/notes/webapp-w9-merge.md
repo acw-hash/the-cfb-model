@@ -57,6 +57,8 @@ No other stranded `src/ncaa_quant/` correctness work. Proceed.
 
 Post-merge: `assert_no_incoherent_margin_interval` and `test_incoherent_band_assertion_bite` present on main.
 
+**Ratchet pin:** merge added union hits → re-pin `scripts/check_betting_language.py` to exact live **351/239/76** (was 348/237/74).
+
 ## Phase 4 — merge w9-pub1 → main
 
 *(filled after commit + merge)*
