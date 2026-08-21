@@ -391,7 +391,7 @@ def test_isolated_2024w5_oracle_against_fixture(
     produced = json.loads(week_path.read_text(encoding="utf-8"))
     fixture = json.loads(FIXTURE_PATH.read_text(encoding="utf-8"))
 
-    assert produced["schema_version"] == SCHEMA_VERSION == "1.2.0"
+    assert produced["schema_version"] == SCHEMA_VERSION == "1.3.0"
     assert produced["season"] == 2024
     assert produced["week"] == 5
     assert produced["refresh_kind"] == "tuesday_primary"

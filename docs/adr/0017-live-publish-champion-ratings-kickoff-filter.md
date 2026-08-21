@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted (W9-L Amendment 2).
+Accepted (W9-L Amendment 2; W9-PUB1 Amendment 3).
 
 ## Context
 
@@ -28,6 +28,14 @@ as This Week / Game Detail forecasts would present a post-kickoff μ as a
 pre-kickoff decision. Amendment 2 keeps the single Tuesday clock and
 omits already-kicked-off games from the forecast artifact.
 
+**W9-PUB1 (Amendment 3):** CFBD 2026 week 1 spans two weekends (Aug 29–30
+early slate + Labor Day weekend). One Tuesday `as_of` for the whole CFBD
+week resolves to `2026-09-01T10:00:00Z` and permanently drops the eight
+early games from every week-1 publish. That conflicts with the operator
+requirement that those games appear in a pre-kickoff publish (ungradable
+if missed). The calendar itself is unchanged when `as_of` is omitted; an
+operator override supplies the first-weekend Tuesday.
+
 ## Decision
 
 1. **`predict_publish` default `predict_fn` is `live_predict_rows`.** Ratings
@@ -41,18 +49,29 @@ omits already-kicked-off games from the forecast artifact.
    (replay 2019–2024). `assert_lockbox_excluded` still raises if 2025 is in
    replay, test, warmup, or continuity.
 4. **Published slate** drops any game whose kickoff (`start_date`) is
-   strictly before the week's Tuesday `as_of`. Equal kickoff is kept. The
+   strictly before the publish's Tuesday `as_of`. Equal kickoff is kept. The
    rule is keyed on kickoff vs `as_of`, not on week number. Excluded games
    are not forecasts; they reach the site through Results once graded.
 5. **`FEATURE_TIME=TUESDAY_DECISION` stays global.** Every published game
    now has kickoff ≥ `as_of`.
 6. **Bet-candidate stub is off** on the publish default (`[]`). Chaos tests
    may still inject dummy candidates.
+7. **One Tuesday `as_of` per publish weekend** (Amendment 3). The default
+   path remains `week_decision_as_of` (modal ET Monday → Tuesday 06:00 ET)
+   when the invocation's `as_of` is `None`. For CFBD weeks that span more
+   than one weekend (2026 week 1), the operator passes an explicit `as_of`
+   per invocation (e.g. `2026-08-25T10:00:00Z` then `2026-09-01T10:00:00Z`).
+   There is no config/YAML/env calendar special-case. Artifacts record
+   `as_of_source` as `"calendar"` | `"operator"`.
+8. **2026 week 1 takes two `tuesday_primary` publishes** (Aug 25 and
+   Sept 1). Idempotency partitions include the decision instant so
+   same-kind runs on different days are distinct.
 
 ## Consequences
 
-- A 2026 week-1 Tuesday (`2026-09-01T10:00:00Z` after D1 unclamp) omits
-  the Labor-Day-weekend kickoffs (8 of 99 on the 2026-08-18 slate).
+- A 2026 week-1 calendar Tuesday (`2026-09-01T10:00:00Z`) still omits the
+  eight Aug 29–30 kickoffs when `as_of` is None. The Aug 25 operator
+  override keeps all 99 games on that publish.
 - `ProvenanceStrip` remains a true claim on every published game.
 - 27 v3 week-1 rows (2021–2024) with `as_of` after kickoff remain inside
   23-reval metrics. Successor: `W9-L-residual-week1-straddle-metrics`.
@@ -63,3 +82,6 @@ omits already-kicked-off games from the forecast artifact.
 - 2025 is not a fitted-prior year. Missing-season priors inject `{}` so
   `run_filter` season-regresses at the 2025 boundary instead of
   cold-starting every team at 0.
+- DESIGN §1.3 grading precedence (refresh_kind before published_at) is
+  unchanged in this ADR. Two primaries in one CFBD week expose a
+  separate operator decision — see W9-PUB1 notes.

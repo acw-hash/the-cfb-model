@@ -15,7 +15,7 @@ import pandas as pd  # type: ignore[import-untyped]
 from ncaa_quant.config import AppConfig, load_config
 from ncaa_quant.pipelines.predict import RefreshKind
 
-SCHEMA_VERSION = "1.2.0"
+SCHEMA_VERSION = "1.3.0"
 
 ConvictionTier = Literal["strong_lean", "clear_lean", "lean", "toss_up"]
 
@@ -791,6 +791,8 @@ def build_week_predictions(
     fixture: bool = False,
     tier_changes_path: Path | None = None,
     record_tier_changes: bool = False,
+    as_of: datetime | str | None = None,
+    as_of_source: Literal["calendar", "operator"] = "calendar",
 ) -> dict[str, Any]:
     store = tier_store or TierStateStore.default_path()
     previous_tiers = store.load()
@@ -849,6 +851,23 @@ def build_week_predictions(
             cfg_path = Path(load_config().webapp.tier_changes_path)
         append_tier_change_records(tier_change_records, path=cfg_path)
 
+    as_of_iso: str | None
+    if isinstance(as_of, datetime):
+        as_of_iso = _iso_utc(as_of)
+    elif as_of is not None:
+        as_of_iso = str(as_of)
+    else:
+        as_of_iso = None
+        for row in prediction_rows:
+            candidate = row.get("as_of")
+            if candidate is not None:
+                as_of_iso = str(candidate)
+                break
+
+    source: Literal["calendar", "operator"] = (
+        as_of_source if as_of_source in ("calendar", "operator") else "calendar"
+    )
+
     stale = stale_context or {}
     artifact: dict[str, Any] = {
         "schema_version": SCHEMA_VERSION,
@@ -856,6 +875,8 @@ def build_week_predictions(
         "week": week,
         "refresh_kind": refresh_kind,
         "published_at": _iso_utc(published_at),
+        "as_of": as_of_iso,
+        "as_of_source": source,
         "feature_time_label": feature_time_label,
         "ensemble_scope_label": ensemble_scope_label,
         "vintage_label": vintage_label,
@@ -1352,7 +1373,18 @@ def export_publish_artifacts(
     push: bool = False,
     notifier: Any | None = None,
 ) -> dict[str, Any]:
-    """Build Ridge artifacts from a predict_publish result payload."""
+    """Build Ridge artifacts from a predict_publish result payload.
+
+    Always appends the ``week_predictions`` object to the workstation publish
+    history store (even when push is disabled / export gated). Never uploads
+    history to R2.
+    """
+    from ncaa_quant.webapp.publish_history import (
+        append_publish_history,
+        assert_no_slate_regression,
+        latest_publish_record,
+    )
+
     cfg = config or load_config()
     season = int(publish_result["season"])
     week = int(publish_result["week"])
@@ -1378,6 +1410,12 @@ def export_publish_artifacts(
             row.setdefault("stale_stamp", stale_ctx.get("combined_stamp"))
             row.setdefault("stale_sources", stale_ctx.get("sources") or [])
 
+    as_of_raw = publish_result.get("as_of")
+    as_of_source_raw = publish_result.get("as_of_source", "calendar")
+    as_of_source: Literal["calendar", "operator"] = (
+        "operator" if as_of_source_raw == "operator" else "calendar"
+    )
+
     identity = _model_identity_from_rows(merged_rows)
     provenance = _provenance_from_rows(merged_rows)
     week_preds = build_week_predictions(
@@ -1396,7 +1434,14 @@ def export_publish_artifacts(
         stale_max_age_hours=float(cfg.pipeline.stale_odds_max_age_hours),
         tier_changes_path=Path(cfg.webapp.tier_changes_path),
         record_tier_changes=True,
+        as_of=as_of_raw if isinstance(as_of_raw, (str, datetime)) else None,
+        as_of_source=as_of_source,
     )
+
+    history_root = Path(cfg.webapp.publish_history_path)
+    prior = latest_publish_record(history_root, season=season, week=week)
+    assert_no_slate_regression(prior, week_preds, now=clock)
+
     meta = build_meta(
         season=season,
         week=week,
@@ -1438,6 +1483,8 @@ def export_publish_artifacts(
     meta["artifact_pointers"]["team_ratings"] = f"latest/team_ratings_{season}.json"
     artifacts["meta.json"] = json.dumps(meta, indent=2, sort_keys=True) + "\n"
 
+    history_path = append_publish_history(week_preds, root=history_root)
+
     push_result: dict[str, Any] | None = None
     if push and cfg.webapp.export_enabled:
         from ncaa_quant.webapp.push import push_artifacts_to_r2
@@ -1460,6 +1507,7 @@ def export_publish_artifacts(
         "team_ratings": team_ratings,
         "tier_distribution": tier_distribution(week_preds.get("games") or []),
         "push": push_result,
+        "publish_history_path": str(history_path),
     }
 
 

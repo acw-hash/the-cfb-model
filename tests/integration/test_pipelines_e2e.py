@@ -5,7 +5,7 @@ from __future__ import annotations
 import pytest
 
 from ncaa_quant.config import AppConfig, PipelineConfig
-from ncaa_quant.pipelines.common import IdempotencyStore, PartitionKey
+from ncaa_quant.pipelines.common import IdempotencyStore
 from ncaa_quant.pipelines.notifications import AlertKind, RecordingNotifier
 from ncaa_quant.pipelines.postgame import run_postgame_ingest
 from ncaa_quant.pipelines.predict import run_fixture_week_publish
@@ -88,8 +88,10 @@ def test_idempotent_rerun_fixture_week(pipeline_config) -> None:
     assert out1["n_accepted"] == out2["n_accepted"]
 
     store = IdempotencyStore(pipeline_config.pipeline.idempotency_dir)
-    key = PartitionKey("predict_publish", "2024-w6-tuesday_primary")
-    assert store.is_done(key)
+    # Partition stamps published_at (run clock), not decision as_of.
+    prefix = "predict_publish:2024-w6-tuesday_primary-"
+    matching = [tok for tok in store._load() if tok.startswith(prefix)]  # noqa: SLF001
+    assert len(matching) == 1
 
 
 def test_retrain_gate_skips_non_gate_week(pipeline_config) -> None:
