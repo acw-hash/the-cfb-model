@@ -86,6 +86,9 @@ _RATINGS_FILENAME = re.compile(r"^team_ratings_[0-9]{4}\.json$")
 _TEAM_ID_KEY = re.compile(r"^[0-9]+$")
 
 _OPTIONAL_FIXTURE: frozenset[str] = frozenset({"fixture"})
+# Additive 1.3.0 decision metadata — required on new exports; optional so frozen
+# 1.2.0 fixtures (webapp/fixtures) still pass the push allowlist.
+_OPTIONAL_WEEK_DECISION: frozenset[str] = frozenset({"as_of", "as_of_source"})
 
 _META_KEYS: frozenset[str] = frozenset(
     {
@@ -276,7 +279,12 @@ def _assert_meta(payload: Mapping[str, Any], filename: str) -> None:
 
 
 def _assert_week_predictions(payload: Mapping[str, Any], filename: str) -> None:
-    _assert_exact_keys(payload, required=_WEEK_KEYS, optional=_OPTIONAL_FIXTURE, path=filename)
+    _assert_exact_keys(
+        payload,
+        required=_WEEK_KEYS,
+        optional=_OPTIONAL_FIXTURE | _OPTIONAL_WEEK_DECISION,
+        path=filename,
+    )
     identity = _require_object(payload.get("model_identity"), f"{filename}.model_identity")
     _assert_exact_keys(identity, required=_MODEL_IDENTITY_KEYS, path=f"{filename}.model_identity")
     stale = _require_object(payload.get("publish_stale"), f"{filename}.publish_stale")
@@ -355,12 +363,29 @@ def _artifact_kind(filename: str) -> str:
     raise PublishedKeyAllowlistError(msg)
 
 
+def refuse_publish_history_artifact_keys(artifacts: Mapping[str, str | bytes]) -> None:
+    """Refuse any push payload that looks like the workstation history store.
+
+    Publish history is append-only JSONL under ``webapp.publish_history_path`` and
+    must never be uploaded to R2 (not under ``latest/``, ``v*/``, or sandbox).
+    """
+    for name in artifacts:
+        normalized = str(name).replace("\\", "/").casefold()
+        if "publish_history" in normalized or normalized.endswith(".jsonl"):
+            msg = (
+                f"refused push: artifact key {name!r} looks like publish history; "
+                "history is workstation-only and must never upload to R2"
+            )
+            raise R2PushError(msg)
+
+
 def assert_push_artifact_allowlists(artifacts: Mapping[str, str | bytes]) -> None:
     """Refuse any write whose objects carry keys outside the sanctioned set.
 
     Exact allowlist per artifact type — unknown keys fail. Runs on every
     ``push_artifacts_to_r2`` call, including sandbox and operator restore.
     """
+    refuse_publish_history_artifact_keys(artifacts)
     for filename, content in artifacts.items():
         kind = _artifact_kind(filename)
         text = content.decode("utf-8") if isinstance(content, bytes) else content

@@ -445,7 +445,12 @@ def test_bet_candidate_fields_not_in_export(tmp_path: Path) -> None:
         "n_accepted": 1,
         "n_rejected": 2,
     }
-    cfg = AppConfig(webapp=WebappConfig(tier_state_path=str(tmp_path / "tier.json")))
+    cfg = AppConfig(
+        webapp=WebappConfig(
+            tier_state_path=str(tmp_path / "tier.json"),
+            publish_history_path=str(tmp_path / "publish_history"),
+        )
+    )
     try:
         out = export_publish_artifacts(publish, config=cfg)
     except FileNotFoundError:
@@ -576,6 +581,7 @@ def test_export_publish_artifacts_with_injected_schedule(tmp_path: Path) -> None
             export_enabled=False,
             tier_state_path=str(tmp_path / "tier.json"),
             tier_changes_path=str(tmp_path / "tier_changes.jsonl"),
+            publish_history_path=str(tmp_path / "publish_history"),
         ),
     )
     published_at = datetime(2026, 9, 1, 10, 0, tzinfo=UTC)
@@ -815,6 +821,7 @@ def test_export_publish_artifacts_stale_stamp(tmp_path: Path) -> None:
             export_enabled=False,
             tier_state_path=str(tmp_path / "tier.json"),
             tier_changes_path=str(tmp_path / "tier_changes.jsonl"),
+            publish_history_path=str(tmp_path / "publish_history"),
         )
     )
     publish = {

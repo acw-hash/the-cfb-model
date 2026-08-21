@@ -204,7 +204,8 @@ def test_committed_track_record_fixture_matches_builder() -> None:
         published_at=datetime(2024, 9, 24, 10, 0, tzinfo=UTC),
         fixture=True,
     )
-    assert fixture["schema_version"] == SCHEMA_VERSION == "1.2.0"
+    assert fixture["schema_version"] == "1.2.0"  # frozen fixture (pre-1.3.0)
+    assert SCHEMA_VERSION == "1.3.0"
     assert fixture["source_memo"] == built["source_memo"]
     assert fixture["verdict"] == built["verdict"]
     assert fixture["vintage_labels"] == built["vintage_labels"]
