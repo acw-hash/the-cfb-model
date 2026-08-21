@@ -144,6 +144,9 @@ class WebappConfig(BaseModel):
     tier_changes_path: str = "data/webapp/tier_changes.jsonl"
     """Per-publish tier instrumentation (JSONL; workstation-only, not pushed to R2)."""
 
+    publish_history_path: str = "data/webapp/publish_history"
+    """Append-only week_predictions JSONL store (workstation-only; never pushed to R2)."""
+
     fixture_artifacts_dir: str = "webapp/fixtures"
 
 

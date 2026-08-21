@@ -9,7 +9,7 @@ from collections.abc import Callable, Mapping, Sequence
 from datetime import UTC, datetime
 from enum import StrEnum
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import pandas as pd  # type: ignore[import-untyped]
 from prefect import flow, task
@@ -27,6 +27,8 @@ from ncaa_quant.pipelines.stale import (
     stamp_predictions,
 )
 from ncaa_quant.utils.logging import configure_logging, get_logger
+
+AsOfSource = Literal["calendar", "operator"]
 
 log = get_logger(__name__)
 
@@ -97,6 +99,71 @@ def exclude_games_kicked_off_before(
     return games.loc[keep].copy(), n_excluded
 
 
+def _normalize_as_of_utc(as_of: datetime) -> datetime:
+    if as_of.tzinfo is None:
+        return as_of.replace(tzinfo=UTC)
+    return as_of.astimezone(UTC)
+
+
+def resolve_week_publish_as_of(
+    season: int,
+    week: int,
+    as_of: datetime | None = None,
+    *,
+    config: AppConfig | None = None,
+) -> tuple[datetime, AsOfSource]:
+    """Resolve the kickoff-filter / Kalman cutoff for a publish.
+
+    When ``as_of`` is None, uses :func:`week_decision_as_of` exactly as before
+    (calendar Tuesday). When set, uses the operator override directly — no
+    calendar special-case, config field, or YAML route.
+    """
+    if as_of is not None:
+        return _normalize_as_of_utc(as_of), "operator"
+
+    from ncaa_quant.data.storage import ParquetStore
+    from ncaa_quant.evaluation.walkforward import WeekDecisionCalendar, week_decision_as_of
+
+    cfg = config or load_config()
+    wf = load_champion_walkforward_config()
+    staged = Path(cfg.paths.staged_dir)
+    store = ParquetStore(staged)
+    frames: list[pd.DataFrame] = []
+    for path in store._matching_paths("games", {"season": int(season)}):  # noqa: SLF001
+        frames.append(pd.read_parquet(path))
+    if not frames:
+        msg = f"no staged games for season {season}"
+        raise FileNotFoundError(msg)
+    season_games = pd.concat(frames, ignore_index=True)
+    if "event_time" not in season_games.columns and "start_date" in season_games.columns:
+        season_games["event_time"] = pd.to_datetime(season_games["start_date"], utc=True)
+    calendar = WeekDecisionCalendar.from_games(season_games)
+    resolved = week_decision_as_of(int(season), int(week), wf, calendar=calendar)
+    return _normalize_as_of_utc(resolved), "calendar"
+
+
+def idempotency_partition_for_publish(
+    *,
+    season: int,
+    week: int,
+    refresh_kind: str,
+    published_at: datetime,
+) -> str:
+    """Partition token fragment including the publish run calendar day.
+
+    Form: ``{season}-w{week}-{refresh_kind}-{published_at:%Y%m%d}``.
+
+    Uses ``published_at`` (export run clock), not decision ``as_of``. Calendar and
+    operator ``as_of`` are stable across daily_refresh days for a given week;
+    partitioning on ``as_of`` would no-op Thu–Sat refreshes after the first.
+    Same-day reruns collide (ledger no-op) even at different minutes; different
+    calendar days do not. Publish cadence is at most one run per refresh_kind
+    per day.
+    """
+    stamp = _normalize_as_of_utc(published_at).strftime("%Y%m%d")
+    return f"{int(season)}-w{int(week)}-{refresh_kind}-{stamp}"
+
+
 def load_champion_walkforward_config() -> Any:
     """v3 WalkForwardConfig. Replay seasons exclude 2025; lockbox still fires."""
     from ncaa_quant.evaluation.backtest_runner import (
@@ -143,6 +210,7 @@ def live_predict_rows(
     week: int,
     *,
     config: AppConfig | None = None,
+    as_of: datetime | None = None,
 ) -> list[dict[str, Any]]:
     """Champion-method live predict for ``(season, week)``.
 
@@ -151,8 +219,10 @@ def live_predict_rows(
     ``filter_history`` is not read. WalkForwardConfig replay stays lockbox-free;
     2025 is loaded only as Kalman observations.
 
-    Published games exclude kickoff ``< as_of``. ~4 min Kalman is expected;
-    there is no observation/filter cache.
+    Published games exclude kickoff ``< as_of``. When ``as_of`` is None, the
+    calendar Tuesday from :func:`week_decision_as_of` is used (unchanged).
+    When set, that instant is used directly (``as_of_source=operator``).
+    ~4 min Kalman is expected; there is no observation/filter cache.
     """
     import pickle
 
@@ -209,23 +279,34 @@ def live_predict_rows(
         msg = f"no staged games for season={season} week={week}"
         raise FileNotFoundError(msg)
 
-    calendar = WeekDecisionCalendar.from_games(season_games)
-    as_of = week_decision_as_of(int(season), int(week), wf, calendar=calendar)
-    publish_games, n_excluded = exclude_games_kicked_off_before(week_games, as_of)
+    # Inline calendar resolution (same as resolve_week_publish_as_of) so we do
+    # not re-load staged games and keep the existing load_staged_games call order.
+    if as_of is not None:
+        resolved_as_of = _normalize_as_of_utc(as_of)
+        as_of_source: AsOfSource = "operator"
+    else:
+        calendar = WeekDecisionCalendar.from_games(season_games)
+        resolved_as_of = _normalize_as_of_utc(
+            week_decision_as_of(int(season), int(week), wf, calendar=calendar)
+        )
+        as_of_source = "calendar"
+    publish_games, n_excluded = exclude_games_kicked_off_before(week_games, resolved_as_of)
     n_week = int(len(week_games))
     n_publish = int(len(publish_games))
     log.info(
         "publish_slate_kickoff_filter",
         season=int(season),
         week=int(week),
-        as_of=as_of.isoformat(),
+        as_of=resolved_as_of.isoformat(),
+        as_of_source=as_of_source,
         n_week_games=n_week,
         n_excluded_kickoff_before_as_of=n_excluded,
         n_publish=n_publish,
     )
     print(
         f"W9-L slate n_week={n_week} n_excluded_kickoff_before_as_of={n_excluded} "
-        f"n_publish={n_publish} as_of={as_of.isoformat()}",
+        f"n_publish={n_publish} as_of={resolved_as_of.isoformat()} "
+        f"as_of_source={as_of_source}",
         flush=True,
     )
     if publish_games.empty:
@@ -271,11 +352,11 @@ def live_predict_rows(
         fbs_team_ids=_fbs_team_ids(teams) or None,
     )
     print(
-        f"W9-L Kalman start n_obs={len(obs)} as_of={as_of.isoformat()} "
+        f"W9-L Kalman start n_obs={len(obs)} as_of={resolved_as_of.isoformat()} "
         "(recompute per publish; ~4 min is expected, not a hang)",
         flush=True,
     )
-    engine.initialize_season(int(season), as_of)
+    engine.initialize_season(int(season), resolved_as_of)
     rating_state = engine.state_snapshot()
     digest = rating_snapshot_digest(rating_state)
     log.info(
@@ -300,7 +381,7 @@ def live_predict_rows(
 
     features = provider.compute_game_features(
         publish_games,
-        as_of,
+        resolved_as_of,
         rating_state=rating_state,
         market_features=False,
     )
@@ -317,7 +398,8 @@ def live_predict_rows(
         rec["model_version"] = model_version
         rec["champion_version"] = champion_version
         rec["registered_at"] = registered_at
-        rec["as_of"] = as_of.isoformat()
+        rec["as_of"] = resolved_as_of.isoformat()
+        rec["as_of_source"] = as_of_source
         rec["rating_digest"] = digest
         rows.append(_alias_stamp_columns(rec))
     log.info(
@@ -329,6 +411,7 @@ def live_predict_rows(
         run_id=run_id,
         model_version=model_version,
         rating_digest=digest,
+        as_of_source=as_of_source,
     )
     return rows
 
@@ -453,9 +536,15 @@ def load_production_prediction_rows(season: int, week: int) -> list[dict[str, An
     return rows
 
 
-def _default_predict_for(season: int, week: int) -> PredictFn:
+def _default_predict_for(
+    season: int,
+    week: int,
+    *,
+    as_of: datetime | None = None,
+    config: AppConfig | None = None,
+) -> PredictFn:
     def _predict(_stale_ctx: StaleContext) -> list[dict[str, Any]]:
-        return live_predict_rows(season, week)
+        return live_predict_rows(season, week, config=config, as_of=as_of)
 
     return _predict
 
@@ -514,12 +603,17 @@ def execute_predict_publish(
     simulate_ingest_failure: bool = False,
     config: AppConfig | None = None,
     notifier: Notifier | None = None,
+    as_of: datetime | None = None,
 ) -> dict[str, Any]:
     """Core predict/publish body (testable without Prefect parameter schema)."""
     cfg = config or load_config()
     ingest_failed = False
     ingest_error: str | None = None
     raw_root = Path(cfg.paths.raw_dir) / "odds_api"
+
+    resolved_as_of, as_of_source = resolve_week_publish_as_of(
+        season, week, as_of, config=cfg
+    )
 
     if simulate_ingest_failure:
         ingest_failed = True
@@ -541,7 +635,7 @@ def execute_predict_publish(
     if ingest_failed and not stale_ctx.use_last_good:
         raise IngestFailure(ingest_error or "ingest failed with no fallback")
 
-    predict = predict_fn or _default_predict_for(season, week)
+    predict = predict_fn or _default_predict_for(season, week, as_of=as_of, config=cfg)
     raw_preds = predict(stale_ctx)
     stamped = stamp_predictions(raw_preds, stale_ctx)
 
@@ -583,6 +677,8 @@ def execute_predict_publish(
         "season": season,
         "week": week,
         "refresh_kind": refresh_kind,
+        "as_of": resolved_as_of.isoformat(),
+        "as_of_source": as_of_source,
         "ingest_failed": ingest_failed,
         "ingest_error": ingest_error,
         "stale": stale_ctx.to_dict(),
@@ -630,6 +726,7 @@ def _run_helper_publish(
     config: AppConfig | None = None,
     notifier: Notifier | None = None,
     publish_scope: str = "sandbox",
+    as_of: datetime | None = None,
 ) -> dict[str, Any]:
     """Run predict/publish for test helpers; default scope is non-live ``sandbox/``.
 
@@ -655,6 +752,7 @@ def _run_helper_publish(
         simulate_ingest_failure=simulate_ingest_failure,
         config=inner_cfg,
         notifier=notifier,
+        as_of=as_of,
     )
 
     if not export_wanted or publish_scope == "live":
@@ -703,10 +801,21 @@ def run_predict_publish(
     simulate_ingest_failure: bool = False,
     config: AppConfig | None = None,
     notifier: Notifier | None = None,
+    as_of: datetime | None = None,
+    published_at: datetime | None = None,
 ) -> dict[str, Any]:
     """Idempotent wrapper around :func:`execute_predict_publish`."""
     cfg = config or load_config()
-    key = PartitionKey(source="predict_publish", partition=f"{season}-w{week}-{refresh_kind}")
+    # Partition on the publish run clock (same clock export stamps as published_at).
+    # Decision as_of is intentionally excluded — it does not vary across daily_refresh days.
+    clock = published_at if published_at is not None else datetime.now(tz=UTC)
+    partition = idempotency_partition_for_publish(
+        season=season,
+        week=week,
+        refresh_kind=refresh_kind,
+        published_at=clock,
+    )
+    key = PartitionKey(source="predict_publish", partition=partition)
 
     def _run() -> dict[str, Any]:
         return execute_predict_publish(
@@ -719,6 +828,7 @@ def run_predict_publish(
             simulate_ingest_failure=simulate_ingest_failure,
             config=cfg,
             notifier=notifier,
+            as_of=as_of,
         )
 
     return run_idempotent(key, _run, config=cfg)
@@ -736,6 +846,7 @@ def predict_publish_task(
     week: int,
     refresh_kind: str,
     simulate_ingest_failure: bool = False,
+    as_of: datetime | None = None,
 ) -> dict[str, Any]:
     """Generate predictions; STALE-stamp and suppress bets on ingest failure."""
     return run_predict_publish(
@@ -743,6 +854,7 @@ def predict_publish_task(
         week=week,
         refresh_kind=refresh_kind,
         simulate_ingest_failure=simulate_ingest_failure,
+        as_of=as_of,
     )
 
 
@@ -762,8 +874,13 @@ def predict_publish_flow(
     week: int | None = None,
     refresh_kind: str = RefreshKind.TUESDAY_PRIMARY,
     simulate_ingest_failure: bool = False,
+    as_of: datetime | None = None,
 ) -> dict[str, Any]:
-    """Tue 06:00 + Thu–Sat refresh — predictions, edges, internal report."""
+    """Tue 06:00 + Thu–Sat refresh — predictions, edges, internal report.
+
+    Optional ``as_of`` is an operator override for the kickoff filter / Kalman
+    cutoff (e.g. 2026 week-1 first weekend). When None, calendar Tuesday is used.
+    """
     configure_logging()
     now = datetime.now(tz=UTC)
     resolved_season = season if season is not None else now.year
@@ -773,12 +890,14 @@ def predict_publish_flow(
         season=resolved_season,
         week=resolved_week,
         refresh_kind=refresh_kind,
+        as_of=as_of.isoformat() if as_of is not None else None,
     )
     return predict_publish_task(
         season=resolved_season,
         week=resolved_week,
         refresh_kind=refresh_kind,
         simulate_ingest_failure=simulate_ingest_failure,
+        as_of=as_of,
     )
 
 
@@ -851,6 +970,7 @@ def _isolated_publish_config(config: AppConfig, state_dir: Path) -> AppConfig:
                     "export_enabled": False,
                     "tier_state_path": str(state_dir / "tier_state.json"),
                     "tier_changes_path": str(state_dir / "tier_changes.jsonl"),
+                    "publish_history_path": str(state_dir / "publish_history"),
                 }
             ),
             "pipeline": config.pipeline.model_copy(
@@ -874,6 +994,7 @@ def run_isolated_week_export(
     config: AppConfig | None = None,
     notifier: Notifier | None = None,
     predict_fn: PredictFn | None = None,
+    as_of: datetime | None = None,
 ) -> dict[str, Any]:
     """Run wired ``predict_fn`` → local artifacts. No R2, no real tier files.
 
@@ -882,6 +1003,7 @@ def run_isolated_week_export(
     disabled on the config; artifacts are written only under ``output_dir``.
     ``predict_fn`` defaults to the live champion-method path. Pass
     :func:`oracle_predict_fn` for stored-parquet 2024 comparisons.
+    Optional ``as_of`` is the operator kickoff-filter override.
     """
     from ncaa_quant.webapp.export import export_publish_artifacts
 
@@ -902,6 +1024,7 @@ def run_isolated_week_export(
     print(f"W9-P tier_state_path={cfg.webapp.tier_state_path}")
     print(f"W9-P tier_changes_path={cfg.webapp.tier_changes_path}")
     print(f"W9-P season={season} week={week} refresh_kind={refresh_kind}")
+    print(f"W9-P as_of={as_of.isoformat() if as_of is not None else None}")
 
     result = execute_predict_publish(
         season=season,
@@ -910,6 +1033,7 @@ def run_isolated_week_export(
         config=cfg,
         notifier=notifier,
         predict_fn=predict_fn,
+        as_of=as_of,
     )
     first = (result.get("prediction_rows") or [{}])[0]
     print("W9-P champion_version=3")

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
 from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any, cast
 
 from ncaa_quant.webapp.export import (
@@ -291,9 +292,14 @@ def grade_export(
     publish_history: Sequence[Mapping[str, Any]] | None = None,
     config: Any = None,
 ) -> dict[str, Any]:
-    """On-demand grade export entry (2026+ only)."""
+    """On-demand grade export entry (2026+ only).
+
+    When ``publish_history`` is omitted, loads append-only records from
+    ``webapp.publish_history_path``. Explicit history (tests / fixtures) still wins.
+    """
     from ncaa_quant.config import load_config
     from ncaa_quant.webapp.export import load_schedule_frame, load_teams_frame
+    from ncaa_quant.webapp.publish_history import history_records_for_grade
 
     assert_live_season(season)
     cfg = config or load_config()
@@ -319,7 +325,11 @@ def grade_export(
     import pandas as pd  # type: ignore[import-untyped]
 
     completed = pd.concat(games_frames, ignore_index=True)
-    history = list(publish_history or [])
+    history = history_records_for_grade(
+        Path(cfg.webapp.publish_history_path),
+        season=season,
+        explicit=publish_history,
+    )
     return build_results_season(
         season=season,
         published_at=clock,
