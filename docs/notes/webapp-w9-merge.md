@@ -59,6 +59,28 @@ Post-merge: `assert_no_incoherent_margin_interval` and `test_incoherent_band_ass
 
 **Ratchet pin:** merge added union hits → re-pin `scripts/check_betting_language.py` to exact live **351/239/76** (was 348/237/74).
 
-## Phase 4 — merge w9-pub1 → main
+### Phase 3 `make test`
 
-*(filled after commit + merge)*
+```
+make test
+# → uv run pytest -m "not live"
+# ========= 942 passed, 1 deselected, 32 warnings in 294.23s (0:04:54) ==========
+# Required test coverage of 80% reached. Total coverage: 80.50%
+```
+
+Gate symbols on main; `test_incoherent_band_assertion_bite` passes under `-m "not live"`.
+
+## Phase 4 — merge w9-pub1 → main — STOPPED
+
+Committed WIP on `w9-pub1` as `814a8b0`, then `git merge w9-pub1` on post–w9-d main.
+
+**Conflicts (pipeline files):**
+
+- `src/ncaa_quant/pipelines/predict.py`
+- `src/ncaa_quant/webapp/export.py`
+
+(`tests/unit/test_webapp_w1.py` auto-merged.)
+
+Per task: *“If any appear, stop and report rather than resolving.”* Merge **aborted**. Main remains at post–w9-d tip (`260e6c7` + notes commits); `w9-pub1` tip `814a8b0` is intact and unmerged.
+
+**Why this contradicts the naïve merge-base expectation:** VERIFY-2 compared `w9-pub1` WIP against `w9-d` while both forked from pre-merge main. After Phase 3, main already contains w9-d’s `export.py` / `predict.py` edits (vintage + coherence gate). w9-pub1’s commit also edits those files (as_of override, day token, history hooks). Content conflict is expected once w9-d lands first; operator must choose a resolution order or an explicit combined commit — not an automatic clean merge.
