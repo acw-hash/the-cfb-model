@@ -1,5 +1,6 @@
 import { Figure } from "@/components/Figure/Figure";
 import { IntervalBand } from "@/components/IntervalBand/IntervalBand";
+import { KickoffTime } from "@/components/KickoffTime/KickoffTime";
 import { TierChip } from "@/components/TierChip/TierChip";
 import type { GradedGame } from "@/lib/artifacts/types";
 import {
@@ -8,7 +9,7 @@ import {
   formatFinalScore,
   formatTotal,
 } from "@/lib/formatting/numbers";
-import { formatAbsoluteUtc, formatKickoffLocal } from "@/lib/formatting/time";
+import { formatAbsoluteUtc } from "@/lib/formatting/time";
 import { formatGradeStatus } from "@/lib/results/grade-status";
 import { formatRefreshKind } from "@/lib/this-week/refresh-kind";
 
@@ -16,6 +17,8 @@ import styles from "./GradedGameRow.module.css";
 
 interface GradedGameRowProps {
   game: GradedGame;
+  /** Test injection — production resolves visitor TZ inside KickoffTime. */
+  timeZone?: string;
 }
 
 function intervalHitLabel(hit: boolean | null): string {
@@ -29,8 +32,7 @@ function intervalHitLabel(hit: boolean | null): string {
 }
 
 /** Per-game grade row — prediction locked before kickoff; ungraded statuses explicit. */
-export function GradedGameRow({ game }: GradedGameRowProps): React.ReactElement {
-  const kickoff = formatKickoffLocal(game.kickoff_utc);
+export function GradedGameRow({ game, timeZone }: GradedGameRowProps): React.ReactElement {
   const isGraded = game.grade_status === "graded";
   const hitClass =
     game.margin_interval_hit === false
@@ -52,9 +54,12 @@ export function GradedGameRow({ game }: GradedGameRowProps): React.ReactElement 
       }
     >
       <div className={styles.top}>
-        <Figure variant="c2" className={styles.kickoff} title={kickoff.utc}>
-          {kickoff.local}
-        </Figure>
+        <KickoffTime
+          kickoffUtc={game.kickoff_utc}
+          variant="c2"
+          className={styles.kickoff}
+          timeZone={timeZone}
+        />
         <span className={styles.status} data-testid={`grade-status-${game.game_id}`}>
           {formatGradeStatus(game.grade_status)}
         </span>

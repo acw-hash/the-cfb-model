@@ -140,6 +140,15 @@ describe("About page — stranger test and §6 copy", () => {
     }
   });
 
+  it("states withheld uncertainty bands are deliberate", () => {
+    const html = renderToStaticMarkup(<AboutPage year={2026} />);
+    expect(html).toContain("Some games show no uncertainty band");
+    expect(html).toContain("internally inconsistent");
+    expect(html).toContain("withheld rather than shown");
+    expect(html).toContain("That absence is deliberate");
+    expect(html).not.toMatch(/\b15 of 99\b/);
+  });
+
   it("states market lines are not published and why", () => {
     const html = renderToStaticMarkup(<AboutPage year={2026} />);
     expect(html).toContain("never published on this site");
