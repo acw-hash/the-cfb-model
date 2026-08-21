@@ -1,10 +1,9 @@
-import { Figure } from "@/components/Figure/Figure";
 import { IntervalBand } from "@/components/IntervalBand/IntervalBand";
+import { KickoffTime } from "@/components/KickoffTime/KickoffTime";
 import { RevisedMarker } from "@/components/RevisedMarker/RevisedMarker";
 import { StaleBadge } from "@/components/StaleBadge/StaleBadge";
 import { TierChip } from "@/components/TierChip/TierChip";
 import type { GamePrediction, ThisWeekGame } from "@/lib/artifacts/types";
-import { formatKickoffLocal } from "@/lib/formatting/time";
 
 import styles from "./GameRow.module.css";
 
@@ -29,20 +28,23 @@ type GameRowModel = Pick<
 
 interface GameRowProps {
   game: GameRowModel | GamePrediction;
+  /** Test injection — production resolves visitor TZ inside KickoffTime. */
+  timeZone?: string;
 }
 
 /** Scores-app density game row (§4.3). */
-export function GameRow({ game }: GameRowProps): React.ReactElement {
-  const kickoff = formatKickoffLocal(game.kickoff_utc);
-  const kickoffTitle = game.kickoff_utc == null ? undefined : `${kickoff.utc} UTC`;
+export function GameRow({ game, timeZone }: GameRowProps): React.ReactElement {
   const matchup = `${game.away_team} @ ${game.home_team}`;
 
   return (
     <article className={styles.row}>
       <div className={styles.kickoff}>
-        <Figure variant="c2" className={styles.kickoffTime} title={kickoffTitle}>
-          {kickoff.local}
-        </Figure>
+        <KickoffTime
+          kickoffUtc={game.kickoff_utc}
+          variant="c2"
+          className={styles.kickoffTime}
+          timeZone={timeZone}
+        />
       </div>
 
       <div className={styles.center}>

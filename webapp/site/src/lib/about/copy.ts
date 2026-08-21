@@ -26,6 +26,7 @@ export const MODEL_SECTIONS = [
     paragraphs: [
       "A predicted margin is a central estimate — the middle of the forecast, not a promise.",
       "The interval beside it is the uncertainty band: where outcomes still look plausible under the model. Games regularly finish outside that band.",
+      "Some games show no uncertainty band. When the model’s interval is internally inconsistent with its point forecast, the band is withheld rather than shown. That absence is deliberate — not missing data.",
       "A conviction tier (Strong lean, Clear lean, Lean, or Toss-up) describes how decisive that forecast looks. It is a label on the forecast. It is not a pick, not a wager, and not advice to bet.",
       "When a value cannot be computed honestly — for example when predictive uncertainty is refused — the site shows that absence (“—” or “not computed”). Missing is shown as missing.",
     ],

@@ -1,5 +1,4 @@
-import { Figure } from "@/components/Figure/Figure";
-import { formatKickoffLocal } from "@/lib/formatting/time";
+import { KickoffTime } from "@/components/KickoffTime/KickoffTime";
 
 import styles from "./MatchupHeader.module.css";
 
@@ -8,6 +7,8 @@ interface MatchupHeaderProps {
   homeTeam: string;
   kickoffUtc: string | null;
   neutralSite: boolean;
+  /** Test injection — production resolves visitor TZ inside KickoffTime. */
+  timeZone?: string;
 }
 
 /** Matchup + kickoff from artifact fields only (§5.2). */
@@ -16,9 +17,8 @@ export function MatchupHeader({
   homeTeam,
   kickoffUtc,
   neutralSite,
+  timeZone,
 }: MatchupHeaderProps): React.ReactElement {
-  const kickoff = formatKickoffLocal(kickoffUtc);
-  const kickoffTitle = kickoffUtc == null ? undefined : `${kickoff.utc} UTC`;
   const vs = `${awayTeam} @ ${homeTeam}`;
 
   return (
@@ -31,9 +31,12 @@ export function MatchupHeader({
           </span>
         ) : null}
       </h1>
-      <Figure variant="b2" className={styles.kickoff} title={kickoffTitle}>
-        {kickoff.local}
-      </Figure>
+      <KickoffTime
+        kickoffUtc={kickoffUtc}
+        variant="b2"
+        className={styles.kickoff}
+        timeZone={timeZone}
+      />
     </header>
   );
 }

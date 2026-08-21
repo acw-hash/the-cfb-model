@@ -16,8 +16,17 @@ export function formatAbsoluteUtc(iso: string): string {
 
 const ABSENT_KICKOFF = "—";
 
-/** Format kickoff in visitor-local time with UTC available for tooltip. */
-export function formatKickoffLocal(kickoffUtc: string | null | undefined): {
+/**
+ * Format kickoff in visitor-local time with UTC available for tooltip.
+ *
+ * `timeZone` should be the viewer IANA zone (e.g. from
+ * `Intl.DateTimeFormat().resolvedOptions().timeZone`). Omitting it falls back
+ * to the runtime default — correct in the browser, wrong on a UTC SSR host.
+ */
+export function formatKickoffLocal(
+  kickoffUtc: string | null | undefined,
+  timeZone?: string,
+): {
   local: string;
   utc: string;
 } {
@@ -31,6 +40,7 @@ export function formatKickoffLocal(kickoffUtc: string | null | undefined): {
     day: "numeric",
     hour: "numeric",
     minute: "2-digit",
+    ...(timeZone != null ? { timeZone } : {}),
   }).format(date);
   const utc = new Intl.DateTimeFormat("en-US", {
     hour: "numeric",

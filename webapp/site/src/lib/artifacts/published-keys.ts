@@ -69,7 +69,7 @@ export const GAME_FIELD_CONSUMERS: Record<PublishedGamePredictionKey, string> = 
   away_team: "GameRow; MatchupHeader",
   home_team_id: "GamePage lookupTeam for rating series",
   away_team_id: "GamePage lookupTeam for rating series",
-  kickoff_utc: "GameRow; sort.ts; MatchupHeader",
+  kickoff_utc: "KickoffTime via GameRow; sort.ts; MatchupHeader; GradedGameRow",
   neutral_site: "GameRow; MatchupHeader",
   conference_game: "DESIGN §1.2 schedule identity (not rendered)",
   mu_margin: "IntervalBand; ForecastBlock Margin",
