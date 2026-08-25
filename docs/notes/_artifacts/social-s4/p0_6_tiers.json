@@ -1,0 +1,41 @@
+{
+  "status": "MEASURED",
+  "authority": "DESIGN \u00a72.1 / \u00a72.2; p_favored from p_ml_home (ADR 0015 kept published)",
+  "bands": [
+    {
+      "tier": "toss_up",
+      "n": 446,
+      "mean_claimed_p_favored": 0.5251042078299951,
+      "realized_favored_win_rate": 0.5582959641255605,
+      "gap_realized_minus_claimed": 0.03319175629556537,
+      "enter_threshold": "< 0.575"
+    },
+    {
+      "tier": "lean",
+      "n": 969,
+      "mean_claimed_p_favored": 0.6409612418338058,
+      "realized_favored_win_rate": 0.5892672858617131,
+      "gap_realized_minus_claimed": -0.0516939559720927,
+      "enter_threshold": 0.575
+    },
+    {
+      "tier": "clear_lean",
+      "n": 1302,
+      "mean_claimed_p_favored": 0.7727660110585975,
+      "realized_favored_win_rate": 0.7235023041474654,
+      "gap_realized_minus_claimed": -0.04926370691113213,
+      "enter_threshold": 0.7
+    },
+    {
+      "tier": "strong_lean",
+      "n": 895,
+      "mean_claimed_p_favored": 0.9160371630205907,
+      "realized_favored_win_rate": 0.9128491620111732,
+      "gap_realized_minus_claimed": -0.003188001009417518,
+      "enter_threshold": 0.85
+    }
+  ],
+  "material_tiers_overall_gap": -0.03698232806022761,
+  "live_site_conviction_tiers_miscalibrated": "MEASURED \u2014 no (|gap|<0.05)",
+  "miscalibrated_flag": false
+}

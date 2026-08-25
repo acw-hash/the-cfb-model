@@ -1,0 +1,103 @@
+{
+  "status": "MEASURED (staged reconstruct)",
+  "feasibility": {
+    "n_314": 314,
+    "n_same_book_two_way_close_in_staged": 314,
+    "n_missing_book_on_cache": 0,
+    "n_missing_or_incomplete_close": 0,
+    "n_would_fallback_or_missing": 0,
+    "by_season": {
+      "2021": {
+        "n": 78,
+        "same_book_two_way_close": 78,
+        "no_close": 0,
+        "no_book": 0
+      },
+      "2022": {
+        "n": 79,
+        "same_book_two_way_close": 79,
+        "no_close": 0,
+        "no_book": 0
+      },
+      "2023": {
+        "n": 77,
+        "same_book_two_way_close": 77,
+        "no_close": 0,
+        "no_book": 0
+      },
+      "2024": {
+        "n": 80,
+        "same_book_two_way_close": 80,
+        "no_close": 0,
+        "no_book": 0
+      }
+    },
+    "missing_fields_blocking_settle": [
+      "candidates_cache.bet_side_american",
+      "candidates_cache.bet_other_american",
+      "candidates_cache.bet_line_source_row_id",
+      "candidates_cache.consensus_side_american",
+      "candidates_cache.consensus_other_american",
+      "candidates_cache.close_side_american",
+      "candidates_cache.close_other_american",
+      "candidates_cache.close_source_row_id"
+    ],
+    "feasible_to_settle_via_clv_settle": false
+  },
+  "reason": "S3 candidates_cache lacks fields required by betting.clv.settle / RecommendationRecord: bet_other_american, bet_line_source_row_id, consensus_{side,other}_american, and structured ClosingQuote ids. Staged odds_snapshots do contain same-book close-ish rows for 314/314 of the 314 at the bet book, but reconstructing an honest RecommendationRecord from cache alone would fabricate missing bet-time two-way + source-row guards. Per task: do not substitute +0.76 line CLV for \u00a72.7 probability CLV.",
+  "mean_line_shopping_capture": {
+    "status": "NOT MEASURED",
+    "note": "requires bet-time consensus two-way; not on S3 cache",
+    "adr_0006_sign": "line_shopping_capture = implied(best@bet) \u2212 implied(consensus@bet); negative means we bought cheaper than consensus (ADR 0006)"
+  },
+  "probability_valued_methods": [
+    "alt_line_price",
+    "model_dist",
+    "same_line"
+  ],
+  "do_not_substitute_line_clv": true,
+  "s3_mean_line_clv_reference_only": 0.76,
+  "settle_followup": {
+    "status": "MEASURED",
+    "n_attempted": 314,
+    "n_settled": 314,
+    "n_failures": 0,
+    "failure_reasons": {},
+    "method_counts": {
+      "same_line": 158,
+      "line_units": 156
+    },
+    "headline_same_book_probability_valued": {
+      "label": "same_book",
+      "n": 158,
+      "mean": 0.004440985412038113,
+      "pct_positive": 0.44936708860759494,
+      "ci_95": [
+        0.0016959544413984377,
+        0.007186016382677789
+      ]
+    },
+    "fallback_consensus": {
+      "label": "fallback_consensus",
+      "n": 0
+    },
+    "line_units": {
+      "label": "line_units",
+      "n": 156,
+      "mean": -0.8237179487179487,
+      "pct_positive": 0.46794871794871795,
+      "ci_95": [
+        -1.6405777305553149,
+        -0.006858166880582495
+      ]
+    },
+    "mean_line_shopping_capture": {
+      "value": 0.00010787019194689681,
+      "n": 314,
+      "adr_0006_sign": "implied(best@bet) \u2212 implied(consensus@bet); negative \u21d2 bought cheaper than consensus (not a skill credit)"
+    },
+    "summarize_settlements_headline_n": 158,
+    "summarize_settlements_mean_clv": 0.004440985412038113,
+    "note": "Bet-time quote taken from decision_point=tuesday_0600_et at the cached book; close from slot_close at the same book. S3 as_of is week_decision_as_of (may differ slightly from the named tuesday slot); treat as staged-only approximation."
+  }
+}

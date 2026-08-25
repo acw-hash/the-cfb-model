@@ -1,0 +1,43 @@
+{
+  "status": "MEASURED",
+  "n_attempted": 314,
+  "n_settled": 314,
+  "n_failures": 0,
+  "failure_reasons": {},
+  "method_counts": {
+    "same_line": 158,
+    "line_units": 156
+  },
+  "headline_same_book_probability_valued": {
+    "label": "same_book",
+    "n": 158,
+    "mean": 0.004440985412038113,
+    "pct_positive": 0.44936708860759494,
+    "ci_95": [
+      0.0016959544413984377,
+      0.007186016382677789
+    ]
+  },
+  "fallback_consensus": {
+    "label": "fallback_consensus",
+    "n": 0
+  },
+  "line_units": {
+    "label": "line_units",
+    "n": 156,
+    "mean": -0.8237179487179487,
+    "pct_positive": 0.46794871794871795,
+    "ci_95": [
+      -1.6405777305553149,
+      -0.006858166880582495
+    ]
+  },
+  "mean_line_shopping_capture": {
+    "value": 0.00010787019194689681,
+    "n": 314,
+    "adr_0006_sign": "implied(best@bet) \u2212 implied(consensus@bet); negative \u21d2 bought cheaper than consensus (not a skill credit)"
+  },
+  "summarize_settlements_headline_n": 158,
+  "summarize_settlements_mean_clv": 0.004440985412038113,
+  "note": "Bet-time quote taken from decision_point=tuesday_0600_et at the cached book; close from slot_close at the same book. S3 as_of is week_decision_as_of (may differ slightly from the named tuesday slot); treat as staged-only approximation."
+}

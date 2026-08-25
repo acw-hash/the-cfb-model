@@ -1,0 +1,392 @@
+{
+  "status": "MEASURED",
+  "reliability_2x2": {
+    "p_ml_home_all": {
+      "n": 3612,
+      "mean_claimed": 0.6300522297704333,
+      "realized": 0.625968992248062,
+      "gap_realized_minus_claimed": -0.004083237522371275,
+      "brier": 0.1871228524152138,
+      "log_loss": 0.5499261435463688,
+      "bins": [
+        {
+          "bin": 0,
+          "n": 361,
+          "mean_claimed": 0.16606118999817387,
+          "realized": 0.21329639889196675,
+          "gap": 0.047235208893792874
+        },
+        {
+          "bin": 1,
+          "n": 361,
+          "mean_claimed": 0.31344685043253784,
+          "realized": 0.3518005540166205,
+          "gap": 0.03835370358408269
+        },
+        {
+          "bin": 2,
+          "n": 361,
+          "mean_claimed": 0.45129280323966775,
+          "realized": 0.49584487534626037,
+          "gap": 0.04455207210659262
+        },
+        {
+          "bin": 3,
+          "n": 361,
+          "mean_claimed": 0.5701084212109365,
+          "realized": 0.5789473684210527,
+          "gap": 0.008838947210116133
+        },
+        {
+          "bin": 4,
+          "n": 362,
+          "mean_claimed": 0.6480977206073939,
+          "realized": 0.6132596685082873,
+          "gap": -0.03483805209910662
+        },
+        {
+          "bin": 5,
+          "n": 361,
+          "mean_claimed": 0.7102119615400857,
+          "realized": 0.6592797783933518,
+          "gap": -0.05093218314673387
+        },
+        {
+          "bin": 6,
+          "n": 361,
+          "mean_claimed": 0.765694177280719,
+          "realized": 0.6952908587257618,
+          "gap": -0.07040331855495718
+        },
+        {
+          "bin": 7,
+          "n": 361,
+          "mean_claimed": 0.8284618728552342,
+          "realized": 0.8088642659279779,
+          "gap": -0.019597606927256317
+        },
+        {
+          "bin": 8,
+          "n": 361,
+          "mean_claimed": 0.8872025538587087,
+          "realized": 0.8836565096952909,
+          "gap": -0.0035460441634178608
+        },
+        {
+          "bin": 9,
+          "n": 362,
+          "mean_claimed": 0.9589835919633417,
+          "realized": 0.9585635359116023,
+          "gap": -0.00042005605173944804
+        }
+      ]
+    },
+    "p_ats_home_all": {
+      "n": 3491,
+      "mean_claimed": 0.49240088125663567,
+      "realized": 0.4932684044686336,
+      "gap_realized_minus_claimed": 0.0008675232119979559,
+      "brier": 0.287646035117011,
+      "log_loss": 0.8001744302260491,
+      "bins": [
+        {
+          "bin": 0,
+          "n": 349,
+          "mean_claimed": 0.14270108893914651,
+          "realized": 0.4813753581661891,
+          "gap": 0.3386742692270426
+        },
+        {
+          "bin": 1,
+          "n": 349,
+          "mean_claimed": 0.2697152521620254,
+          "realized": 0.4813753581661891,
+          "gap": 0.21166010600416368
+        },
+        {
+          "bin": 2,
+          "n": 349,
+          "mean_claimed": 0.34581683521428935,
+          "realized": 0.5272206303724928,
+          "gap": 0.18140379515820343
+        },
+        {
+          "bin": 3,
+          "n": 349,
+          "mean_claimed": 0.4093518069843229,
+          "realized": 0.4871060171919771,
+          "gap": 0.07775421020765422
+        },
+        {
+          "bin": 4,
+          "n": 349,
+          "mean_claimed": 0.47370561040731374,
+          "realized": 0.4871060171919771,
+          "gap": 0.013400406784663366
+        },
+        {
+          "bin": 5,
+          "n": 349,
+          "mean_claimed": 0.5336328784570875,
+          "realized": 0.4699140401146132,
+          "gap": -0.06371883834247433
+        },
+        {
+          "bin": 6,
+          "n": 349,
+          "mean_claimed": 0.5866532984506269,
+          "realized": 0.4813753581661891,
+          "gap": -0.10527794028443777
+        },
+        {
+          "bin": 7,
+          "n": 349,
+          "mean_claimed": 0.6380933569335849,
+          "realized": 0.5128939828080229,
+          "gap": -0.12519937412556204
+        },
+        {
+          "bin": 8,
+          "n": 349,
+          "mean_claimed": 0.706278857366963,
+          "realized": 0.4813753581661891,
+          "gap": -0.22490349920077396
+        },
+        {
+          "bin": 9,
+          "n": 350,
+          "mean_claimed": 0.8171293735184416,
+          "realized": 0.5228571428571429,
+          "gap": -0.2942722306612987
+        }
+      ]
+    },
+    "p_ml_home_candidates": {
+      "n": 314,
+      "mean_claimed": 0.6020387693918297,
+      "realized": 0.5987261146496815,
+      "gap_realized_minus_claimed": -0.0033126547421481467,
+      "brier": 0.20589609074626403,
+      "log_loss": 0.599151960336926,
+      "bins": [
+        {
+          "bin": 0,
+          "n": 31,
+          "mean_claimed": 0.13543395089138635,
+          "realized": 0.16129032258064516,
+          "gap": 0.025856371689258806
+        },
+        {
+          "bin": 1,
+          "n": 31,
+          "mean_claimed": 0.29832508829495863,
+          "realized": 0.3225806451612903,
+          "gap": 0.024255556866331685
+        },
+        {
+          "bin": 2,
+          "n": 32,
+          "mean_claimed": 0.4279853688421709,
+          "realized": 0.71875,
+          "gap": 0.2907646311578291
+        },
+        {
+          "bin": 3,
+          "n": 31,
+          "mean_claimed": 0.5227113268931863,
+          "realized": 0.5806451612903226,
+          "gap": 0.057933834397136286
+        },
+        {
+          "bin": 4,
+          "n": 32,
+          "mean_claimed": 0.6104844912086163,
+          "realized": 0.34375,
+          "gap": -0.26673449120861625
+        },
+        {
+          "bin": 5,
+          "n": 31,
+          "mean_claimed": 0.6749681803486554,
+          "realized": 0.8064516129032258,
+          "gap": 0.1314834325545704
+        },
+        {
+          "bin": 6,
+          "n": 31,
+          "mean_claimed": 0.7457319174799957,
+          "realized": 0.5806451612903226,
+          "gap": -0.16508675618967306
+        },
+        {
+          "bin": 7,
+          "n": 32,
+          "mean_claimed": 0.8009061397846589,
+          "realized": 0.75,
+          "gap": -0.050906139784658855
+        },
+        {
+          "bin": 8,
+          "n": 31,
+          "mean_claimed": 0.8565900972754197,
+          "realized": 0.8387096774193549,
+          "gap": -0.01788041985606481
+        },
+        {
+          "bin": 9,
+          "n": 32,
+          "mean_claimed": 0.9354238811752676,
+          "realized": 0.875,
+          "gap": -0.060423881175267646
+        }
+      ]
+    },
+    "p_ats_claim_candidates": {
+      "n": 314,
+      "mean_claimed": 0.6409389884344892,
+      "realized": 0.49363057324840764,
+      "gap_realized_minus_claimed": -0.1473084151860815,
+      "brier": 0.2724846445164383,
+      "log_loss": 0.740232099939143,
+      "bins": [
+        {
+          "bin": 0,
+          "n": 31,
+          "mean_claimed": 0.5960415999626573,
+          "realized": 0.45161290322580644,
+          "gap": -0.14442869673685083
+        },
+        {
+          "bin": 1,
+          "n": 31,
+          "mean_claimed": 0.6183489193744645,
+          "realized": 0.5806451612903226,
+          "gap": -0.037703758084141836
+        },
+        {
+          "bin": 2,
+          "n": 32,
+          "mean_claimed": 0.6262885616848921,
+          "realized": 0.4375,
+          "gap": -0.1887885616848921
+        },
+        {
+          "bin": 3,
+          "n": 31,
+          "mean_claimed": 0.6338788785536535,
+          "realized": 0.41935483870967744,
+          "gap": -0.2145240398439761
+        },
+        {
+          "bin": 4,
+          "n": 32,
+          "mean_claimed": 0.6395959866664606,
+          "realized": 0.6875,
+          "gap": 0.04790401333353944
+        },
+        {
+          "bin": 5,
+          "n": 31,
+          "mean_claimed": 0.6446376334632968,
+          "realized": 0.4838709677419355,
+          "gap": -0.16076666572136133
+        },
+        {
+          "bin": 6,
+          "n": 31,
+          "mean_claimed": 0.6497567997964284,
+          "realized": 0.4838709677419355,
+          "gap": -0.16588583205449292
+        },
+        {
+          "bin": 7,
+          "n": 32,
+          "mean_claimed": 0.655148540765232,
+          "realized": 0.375,
+          "gap": -0.280148540765232
+        },
+        {
+          "bin": 8,
+          "n": 31,
+          "mean_claimed": 0.6635023566677474,
+          "realized": 0.5161290322580645,
+          "gap": -0.14737332440968287
+        },
+        {
+          "bin": 9,
+          "n": 32,
+          "mean_claimed": 0.6809572404479123,
+          "realized": 0.5,
+          "gap": -0.18095724044791228
+        }
+      ]
+    }
+  },
+  "reading": {
+    "ml_all_gap": -0.004083237522371275,
+    "ats_all_gap": 0.0008675232119979559,
+    "ats_cand_gap": -0.1473084151860815,
+    "interpretation_rule": "ML calibrated, ATS not \u2192 H3; both miscalibrated \u2192 H2; all-games ATS fine but candidates not \u2192 H4",
+    "reading": "H4_lean \u2014 all-games ATS ok, candidates not (selection)"
+  },
+  "pit_z": {
+    "n_all": 3612,
+    "z_mean": 0.023248894646436376,
+    "z_std": 0.9937172692561126,
+    "pit_mean": 0.5076823256199365,
+    "frac_pit_in_01": 1.0,
+    "interval_coverage_all": {
+      "50": {
+        "nominal": 0.5,
+        "k_sigma": 0.6745,
+        "empirical_coverage": 0.5121816168327796,
+        "delta_vs_nominal": 0.01218161683277963
+      },
+      "80": {
+        "nominal": 0.8,
+        "k_sigma": 1.2816,
+        "empirical_coverage": 0.8098006644518272,
+        "delta_vs_nominal": 0.009800664451827146
+      },
+      "95": {
+        "nominal": 0.95,
+        "k_sigma": 1.95996,
+        "empirical_coverage": 0.9537652270210409,
+        "delta_vs_nominal": 0.0037652270210409844
+      }
+    },
+    "interval_coverage_candidates": {
+      "50": {
+        "nominal": 0.5,
+        "empirical_coverage": 0.4681528662420382,
+        "delta_vs_nominal": -0.031847133757961776,
+        "n": 314
+      },
+      "80": {
+        "nominal": 0.8,
+        "empirical_coverage": 0.8121019108280255,
+        "delta_vs_nominal": 0.012101910828025475,
+        "n": 314
+      },
+      "95": {
+        "nominal": 0.95,
+        "empirical_coverage": 0.9617834394904459,
+        "delta_vs_nominal": 0.011783439490445913,
+        "n": 314
+      }
+    }
+  },
+  "h2_vs_w9_cqr": {
+    "status": "MEASURED",
+    "all_games_80pct_interval_coverage": 0.8098006644518272,
+    "nominal_80": 0.8,
+    "w9_cqr_reference": {
+      "note": "W9-CQR measured 0.874 coverage against 0.815 for \u03bc\u00b11.28\u03c3 (over-coverage \u21d2 \u03c3 too large \u21d2 probs compressed toward 0.5)"
+    },
+    "observed_direction": "near-nominal",
+    "h2_survives": false,
+    "top_bin_claim_0_678_is_not_extreme": true,
+    "comparability_to_w9_cqr": "Same family of check (Gaussian \u03bc\u00b1k\u03c3 margin intervals on walk-forward). If both over-cover, H2 (\u03c3 too small) is contradicted."
+  },
+  "n_candidates_in_scored": 314
+}

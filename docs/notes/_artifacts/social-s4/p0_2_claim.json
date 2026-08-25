@@ -1,0 +1,38 @@
+{
+  "status": "MEASURED",
+  "claim_source": {
+    "column": "p_win",
+    "provenance": "BetCandidate.p_win from build_candidates_from_odds \u2192 two_way_side_prob(spread_cover_probs(draws, home_line, side=bet_on)) at the shopped book line \u2014 NOT stored walk-forward p_ats_home",
+    "cache_write_site": "scripts/calibrate_social_threshold.py lines 164, 714-path via provider",
+    "provider_site": "src/ncaa_quant/betting/provider.py:692-714",
+    "is_stored_p_ats_home": false
+  },
+  "shopped_vs_close_delta": {
+    "status": "MEASURED_DIAGNOSTIC",
+    "note": "Claim is NOT stored p_ats_home; \u0394(shopped\u2212cfbd_close) reported as diagnostic of the ADR 0015 / ticket-pricing tension only.",
+    "n_with_both": 314,
+    "share_delta_ne_0": 0.9299363057324841,
+    "mean_abs_delta": 8.990445859872612,
+    "max_abs_delta": 35.0,
+    "share_straddle_3_or_7": 0.4299363057324841,
+    "n_straddle_3_or_7": 135
+  },
+  "pit": {
+    "status": "MEASURED",
+    "embeds_post_decision_close": false,
+    "reason": "S3 claimed p_win is MC at Tuesday shopped snapshot line via provider; it does not use ProductionStack._lookup_closes / CFBD close. Stored p_ats_home (close-conditional + ats_close calibrator) is a different column and is not the S3 claim.",
+    "assert_no_future_event_time_covers_this_path": "Provider snapshot ladder requires event_time <= as_of (Tuesday week_decision_as_of). CFBD close join is on the walk-forward p_ats_home path, not the S3 claim path. PIT STOP does not fire.",
+    "stop_post_tuesday_in_claim": false
+  },
+  "recompute": {
+    "n": 314,
+    "mean_claimed_s3_p_win": 0.6409389884344892,
+    "mean_claimed_recomputed_shopped": 0.6409389884344892,
+    "realized_ats": 0.49363057324840764,
+    "gap_s3_realized_minus_claim": -0.1473084151860815,
+    "gap_recomputed_realized_minus_claim": -0.1473084151860815,
+    "s3_reference_gap": -0.147,
+    "mean_abs_p_win_minus_recomputed": 0.0
+  },
+  "per_candidate_path": "C:\\Users\\alecw\\Projects\\the-cfb-model\\docs\\notes\\_artifacts\\social-s4\\p0_2_recomputed_claims.parquet"
+}
