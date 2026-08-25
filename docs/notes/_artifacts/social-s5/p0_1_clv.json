@@ -1,0 +1,213 @@
+{
+  "status": "MEASURED",
+  "row_match": {
+    "n": 314,
+    "keys_equal": true,
+    "max_abs_p_win_delta": 0.0,
+    "covered_mismatch": 0
+  },
+  "s3_expression": {
+    "file": "scripts/calibrate_social_threshold.py",
+    "lines": "235-241",
+    "expression_line": 241,
+    "verbatim": "close_side = close_h if bet_on == \"home\" else -close_h\nline_clv = float(market_line - close_side)",
+    "surrounding": "    line_clv: float | None = None\n    close = row.get(\"spread_close\")\n    if close is not None and np.isfinite(float(close)) and bet_on in (\"home\", \"away\"):\n        close_h = float(close)\n        # Bettor-side line: higher is always better (-2.5 > -3.5, +3.5 > +2.5).\n        close_side = close_h if bet_on == \"home\" else -close_h\n        line_clv = float(market_line - close_side)",
+    "sign_convention": "Positive = bet-side line is higher (better) than the closing bet-side line derived from CFBD/backtest spread_close (home-centric). Comment on GradedBet: 'bet_side_line - close_side_line; higher = better number'.",
+    "whose_side": "the ticket's bet side (home or away), not home-always"
+  },
+  "line_units_clv": {
+    "file": "src/ncaa_quant/betting/clv.py",
+    "lines": "335-355",
+    "verbatim_spread_branch": "return float(bet_line) - float(close_line)",
+    "docstring_excerpt": "Points of closing movement toward the bet (positive = we hold value). A spread ticket is better than the close when its number is higher on the bet side (-6.5 beats -7; +3.5 beats +3).",
+    "sign_convention": "Positive = bet_line \u2212 close_line on the bet side; we hold a better number than the close.",
+    "whose_side": "the recommendation's bet side (bet_line and close.line are bet-side)"
+  },
+  "two_by_two": {
+    "rows": "expression",
+    "cols": "population",
+    "cells": {
+      "s3_expr": {
+        "all_314_cfbd": 0.7595541401273885,
+        "moved_156_odds": -0.8237179487179487
+      },
+      "line_units_clv": {
+        "all_314_cfbd": 0.7595541401273885,
+        "moved_156_odds": -0.8237179487179487
+      }
+    },
+    "note": "On a fixed (bet_line, close_line) pair the two expressions are algebraically identical. Sign disagreement between S3 +0.76 and S4 \u22120.824 is therefore a population/close-source artifact, not a sign-flip bug in either function."
+  },
+  "populations": {
+    "all_314_cfbd_close": {
+      "n": 314,
+      "mean_s3_expr": 0.7595541401273885,
+      "mean_line_units_clv": 0.7595541401273885,
+      "exprs_identical": true,
+      "close_source": "CFBD/backtest spread_close"
+    },
+    "odds_moved_156": {
+      "n": 156,
+      "mean_s3_expr": -0.8237179487179487,
+      "mean_line_units_clv": -0.8237179487179487,
+      "exprs_identical": true,
+      "close_source": "Odds API staged slot_close at bet book (bet-side)",
+      "s4_reference_mean": -0.8237179487179487
+    },
+    "odds_same_line_158": {
+      "n": 158,
+      "mean_s3_expr": 0.0,
+      "mean_line_units_clv": 0.0
+    },
+    "all_314_odds_close": {
+      "n": 314,
+      "mean_s3_expr": -0.40923566878980894,
+      "mean_line_units_clv": -0.40923566878980894
+    }
+  },
+  "synthetic_controls": {
+    "cases": [
+      {
+        "label": "home_toward",
+        "bet_on": "home",
+        "market_line": -6.5,
+        "close_home": -7.5,
+        "expect": 1.0,
+        "close_side": -7.5,
+        "s3_expr": 1.0,
+        "line_units_clv": 1.0,
+        "pass": true
+      },
+      {
+        "label": "home_against",
+        "bet_on": "home",
+        "market_line": -7.5,
+        "close_home": -6.5,
+        "expect": -1.0,
+        "close_side": -6.5,
+        "s3_expr": -1.0,
+        "line_units_clv": -1.0,
+        "pass": true
+      },
+      {
+        "label": "away_toward",
+        "bet_on": "away",
+        "market_line": 6.5,
+        "close_home": -5.5,
+        "expect": 1.0,
+        "close_side": 5.5,
+        "s3_expr": 1.0,
+        "line_units_clv": 1.0,
+        "pass": true
+      },
+      {
+        "label": "away_against",
+        "bet_on": "away",
+        "market_line": 5.5,
+        "close_home": -6.5,
+        "expect": -1.0,
+        "close_side": 6.5,
+        "s3_expr": -1.0,
+        "line_units_clv": -1.0,
+        "pass": true
+      }
+    ],
+    "all_pass": true
+  },
+  "hand_checks": [
+    {
+      "game_id": "401282626",
+      "season": 2021,
+      "week": 3,
+      "bet_on": "home",
+      "market_line": 7.0,
+      "spread_close_home": 6.5,
+      "close_side": 6.5,
+      "s3_expr": 0.5,
+      "line_units_clv": 0.5,
+      "hand": 0.5,
+      "agree": true,
+      "class": "toward"
+    },
+    {
+      "game_id": "401309912",
+      "season": 2021,
+      "week": 5,
+      "bet_on": "home",
+      "market_line": 7.5,
+      "spread_close_home": 8.0,
+      "close_side": 8.0,
+      "s3_expr": -0.5,
+      "line_units_clv": -0.5,
+      "hand": -0.5,
+      "agree": true,
+      "class": "against"
+    },
+    {
+      "game_id": "401309612",
+      "season": 2021,
+      "week": 5,
+      "bet_on": "home",
+      "market_line": 10.0,
+      "spread_close_home": 10.0,
+      "close_side": 10.0,
+      "s3_expr": 0.0,
+      "line_units_clv": 0.0,
+      "hand": 0.0,
+      "agree": true,
+      "class": "unmoved"
+    },
+    {
+      "game_id": "401524057",
+      "season": 2023,
+      "week": 12,
+      "bet_on": "away",
+      "market_line": 4.5,
+      "spread_close_home": -4.25,
+      "close_side": 4.25,
+      "s3_expr": 0.25,
+      "line_units_clv": 0.25,
+      "hand": 0.25,
+      "agree": true,
+      "class": "toward"
+    },
+    {
+      "game_id": "401426370",
+      "season": 2022,
+      "week": 11,
+      "bet_on": "away",
+      "market_line": 3.0,
+      "spread_close_home": -3.5,
+      "close_side": 3.5,
+      "s3_expr": -0.5,
+      "line_units_clv": -0.5,
+      "hand": -0.5,
+      "agree": true,
+      "class": "against"
+    },
+    {
+      "game_id": "401282187",
+      "season": 2021,
+      "week": 2,
+      "bet_on": "away",
+      "market_line": 22.5,
+      "spread_close_home": -22.5,
+      "close_side": 22.5,
+      "s3_expr": 0.0,
+      "line_units_clv": 0.0,
+      "hand": 0.0,
+      "agree": true,
+      "class": "unmoved"
+    }
+  ],
+  "reading": {
+    "algebra": "MEASURED \u2014 S3 line_clv and line_units_clv(spread) are the same formula on bet-side lines; synthetic controls both return +1/\u22121/+1/\u22121.",
+    "s3_plus_0_76": "MEASURED \u2014 mean S3 line_clv on all 314 with CFBD spread_close = 0.759554 (matches S3 report +0.76).",
+    "s4_minus_0_824": "MEASURED \u2014 mean line_units on Odds-book moved-line subset n=156 = -0.8237179487179487; matches S4 \u22120.824 within rounding.",
+    "framing": "The +0.76 and \u22120.824 figures are not contradictory signs of one quantity: they use different closes (CFBD vs Odds book) and different populations (all 314 vs moved-only 156). Against the Odds book that priced the ticket, moved lines average ~0.8 points against the bet \u2014 a 49.4% realization is the ordinary consequence of buying a stale number; the S3 'positive line CLV + sub-coin-flip' anomaly framing does not survive on the book that matters.",
+    "which_correct_for_tickets": "For ticket CLV, S4's Odds same-book line_units on moved rows (\u22120.82) and probability CLV on same_line rows (+0.0044) are the relevant \u00a72.7 figures. S3's +0.76 vs CFBD close is a different instrument and should not be read as evidence we held a better number at the book."
+  },
+  "odds_n_ok": 314,
+  "odds_n_moved": 156,
+  "odds_n_same": 158
+}

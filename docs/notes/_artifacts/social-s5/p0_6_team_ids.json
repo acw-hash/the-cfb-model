@@ -1,0 +1,17 @@
+{
+  "status": "MEASURED",
+  "row_match": {
+    "n": 314,
+    "keys_equal": true,
+    "max_abs_p_win_delta": 0.0,
+    "covered_mismatch": 0
+  },
+  "n_matched_candidates": 314,
+  "n_empty_team_ids": 0,
+  "len_team_ids_distribution": {
+    "2": 314
+  },
+  "provider_populates_team_ids": true,
+  "evaluate_filters_loops_team_ids": true,
+  "paragraph": "Of the 314 accepted candidates matching the 314 tickets, 0 have len(team_ids)==0 (distribution={2: 314}). provider.py DOES populate team_ids from (home_id, away_id) when present; evaluate_filters DOES loop for tid in candidate.team_ids, so an empty tuple makes MAX_TEAM_EXPOSURE structurally unreachable. Ids are populated on this set; zero MAX_TEAM_EXPOSURE rejects are therefore not from an empty-tuple structural dead filter alone - weekly exposure likely binds first, or same-team collisions are rare at the observed stake sizes."
+}

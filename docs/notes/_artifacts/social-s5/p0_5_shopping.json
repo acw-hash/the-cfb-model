@@ -1,0 +1,56 @@
+{
+  "status": "MEASURED",
+  "row_match": {
+    "n": 314,
+    "keys_equal": true,
+    "max_abs_p_win_delta": 0.0,
+    "covered_mismatch": 0
+  },
+  "should_hold": "Under real shopping (ADR 0006): line_shopping_capture systematically negative (bought cheaper than consensus); best captured price often differs from consensus; n_books_available \u2265 2 on most tickets.",
+  "n_books_by_season": {
+    "2021": {
+      "n": 78,
+      "min": 2,
+      "median": 4.0,
+      "max": 4,
+      "share_lt_2": 0.0
+    },
+    "2022": {
+      "n": 79,
+      "min": 2,
+      "median": 4.0,
+      "max": 4,
+      "share_lt_2": 0.0
+    },
+    "2023": {
+      "n": 77,
+      "min": 1,
+      "median": 4.0,
+      "max": 4,
+      "share_lt_2": 0.012987012987012988
+    },
+    "2024": {
+      "n": 80,
+      "min": 1,
+      "median": 4.0,
+      "max": 4,
+      "share_lt_2": 0.0125
+    }
+  },
+  "n_books_overall": {
+    "min": 1,
+    "median": 4.0,
+    "max": 4,
+    "share_lt_2": 0.006369426751592357
+  },
+  "share_best_price_differs_from_consensus_price": 0.5668789808917197,
+  "n_with_consensus": 314,
+  "mean_line_shopping_capture": 0.00010787019194689681,
+  "s4_reference_capture": 0.00010787019194689681,
+  "reading": "If best price \u2248 consensus price (share differing near 0) and capture \u2248 0, shopping is inert \u2014 same class as S4 MAX_TEAM_EXPOSURE silence.",
+  "observed": {
+    "share_price_differs": 0.5668789808917197,
+    "mean_capture": 0.00010787019194689681,
+    "share_n_books_lt_2": 0.006369426751592357
+  }
+}
