@@ -160,7 +160,14 @@ def main(argv: list[str] | None = None) -> int:
 
     thread_path = out_dir / f"thread_w{week}.md"
     thread_path.write_text(
-        render_thread(week, bets, record, args.site_url, fixture=fixture),
+        render_thread(
+            week,
+            bets,
+            record,
+            args.site_url,
+            fixture=fixture,
+            rejected=rejected,
+        ),
         encoding="utf-8",
     )
 

@@ -6,6 +6,7 @@ No network calls. Human reviews and posts. Character counts use Python
 
 from __future__ import annotations
 
+from collections import Counter
 from collections.abc import Mapping, Sequence
 from datetime import datetime
 from typing import Any
@@ -36,6 +37,87 @@ REASON_PLAIN: dict[str, str] = {
     "no_snapshot": "we didn't have a usable odds snapshot at the decision point",
     "line_quarantined": "the book line failed ingest sanity and was quarantined",
 }
+
+# No-Bet thread bodies keyed by dominant FilterReason.
+# Never claim a market condition the rejection data does not support.
+# Keep mid copy short: full post must stay ≤ POST_CHAR_LIMIT.
+_NO_BET_MID: dict[str, str] = {
+    "qb_status_unknown": (
+        "QB status is unclear on the games that would clear the bar — "
+        "we don't bet through that."
+    ),
+    "stale_inputs": (
+        "Our odds feed was stale at decision time — no bet on stale data."
+    ),
+    "edge_too_small": (
+        "Yes, really. Edges that survived our filters were too small to post."
+    ),
+    "non_positive_ev": (
+        "Nothing on the slate showed positive EV at the prices we shopped."
+    ),
+    "model_market_disagree": (
+        "Model and market are too far apart on this slate — auto sit-out."
+    ),
+    "no_snapshot": (
+        "We didn't have a usable odds snapshot at the decision point."
+    ),
+    "sigma_not_credible": (
+        "Margin uncertainty isn't credible enough to bet this slate."
+    ),
+    "line_quarantined": (
+        "Book lines failed ingest sanity checks and were quarantined."
+    ),
+    "max_bets_per_week": "We hit our weekly bet cap before a public card filled out.",
+    "max_weekly_exposure": "Weekly bankroll exposure cap reached before a public card.",
+    "max_team_exposure": "Team exposure caps blocked the remaining candidates.",
+    "kickoff_passed": "The remaining candidates had already kicked off at decision time.",
+}
+
+_NO_BET_MID_FALLBACK = (
+    "Nothing cleared the bar — we're flat on purpose, not guessing why."
+)
+
+
+def dominant_rejection_reason(
+    rejected: Sequence[Mapping[str, Any]] | None,
+) -> str | None:
+    """Mode of each rejected candidate's primary ``FilterReason``.
+
+    Primary = first listed reason (construction / §12 order as recorded).
+    Ties break lexicographically for determinism. ``None`` when no reasons.
+    """
+    counts: Counter[str] = Counter()
+    for row in rejected or []:
+        reasons = [str(r) for r in (row.get("reasons") or []) if r and str(r) != "pass"]
+        if not reasons:
+            continue
+        counts[reasons[0]] += 1
+    if not counts:
+        return None
+    top = max(counts.values())
+    tied = sorted(k for k, v in counts.items() if v == top)
+    return tied[0]
+
+
+def render_no_bet_post(
+    week: int,
+    site_url: str,
+    *,
+    rejected: Sequence[Mapping[str, Any]] | None = None,
+) -> str:
+    """Single No-Bet X post. Copy follows the dominant rejection reason.
+
+    Never asserts a market condition (e.g. \"priced tight\") unless the data's
+    dominant reason is actually an edge / EV refusal.
+    """
+    reason = dominant_rejection_reason(rejected)
+    mid = _NO_BET_MID.get(reason, _NO_BET_MID_FALLBACK) if reason else _NO_BET_MID_FALLBACK
+    return (
+        f"Week {week}: the model found ZERO bets that clear our bar.\n\n"
+        f"{mid}\n\n"
+        "Most accounts would post 10 picks anyway. We'd rather be flat "
+        f"than wrong on purpose. Forecasts for every game: {site_url}"
+    )
 
 
 def fmt_line(x: Any) -> str:
@@ -100,11 +182,13 @@ def render_thread(
     site_url: str,
     *,
     fixture: bool = False,
+    rejected: Sequence[Mapping[str, Any]] | None = None,
 ) -> str:
     """Render the Tuesday anchor thread (one X post per block).
 
     ``N`` qualifying bets → ``N`` bet posts plus hook / methodology / CTA.
-    ``N=0`` → single No-Bet post only (never padded).
+    ``N=0`` → single No-Bet post only (never padded). When ``rejected`` is
+    provided, No-Bet copy follows the dominant ``FilterReason``.
     """
     posts: list[str] = []
     rec = dict(record or {})
@@ -113,12 +197,7 @@ def render_thread(
     clv_bit = f", {clv:+.2f} avg CLV" if isinstance(clv, (int, float)) else ""
 
     if not bets:
-        posts.append(
-            f"Week {week}: the model found ZERO bets that clear our bar.\n\n"
-            "Yes, really. The market priced this slate tight.\n\n"
-            "Most accounts would post 10 picks anyway. We'd rather be flat "
-            f"than wrong on purpose. Forecasts for every game: {site_url}"
-        )
+        posts.append(render_no_bet_post(week, site_url, rejected=rejected))
         body = join_posts(posts)
         return (FIXTURE_BANNER + "\n" + body) if fixture else body
 

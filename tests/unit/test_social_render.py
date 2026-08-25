@@ -18,9 +18,11 @@ from ncaa_quant.config import BettingConfig, SocialConfig
 from ncaa_quant.social.render import (
     FIXTURE_BANNER,
     POST_CHAR_LIMIT,
+    dominant_rejection_reason,
     extract_post_bodies,
     fmt_line,
     kick_et_label,
+    render_no_bet_post,
     render_replies,
     render_thread,
 )
@@ -92,6 +94,77 @@ def test_n0_renders_only_no_bet_post() -> None:
     assert len(bodies) == 1
     assert "ZERO bets" in bodies[0]
     assert "Best Bet #" not in thread
+    # No rejected rows → fallback mid; never invent a market claim.
+    assert "market priced this slate tight" not in bodies[0]
+
+
+def _rejected(reason: str) -> list[dict[str, Any]]:
+    return [{"game_id": "g1", "reasons": [reason]}]
+
+
+@pytest.mark.parametrize(
+    ("reason", "must_contain", "must_not_contain"),
+    [
+        (
+            "qb_status_unknown",
+            "QB status is unclear",
+            "market priced this slate tight",
+        ),
+        (
+            "stale_inputs",
+            "odds feed was stale",
+            "market priced this slate tight",
+        ),
+        (
+            "edge_too_small",
+            "Edges that survived our filters were too small",
+            "market priced this slate tight",
+        ),
+        (
+            "non_positive_ev",
+            "positive EV",
+            "market priced this slate tight",
+        ),
+        (
+            "model_market_disagree",
+            "too far apart",
+            "market priced this slate tight",
+        ),
+        (
+            "no_snapshot",
+            "usable odds snapshot",
+            "market priced this slate tight",
+        ),
+    ],
+)
+def test_no_bet_golden_per_dominant_reason(
+    reason: str,
+    must_contain: str,
+    must_not_contain: str,
+) -> None:
+    rejected = _rejected(reason)
+    assert dominant_rejection_reason(rejected) == reason
+    body = render_no_bet_post(1, SITE, rejected=rejected)
+    assert "ZERO bets that clear our bar" in body
+    assert must_contain in body
+    assert must_not_contain not in body
+    assert len(body) <= POST_CHAR_LIMIT
+
+    thread = render_thread(1, [], None, SITE, rejected=rejected)
+    bodies = extract_post_bodies(thread)
+    assert bodies == [body]
+
+
+def test_no_bet_dominant_reason_uses_primary_per_row() -> None:
+    rejected = [
+        {"game_id": "a", "reasons": ["qb_status_unknown", "model_market_disagree"]},
+        {"game_id": "b", "reasons": ["qb_status_unknown"]},
+        {"game_id": "c", "reasons": ["stale_inputs"]},
+    ]
+    assert dominant_rejection_reason(rejected) == "qb_status_unknown"
+    body = render_no_bet_post(1, SITE, rejected=rejected)
+    assert "QB status is unclear" in body
+    assert "market priced this slate tight" not in body
 
 
 def test_fixture_true_requires_warning_banner() -> None:
