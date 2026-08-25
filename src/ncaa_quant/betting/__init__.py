@@ -68,6 +68,12 @@ from ncaa_quant.betting.kelly import (
     full_kelly,
     recommended_stake,
 )
+from ncaa_quant.betting.provider import (
+    build_candidates_from_odds,
+    merge_stale_onto_prediction_rows,
+    qb_status_known_for_game,
+    resolve_asof_snapshot_window,
+)
 
 __all__ = [
     "DEFAULT_DEVIG_METHOD",
@@ -102,6 +108,7 @@ __all__ = [
     "american_to_raw_implied",
     "assert_distinct_line_sources",
     "best_price",
+    "build_candidates_from_odds",
     "compute_clv",
     "compute_edge",
     "compute_line_shopping_capture",
@@ -115,9 +122,12 @@ __all__ = [
     "full_kelly",
     "line_units_clv",
     "market_fair_prob",
+    "merge_stale_onto_prediction_rows",
     "multiplicative_devig",
     "proportional_devig",
+    "qb_status_known_for_game",
     "recommended_stake",
+    "resolve_asof_snapshot_window",
     "settle",
     "settle_recommendation",
     "settle_week",

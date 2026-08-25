@@ -27,6 +27,10 @@ class FilterReason(StrEnum):
     MAX_WEEKLY_EXPOSURE = "max_weekly_exposure"
     MAX_TEAM_EXPOSURE = "max_team_exposure"
     NON_POSITIVE_EV = "non_positive_ev"
+    SIGMA_NOT_CREDIBLE = "sigma_not_credible"
+    KICKOFF_PASSED = "kickoff_passed"
+    NO_SNAPSHOT = "no_snapshot"
+    LINE_QUARANTINED = "line_quarantined"
 
 
 @dataclass(frozen=True, slots=True)
@@ -45,6 +49,15 @@ class BetCandidate:
 
     team_ids: tuple[str, ...] = ()
     """Teams whose exposure this bet counts against (usually one or both)."""
+
+    block_reasons: tuple[FilterReason, ...] = ()
+    """Construction-time refusals (S5); evaluated before §12 thresholds."""
+
+    p_win: float | None = None
+    """Calibrated win probability for Kelly stake (optional)."""
+
+    american_odds: float | None = None
+    """Shopped American price for Kelly stake (optional)."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -94,6 +107,13 @@ def evaluate_filters(
     reasons: list[FilterReason] = []
     team_exp = team_exposure_so_far or {}
     min_edge = _min_edge_for(candidate, config)
+
+    if candidate.block_reasons:
+        return FilterResult(
+            accepted=False,
+            reasons=tuple(candidate.block_reasons),
+            min_edge_applied=min_edge,
+        )
 
     if candidate.edge < min_edge:
         reasons.append(FilterReason.EDGE_TOO_SMALL)

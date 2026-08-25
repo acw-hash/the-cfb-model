@@ -85,9 +85,7 @@ def orient_bet_lines(
     """
     if market == "total":
         if bet_on not in ("over", "under"):
-            raise SocialCandidateError(
-                f"totals bet_on must be 'over' or 'under', got {bet_on!r}"
-            )
+            raise SocialCandidateError(f"totals bet_on must be 'over' or 'under', got {bet_on!r}")
         side = "Over" if bet_on == "over" else "Under"
         return side, float(market_line_home), float(model_line_home)
 
@@ -161,7 +159,7 @@ def _record_from_mapping(
             raise SocialCandidateError(f"invalid market: {market!r}")
         return CandidateRecord(
             game_id=str(raw["game_id"]),
-            market=market,  # type: ignore[arg-type]
+            market=market,
             side_team=str(raw["side_team"]),
             market_line=float(raw["market_line"]),
             model_line=float(raw["model_line"]),
@@ -186,7 +184,7 @@ def _record_from_mapping(
         raise SocialCandidateError(f"invalid bet_on: {bet_on!r}")
     return build_candidate_record(
         game_id=str(raw["game_id"]),
-        market=market,  # type: ignore[arg-type]
+        market=market,
         edge=float(raw["edge"]),
         expected_value=float(raw["expected_value"]),
         model_market_residual_points=float(raw["model_market_residual_points"]),
@@ -194,7 +192,7 @@ def _record_from_mapping(
         p_win=float(raw["p_win"]),
         home_team=str(raw["home_team"]),
         away_team=str(raw["away_team"]),
-        bet_on=bet_on,  # type: ignore[arg-type]
+        bet_on=bet_on,
         market_line_home=float(raw["market_line_home"]),
         model_line_home=float(raw["model_line_home"]),
         betting=betting,
@@ -304,9 +302,7 @@ def export_social_candidates(
             raise SocialCandidateError("rejected candidate missing reasons")
         body = {k: v for k, v in row.items() if k != "reasons"}
         rec = _record_from_mapping(body, betting=cfg.betting).to_dict()
-        rec["reasons"] = [
-            r.value if isinstance(r, FilterReason) else str(r) for r in reasons
-        ]
+        rec["reasons"] = [r.value if isinstance(r, FilterReason) else str(r) for r in reasons]
         rejected_out.append(rec)
 
     published_at = publish_result.get("published_at")
@@ -329,9 +325,7 @@ def export_social_candidates(
         "rejected": rejected_out,
     }
 
-    path = candidates_sidecar_path(
-        cfg.social, season=season, week=week, refresh_kind=refresh_kind
-    )
+    path = candidates_sidecar_path(cfg.social, season=season, week=week, refresh_kind=refresh_kind)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return path

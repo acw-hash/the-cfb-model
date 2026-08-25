@@ -31,6 +31,10 @@ REASON_PLAIN: dict[str, str] = {
     "max_bets_per_week": "we hit our weekly bet cap",
     "max_weekly_exposure": "weekly bankroll exposure cap reached",
     "max_team_exposure": "already have max exposure on this team",
+    "sigma_not_credible": "margin uncertainty isn't credible enough to bet",
+    "kickoff_passed": "this game had already kicked off at decision time",
+    "no_snapshot": "we didn't have a usable odds snapshot at the decision point",
+    "line_quarantined": "the book line failed ingest sanity and was quarantined",
 }
 
 

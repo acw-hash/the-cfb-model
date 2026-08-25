@@ -24,7 +24,11 @@ from ncaa_quant.social.candidates import (
     orient_bet_lines,
     records_from_filter_result,
 )
-from ncaa_quant.webapp.export import ODDS_FIELD_DENYLIST, assert_no_denylisted_fields, export_publish_artifacts
+from ncaa_quant.webapp.export import (
+    ODDS_FIELD_DENYLIST,
+    assert_no_denylisted_fields,
+    export_publish_artifacts,
+)
 
 
 def _social_cfg(tmp_path: Path, *, enabled: bool = True) -> AppConfig:

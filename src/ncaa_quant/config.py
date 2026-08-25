@@ -103,7 +103,15 @@ class BettingConfig(BaseModel):
     min_model_market_agreement: float = 7.0
     no_bet_on_stale: bool = True
     no_bet_on_qb_unknown: bool = True
+    odds_max_age_hours: float = 6.0
+    """Max age of the resolved odds snapshot vs ``as_of`` (playbook: fresh < 6h)."""
+
     max_weekly_exposure: float = 0.10
+    candidates_enabled: bool = False
+    """When False (default), publish uses the empty candidate stub (ADR 0017)."""
+
+    candidate_markets: list[str] = Field(default_factory=lambda: ["side"])
+    """Markets the S5 provider may emit. Totals ship tested but stay off until σ_t check."""
 
 
 class NotificationConfig(BaseModel):
