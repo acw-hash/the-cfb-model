@@ -447,4 +447,4 @@ code; not edited in this task (render-only scope).
 ## Verification (this diag)
 
 `make test`: **998 passed**, 1 deselected; language-ratchet pin held at
-405/290/86 after rewording “no-play” → “sit-out” in No-Bet mid.
+405/290/86 after rewording the No-Bet mid away from a `\bplay\b` hit.
