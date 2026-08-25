@@ -161,6 +161,89 @@ def test_export_stamps_vintage_from_producing_run(tmp_path: Path) -> None:
         _export("task23_fundamental_reduced_future_run", "production-v0_reduced_future")
 
 
+def test_week_model_identity_omits_registered_at_meta_keeps_it(tmp_path: Path) -> None:
+    """P0-E-FIX: push allowlist is exact-keys on model_identity (no registered_at)."""
+    from ncaa_quant.webapp.push import assert_push_artifact_allowlists
+
+    staged = tmp_path / "staged"
+    teams_dir = staged / "teams" / "season=2026"
+    teams_dir.mkdir(parents=True)
+    pd.DataFrame(
+        [
+            {"team_id": 1, "school": "Home"},
+            {"team_id": 2, "school": "Away"},
+        ]
+    ).to_parquet(teams_dir / "part.parquet", index=False)
+    cfg = AppConfig(
+        paths=PathsConfig(staged_dir=str(staged), data_dir=str(tmp_path / "data")),
+        webapp=WebappConfig(
+            export_enabled=False,
+            tier_state_path=str(tmp_path / "tier.json"),
+            tier_changes_path=str(tmp_path / "tier_changes.jsonl"),
+            publish_history_path=str(tmp_path / "publish_history"),
+        ),
+    )
+    registered_at = "2026-08-17T20:41:49Z"
+    publish = {
+        "season": 2026,
+        "week": 1,
+        "refresh_kind": RefreshKind.TUESDAY_PRIMARY,
+        "as_of": "2026-08-25T10:00:00+00:00",
+        "as_of_source": "operator",
+        "predictions": [
+            {
+                "game_id": "401000001",
+                "mu_margin": 3.0,
+                "sigma_margin": 14.0,
+                "is_stale": False,
+            }
+        ],
+        "prediction_rows": [
+            {
+                "game_id": "401000001",
+                "pred_margin": 3.0,
+                "sigma_m": 14.0,
+                "sigma_m_is_missing": False,
+                "p_ml_home": 0.62,
+                "p_ml_home_is_missing": False,
+                "run_id": V3_RUN_ID,
+                "model_version": "production-v0_reduced_v3",
+                "champion_version": 2,
+                "registered_at": registered_at,
+            }
+        ],
+        "stale": {"is_stale": False, "combined_stamp": None, "sources": []},
+    }
+    schedule = {
+        "401000001": {
+            "game_id": "401000001",
+            "home_team": "Home",
+            "away_team": "Away",
+            "home_team_id": 1,
+            "away_team_id": 2,
+            "kickoff_utc": "2026-09-05T16:00:00Z",
+            "neutral_site": False,
+            "conference_game": False,
+        }
+    }
+    out = export_publish_artifacts(
+        publish,
+        config=cfg,
+        published_at=datetime(2026, 9, 1, 10, 0, tzinfo=UTC),
+        schedule_by_game=schedule,
+        push=False,
+    )
+    week = json.loads(out["artifacts"]["week_predictions.json"])
+    meta = json.loads(out["artifacts"]["meta.json"])
+    identity = week["model_identity"]
+    assert set(identity) == {"registry_name", "champion_version", "model_version", "run_id"}
+    assert "registered_at" not in identity
+    assert identity["run_id"] == V3_RUN_ID
+    assert identity["champion_version"] == 2
+    assert meta["champion_model"]["registered_at"] == registered_at
+    assert_push_artifact_allowlists(out["artifacts"])
+
+
 def test_2024_fixture_vintage_matches_producing_run() -> None:
     week = _load(FIXTURE_WEEK)
     meta = _load(FIXTURE_META)

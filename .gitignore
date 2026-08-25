@@ -70,3 +70,5 @@ Thumbs.db
 
 # Large local run logs (referenced from docs/notes/05b.md)
 docs/notes/05b-backfill-run.log
+
+backup_latest_20260824/

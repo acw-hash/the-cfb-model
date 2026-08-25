@@ -627,11 +627,26 @@ def merge_prediction_rows(
     return merged
 
 
+# Push allowlist (``push._MODEL_IDENTITY_KEYS``): week_predictions.model_identity
+# must be exactly these four keys. ``registered_at`` belongs on meta.champion_model.
+_WEEK_MODEL_IDENTITY_KEYS: tuple[str, ...] = (
+    "registry_name",
+    "champion_version",
+    "model_version",
+    "run_id",
+)
+
+
 def _model_identity_from_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     """Pass walkforward identity through when present on the producing rows.
 
     Fallback ``champion_version`` / ``model_version`` are stub defaults used
     only when the row did not carry those fields.
+
+    ``registered_at`` is collected when present so :func:`build_meta` can stamp
+    ``champion_model.registered_at``. It must not appear on the week artifact's
+    ``model_identity`` (push exact-keys allowlist) — see
+    :func:`_week_model_identity`.
     """
     identity: dict[str, Any] = {
         "registry_name": "ncaa-quant",
@@ -651,6 +666,27 @@ def _model_identity_from_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, An
     if row.get("registered_at") is not None:
         identity["registered_at"] = str(row["registered_at"])
     return identity
+
+
+def _week_model_identity(identity: Mapping[str, Any] | None) -> dict[str, Any]:
+    """Project identity to the four keys allowed on ``week_predictions.model_identity``."""
+    base: dict[str, Any] = {
+        "registry_name": "ncaa-quant",
+        "champion_version": 3,
+        "model_version": "production-v0_reduced_v1",
+        "run_id": None,
+    }
+    if not identity:
+        return base
+    if identity.get("registry_name") is not None:
+        base["registry_name"] = str(identity["registry_name"])
+    if identity.get("champion_version") is not None:
+        base["champion_version"] = int(identity["champion_version"])
+    if identity.get("model_version") is not None:
+        base["model_version"] = str(identity["model_version"])
+    if "run_id" in identity:
+        base["run_id"] = None if identity["run_id"] is None else str(identity["run_id"])
+    return {k: base[k] for k in _WEEK_MODEL_IDENTITY_KEYS}
 
 
 def build_game_prediction(
@@ -880,13 +916,7 @@ def build_week_predictions(
         "feature_time_label": feature_time_label,
         "ensemble_scope_label": ensemble_scope_label,
         "vintage_label": vintage_label,
-        "model_identity": model_identity
-        or {
-            "registry_name": "ncaa-quant",
-            "champion_version": 3,
-            "model_version": "production-v0_reduced_v1",
-            "run_id": None,
-        },
+        "model_identity": _week_model_identity(model_identity),
         "publish_stale": {
             "is_stale": bool(stale.get("is_stale", False)),
             "combined_stamp": stale.get("combined_stamp"),
