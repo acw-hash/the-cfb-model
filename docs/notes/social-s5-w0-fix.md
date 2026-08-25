@@ -448,3 +448,157 @@ code; not edited in this task (render-only scope).
 
 `make test`: **998 passed**, 1 deselected; language-ratchet pin held at
 405/290/86 after rewording the No-Bet mid away from a `\bplay\b` hit.
+
+---
+
+## S5-QB-VERIFY — one row round-trips (2026-08-25)
+
+**Date:** 2026-08-25  
+**Branch:** `social-s1-s2`  
+**Scope:** read-only. No writes, Odds API, publish, or config changes.
+
+Hand-written row (via `ncaa-quant roster set-qb`):
+
+| field | value |
+|-------|-------|
+| game_id | 401858202 |
+| team_id | 258 (Virginia) |
+| status | starter |
+| event_time | 2026-08-25T22:58:49.130903Z |
+
+### 1 — Where did it land
+
+**CLI write call site** — `ParquetStore(cfg.paths.staged_dir)` →
+`set_qb_status` → `store.write_partition("qb_status", …, {"season": season},
+mode="append")`:
+
+```474:484:src/ncaa_quant/cli.py
+    cfg = load_config()
+    with ParquetStore(cfg.paths.staged_dir) as store:
+        games = store.read("games", filters={"game_id": game})
+        if games.empty:
+            typer.echo(f"game_id {game} not found in staged games")
+            raise typer.Exit(code=2)
+        season = int(games.iloc[0]["season"])
+        teams = store.read("teams", filters={"season": season})
+        try:
+            team_id = resolve_team_id(team, teams, season=season)
+            row = set_qb_status(store, game_id=game, team_id=team_id, status=status)
+```
+
+```398:403:src/ncaa_quant/features/builders/roster.py
+    store.write_partition(
+        QB_STATUS_TABLE,
+        row,
+        {"season": season},
+        mode="append",
+    )
+```
+
+**On-disk path:** `data/staged/qb_status/season=2026/part.parquet`
+(`PathsConfig.staged_dir` = `data/staged`; `qb_status` is a reference table
+partitioned by `season` only).
+
+**Provider as-of read call site** — same store root, same table name:
+
+```543:546:src/ncaa_quant/betting/provider.py
+    try:
+        qb_frame = store.read("qb_status", filters={"season": int(season)})
+    except Exception:  # noqa: BLE001
+        qb_frame = pd.DataFrame()
+```
+
+**Same store?** **Yes.** Both paths use `ParquetStore(load_config().paths.staged_dir)`
+→ `data/staged`, table `qb_status`, season hive partition.
+
+### 2 — Read back the way the provider does
+
+`as_of ≈ 2026-08-25T23:00:52Z` (UTC now). Game 401858202: Virginia home
+(`team_id=258`), NC State away (`team_id=152`).
+
+Per-team resolution mirrors `qb_status_known_for_game._team_ok` (filter
+`game_id`, `event_time <= as_of`, latest row per `team_id`, known iff
+`status != "unknown"`):
+
+| team | team_id | qb_status_known | status | source |
+|------|--------:|:---------------:|--------|--------|
+| Virginia | 258 | **True** | starter | staged_asof |
+| NC State | 152 | **False** | — | NO_ROW |
+
+Game-level (provider API):
+
+```565:571:src/ncaa_quant/betting/provider.py
+        qb_known, qb_source = qb_status_known_for_game(
+            qb_frame,
+            game_id=gid_int,
+            home_team_id=home_id,
+            away_team_id=away_id,
+            as_of=as_of_utc,
+        )
+```
+
+→ `qb_status_known=False`, `qb_status_source=unchecked` (both teams must
+pass; NC State has no row).
+
+**Verdict:** Virginia **round-trips**. Not wrong store, not join-key mismatch,
+not as-of ordering, not stale partition. The single row is visible at
+`data/staged/qb_status/season=2026/part.parquet` (n=1 after write).
+
+### 3 — Join key
+
+**CLI path:** `--team "Virginia"` → `resolve_team_id` matches
+`teams.school` case-insensitively (or accepts a numeric string) → writes
+**integer `team_id`** into `qb_status`:
+
+```438:455:src/ncaa_quant/features/builders/roster.py
+def resolve_team_id(
+    team: str,
+    teams: pd.DataFrame,
+    *,
+    season: int | None = None,
+) -> int:
+    """Resolve ``team`` as numeric id or school name within ``teams``."""
+    stripped = team.strip()
+    if stripped.isdigit():
+        return int(stripped)
+    frame = teams
+    if season is not None and "season" in frame.columns:
+        frame = frame.loc[frame["season"] == season]
+    matches = frame.loc[frame["school"].astype(str).str.casefold() == stripped.casefold()]
+    if matches.empty:
+        msg = f"team {team!r} not found in staged teams"
+        raise ValueError(msg)
+    return int(matches.iloc[0]["team_id"])
+```
+
+**Provider path:** `_game_teams` loads `home_team_id` / `away_team_id` from
+staged `games` (not from the `--team` string). `qb_status_known_for_game`
+then filters `qb_frame["team_id"].astype(int) == tid`:
+
+```316:321:src/ncaa_quant/betting/provider.py
+    def _team_ok(tid: int) -> bool:
+        sub = work.loc[work["team_id"].astype(int) == int(tid)]
+        if sub.empty:
+            return False
+        latest = sub.sort_values("event_time").iloc[-1]
+        return str(latest["status"]).casefold() != "unknown"
+```
+
+**Plain answer:** the provider does **not** join on team name. Name → id
+happens only at CLI write time via `resolve_team_id`; the staged row and
+provider lookup both key on **`(game_id, team_id)`**.
+
+### 4 — Odds snapshot age
+
+| field | value |
+|-------|------:|
+| `as_of` | 2026-08-25T23:00:52.617988Z |
+| newest 2026 `odds_snapshots.event_time` | 2026-08-25T16:59:11.540113Z |
+| age | **6.03 h** |
+| `odds_max_age_hours` | **6.0** |
+| game 401858202 snap age | 6.03 h (same batch) |
+
+**Staleness right now:** **yes** — `(as_of − snapshot.event_time) > 6h` by
+~1.7 minutes. A provider run at this instant would set `is_stale=True` →
+`STALE_INPUTS` (in addition to game-level `QB_STATUS_UNKNOWN` because NC
+State has no row).
