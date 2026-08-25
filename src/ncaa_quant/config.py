@@ -150,6 +150,27 @@ class WebappConfig(BaseModel):
     fixture_artifacts_dir: str = "webapp/fixtures"
 
 
+class SocialConfig(BaseModel):
+    """Private local-only social sidecar (docs/social/TASKS-social.md S-series).
+
+    Never pushed to R2. Default off — enable only on the operator workstation
+    via ``NCAA_QUANT_SOCIAL__ENABLED=true``.
+    """
+
+    enabled: bool = False
+    output_dir: str = "data/social"
+    """Root for ``{output_dir}/{season}/w{week}/{refresh_kind}/candidates.json``."""
+
+    public_min_edge_sides: float = 0.045
+    """Public card edge floor for sides (applied by S2 on top of §12 filters)."""
+
+    public_min_edge_totals: float = 0.055
+    """Public card edge floor for totals."""
+
+    unit_fraction: float = 0.005
+    """Bankroll fraction per displayed stake unit (1 displayed unit = 0.5% bankroll)."""
+
+
 class PipelineConfig(BaseModel):
     """Schedules, promotion gates, and monitoring thresholds."""
 
@@ -202,6 +223,7 @@ class AppConfig(BaseSettings):
     betting: BettingConfig = Field(default_factory=BettingConfig)
     pipeline: PipelineConfig = Field(default_factory=PipelineConfig)
     webapp: WebappConfig = Field(default_factory=WebappConfig)
+    social: SocialConfig = Field(default_factory=SocialConfig)
 
 
 class SecretsSettings(BaseSettings):

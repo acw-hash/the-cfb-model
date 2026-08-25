@@ -604,12 +604,33 @@ def execute_predict_publish(
     config: AppConfig | None = None,
     notifier: Notifier | None = None,
     as_of: datetime | None = None,
+    fixture: bool = False,
+    published_at: datetime | None = None,
+    social_candidate_details: Mapping[str, Mapping[str, Any]] | None = None,
 ) -> dict[str, Any]:
-    """Core predict/publish body (testable without Prefect parameter schema)."""
+    """Core predict/publish body (testable without Prefect parameter schema).
+
+    Parameters
+    ----------
+    fixture:
+        When True, the local social sidecar inherits ``\"fixture\": true``.
+        Does not affect webapp / R2 artifacts (those use their own fixture flag).
+    published_at:
+        Publish clock stamped on the social sidecar; defaults to now (UTC).
+    social_candidate_details:
+        Optional orientation inputs keyed by ``\"{game_id}:{market}\"`` for the
+        local social sidecar. Required when ``social.enabled`` and the filter
+        returns any candidates.
+    """
     cfg = config or load_config()
     ingest_failed = False
     ingest_error: str | None = None
     raw_root = Path(cfg.paths.raw_dir) / "odds_api"
+    clock = published_at if published_at is not None else datetime.now(tz=UTC)
+    if clock.tzinfo is None:
+        clock = clock.replace(tzinfo=UTC)
+    else:
+        clock = clock.astimezone(UTC)
 
     resolved_as_of, as_of_source = resolve_week_publish_as_of(
         season, week, as_of, config=cfg
@@ -679,6 +700,8 @@ def execute_predict_publish(
         "refresh_kind": refresh_kind,
         "as_of": resolved_as_of.isoformat(),
         "as_of_source": as_of_source,
+        "published_at": clock.isoformat().replace("+00:00", "Z"),
+        "fixture": bool(fixture),
         "ingest_failed": ingest_failed,
         "ingest_error": ingest_error,
         "stale": stale_ctx.to_dict(),
@@ -693,6 +716,37 @@ def execute_predict_publish(
             stale_ctx.sources[0].last_good_at.isoformat() if stale_ctx.sources else None
         ),
     }
+
+    if cfg.social.enabled:
+        try:
+            from ncaa_quant.social.candidates import (
+                export_social_candidates,
+                records_from_filter_result,
+            )
+
+            acc_dicts, rej_dicts = records_from_filter_result(
+                accepted,
+                rejected,
+                details=social_candidate_details,
+                betting=cfg.betting,
+            )
+            result["accepted"] = acc_dicts
+            result["rejected"] = rej_dicts
+            path = export_social_candidates(result, cfg)
+            result["social_export"] = {
+                "ok": True,
+                "path": str(path) if path is not None else None,
+            }
+        except Exception as exc:
+            log.warning("social_export_failed", error=str(exc))
+            notify(
+                AlertKind.SOCIAL_EXPORT_FAILURE,
+                "Ridge social candidate export failed",
+                str(exc),
+                config=cfg,
+                notifier=n,
+            )
+            result["social_export"] = {"ok": False, "error": str(exc)}
 
     if cfg.webapp.export_enabled:
         try:
@@ -727,6 +781,9 @@ def _run_helper_publish(
     notifier: Notifier | None = None,
     publish_scope: str = "sandbox",
     as_of: datetime | None = None,
+    fixture: bool = False,
+    published_at: datetime | None = None,
+    social_candidate_details: Mapping[str, Mapping[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Run predict/publish for test helpers; default scope is non-live ``sandbox/``.
 
@@ -753,6 +810,9 @@ def _run_helper_publish(
         config=inner_cfg,
         notifier=notifier,
         as_of=as_of,
+        fixture=fixture,
+        published_at=published_at,
+        social_candidate_details=social_candidate_details,
     )
 
     if not export_wanted or publish_scope == "live":
@@ -803,6 +863,8 @@ def run_predict_publish(
     notifier: Notifier | None = None,
     as_of: datetime | None = None,
     published_at: datetime | None = None,
+    fixture: bool = False,
+    social_candidate_details: Mapping[str, Mapping[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Idempotent wrapper around :func:`execute_predict_publish`."""
     cfg = config or load_config()
@@ -829,6 +891,9 @@ def run_predict_publish(
             config=cfg,
             notifier=notifier,
             as_of=as_of,
+            fixture=fixture,
+            published_at=clock,
+            social_candidate_details=social_candidate_details,
         )
 
     return run_idempotent(key, _run, config=cfg)
@@ -927,6 +992,8 @@ def run_fixture_week_publish(
         predict_fn=_predict,
         config=config,
         notifier=notifier,
+        fixture=True,
+        published_at=_FIXTURE_WEEK5_PUBLISHED_AT,
     )
 
 
