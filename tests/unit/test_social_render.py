@@ -20,8 +20,11 @@ from ncaa_quant.social.render import (
     POST_CHAR_LIMIT,
     dominant_rejection_reason,
     extract_post_bodies,
+    fmt_interval_bound,
     fmt_line,
+    join_reason_plain,
     kick_et_label,
+    ordered_reply_reasons,
     render_no_bet_post,
     render_replies,
     render_thread,
@@ -284,9 +287,13 @@ def test_stale_and_sigma_excluded_from_card_correct_in_reply_bank() -> None:
     replies = render_replies(games, bets, rejected, SITE)
     assert "Best Bet #1" in replies
     assert "Play Away @ Play Home" in replies
-    # Stale: forecast-only with FilterReason plain English
+    # Stale-only: forecast with no bet rationale (staleness is a run property)
     assert "Stale Away @ Stale Home" in replies
-    assert "stale at decision time" in replies
+    assert "Stale Home by 4.0" in replies
+    assert "80% range: -8 to +16" in replies
+    assert "stale at decision time" not in replies
+    assert "No bet though" not in replies.split("## Sigma Away")[0]
+    assert "Forecast ≠ edge" in replies.split("## Sigma Away")[0]
     # Sigma refused branch (not forecast-only)
     assert "Sigma Away @ Sigma Home" in replies
     assert "not enough signal" in replies
@@ -370,9 +377,135 @@ def test_script_fallback_separate_candidate_files(tmp_path: Path) -> None:
 def test_fmt_line_and_kick_label_helpers() -> None:
     assert fmt_line(-3.5) == "-3.5"
     assert fmt_line("x") == "?"
+    assert fmt_interval_bound(-10.6196) == "-11"
+    assert fmt_interval_bound(45.7377) == "+46"
+    assert fmt_interval_bound("x") == "?"
     assert kick_et_label(None) == ""
     assert kick_et_label("not-iso") == ""
     assert kick_et_label("2024-09-28T19:30:00Z") == "Sat"
+
+
+def _forecast_game(**overrides: Any) -> dict[str, Any]:
+    base: dict[str, Any] = {
+        "game_id": "g1",
+        "away_team": "Away U",
+        "home_team": "Home U",
+        "kickoff_utc": "2024-09-28T19:30:00Z",
+        "mu_margin": 10.0,
+        "sigma_margin_credible": True,
+        "margin_interval_lo": -10.6196,
+        "margin_interval_hi": 45.7377,
+    }
+    base.update(overrides)
+    return base
+
+
+@pytest.mark.parametrize(
+    ("reasons", "must_contain", "must_not_contain"),
+    [
+        (
+            ["qb_status_unknown"],
+            ["QB situation is unclear", "No bet though"],
+            ["stale at decision time", "priced about right", "so far apart"],
+        ),
+        (
+            ["model_market_disagree"],
+            ["so far apart", "No bet though"],
+            ["QB situation", "stale at decision time"],
+        ),
+        (
+            ["stale_inputs"],
+            ["Home U by 10.0", "80% range: -11 to +46", "Forecast ≠ edge"],
+            ["No bet though", "stale at decision time"],
+        ),
+        (
+            ["edge_too_small"],
+            ["priced about right", "No bet though"],
+            ["QB situation", "stale at decision time"],
+        ),
+        (
+            ["non_positive_ev"],
+            ["no positive EV", "No bet though"],
+            ["QB situation"],
+        ),
+        (
+            ["qb_status_unknown", "model_market_disagree"],
+            [
+                "QB situation is unclear",
+                "so far apart",
+                "No bet though",
+            ],
+            ["stale at decision time"],
+        ),
+        (
+            ["stale_inputs", "qb_status_unknown"],
+            [
+                "QB situation is unclear",
+                "stale at decision time",
+                "No bet though",
+            ],
+            ["so far apart"],
+        ),
+        (
+            ["stale_inputs", "model_market_disagree"],
+            [
+                "so far apart",
+                "stale at decision time",
+                "No bet though",
+            ],
+            ["QB situation"],
+        ),
+        (
+            ["stale_inputs", "qb_status_unknown", "model_market_disagree"],
+            [
+                "QB situation is unclear",
+                "so far apart",
+                "stale at decision time",
+                "No bet though",
+            ],
+            ["priced about right"],
+        ),
+        (
+            ["model_market_disagree", "stale_inputs", "qb_status_unknown"],
+            [
+                "QB situation is unclear",
+                "so far apart",
+                "stale at decision time",
+            ],
+            [],
+        ),
+    ],
+)
+def test_forecast_reply_golden_per_reason_combination(
+    reasons: list[str],
+    must_contain: list[str],
+    must_not_contain: list[str],
+) -> None:
+    games = [_forecast_game()]
+    rejected = [{"game_id": "g1", "reasons": reasons}]
+    replies = render_replies(games, [], rejected, SITE)
+    body = replies.split("## Away U @ Home U", 1)[1].split("## Game not", 1)[0]
+    for needle in must_contain:
+        assert needle in body, f"missing {needle!r} in:\n{body}"
+    for needle in must_not_contain:
+        assert needle not in body, f"unexpected {needle!r} in:\n{body}"
+    # Multi-reason: QB before disagree before stale (reader order)
+    if "qb_status_unknown" in reasons and "model_market_disagree" in reasons:
+        assert body.index("QB situation") < body.index("so far apart")
+    if "qb_status_unknown" in reasons and "stale_inputs" in reasons and "No bet though" in body:
+        assert body.index("QB situation") < body.index("stale at decision time")
+    if "model_market_disagree" in reasons and "stale_inputs" in reasons and "No bet though" in body:
+        assert body.index("so far apart") < body.index("stale at decision time")
+
+
+def test_ordered_reply_reasons_and_join() -> None:
+    assert ordered_reply_reasons(
+        ["stale_inputs", "pass", "qb_status_unknown", "stale_inputs", "model_market_disagree"]
+    ) == ["qb_status_unknown", "model_market_disagree", "stale_inputs"]
+    joined = join_reason_plain(["stale_inputs", "qb_status_unknown"])
+    assert joined.startswith("QB situation")
+    assert "stale at decision time" in joined
+    assert "QB situation" in joined.split(";")[0]
 
 
 def test_variable_count_n_posts_match_n_bets() -> None:

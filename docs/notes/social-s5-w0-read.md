@@ -260,6 +260,162 @@ generator run; posting decision left to operator.
 
 ---
 
+## S5-W0-REPLIES — honest multi-reason reply bank (2026-08-25)
+
+**Branch:** `social-s1-s2`  
+**Scope:** `src/ncaa_quant/social/render.py` (+ unit/golden tests). No Odds API,
+no threshold/config writes, no QB writes, no R2/publish, no Best Bets / No-Bet
+post generation.
+
+### Defect
+
+R2 used `next(...)` on `REASON_PLAIN` — same first-reason convention as the
+pre-fix No-Bet post. At this `as_of` every game listed `stale_inputs` first, so
+QB and residual refusals never reached the reader.
+
+### Fixes in `render.py`
+
+1. **All firing reasons** — `ordered_reply_reasons` + `join_reason_plain` name
+   every FilterReason with plain copy, ordered by reader importance: QB →
+   model/market disagree → other durable gates → `stale_inputs` last.
+2. **Stale-only** — when the only reason is `stale_inputs`, R2 emits forecast +
+   `Forecast ≠ edge` with **no** “No bet though …” rationale (staleness is a
+   run property, not a durable game condition).
+3. **Whole-point intervals** — `fmt_interval_bound` (`round` → `+d`); playbook
+   R2 already specified `{lo:+.0f}` / `{hi:+.0f}`.
+
+### Raw floats still reaching templates (inventory)
+
+| Site | Format | Notes |
+|------|--------|-------|
+| R2 μ | `{amt:.1f}` | one decimal (playbook) |
+| R2 interval | `fmt_interval_bound` | **whole points** (fixed) |
+| R1 / Best Bet lines | `fmt_line` (`+g`) | half-points intentional |
+| Best Bet edge | `b.edge_pct` | pre-rounded % from select |
+| `why_line` gap | `{gap:.1f}` | one decimal |
+| Hook CLV | `{clv:+.2f}` | two decimals |
+
+### Site URL templating (report only — no config change)
+
+| Location | Source |
+|----------|--------|
+| `render_no_bet_post` / `render_thread` / `render_replies` | parameter `site_url` — **no literal** |
+| `scripts/ridge_social.py` `--site-url` | **CLI default literal** `https://ridge.example.com` |
+| `SocialConfig` | **no `site_url` field** — not config-backed |
+| Probe / regenerated artifact | same example string (CLI default mirror) |
+
+`render.py` never hardcodes a URL; the placeholder in `replies_w1.md` comes
+from the CLI/probe default, not from `load_config()`.
+
+### 80% interval half-width / σ (report only — no interval code change)
+
+Regenerated forecast rows (`half_width_over_sigma` = `(hi−lo)/(2σ)`):
+
+| game_id | σ | half-width/σ |
+|--------:|--:|-------------:|
+| 401856766 | 19.82 | 1.422 |
+| 401864494 | 20.26 | 1.368 |
+| 401858202 | 23.64 | 1.307 |
+| 401864577 | 17.81 | **1.806** |
+| 401866408 | 20.99 | 1.590 |
+| 401858201 | 21.30 | 1.390 |
+| 401864570 | 17.00 | 1.504 |
+| 401862693 | 20.08 | **1.288** |
+
+**Range 1.29σ–1.81σ** across the eight games. **Expected** of published
+construction (sorted LightGBM **q10/q90 ± CQR add**, not Gaussian μ±1.28σ).
+Bands are often asymmetric; half-width/σ therefore varies with quantile-head
+geometry. **Related to open finding W9-CQR:** champion CQR 80% add (6.837) was
+fit on placeholder Gaussian bands then applied to real heads (W9-INT published
+coverage **0.874** vs nominal 0.80) — the constant add also inflates
+half-width/σ more when σ is smaller. Not a render bug; left untouched.
+
+### Regenerated replies (paste-ready)
+
+`as_of` on this regen: `2026-08-26T00:05:51Z` (same 16:59Z snap → still stale).
+Char counts = Python `len` on the reply body (under each `##` header).
+
+#### North Carolina @ TCU — **300 chars ⚠️ OVER 280**
+
+```
+Model: TCU by 17.6 (80% range: -11 to +46).
+
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+```
+
+#### San José State @ USC — **299 chars ⚠️ OVER 280**
+
+```
+Model: USC by 19.9 (80% range: -7 to +48).
+
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+```
+
+#### NC State @ Virginia — 65 chars (stale-only; no bet rationale)
+
+```
+Model: Virginia by 3.0 (80% range: -31 to +31).
+
+Forecast ≠ edge.
+```
+
+#### Jacksonville State @ North Dakota State — **315 chars ⚠️ OVER 280**
+
+```
+Model: North Dakota State by 14.5 (80% range: -19 to +45).
+
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+```
+
+#### Sacramento State @ Eastern Michigan — 210 chars
+
+```
+Model: Eastern Michigan by 12.4 (80% range: -21 to +46).
+
+No bet though — QB situation is unclear and we don't bet through that; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+```
+
+#### Hawai'i @ Stanford — 250 chars
+
+```
+Model: Stanford by 11.2 (80% range: -18 to +41).
+
+No bet though — model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+```
+
+#### New Mexico State @ Florida State — **309 chars ⚠️ OVER 280**
+
+```
+Model: Florida State by 15.5 (80% range: -8 to +43).
+
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+```
+
+#### Memphis @ UNLV — 198 chars
+
+```
+Model: UNLV by 10.9 (80% range: -13 to +38).
+
+No bet though — QB situation is unclear and we don't bet through that; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+```
+
+#### Game not in the slate — 150 chars
+
+```
+That one's outside this week's publish (kicked off before our Tuesday decision point / not covered). Everything we forecast: https://ridge.example.com
+```
+
+**Over 280:** four triple-reason replies (QB + disagree + stale). Flagged only —
+REASON_PLAIN left unchanged so single-reason / No-Bet copy stays stable.
+
+### Tests
+
+Golden per reason combination (incl. multi-reason + stale-only) in
+`tests/unit/test_social_render.py`. Fixture golden `replies_w5.md` regenerated
+with whole-point intervals.
+
+---
+
 ## Verification
 
 `make lint typecheck test` — see commit.
@@ -273,3 +429,7 @@ generator run; posting decision left to operator.
    though the batch is the Aug-25 live pull — not Aug-12 history.
 2. **Fresh pull required for a card:** staleness is binding now; operator must
    approve Odds API credits for a post-6h snap before any non-directional read.
+3. **Multi-reason R2 > 280:** three-reason paste exceeds X’s limit; shortening
+   REASON_PLAIN or a compact multi-reason template is a follow-up, not done here.
+4. **`site_url` not on SocialConfig:** CLI/probe default is still the example
+   placeholder until a config field is added.

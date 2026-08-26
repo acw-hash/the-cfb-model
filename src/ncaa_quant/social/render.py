@@ -38,44 +38,43 @@ REASON_PLAIN: dict[str, str] = {
     "line_quarantined": "the book line failed ingest sanity and was quarantined",
 }
 
+# Reply-bank order: durable reader-facing reasons first; stale last (run property).
+_REPLY_REASON_PRIORITY: dict[str, int] = {
+    "qb_status_unknown": 0,
+    "model_market_disagree": 1,
+    "sigma_not_credible": 2,
+    "edge_too_small": 3,
+    "non_positive_ev": 4,
+    "line_quarantined": 5,
+    "no_snapshot": 6,
+    "kickoff_passed": 7,
+    "max_bets_per_week": 8,
+    "max_weekly_exposure": 9,
+    "max_team_exposure": 10,
+    "stale_inputs": 11,
+}
+
 # No-Bet thread bodies keyed by dominant FilterReason.
 # Never claim a market condition the rejection data does not support.
 # Keep mid copy short: full post must stay ≤ POST_CHAR_LIMIT.
 _NO_BET_MID: dict[str, str] = {
     "qb_status_unknown": (
-        "QB status is unclear on the games that would clear the bar — "
-        "we don't bet through that."
+        "QB status is unclear on the games that would clear the bar — we don't bet through that."
     ),
-    "stale_inputs": (
-        "Our odds feed was stale at decision time — no bet on stale data."
-    ),
-    "edge_too_small": (
-        "Yes, really. Edges that survived our filters were too small to post."
-    ),
-    "non_positive_ev": (
-        "Nothing on the slate showed positive EV at the prices we shopped."
-    ),
-    "model_market_disagree": (
-        "Model and market are too far apart on this slate — auto sit-out."
-    ),
-    "no_snapshot": (
-        "We didn't have a usable odds snapshot at the decision point."
-    ),
-    "sigma_not_credible": (
-        "Margin uncertainty isn't credible enough to bet this slate."
-    ),
-    "line_quarantined": (
-        "Book lines failed ingest sanity checks and were quarantined."
-    ),
+    "stale_inputs": ("Our odds feed was stale at decision time — no bet on stale data."),
+    "edge_too_small": ("Yes, really. Edges that survived our filters were too small to post."),
+    "non_positive_ev": ("Nothing on the slate showed positive EV at the prices we shopped."),
+    "model_market_disagree": ("Model and market are too far apart on this slate — auto sit-out."),
+    "no_snapshot": ("We didn't have a usable odds snapshot at the decision point."),
+    "sigma_not_credible": ("Margin uncertainty isn't credible enough to bet this slate."),
+    "line_quarantined": ("Book lines failed ingest sanity checks and were quarantined."),
     "max_bets_per_week": "We hit our weekly bet cap before a public card filled out.",
     "max_weekly_exposure": "Weekly bankroll exposure cap reached before a public card.",
     "max_team_exposure": "Team exposure caps blocked the remaining candidates.",
     "kickoff_passed": "The remaining candidates had already kicked off at decision time.",
 }
 
-_NO_BET_MID_FALLBACK = (
-    "Nothing cleared the bar — we're flat on purpose, not guessing why."
-)
+_NO_BET_MID_FALLBACK = "Nothing cleared the bar — we're flat on purpose, not guessing why."
 
 
 def dominant_rejection_reason(
@@ -127,6 +126,37 @@ def fmt_line(x: Any) -> str:
     except (TypeError, ValueError):
         return "?"
     return f"{v:+g}"
+
+
+def fmt_interval_bound(x: Any) -> str:
+    """Whole-point signed bound for public interval copy (playbook R2)."""
+    try:
+        v = float(x)
+    except (TypeError, ValueError):
+        return "?"
+    return f"{round(v):+d}"
+
+
+def ordered_reply_reasons(reasons: Sequence[str]) -> list[str]:
+    """Unique FilterReasons with plain copy, ordered by reader importance."""
+    seen: set[str] = set()
+    out: list[str] = []
+    for raw in reasons:
+        key = str(raw)
+        if key in ("", "pass") or key not in REASON_PLAIN or key in seen:
+            continue
+        seen.add(key)
+        out.append(key)
+    out.sort(key=lambda r: (_REPLY_REASON_PRIORITY.get(r, 100), r))
+    return out
+
+
+def join_reason_plain(reasons: Sequence[str]) -> str:
+    """Join REASON_PLAIN clauses for multi-reason forecast-only replies."""
+    plains = [REASON_PLAIN[r] for r in ordered_reply_reasons(reasons)]
+    if not plains:
+        return REASON_PLAIN["edge_too_small"]
+    return "; ".join(plains)
 
 
 def kick_et_label(kick_utc: str | None) -> str:
@@ -245,6 +275,31 @@ def _is_sigma_refused(game: Mapping[str, Any]) -> bool:
     return game.get("mu_margin") is None
 
 
+def _forecast_only_body(
+    game: Mapping[str, Any],
+    reasons: Sequence[str],
+) -> str:
+    """R2 reply: forecast line; durable FilterReasons; stale-only has no rationale."""
+    mu = game.get("mu_margin")
+    assert mu is not None  # narrowed by _is_sigma_refused
+    lo, hi = game.get("margin_interval_lo"), game.get("margin_interval_hi")
+    away, home = game.get("away_team", "?"), game.get("home_team", "?")
+    fav = home if float(mu) >= 0 else away
+    amt = abs(float(mu))
+    rng = (
+        f" (80% range: {fmt_interval_bound(lo)} to {fmt_interval_bound(hi)})"
+        if lo is not None and hi is not None
+        else ""
+    )
+    head = f"Model: {fav} by {amt:.1f}{rng}."
+    ordered = ordered_reply_reasons(reasons)
+    # Staleness is a run property — alone it has no durable bet rationale.
+    if ordered == ["stale_inputs"]:
+        return f"{head}\n\nForecast \u2260 edge."
+    why = join_reason_plain(ordered)
+    return f"{head}\n\nNo bet though — {why}. Forecast \u2260 edge."
+
+
 def render_replies(
     games: Sequence[Mapping[str, Any]],
     bets: Sequence[BestBet],
@@ -255,13 +310,15 @@ def render_replies(
 ) -> str:
     """Reply bank for every game on the published slate.
 
-    Three branches per game: on-card / forecast-only (FilterReason → plain
-    English) / σ-refused.
+    Three branches per game: on-card / forecast-only (all FilterReasons → plain
+    English, reader-ordered) / σ-refused. Stale-only games get forecast copy
+    with no bet rationale.
     """
     bet_by_gid = {str(b.game["game_id"]): b for b in bets}
     rej_by_gid: dict[str, list[str]] = {}
     for r in rejected or []:
-        rej_by_gid.setdefault(str(r.get("game_id")), []).extend(list(r.get("reasons") or []))
+        gid = str(r.get("game_id"))
+        rej_by_gid.setdefault(gid, []).extend(list(r.get("reasons") or []))
 
     blocks: list[str] = []
     if fixture:
@@ -289,24 +346,7 @@ def render_replies(
                 f"Details: {site_url}"
             )
         else:
-            mu = g.get("mu_margin")
-            assert mu is not None  # narrowed by _is_sigma_refused
-            lo, hi = g.get("margin_interval_lo"), g.get("margin_interval_hi")
-            fav = home if float(mu) >= 0 else away
-            amt = abs(float(mu))
-            rng = (
-                f" (80% range: {fmt_line(lo)} to {fmt_line(hi)})"
-                if lo is not None and hi is not None
-                else ""
-            )
-            reasons = rej_by_gid.get(gid, [])
-            why = next(
-                (REASON_PLAIN[r] for r in reasons if r in REASON_PLAIN),
-                "the market has this priced about right",
-            )
-            body = (
-                f"Model: {fav} by {amt:.1f}{rng}.\n\nNo bet though — {why}. Forecast \u2260 edge."
-            )
+            body = _forecast_only_body(g, rej_by_gid.get(gid, []))
         blocks.append(f"{header}\n\n{body}\n")
 
     blocks.append(

@@ -14,7 +14,7 @@ from ncaa_quant.betting.kelly import recommended_stake
 from ncaa_quant.betting.provider import build_candidates_from_odds
 from ncaa_quant.config import load_config
 from ncaa_quant.data.storage import ParquetStore
-from ncaa_quant.social.render import REASON_PLAIN, dominant_rejection_reason
+from ncaa_quant.social.render import dominant_rejection_reason, render_replies
 
 ROOT = Path(__file__).resolve().parents[1]
 ARTIFACT_DIR = ROOT / "docs" / "notes" / "_artifacts" / "social-s5-w0-read"
@@ -117,6 +117,11 @@ def _game_forecast_row(game: dict[str, Any]) -> dict[str, Any]:
     home = game.get("home_team", "?")
     away = game.get("away_team", "?")
     fav = home if mu is not None and float(mu) >= 0 else away
+    half_width_sigma = None
+    if mu is not None and lo is not None and hi is not None and game.get("sigma_margin"):
+        sig = float(game["sigma_margin"])
+        if sig > 0:
+            half_width_sigma = round((float(hi) - float(lo)) / (2.0 * sig), 3)
     return {
         "game_id": str(game["game_id"]),
         "matchup": f"{away} @ {home}",
@@ -125,53 +130,12 @@ def _game_forecast_row(game: dict[str, Any]) -> dict[str, Any]:
         "sigma_margin": game.get("sigma_margin"),
         "interval_80_lo": lo,
         "interval_80_hi": hi,
+        "half_width_over_sigma": half_width_sigma,
         "conviction_tier": game.get("conviction_tier"),
         "p_favored": (game.get("conviction_basis") or {}).get("p_favored", game.get("p_win_home")),
         "coherence_suppressed": suppressed,
+        "favored_team": fav,
     }
-
-
-def _fmt_line(x: Any) -> str:
-    try:
-        v = float(x)
-    except (TypeError, ValueError):
-        return "?"
-    return f"{v:+g}"
-
-
-def _reply_for_game(
-    game: dict[str, Any],
-    *,
-    reasons: list[str],
-    site_url: str = "https://ridge.example.com",
-) -> str:
-    """Single-game reply using primary FilterReason (render.py convention)."""
-    gid = str(game["game_id"])
-    away, home = game.get("away_team", "?"), game.get("home_team", "?")
-    mu = game.get("mu_margin")
-    lo, hi = game.get("margin_interval_lo"), game.get("margin_interval_hi")
-    if mu is None or game.get("sigma_margin_credible") is False:
-        return (
-            f"## {away} @ {home}\n\n"
-            "Model won't give a confident number on this one "
-            "(not enough signal) — that's a feature, not a bug. "
-            f"Details: {site_url}\n"
-        )
-    fav = home if float(mu) >= 0 else away
-    amt = abs(float(mu))
-    rng = (
-        f" (80% range: {_fmt_line(lo)} to {_fmt_line(hi)})"
-        if lo is not None and hi is not None
-        else ""
-    )
-    primary = next((r for r in reasons if r in REASON_PLAIN), None)
-    why = (
-        REASON_PLAIN.get(primary, "the market has this priced about right")
-        if primary
-        else ("the market has this priced about right")
-    )
-    body = f"Model: {fav} by {amt:.1f}{rng}.\n\nNo bet though — {why}. Forecast ≠ edge."
-    return f"## {away} @ {home}\n\n{body}\n"
 
 
 def run_analysis(*, as_of: datetime | None = None) -> dict[str, Any]:
@@ -339,20 +303,9 @@ def run_analysis(*, as_of: datetime | None = None) -> dict[str, Any]:
     edges = sorted(r["edge"] for r in rows)
     forecast_rows = [_game_forecast_row(g) for g in games]
 
-    # Reply bank
-    reply_blocks = ["# Reply bank — paste-ready answers per game\n"]
-    for game in games:
-        gid = str(game["game_id"])
-        reasons = next((r["filter_reasons_firing"] for r in rows if r["game_id"] == gid), [])
-        reply_blocks.append(_reply_for_game(game, reasons=reasons))
-
-    reply_blocks.append(
-        "## Game not in the slate\n\n"
-        "That one's outside this week's publish (kicked off before our "
-        "Tuesday decision point / not covered). Everything we forecast: "
-        "https://ridge.example.com\n"
-    )
-    replies_md = "\n".join(reply_blocks)
+    # Reply bank via render.py (all reasons, stale-only, whole-point intervals)
+    site_url = "https://ridge.example.com"  # CLI default; SocialConfig has no site_url
+    replies_md = render_replies(games, [], rejected_for_replies, site_url)
 
     # Dominant reason for doc
     dom = dominant_rejection_reason(rejected_for_replies)
@@ -379,6 +332,7 @@ def run_analysis(*, as_of: datetime | None = None) -> dict[str, Any]:
         "forecast_rows": forecast_rows,
         "replies_w1_md": replies_md,
         "dominant_rejection_reason": dom,
+        "site_url_used": site_url,
         "qb_fully_resolved_games": ["401858202", "401858201"],
         "qb_blocked_count": 6,
         "qb_clear_count": 2,
@@ -395,6 +349,13 @@ def main() -> None:
     print(f"wrote {out_json}")
     print(f"dominant reason: {payload['dominant_rejection_reason']}")
     print(f"stale: {payload['stale_inputs_directional_only']}")
+    halfs = [
+        r["half_width_over_sigma"]
+        for r in payload["forecast_rows"]
+        if r.get("half_width_over_sigma") is not None
+    ]
+    if halfs:
+        print(f"half_width/sigma min={min(halfs)} max={max(halfs)}")
 
 
 if __name__ == "__main__":
