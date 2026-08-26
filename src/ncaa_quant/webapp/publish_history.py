@@ -74,7 +74,8 @@ def load_season_publish_history(root: Path | str, *, season: int) -> list[dict[s
     records: list[dict[str, Any]] = []
     base = Path(root)
     for week in range(1, 16):
-        records.extend(load_publish_history_file(publish_history_file(base, season=season, week=week)))
+        path = publish_history_file(base, season=season, week=week)
+        records.extend(load_publish_history_file(path))
     return records
 
 

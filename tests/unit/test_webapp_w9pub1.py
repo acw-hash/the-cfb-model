@@ -95,7 +95,7 @@ def test_week1_operator_as_of_keeps_early_slate() -> None:
     kept_op, n_ex_op = exclude_games_kicked_off_before(week_games, OPERATOR_AS_OF)
     assert n_ex_op == 0
     assert len(kept_op) == 99
-    assert EARLY_WEEK1_IDS <= set(kept_op["game_id"].astype(int))
+    assert set(kept_op["game_id"].astype(int)) >= EARLY_WEEK1_IDS
 
     cal_as_of, source = resolve_week_publish_as_of(2026, 1, None)
     assert source == "calendar"
@@ -151,8 +151,6 @@ def test_publish_history_append_only_and_grade_loads(tmp_path: Path) -> None:
 
     loaded = load_season_publish_history(root, season=2026)
     assert len(loaded) == 2
-
-    from ncaa_quant.webapp.publish_history import history_records_for_grade
 
     hist = history_records_for_grade(root, season=2026, explicit=None)
     assert len(hist) == 2
@@ -366,11 +364,11 @@ def test_export_writes_history_with_export_disabled(tmp_path: Path) -> None:
                 "cqr_lo": -20.0,
                 "cqr_hi": 26.0,
                 "cqr_nominal": 0.8,
-                    "p_ml_home": 0.6,
-                    "p_ml_home_is_missing": False,
-                    "run_id": "task23_fundamental_reduced_v3",
-                    "model_version": "production-v0_reduced_v3",
-                }
+                "p_ml_home": 0.6,
+                "p_ml_home_is_missing": False,
+                "run_id": "task23_fundamental_reduced_v3",
+                "model_version": "production-v0_reduced_v3",
+            }
         ],
         "stale": {"is_stale": False, "combined_stamp": None, "sources": []},
     }

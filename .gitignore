@@ -70,3 +70,6 @@ Thumbs.db
 
 # Large local run logs (referenced from docs/notes/05b.md)
 docs/notes/05b-backfill-run.log
+
+# Local R2 rollback snapshots (never commit)
+backup_latest_*/
