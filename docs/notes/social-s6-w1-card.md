@@ -445,3 +445,122 @@ for regenerated card artifacts).
    is 16 team rows across 8 games if gates were cleared through exposure.
 3. **Massachusetts @ Rutgers** retains Aug-25 fallback only (`stale_inputs`).
 
+---
+
+## S7-XWALK-B — gate re-run with QB rows populated (2026-09-01)
+
+**Branch:** `social-s1-s2`  
+**Analysis `as_of`:** `2026-09-01T22:30:00Z` (after 16 manual `qb_status` writes; QB rows
+visible at this `as_of`)  
+**Publish `as_of`:** `2026-09-01T10:00:00Z` (unchanged)  
+**Snapshot `event_time`:** `2026-09-01T20:34:56.940488Z`  
+**Odds API / R2 / publish / merge to `main`:** OFF  
+**No new pull.** Probe-only gate ordering (QB last). No `qb_status` writes in this task.
+
+**QB store:** 16 new rows across the eight step-4 exposure survivors from S7-XWALK replay
+(six `starter`, ten `unknown`; `source_version=manual_v1`). Two step-4 games from the
+current exposure set have **no** `qb_status` rows (Northwestern State @ Louisiana Tech,
+Portland State @ San Diego State — swapped in after crosswalk fix).
+
+**Artifact:** `docs/notes/_artifacts/social-s7-xwalk-b/gate_rerun.json`
+
+### 1 — Survivor counts (probe ordering)
+
+| Step | Prior (S7-XWALK replay, no QB rows) | This run (QB populated) |
+|------|------------------------------------:|------------------------:|
+| start | 91 | **91** |
+| 1 — snapshot / stale / kickoff / quarantine | 90 | **90** |
+| 2 — edge / EV / σ | 84 | **84** |
+| 3 — model_market_disagree | 28 | **28** |
+| 4 — exposure caps | 8 | **8** |
+| 5 — qb_status_unknown | 0 | **2** |
+
+Steps 1–4 unchanged. Step 5 is the first live slate where the QB gate **both passes and
+fails** games in the same run (2 pass, 6 fail among step-4 survivors).
+
+### 2 — Step-4 games: QB resolution
+
+| game_id | matchup | away status | away source | home status | home source | passes QB gate |
+|--------:|---------|-------------|-------------|-------------|-------------|:--------------:|
+| 401869129 | Northwestern State @ Louisiana Tech | — (no row) | — | — (no row) | — | **no** |
+| 401856636 | Baylor @ Auburn | starter | manual_v1 | starter | manual_v1 | **yes** |
+| 401860879 | Portland State @ San Diego State | — (no row) | — | — (no row) | — | **no** |
+| 401858209 | Tulane @ Duke | starter | manual_v1 | starter | manual_v1 | **yes** |
+| 401858434 | Marshall @ Penn State | starter | manual_v1 | unknown | manual_v1 | **no** |
+| 401866623 | NC A&T @ Georgia State | unknown | manual_v1 | unknown | manual_v1 | **no** |
+| 401858422 | Eastern Illinois @ Minnesota | unknown | manual_v1 | unknown | manual_v1 | **no** |
+| 401864498 | Central Michigan @ New Mexico | unknown | manual_v1 | unknown | manual_v1 | **no** |
+
+Game-level rule: both teams must have a non-`unknown` status row with `event_time ≤ as_of`
+(`qb_status_known_for_game` → `staged_asof`). A row with `status=unknown` does **not**
+resolve the team.
+
+### 3 — Candidates surviving all five gates
+
+**Two** games clear every probe gate. S5 overlay attached verbatim on each row.
+
+**401856636 — Baylor @ Auburn**
+
+| Field | Value |
+|-------|------:|
+| side | Auburn |
+| book | fanduel |
+| line | −7.5 |
+| price | −102 |
+| edge | 0.1472 |
+| EV | 0.2436 |
+| residual | 6.98 |
+| stake | 0.015 |
+| units | 3.0 |
+
+**401858209 — Tulane @ Duke**
+
+| Field | Value |
+|-------|------:|
+| side | Duke |
+| book | draftkings |
+| line | −7.5 |
+| price | −105 |
+| edge | 0.1048 |
+| EV | 0.1597 |
+| residual | 5.29 |
+| stake | 0.015 |
+| units | 3.0 |
+
+**S5 discrimination overlay (verbatim on both survivors):**
+
+| Quantity | Value |
+|----------|-------|
+| Candidate `p_win` AUC | **0.493** [0.43, 0.56] |
+| Top bin realized vs break-even | **0.508** vs **0.524** |
+| Accept-loop top-*k* overlap | **1.0** |
+| Probability CLV vs required | **+0.0044** vs **+0.0238** |
+
+**Verdict:** **NOT MEASURED** — two candidates clear all probe gates, but S5 measured no
+per-game ATS discrimination on the 314-ticket population (AUC 0.493).
+
+### 4 — QB gate end-to-end confirmation
+
+First live slate where `qb_status_unknown` fires **selectively** rather than on all 91:
+
+| Outcome | Count | games |
+|---------|------:|-------|
+| QB gate **pass** (step 5 survivor) | **2** | Baylor @ Auburn, Tulane @ Duke |
+| QB gate **fail** (step-4 but blocked at 5) | **6** | Northwestern State @ LA Tech, Portland State @ SDSU, Marshall @ Penn State, NC A&T @ Georgia State, Eastern Illinois @ Minnesota, Central Michigan @ New Mexico |
+
+Prior runs: all 91 (pre-pull) or all 8 step-4 survivors (post-pull, no QB rows) rejected
+on `qb_status_unknown`. This run proves the gate is wired correctly — it passes when both
+starters are known and fails when either team is missing or `unknown`.
+
+### 5 — Staleness
+
+| Field | Value |
+|-------|------:|
+| `as_of − snapshot event_time` | **1.92 h** |
+| `odds_max_age_hours` | 6.0 |
+| `stale_inputs` fired | **NO** |
+| Stale wall-clock (UTC) | `2026-09-02T02:34:56Z` |
+
+Snapshot ladder rung is `odds_api_snapshot_fallback` (1.92 h > 5-min post-2022 tolerance) but
+within the 6-hour staleness wall — `is_stale=false` on all constructed candidates.
+

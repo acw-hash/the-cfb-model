@@ -1,0 +1,335 @@
+{
+  "analysis_as_of": "2026-09-01T22:30:00+00:00",
+  "snapshot_event_time": "2026-09-01T20:34:56.940488+00:00",
+  "as_of_minus_snapshot_hours": 1.918,
+  "stale_at_as_of": false,
+  "odds_max_age_hours": 6.0,
+  "prior_step_counts": {
+    "start": 91,
+    "step1_snapshot_stale_kickoff_quarantine": 90,
+    "step2_edge_ev_sigma": 84,
+    "step3_model_market_disagree": 28,
+    "step4_exposure_caps": 8,
+    "step5_qb_status_unknown": 0
+  },
+  "new_step_counts": {
+    "step1_snapshot_stale_kickoff_quarantine": 90,
+    "step2_edge_ev_sigma": 84,
+    "step3_model_market_disagree": 28,
+    "step4_exposure_caps": 8,
+    "step5_qb_status_unknown": 2,
+    "start": 91
+  },
+  "step4_qb_detail": [
+    {
+      "game_id": "401869129",
+      "matchup": "Northwestern State @ Louisiana Tech",
+      "teams": [
+        {
+          "team": "Louisiana Tech",
+          "team_id": 2348,
+          "status": null,
+          "source_version": null,
+          "event_time": null
+        },
+        {
+          "team": "Northwestern State",
+          "team_id": 2466,
+          "status": null,
+          "source_version": null,
+          "event_time": null
+        }
+      ],
+      "qb_status_known": false,
+      "qb_status_source": "unchecked",
+      "passes_qb_gate": false,
+      "filter_reasons_firing": [
+        "qb_status_unknown"
+      ]
+    },
+    {
+      "game_id": "401856636",
+      "matchup": "Baylor @ Auburn",
+      "teams": [
+        {
+          "team": "Auburn",
+          "team_id": 2,
+          "status": "starter",
+          "source_version": "manual_v1",
+          "event_time": "2026-09-01T22:15:27.497134+00:00"
+        },
+        {
+          "team": "Baylor",
+          "team_id": 239,
+          "status": "starter",
+          "source_version": "manual_v1",
+          "event_time": "2026-09-01T22:15:22.454398+00:00"
+        }
+      ],
+      "qb_status_known": true,
+      "qb_status_source": "staged_asof",
+      "passes_qb_gate": true,
+      "filter_reasons_firing": []
+    },
+    {
+      "game_id": "401860879",
+      "matchup": "Portland State @ San Diego State",
+      "teams": [
+        {
+          "team": "San Diego State",
+          "team_id": 21,
+          "status": null,
+          "source_version": null,
+          "event_time": null
+        },
+        {
+          "team": "Portland State",
+          "team_id": 2502,
+          "status": null,
+          "source_version": null,
+          "event_time": null
+        }
+      ],
+      "qb_status_known": false,
+      "qb_status_source": "unchecked",
+      "passes_qb_gate": false,
+      "filter_reasons_firing": [
+        "qb_status_unknown"
+      ]
+    },
+    {
+      "game_id": "401858209",
+      "matchup": "Tulane @ Duke",
+      "teams": [
+        {
+          "team": "Duke",
+          "team_id": 150,
+          "status": "starter",
+          "source_version": "manual_v1",
+          "event_time": "2026-09-01T22:15:36.968358+00:00"
+        },
+        {
+          "team": "Tulane",
+          "team_id": 2655,
+          "status": "starter",
+          "source_version": "manual_v1",
+          "event_time": "2026-09-01T22:15:32.064135+00:00"
+        }
+      ],
+      "qb_status_known": true,
+      "qb_status_source": "staged_asof",
+      "passes_qb_gate": true,
+      "filter_reasons_firing": []
+    },
+    {
+      "game_id": "401858434",
+      "matchup": "Marshall @ Penn State",
+      "teams": [
+        {
+          "team": "Penn State",
+          "team_id": 213,
+          "status": "unknown",
+          "source_version": "manual_v1",
+          "event_time": "2026-09-01T22:24:09.289476+00:00"
+        },
+        {
+          "team": "Marshall",
+          "team_id": 276,
+          "status": "starter",
+          "source_version": "manual_v1",
+          "event_time": "2026-09-01T22:15:42.189092+00:00"
+        }
+      ],
+      "qb_status_known": false,
+      "qb_status_source": "unchecked",
+      "passes_qb_gate": false,
+      "filter_reasons_firing": [
+        "qb_status_unknown"
+      ]
+    },
+    {
+      "game_id": "401866623",
+      "matchup": "North Carolina A&T @ Georgia State",
+      "teams": [
+        {
+          "team": "Georgia State",
+          "team_id": 2247,
+          "status": "unknown",
+          "source_version": "manual_v1",
+          "event_time": "2026-09-01T22:24:19.204211+00:00"
+        },
+        {
+          "team": "North Carolina A&T",
+          "team_id": 2448,
+          "status": "unknown",
+          "source_version": "manual_v1",
+          "event_time": "2026-09-01T22:24:13.972019+00:00"
+        }
+      ],
+      "qb_status_known": false,
+      "qb_status_source": "unchecked",
+      "passes_qb_gate": false,
+      "filter_reasons_firing": [
+        "qb_status_unknown"
+      ]
+    },
+    {
+      "game_id": "401858422",
+      "matchup": "Eastern Illinois @ Minnesota",
+      "teams": [
+        {
+          "team": "Minnesota",
+          "team_id": 135,
+          "status": "unknown",
+          "source_version": "manual_v1",
+          "event_time": "2026-09-01T22:24:43.691921+00:00"
+        },
+        {
+          "team": "Eastern Illinois",
+          "team_id": 2197,
+          "status": "unknown",
+          "source_version": "manual_v1",
+          "event_time": "2026-09-01T22:24:39.025013+00:00"
+        }
+      ],
+      "qb_status_known": false,
+      "qb_status_source": "unchecked",
+      "passes_qb_gate": false,
+      "filter_reasons_firing": [
+        "qb_status_unknown"
+      ]
+    },
+    {
+      "game_id": "401864498",
+      "matchup": "Central Michigan @ New Mexico",
+      "teams": [
+        {
+          "team": "New Mexico",
+          "team_id": 167,
+          "status": "unknown",
+          "source_version": "manual_v1",
+          "event_time": "2026-09-01T22:24:58.144394+00:00"
+        },
+        {
+          "team": "Central Michigan",
+          "team_id": 2117,
+          "status": "unknown",
+          "source_version": "manual_v1",
+          "event_time": "2026-09-01T22:24:48.289809+00:00"
+        }
+      ],
+      "qb_status_known": false,
+      "qb_status_source": "unchecked",
+      "passes_qb_gate": false,
+      "filter_reasons_firing": [
+        "qb_status_unknown"
+      ]
+    }
+  ],
+  "final_survivors": [
+    {
+      "game_id": "401856636",
+      "matchup": "Baylor @ Auburn",
+      "side": "Auburn",
+      "kickoff_utc": "2026-09-05T19:30:00Z",
+      "book": "fanduel",
+      "shopped_line": -7.5,
+      "price": -102.0,
+      "snapshot_event_time": "2026-09-01T20:34:56.940488+00:00",
+      "ladder_rung": "odds_api_snapshot_fallback",
+      "model_line": -14.479792998249879,
+      "mu_margin": 14.479792998249879,
+      "sigma_margin": 20.79419878505018,
+      "sigma_margin_credible": true,
+      "p_model": 0.62795,
+      "p_market": 0.48071979434447304,
+      "edge": 0.1472,
+      "expected_value": 0.2436,
+      "model_market_residual_points": 6.98,
+      "residual_passes_agreement": true,
+      "near_agreement_flip": true,
+      "is_stale": false,
+      "snapshot_age_hours": 1.918,
+      "qb_status_known": true,
+      "qb_status_source": "staged_asof",
+      "stake_fraction": 0.015,
+      "units": 3.0,
+      "per_filter_pass": {
+        "edge_too_small": true,
+        "stale_inputs": true,
+        "qb_status_unknown": true,
+        "model_market_disagree": true,
+        "max_bets_per_week": true,
+        "max_weekly_exposure": true,
+        "max_team_exposure": true,
+        "non_positive_ev": true,
+        "sigma_not_credible": true,
+        "kickoff_passed": true,
+        "no_snapshot": true,
+        "line_quarantined": true
+      },
+      "filter_reasons_firing": [],
+      "block_reasons": [],
+      "refusal_only": false,
+      "s5_discrimination_overlay": {
+        "candidate_p_win_auc": "0.493 [0.43, 0.56]",
+        "top_bin": "0.508 vs 0.524 break-even",
+        "accept_loop_top_k_overlap": "1.0",
+        "probability_clv": "+0.0044 vs +0.0238 required"
+      }
+    },
+    {
+      "game_id": "401858209",
+      "matchup": "Tulane @ Duke",
+      "side": "Duke",
+      "kickoff_utc": "2026-09-05T19:30:00Z",
+      "book": "draftkings",
+      "shopped_line": -7.5,
+      "price": -105.0,
+      "snapshot_event_time": "2026-09-01T20:34:56.940488+00:00",
+      "ladder_rung": "odds_api_snapshot_fallback",
+      "model_line": -12.79407930718834,
+      "mu_margin": 12.79407930718834,
+      "sigma_margin": 22.14638327603449,
+      "sigma_margin_credible": true,
+      "p_model": 0.594,
+      "p_market": 0.4891657638136511,
+      "edge": 0.1048,
+      "expected_value": 0.1597,
+      "model_market_residual_points": 5.29,
+      "residual_passes_agreement": true,
+      "near_agreement_flip": false,
+      "is_stale": false,
+      "snapshot_age_hours": 1.918,
+      "qb_status_known": true,
+      "qb_status_source": "staged_asof",
+      "stake_fraction": 0.015,
+      "units": 3.0,
+      "per_filter_pass": {
+        "edge_too_small": true,
+        "stale_inputs": true,
+        "qb_status_unknown": true,
+        "model_market_disagree": true,
+        "max_bets_per_week": true,
+        "max_weekly_exposure": true,
+        "max_team_exposure": true,
+        "non_positive_ev": true,
+        "sigma_not_credible": true,
+        "kickoff_passed": true,
+        "no_snapshot": true,
+        "line_quarantined": true
+      },
+      "filter_reasons_firing": [],
+      "block_reasons": [],
+      "refusal_only": false,
+      "s5_discrimination_overlay": {
+        "candidate_p_win_auc": "0.493 [0.43, 0.56]",
+        "top_bin": "0.508 vs 0.524 break-even",
+        "accept_loop_top_k_overlap": "1.0",
+        "probability_clv": "+0.0044 vs +0.0238 required"
+      }
+    }
+  ],
+  "qb_gate_pass_count": 2,
+  "qb_gate_fail_count": 6
+}
