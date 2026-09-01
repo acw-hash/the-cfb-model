@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -15,6 +15,7 @@ from ncaa_quant.betting.provider import build_candidates_from_odds
 from ncaa_quant.config import load_config
 from ncaa_quant.data.storage import ParquetStore
 from ncaa_quant.social.render import render_replies
+from ncaa_quant.utils.timeutils import to_utc
 
 ROOT = Path(__file__).resolve().parents[1]
 ARTIFACT_DIR = ROOT / "docs" / "notes" / "_artifacts" / "social-s6-w1-card"
@@ -198,6 +199,8 @@ def _ordered_gate_survivors(
         "step5_qb_status_unknown",
     ]
 
+    qb_worklist: list[dict[str, Any]] = []
+
     for idx, step_reasons in enumerate(GATE_STEPS):
         if idx == 3:
             # Exposure: edge-sorted cumulative accept simulation.
@@ -227,6 +230,15 @@ def _ordered_gate_survivors(
                 for tid in cand.team_ids:
                     team_exp[tid] = team_exp.get(tid, 0.0) + stake
             survivors = kept
+            qb_worklist = [
+                {
+                    "game_id": r["game_id"],
+                    "matchup": r["matchup"],
+                    "home_team": r["matchup"].split(" @ ")[1],
+                    "away_team": r["matchup"].split(" @ ")[0],
+                }
+                for r in survivors
+            ]
         else:
             survivors = [
                 r
@@ -234,16 +246,6 @@ def _ordered_gate_survivors(
                 if _passes_step(set(r["filter_reasons_firing"]), step_reasons)
             ]
         step_counts.append(len(survivors))
-
-    qb_worklist = [
-        {
-            "game_id": r["game_id"],
-            "matchup": r["matchup"],
-            "home_team": r["matchup"].split(" @ ")[1],
-            "away_team": r["matchup"].split(" @ ")[0],
-        }
-        for r in survivors
-    ]
 
     return {
         "step_counts": dict(zip(step_labels, step_counts, strict=True)),
@@ -331,44 +333,141 @@ def _qb_coverage(
     }
 
 
+def _crosswalk_summary(store: ParquetStore, season: int, ingest_ingested_at: datetime) -> dict[str, Any]:
+    """Summarize the most recent live-ingest crosswalk rows."""
+    xw = store.read("odds_cfbd_game_crosswalk", filters={"season": int(season)})
+    if xw.empty:
+        return {
+            "events_in_pull": 0,
+            "matched": 0,
+            "unmatched": 0,
+            "match_rate": None,
+            "unmatched_events": [],
+        }
+    xw = xw.copy()
+    xw["ingested_at"] = pd.to_datetime(xw["ingested_at"], utc=True)
+    ingest_ts = pd.Timestamp(to_utc(ingest_ingested_at))
+    recent = xw.loc[xw["ingested_at"] >= ingest_ts - pd.Timedelta(seconds=30)]
+    if recent.empty:
+        recent = xw.sort_values("ingested_at").groupby("odds_event_id", sort=False).tail(1)
+    matched = int((recent["match_status"] == "matched").sum()) if "match_status" in recent.columns else 0
+    unmatched = int((recent["match_status"] != "matched").sum()) if "match_status" in recent.columns else 0
+    total = len(recent)
+    unmatched_events = []
+    if "match_status" in recent.columns:
+        bad = recent.loc[recent["match_status"] != "matched"]
+        for _, row in bad.iterrows():
+            unmatched_events.append(
+                {
+                    "odds_event_id": str(row.get("odds_event_id", "")),
+                    "home_team": str(row.get("home_team", "")),
+                    "away_team": str(row.get("away_team", "")),
+                    "match_status": str(row.get("match_status", "")),
+                }
+            )
+    return {
+        "events_in_pull": total,
+        "matched": matched,
+        "unmatched": unmatched,
+        "match_rate": round(matched / total, 4) if total else None,
+        "unmatched_events": unmatched_events,
+    }
+
+
+def _fcs_opponent_ids(store: ParquetStore, season: int) -> set[int]:
+    teams = store.read("teams", filters={"season": int(season)})
+    if teams.empty or "classification" not in teams.columns:
+        return set()
+    return set(teams.loc[teams["classification"].astype(str) == "fcs", "team_id"].astype(int))
+
+
+def _edge_distribution(rows: list[dict[str, Any]], game_lookup: dict[int, dict[str, Any]], fcs_ids: set[int]) -> dict[str, Any]:
+    edges = sorted(float(r.get("edge", 0)) for r in rows)
+    all_ge_015 = [r["game_id"] for r in rows if float(r.get("edge", 0)) >= 0.15]
+    fcs_edges: list[float] = []
+    fcs_rows: list[dict[str, Any]] = []
+    for r in rows:
+        gid = int(r["game_id"])
+        game = game_lookup.get(gid, {})
+        hi = int(game.get("home_team_id", 0))
+        ai = int(game.get("away_team_id", 0))
+        if hi in fcs_ids or ai in fcs_ids:
+            e = float(r.get("edge", 0))
+            fcs_edges.append(e)
+            fcs_rows.append({"game_id": r["game_id"], "matchup": r.get("matchup", ""), "edge": e})
+    fcs_sorted = sorted(fcs_edges)
+    return {
+        "min": min(edges) if edges else None,
+        "max": max(edges) if edges else None,
+        "values": edges,
+        "near_bar_0_045": [
+            r["game_id"] for r in rows if 0.04 <= float(r.get("edge", 0)) <= 0.05
+        ],
+        "regime_ge_0_15": all_ge_015,
+        "fcs_opponent_games": len(fcs_rows),
+        "fcs_edge_min": min(fcs_sorted) if fcs_sorted else None,
+        "fcs_edge_max": max(fcs_sorted) if fcs_sorted else None,
+        "fcs_regime_ge_0_15": sum(1 for e in fcs_edges if e >= 0.15),
+        "fcs_top_edges": sorted(fcs_rows, key=lambda x: float(x["edge"]), reverse=True)[:10],
+    }
+
+
 def _odds_snapshot_summary(
     games: list[dict[str, Any]],
     as_of: datetime,
     betting: Any,
 ) -> dict[str, Any]:
     parts = sorted((ROOT / "data" / "staged" / "odds_snapshots").glob("season=2026/**/part.parquet"))
-    newest_et = max(pd.read_parquet(p, columns=["event_time"])["event_time"].max() for p in parts)
-    newest_dt = pd.Timestamp(newest_et).to_pydatetime()
-    if newest_dt.tzinfo is None:
-        newest_dt = newest_dt.replace(tzinfo=UTC)
-    age_h = (as_of - newest_dt).total_seconds() / 3600.0
-
-    gids = {int(g["game_id"]) for g in games}
     odds_frames = [pd.read_parquet(p) for p in parts]
     odds = pd.concat(odds_frames, ignore_index=True)
+    odds["event_time"] = pd.to_datetime(odds["event_time"], utc=True)
+    odds["ingested_at"] = pd.to_datetime(odds["ingested_at"], utc=True)
+    newest_et = odds["event_time"].max()
+    newest_dt = newest_et.to_pydatetime()
+    newest_ingested = odds.loc[odds["event_time"] == newest_et, "ingested_at"].max()
+    newest_ingested_dt = newest_ingested.to_pydatetime()
+    age_h = (as_of - newest_dt).total_seconds() / 3600.0
+    max_age = float(betting.odds_max_age_hours)
+    stale_wall = newest_dt + timedelta(hours=max_age)
+
+    gids = {int(g["game_id"]) for g in games}
     odds["game_id"] = odds["game_id"].astype("Int64")
-    slate_spread = odds[(odds["game_id"].isin(list(gids))) & (odds["market"] == "spread")]
+    newest_slice = odds.loc[odds["event_time"] == newest_et]
+    slate_spread = newest_slice[
+        (newest_slice["game_id"].isin(list(gids))) & (newest_slice["market"] == "spread")
+    ]
     books_per = (
         slate_spread.groupby("game_id")["book"].nunique().to_dict() if not slate_spread.empty else {}
     )
     coverage_rows: list[dict[str, Any]] = []
+    no_snapshot_games: list[dict[str, Any]] = []
     for g in games:
         gid = int(g["game_id"])
         n_books = int(books_per.get(gid, 0))
+        matchup = f"{g['away_team']} @ {g['home_team']}"
         coverage_rows.append(
             {
                 "game_id": str(gid),
-                "matchup": f"{g['away_team']} @ {g['home_team']}",
+                "matchup": matchup,
                 "books_with_spread": n_books,
             }
         )
+        if n_books == 0:
+            no_snapshot_games.append({"game_id": str(gid), "matchup": matchup})
+    book_counts = list(books_per.values())
     return {
         "newest_event_time": newest_dt.isoformat(),
+        "newest_ingested_at": newest_ingested_dt.isoformat(),
         "age_hours_at_as_of": round(age_h, 3),
-        "odds_max_age_hours": float(betting.odds_max_age_hours),
-        "stale_at_as_of": age_h > float(betting.odds_max_age_hours),
+        "odds_max_age_hours": max_age,
+        "stale_at_as_of": age_h > max_age,
+        "stale_wall_clock_utc": stale_wall.isoformat(),
         "games_with_spread_odds": len(books_per),
         "games_without_spread_odds": len(gids) - len(books_per),
+        "books_per_game_min": min(book_counts) if book_counts else 0,
+        "books_per_game_median": float(pd.Series(book_counts).median()) if book_counts else 0.0,
+        "books_per_game_max": max(book_counts) if book_counts else 0,
+        "no_snapshot_games": no_snapshot_games,
         "book_coverage": coverage_rows,
         "live_pull_credit_cost": LIVE_ODDS_CREDITS,
         "live_pull_credit_note": "markets (h2h,spreads,totals) × regions (us) per Odds API live endpoint",
@@ -385,9 +484,11 @@ def run_analysis(*, as_of: datetime | None = None) -> dict[str, Any]:
 
     with ParquetStore(cfg.paths.staged_dir) as store:
         qb_frame = store.read("qb_status", filters={"season": 2026})
+        season = int(wp.get("season", 2026))
+        fcs_ids = _fcs_opponent_ids(store, season)
         candidates, details = build_candidates_from_odds(
             games,
-            season=int(wp.get("season", 2026)),
+            season=season,
             week=int(wp.get("week", 1)),
             as_of=analysis_as_of,
             store=store,
@@ -397,6 +498,11 @@ def run_analysis(*, as_of: datetime | None = None) -> dict[str, Any]:
         )
 
     odds_summary = _odds_snapshot_summary(games, analysis_as_of, betting)
+    ingest_ingested = datetime.fromisoformat(
+        str(odds_summary["newest_ingested_at"]).replace("Z", "+00:00")
+    )
+    with ParquetStore(cfg.paths.staged_dir) as store:
+        crosswalk_summary = _crosswalk_summary(store, season, ingest_ingested)
     qb_summary = _qb_coverage(games, qb_frame, analysis_as_of)
 
     rows: list[dict[str, Any]] = []
@@ -508,19 +614,35 @@ def run_analysis(*, as_of: datetime | None = None) -> dict[str, Any]:
         r["game_id"] for r in rows if float(r.get("edge", 0)) >= PUBLIC_MIN_EDGE_S3
     ]
 
-    edges = sorted(float(r.get("edge", 0)) for r in rows)
+    game_lookup = {int(g["game_id"]): g for g in games}
+    edge_distribution = _edge_distribution(rows, game_lookup, fcs_ids)
     forecast_rows = [_game_forecast_row(g) for g in games]
     replies_md = render_replies(games, [], rejected_for_replies, SITE_URL)
 
     any_clear_all_filters = any(not r.get("filter_reasons_firing") for r in rows)
-    verdict = (
-        "NOT MEASURED — no ATS discrimination on the 314-ticket population (S5); "
-        "every candidate clearing filters is still a draw from a ranking with AUC "
-        "0.493 and no information."
-        if any_clear_all_filters
-        else "NOT MEASURED — load-bearing gates (stale inputs, missing odds, QB unknown) "
-        "block the slate before discrimination matters."
-    )
+    step4_survivors = gate["step_counts"].get("step4_exposure_caps", 0)
+    if any_clear_all_filters:
+        verdict = (
+            "NOT MEASURED — no ATS discrimination on the 314-ticket population (S5); "
+            "every candidate clearing filters is still a draw from a ranking with AUC "
+            "0.493 and no information."
+        )
+    elif step4_survivors > 0:
+        verdict = (
+            f"NOT MEASURED — {step4_survivors} games survive exposure simulation but all "
+            "reject on qb_status_unknown; S5 overlay (AUC 0.493) applies to any hypothetical "
+            "survivor."
+        )
+    elif gate["step_counts"].get("step1_snapshot_stale_kickoff_quarantine", 0) > 0:
+        verdict = (
+            "NOT MEASURED — gates exercised through model disagreement but no survivor clears "
+            "all filters; discrimination overlay (AUC 0.493) still applies."
+        )
+    else:
+        verdict = (
+            "NOT MEASURED — load-bearing gates (stale inputs, missing odds, QB unknown) "
+            "block the slate before discrimination matters."
+        )
 
     kickoffs = [
         datetime.fromisoformat(str(g["kickoff_utc"]).replace("Z", "+00:00")) for g in games
@@ -546,6 +668,7 @@ def run_analysis(*, as_of: datetime | None = None) -> dict[str, Any]:
         "adr_0017_label": "CFBD week 1 second weekend (Sept 1 operator primary)",
         "stale_inputs_directional_only": odds_summary["stale_at_as_of"],
         "odds_summary": odds_summary,
+        "crosswalk_summary": crosswalk_summary,
         "qb_summary": qb_summary,
         "gate_steps_probe_only": True,
         "gate": gate,
@@ -554,17 +677,7 @@ def run_analysis(*, as_of: datetime | None = None) -> dict[str, Any]:
         "public_min_edge_0_05_edge_only": public_050_ids,
         "public_min_edge_0_045_all_filters": public_survivors(PUBLIC_MIN_EDGE_DEFAULT),
         "public_min_edge_0_05_all_filters": public_survivors(PUBLIC_MIN_EDGE_S3),
-        "edge_distribution": {
-            "min": min(edges) if edges else None,
-            "max": max(edges) if edges else None,
-            "values": edges,
-            "near_bar_0_045": [
-                r["game_id"] for r in rows if 0.04 <= float(r.get("edge", 0)) <= 0.05
-            ],
-            "regime_ge_0_15": [
-                r["game_id"] for r in rows if float(r.get("edge", 0)) >= 0.15
-            ],
-        },
+        "edge_distribution": edge_distribution,
         "forecast_rows": forecast_rows,
         "replies_w1_md": replies_md,
         "site_url_used": SITE_URL,

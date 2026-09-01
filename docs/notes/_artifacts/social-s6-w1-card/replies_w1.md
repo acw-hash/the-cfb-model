@@ -16,13 +16,13 @@ No bet though — QB situation is unclear and we don't bet through that; the mar
 
 Model: Wake Forest by 28.0 (80% range: +0 to +56).
 
-No bet though — QB situation is unclear and we don't bet through that; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that. Forecast ≠ edge.
 
 ## Bethune-Cookman @ UCF
 
 Model: UCF by 43.4.
 
-No bet though — QB situation is unclear and we don't bet through that; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that; the market has this priced about right; no positive EV at current prices. Forecast ≠ edge.
 
 ## West Georgia @ Kennesaw State
 
@@ -40,7 +40,7 @@ No bet though — QB situation is unclear and we don't bet through that; the mar
 
 Model: Georgia Tech by 17.5 (80% range: -13 to +45).
 
-No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play. Forecast ≠ edge.
 
 ## Arkansas-Pine Bluff @ Missouri
 
@@ -52,13 +52,13 @@ No bet though — QB situation is unclear and we don't bet through that; the mar
 
 Model: Minnesota by 45.1.
 
-No bet though — QB situation is unclear and we don't bet through that; the market has this priced about right; no positive EV at current prices; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that. Forecast ≠ edge.
 
 ## UAB @ Illinois
 
 Model: Illinois by 20.4 (80% range: -7 to +48).
 
-No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play. Forecast ≠ edge.
 
 ## Idaho @ Utah
 
@@ -70,7 +70,7 @@ No bet though — QB situation is unclear and we don't bet through that; the mar
 
 Model: Eastern Michigan by 18.1 (80% range: -14 to +43).
 
-No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play. Forecast ≠ edge.
 
 ## Indiana State @ Purdue
 
@@ -82,7 +82,7 @@ No bet though — QB situation is unclear and we don't bet through that; the mar
 
 Model: Georgia State by 34.6 (80% range: -31 to +42).
 
-No bet though — QB situation is unclear and we don't bet through that; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that. Forecast ≠ edge.
 
 ## Long Island University @ Kansas
 
@@ -94,55 +94,55 @@ No bet though — QB situation is unclear and we don't bet through that; the mar
 
 Model: Oklahoma by 26.1 (80% range: -2 to +52).
 
-No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play. Forecast ≠ edge.
 
 ## Toledo @ Michigan State
 
 Model: Michigan State by 0.9 (80% range: -27 to +30).
 
-No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play. Forecast ≠ edge.
 
 ## Fresno State @ USC
 
 Model: USC by 13.2 (80% range: -16 to +42).
 
-No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play. Forecast ≠ edge.
 
 ## Miami @ Stanford
 
 Model: Miami by 9.8 (80% range: -29 to +25).
 
-No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play. Forecast ≠ edge.
 
 ## East Carolina @ Alabama
 
 Model: Alabama by 7.9 (80% range: -19 to +36).
 
-No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play. Forecast ≠ edge.
 
 ## New Hampshire @ Syracuse
 
 Model: Syracuse by 33.1 (80% range: -26 to +41).
 
-No bet though — QB situation is unclear and we don't bet through that; the market has this priced about right; no positive EV at current prices; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that. Forecast ≠ edge.
 
 ## Ohio @ Nebraska
 
 Model: Nebraska by 7.1 (80% range: -22 to +36).
 
-No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play. Forecast ≠ edge.
 
 ## Oregon State @ Houston
 
 Model: Houston by 20.3 (80% range: -17 to +44).
 
-No bet though — QB situation is unclear and we don't bet through that; the market has this priced about right; no positive EV at current prices; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that; the market has this priced about right; no positive EV at current prices. Forecast ≠ edge.
 
 ## North Texas @ Indiana
 
 Model: Indiana by 26.4 (80% range: -9 to +53).
 
-No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play. Forecast ≠ edge.
 
 ## Lafayette @ UConn
 
@@ -154,13 +154,13 @@ No bet though — QB situation is unclear and we don't bet through that; the mar
 
 Model: West Virginia by 17.1 (80% range: -12 to +45).
 
-No bet though — QB situation is unclear and we don't bet through that; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that. Forecast ≠ edge.
 
 ## Liberty @ James Madison
 
 Model: James Madison by 22.3 (80% range: -4 to +49).
 
-No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play. Forecast ≠ edge.
 
 ## Tarleton State @ Bowling Green
 
@@ -172,37 +172,37 @@ No bet though — QB situation is unclear and we don't bet through that; the mar
 
 Model: Army by 46.0.
 
-No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play. Forecast ≠ edge.
 
 ## Miami (OH) @ Pittsburgh
 
 Model: Pittsburgh by 19.5 (80% range: -7 to +44).
 
-No bet though — QB situation is unclear and we don't bet through that; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that. Forecast ≠ edge.
 
 ## Ball State @ Ohio State
 
 Model: Ohio State by 37.7 (80% range: -1 to +56).
 
-No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play. Forecast ≠ edge.
 
 ## Kent State @ South Carolina
 
 Model: South Carolina by 17.9 (80% range: -12 to +43).
 
-No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play. Forecast ≠ edge.
 
 ## Duquesne @ Air Force
 
 Model: Air Force by 34.2 (80% range: -25 to +42).
 
-No bet though — QB situation is unclear and we don't bet through that; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that. Forecast ≠ edge.
 
 ## Southeast Missouri State @ Iowa State
 
 Model: Iowa State by 47.6.
 
-No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play. Forecast ≠ edge.
 
 ## Youngstown State @ Kentucky
 
@@ -214,31 +214,31 @@ No bet though — QB situation is unclear and we don't bet through that; the mar
 
 Model: Temple by 37.3 (80% range: -26 to +47).
 
-No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play. Forecast ≠ edge.
 
 ## Tennessee State @ Georgia
 
 Model: Georgia by 47.0 (80% range: -1 to +58).
 
-No bet though — QB situation is unclear and we don't bet through that; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that. Forecast ≠ edge.
 
 ## Boise State @ Oregon
 
 Model: Oregon by 16.5 (80% range: -12 to +43).
 
-No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play. Forecast ≠ edge.
 
 ## Boston College @ Cincinnati
 
 Model: Cincinnati by 5.0 (80% range: -24 to +33).
 
-No bet though — QB situation is unclear and we don't bet through that; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that. Forecast ≠ edge.
 
 ## Towson @ Navy
 
 Model: Navy by 49.3 (80% range: -8 to +57).
 
-No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play. Forecast ≠ edge.
 
 ## Furman @ Tennessee
 
@@ -250,13 +250,13 @@ No bet though — QB situation is unclear and we don't bet through that; the mar
 
 Model: Auburn by 14.5 (80% range: -17 to +42).
 
-No bet though — QB situation is unclear and we don't bet through that; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that. Forecast ≠ edge.
 
 ## Marshall @ Penn State
 
 Model: Penn State by 29.3 (80% range: +4 to +58).
 
-No bet though — QB situation is unclear and we don't bet through that; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that. Forecast ≠ edge.
 
 ## UT Rio Grande Valley @ UTSA
 
@@ -274,13 +274,13 @@ No bet though — QB situation is unclear and we don't bet through that; the mar
 
 Model: Texas by 18.2 (80% range: -11 to +47).
 
-No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play. Forecast ≠ edge.
 
 ## Fordham @ North Dakota State
 
 Model: North Dakota State by 34.9 (80% range: +2 to +57).
 
-No bet though — QB situation is unclear and we don't bet through that; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that. Forecast ≠ edge.
 
 ## The Citadel @ Charlotte
 
@@ -292,13 +292,13 @@ No bet though — QB situation is unclear and we don't bet through that; the mar
 
 Model: Duke by 12.8 (80% range: -22 to +43).
 
-No bet though — QB situation is unclear and we don't bet through that; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that. Forecast ≠ edge.
 
 ## Oklahoma State @ Tulsa
 
 Model: Oklahoma State by 0.9 (80% range: -30 to +24).
 
-No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play. Forecast ≠ edge.
 
 ## North Alabama @ Arkansas
 
@@ -310,7 +310,7 @@ No bet though — QB situation is unclear and we don't bet through that; the mar
 
 Model: Iowa by 29.6 (80% range: -3 to +53).
 
-No bet though — QB situation is unclear and we don't bet through that; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that. Forecast ≠ edge.
 
 ## Alcorn State @ Southern Miss
 
@@ -322,13 +322,13 @@ No bet though — QB situation is unclear and we don't bet through that; the mar
 
 Model: Old Dominion by 46.4 (80% range: -5 to +59).
 
-No bet though — QB situation is unclear and we don't bet through that; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that. Forecast ≠ edge.
 
 ## Wyoming @ Colorado State
 
 Model: Colorado State by 2.0 (80% range: -24 to +31).
 
-No bet though — QB situation is unclear and we don't bet through that; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that. Forecast ≠ edge.
 
 ## Murray State @ Middle Tennessee
 
@@ -346,13 +346,13 @@ No bet though — QB situation is unclear and we don't bet through that; the mar
 
 Model: Texas Tech by 35.4 (80% range: -5 to +58).
 
-No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play. Forecast ≠ edge.
 
 ## Arkansas State @ Memphis
 
 Model: Memphis by 25.4 (80% range: +1 to +53).
 
-No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play. Forecast ≠ edge.
 
 ## Austin Peay @ Vanderbilt
 
@@ -376,7 +376,7 @@ No bet though — QB situation is unclear and we don't bet through that; the mar
 
 Model: South Florida by 21.7 (80% range: -8 to +51).
 
-No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play. Forecast ≠ edge.
 
 ## Houston Christian @ Rice
 
@@ -394,7 +394,7 @@ No bet though — QB situation is unclear and we don't bet through that; the mar
 
 Model: Troy by 17.5 (80% range: -12 to +41).
 
-No bet though — QB situation is unclear and we don't bet through that; the market has this priced about right; no positive EV at current prices; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that; the market has this priced about right; no positive EV at current prices. Forecast ≠ edge.
 
 ## SE Louisiana @ South Alabama
 
@@ -412,13 +412,13 @@ No bet though — QB situation is unclear and we don't bet through that; the mar
 
 Model: Clemson by 4.4 (80% range: -30 to +30).
 
-No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play. Forecast ≠ edge.
 
 ## UL Monroe @ Mississippi State
 
 Model: Mississippi State by 14.5 (80% range: -12 to +40).
 
-No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play. Forecast ≠ edge.
 
 ## Northwestern State @ Louisiana Tech
 
@@ -436,25 +436,25 @@ No bet though — QB situation is unclear and we don't bet through that; the mar
 
 Model: Michigan by 0.3 (80% range: -28 to +31).
 
-No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play. Forecast ≠ edge.
 
 ## Florida Atlantic @ Florida
 
 Model: Florida by 18.0 (80% range: -8 to +46).
 
-No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play. Forecast ≠ edge.
 
 ## Hampton @ Maryland
 
 Model: Maryland by 43.5.
 
-No bet though — QB situation is unclear and we don't bet through that; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that. Forecast ≠ edge.
 
 ## Lamar @ Louisiana
 
 Model: Louisiana by 31.5 (80% range: -29 to +42).
 
-No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play. Forecast ≠ edge.
 
 ## South Dakota State @ Northwestern
 
@@ -490,7 +490,7 @@ No bet though — QB situation is unclear and we don't bet through that; the mar
 
 Model: New Mexico by 10.9 (80% range: -17 to +40).
 
-No bet though — QB situation is unclear and we don't bet through that; the market has this priced about right; no positive EV at current prices; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that. Forecast ≠ edge.
 
 ## Mississippi Valley State @ Sacramento State
 
@@ -508,43 +508,43 @@ No bet though — QB situation is unclear and we don't bet through that; the mar
 
 Model: Hawai'i by 14.5 (80% range: -18 to +42).
 
-No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play. Forecast ≠ edge.
 
 ## UCLA @ California
 
 Model: California by 7.0 (80% range: -24 to +34).
 
-No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play. Forecast ≠ edge.
 
 ## Western Kentucky @ Nevada
 
 Model: Western Kentucky by 0.0 (80% range: -33 to +31).
 
-No bet though — QB situation is unclear and we don't bet through that; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that. Forecast ≠ edge.
 
 ## Washington State @ Washington
 
 Model: Washington by 14.5 (80% range: -13 to +39).
 
-No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play. Forecast ≠ edge.
 
 ## Louisville @ Ole Miss
 
 Model: Ole Miss by 9.5 (80% range: -19 to +37).
 
-No bet though — QB situation is unclear and we don't bet through that; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that. Forecast ≠ edge.
 
 ## Wisconsin @ Notre Dame
 
 Model: Notre Dame by 30.2 (80% range: -6 to +54).
 
-No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that; model and market are so far apart it usually means the market knows something we don't — auto no-play. Forecast ≠ edge.
 
 ## SMU @ Florida State
 
 Model: SMU by 6.1 (80% range: -30 to +23).
 
-No bet though — QB situation is unclear and we don't bet through that; our odds feed was stale at decision time — no bet on stale data. Forecast ≠ edge.
+No bet though — QB situation is unclear and we don't bet through that. Forecast ≠ edge.
 
 ## Game not in the slate
 
