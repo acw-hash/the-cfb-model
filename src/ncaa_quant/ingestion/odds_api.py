@@ -96,6 +96,7 @@ from ncaa_quant.utils.timeutils import season_of, to_utc, week_of
 __all__ = (
     "CalibrationError",
     "CrosswalkRegressionFailure",
+    "CrosswalkTeamMismatchError",
     "HistoricalBackfillResult",
     "HistoricalBudgetCeilingError",
     "HistoricalOddsResponse",
@@ -128,6 +129,7 @@ __all__ = (
     "preview_crosswalk_game_key_regression",
     "reconcile_cfbd_close_vs_slot_close",
     "replay_historical_from_archives",
+    "replay_live_from_archive",
     "resolve_event_game_ids",
     "run_historical_backfill",
     "run_odds_ingest",
@@ -217,6 +219,10 @@ class CalibrationError(RuntimeError):
 
 class OddsAPIError(RuntimeError):
     """Non-retryable Odds API failure."""
+
+
+class CrosswalkTeamMismatchError(RuntimeError):
+    """Raised when a matched crosswalk row's teams are absent from the CFBD game."""
 
 
 def _is_retryable(exc: BaseException) -> bool:
@@ -1180,6 +1186,64 @@ def resolve_event_game_ids(crosswalk: pd.DataFrame) -> dict[str, int]:
     return {str(row.odds_event_id): int(row.game_id) for row in matched.itertuples(index=False)}
 
 
+def assert_crosswalk_teams_match_schedule(
+    crosswalk: pd.DataFrame,
+    schedule: pd.DataFrame,
+) -> None:
+    """Fail ingest when a matched event's teams are not on the resolved CFBD game.
+
+    Allows home/away swap (``swap_detected`` path). Ambiguous or quarantined rows
+    are skipped — only ``match_status='matched'`` with non-null ``game_id``.
+    """
+    if crosswalk.empty or schedule.empty:
+        return
+    sched_idx: dict[int, tuple[str, str]] = {
+        int(r.game_id): (str(r.home_team), str(r.away_team))
+        for r in schedule.itertuples(index=False)
+    }
+    failures: list[str] = []
+    matched = crosswalk[(crosswalk["match_status"] == "matched") & crosswalk["game_id"].notna()]
+    for row in matched.itertuples(index=False):
+        gid = int(row.game_id)
+        teams = sched_idx.get(gid)
+        if teams is None:
+            failures.append(f"{row.odds_event_id}: game_id={gid} not in schedule")
+            continue
+        cfbd_home, cfbd_away = teams
+        odds_home, odds_away = str(row.home_team), str(row.away_team)
+        ordered = odds_home == cfbd_home and odds_away == cfbd_away
+        swapped = odds_home == cfbd_away and odds_away == cfbd_home
+        if not (ordered or swapped):
+            failures.append(
+                f"{row.odds_event_id}: odds={odds_away}@{odds_home} "
+                f"cfbd={cfbd_away}@{cfbd_home} game_id={gid}"
+            )
+    if failures:
+        sample = "; ".join(failures[:5])
+        msg = f"crosswalk team guard failed for {len(failures)} matched event(s): {sample}"
+        raise CrosswalkTeamMismatchError(msg)
+
+
+def _log_crosswalk_match_rate(crosswalk: pd.DataFrame) -> None:
+    """Emit match-rate metrics so crosswalk regressions are visible in run logs."""
+    log = get_logger(__name__)
+    if crosswalk.empty:
+        log.info("odds_crosswalk_match_rate", total=0, matched=0, unmatched=0, match_rate=None)
+        return
+    total = len(crosswalk)
+    matched = int((crosswalk["match_status"] == "matched").sum())
+    unmatched = int((crosswalk["match_status"] == "unmatched").sum())
+    quarantined = int((crosswalk["match_status"] == "quarantined").sum())
+    log.info(
+        "odds_crosswalk_match_rate",
+        total=total,
+        matched=matched,
+        unmatched=unmatched,
+        quarantined=quarantined,
+        match_rate=round(matched / total, 4) if total else None,
+    )
+
+
 _CROSSWALK_PERSIST_COLS: Final[tuple[str, ...]] = (
     "odds_event_id",
     "game_id",
@@ -1258,6 +1322,8 @@ def _enrich_frame_via_crosswalk(
         existing=existing,
         ingested_at=ingested_at,
     )
+    assert_crosswalk_teams_match_schedule(crosswalk, schedule)
+    _log_crosswalk_match_rate(crosswalk)
     if not crosswalk.empty:
         write_odds_cfbd_crosswalk(store, crosswalk)
     return normalize_odds_payload(
@@ -1697,6 +1763,63 @@ def run_odds_raw_capture(
     finally:
         if owns_client:
             odds_client.close()
+
+
+def replay_live_from_archive(
+    raw_path: Path | str,
+    *,
+    config: AppConfig | None = None,
+    staged_root: Path | str | None = None,
+    captured_at: datetime | None = None,
+    ingested_at: datetime | None = None,
+    team_map: Mapping[str, str] | None = None,
+) -> OddsIngestResult:
+    """Re-normalize and re-crosswalk one archived live pull (zero API credits).
+
+    Parses ``captured_at`` from the archive filename when not supplied
+    (``YYYYMMDDTHHMMSSffffffZ.json``). Upserts crosswalk and appends snapshot
+    rows with minute-level dedupe — does not delete prior rows from a failed match.
+    """
+    cfg = config or load_config()
+    path = Path(raw_path)
+    if not path.is_file():
+        msg = f"live odds archive not found: {path}"
+        raise FileNotFoundError(msg)
+    stamp = path.stem
+    if captured_at is None:
+        captured = to_utc(datetime.strptime(stamp, "%Y%m%dT%H%M%S%fZ").replace(tzinfo=UTC))
+    else:
+        captured = to_utc(captured_at)
+    ingested = to_utc(ingested_at or datetime.now(tz=UTC))
+    staged_dir = Path(staged_root) if staged_root is not None else Path(cfg.paths.staged_dir)
+    names = (
+        dict(team_map)
+        if team_map is not None
+        else load_team_name_map(Path(cfg.data.team_names_path))
+    )
+    body = path.read_bytes()
+    with ParquetStore(staged_dir) as store:
+        frame = _enrich_frame_via_crosswalk(
+            store,
+            body,
+            names,
+            captured_at=captured,
+            ingested_at=ingested,
+            snapshot_source="live",
+            decision_point=None,
+            event_time=captured,
+        )
+        added, _quarantined = write_odds_snapshots(
+            store,
+            frame,
+            raw_archive_path=path,
+        )
+    return OddsIngestResult(
+        raw_path=path,
+        rows_written=added,
+        rows_fetched=len(frame),
+        captured_at=captured,
+    )
 
 
 def run_odds_ingest(

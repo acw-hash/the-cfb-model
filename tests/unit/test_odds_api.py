@@ -14,6 +14,7 @@ from ncaa_quant.config import AppConfig, load_config
 from ncaa_quant.data.storage import ParquetStore
 from ncaa_quant.ingestion.odds_api import (
     CalibrationError,
+    CrosswalkTeamMismatchError,
     HistoricalBudgetCeilingError,
     OddsAPIClient,
     OddsEventRef,
@@ -21,6 +22,7 @@ from ncaa_quant.ingestion.odds_api import (
     archive_historical_response,
     archive_raw_response,
     asof_tolerance_for,
+    assert_crosswalk_teams_match_schedule,
     dedupe_snapshots,
     estimate_historical_credits,
     extract_odds_events,
@@ -34,6 +36,7 @@ from ncaa_quant.ingestion.odds_api import (
     normalize_team_name,
     parse_historical_envelope,
     plan_historical_units,
+    replay_live_from_archive,
     run_historical_backfill,
     run_odds_ingest,
     run_odds_raw_capture,
@@ -1769,6 +1772,158 @@ def test_replay_historical_from_archives_zero_api(
         assert (hist["game_key"] == "2024:Michigan:Texas:2024-09-07").all()
         cw = store.read("odds_cfbd_game_crosswalk", filters={"season": 2024})
         assert (cw["match_status"] == "matched").all()
+
+
+def test_assert_crosswalk_teams_match_schedule_allows_swap() -> None:
+    crosswalk = pd.DataFrame(
+        [
+            {
+                "odds_event_id": "evt-1",
+                "game_id": 99,
+                "match_status": "matched",
+                "home_team": "USC",
+                "away_team": "LSU",
+            }
+        ]
+    )
+    schedule = pd.DataFrame(
+        [
+            {
+                "game_id": 99,
+                "home_team": "LSU",
+                "away_team": "USC",
+                "start_date": datetime(2024, 1, 1, tzinfo=UTC),
+            }
+        ]
+    )
+    assert_crosswalk_teams_match_schedule(crosswalk, schedule)
+
+
+def test_assert_crosswalk_teams_match_schedule_fails_on_mismatch() -> None:
+    crosswalk = pd.DataFrame(
+        [
+            {
+                "odds_event_id": "evt-bad",
+                "game_id": 99,
+                "match_status": "matched",
+                "home_team": "Michigan",
+                "away_team": "Ohio State",
+            }
+        ]
+    )
+    schedule = pd.DataFrame(
+        [
+            {
+                "game_id": 99,
+                "home_team": "Michigan",
+                "away_team": "Texas",
+                "start_date": datetime(2024, 1, 1, tzinfo=UTC),
+            }
+        ]
+    )
+    with pytest.raises(CrosswalkTeamMismatchError, match="crosswalk team guard failed"):
+        assert_crosswalk_teams_match_schedule(crosswalk, schedule)
+
+
+@pytest.mark.parametrize(
+    ("raw", "canonical"),
+    [
+        ("Albany", "UAlbany"),
+        ("Citadel", "The Citadel"),
+        ("Houston Baptist Huskies", "Houston Christian"),
+        ("Indiana State Sycamores", "Indiana State"),
+        ("LIU Sharks", "Long Island University"),
+        ("Delaware Blue Hens", "Delaware"),
+        ("Merrimack Warriors", "Merrimack"),
+    ],
+)
+def test_s7_xwalk_aliases(team_map: dict[str, str], raw: str, canonical: str) -> None:
+    assert normalize_team_name(raw, team_map) == canonical
+
+
+def test_replay_live_from_archive_zero_api(
+    tmp_path: Path,
+    team_map: dict[str, str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import ncaa_quant.ingestion.odds_api as odds_mod
+
+    raw = tmp_path / "raw"
+    staged = tmp_path / "staged"
+    kick = datetime(2024, 9, 7, 19, 0, tzinfo=UTC)
+    captured = datetime(2026, 9, 1, 20, 34, 56, 940488, tzinfo=UTC)
+    archive = archive_raw_response(raw, captured, json.dumps(SAMPLE_PAYLOAD).encode())
+    with ParquetStore(staged) as store:
+        store.write_partition(
+            "games",
+            pd.DataFrame(
+                [
+                    {
+                        "game_id": 401628331,
+                        "season": 2024,
+                        "week": 1,
+                        "season_type": "regular",
+                        "start_date": kick,
+                        "home_team_id": 130,
+                        "away_team_id": 251,
+                        "home_points": None,
+                        "away_points": None,
+                        "neutral_site": False,
+                        "conference_game": False,
+                        "venue_id": None,
+                        "completed": False,
+                        "event_time_estimated": True,
+                        "source_version": "test",
+                        "event_time": kick,
+                        "ingested_at": kick,
+                    }
+                ]
+            ),
+            {"season": 2024, "week": 1},
+        )
+        store.write_partition(
+            "teams",
+            pd.DataFrame(
+                [
+                    {
+                        "team_id": 130,
+                        "season": 2024,
+                        "school": "Michigan",
+                        "conference": "Big Ten",
+                        "abbreviation": "MICH",
+                        "classification": "fbs",
+                        "source_version": "test",
+                        "event_time": kick,
+                        "ingested_at": kick,
+                    },
+                    {
+                        "team_id": 251,
+                        "season": 2024,
+                        "school": "Texas",
+                        "conference": "SEC",
+                        "abbreviation": "TEX",
+                        "classification": "fbs",
+                        "source_version": "test",
+                        "event_time": kick,
+                        "ingested_at": kick,
+                    },
+                ]
+            ),
+            {"season": 2024},
+        )
+
+    def _boom(*_a: object, **_k: object) -> None:
+        raise AssertionError("HTTP client must not be constructed during live archive replay")
+
+    monkeypatch.setattr(odds_mod, "OddsAPIClient", _boom)
+    result = replay_live_from_archive(
+        archive,
+        staged_root=staged,
+        captured_at=captured,
+        team_map=team_map,
+    )
+    assert result.rows_fetched > 0
+    assert result.raw_path == archive
 
 
 @pytest.mark.live
