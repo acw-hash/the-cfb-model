@@ -8,7 +8,6 @@ import numpy as np
 import pytest
 
 from ncaa_quant.betting.clv import (
-    RecommendationRecord,
     compute_clv,
     settle_recommendation,
     settle_week,

@@ -93,6 +93,69 @@ def ingest_odds(
     )
 
 
+@ingest_app.command("odds-slot-close")
+def ingest_odds_slot_close(
+    once: bool = typer.Option(
+        False,
+        "--once",
+        help="Run due kickoff-slot captures once (required for manual runs).",
+    ),
+    seasons: str = typer.Option(
+        "",
+        "--seasons",
+        help="Season or range (e.g. 2026 or 2025-2026). Default: config end_season.",
+    ),
+    estimate: bool = typer.Option(
+        False,
+        "--estimate",
+        help="Print slot/credit accounting from staged games only; no API spend.",
+    ),
+) -> None:
+    """Forward kickoff-aligned slot_close capture (live endpoint, 3 credits/slot)."""
+    configure_logging()
+    log = get_logger("ncaa_quant.cli")
+    from ncaa_quant.config import load_config
+    from ncaa_quant.data.storage import ParquetStore
+    from ncaa_quant.ingestion.cfbd import parse_seasons_arg
+    from ncaa_quant.ingestion.slot_close_capture import (
+        credit_accounting_report,
+        run_due_slot_close_captures,
+    )
+
+    cfg = load_config()
+    season_tuple = parse_seasons_arg(seasons) if seasons else (int(cfg.data.end_season),)
+    staged = Path(cfg.paths.staged_dir)
+
+    with ParquetStore(staged) as store:
+        report = credit_accounting_report(store, season_tuple)
+        for line in report.summary_lines():
+            typer.echo(line)
+        if estimate:
+            return
+
+    if not once:
+        typer.echo(
+            "Pass --once to capture due slots, or serve capture_slot_close "
+            "(no cron — kickoff-aligned polling required)."
+        )
+        raise typer.Exit(code=2)
+
+    batch = run_due_slot_close_captures(seasons=season_tuple, config=cfg)
+    log.info(
+        "cli_ingest_odds_slot_close_complete",
+        captured=batch.captured,
+        skipped=batch.skipped,
+        missed_recorded=batch.missed_recorded,
+        credits_spent=batch.credits_spent,
+        rows_written=batch.rows_written,
+    )
+    typer.echo(
+        f"captured={batch.captured} skipped={batch.skipped} "
+        f"missed_recorded={batch.missed_recorded} credits_spent={batch.credits_spent} "
+        f"rows_written={batch.rows_written}"
+    )
+
+
 @ingest_app.command("odds-historical")
 def ingest_odds_historical(
     seasons: str = typer.Option(
