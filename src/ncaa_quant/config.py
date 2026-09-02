@@ -185,6 +185,7 @@ class PipelineConfig(BaseModel):
     odds_snapshots_per_day: int = 6
     # 6×/day UTC (DESIGN §10); overridable.
     odds_ingest_cron: str = "0 0,4,8,12,16,20 * * *"
+    slot_close_poll_cron: str = "*/2 * * * *"
     postgame_ingest_cron_sat: str = "30 23 * * 6"
     postgame_ingest_cron_hourly: str = "0 0-3 * * 0"
     weekly_update_cron: str = "0 6 * * 0"

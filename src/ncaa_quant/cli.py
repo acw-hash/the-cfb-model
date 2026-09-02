@@ -117,10 +117,8 @@ def ingest_odds_slot_close(
     from ncaa_quant.config import load_config
     from ncaa_quant.data.storage import ParquetStore
     from ncaa_quant.ingestion.cfbd import parse_seasons_arg
-    from ncaa_quant.ingestion.slot_close_capture import (
-        credit_accounting_report,
-        run_due_slot_close_captures,
-    )
+    from ncaa_quant.ingestion.slot_close_capture import credit_accounting_report
+    from ncaa_quant.pipelines.slot_close_schedule import execute_slot_close_poll
 
     cfg = load_config()
     season_tuple = parse_seasons_arg(seasons) if seasons else (int(cfg.data.end_season),)
@@ -135,24 +133,25 @@ def ingest_odds_slot_close(
 
     if not once:
         typer.echo(
-            "Pass --once to capture due slots, or serve capture_slot_close "
-            "(no cron — kickoff-aligned polling required)."
+            "Pass --once to capture due slots, or run serve_all() / "
+            "capture_slot_close_flow (*/2 cron poll)."
         )
         raise typer.Exit(code=2)
 
-    batch = run_due_slot_close_captures(seasons=season_tuple, config=cfg)
+    poll = execute_slot_close_poll(seasons=season_tuple, config=cfg)
     log.info(
         "cli_ingest_odds_slot_close_complete",
-        captured=batch.captured,
-        skipped=batch.skipped,
-        missed_recorded=batch.missed_recorded,
-        credits_spent=batch.credits_spent,
-        rows_written=batch.rows_written,
+        outcome=poll.outcome,
+        captured=poll.captured,
+        skipped=poll.skipped,
+        missed_recorded=poll.missed_recorded,
+        credits_spent=poll.credits_spent,
+        rows_written=poll.rows_written,
     )
     typer.echo(
-        f"captured={batch.captured} skipped={batch.skipped} "
-        f"missed_recorded={batch.missed_recorded} credits_spent={batch.credits_spent} "
-        f"rows_written={batch.rows_written}"
+        f"outcome={poll.outcome} captured={poll.captured} skipped={poll.skipped} "
+        f"missed_recorded={poll.missed_recorded} credits_spent={poll.credits_spent} "
+        f"rows_written={poll.rows_written}"
     )
 
 

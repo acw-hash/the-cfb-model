@@ -8,6 +8,7 @@ from ncaa_quant.pipelines.postgame import postgame_ingest_flow
 from ncaa_quant.pipelines.predict import RefreshKind, predict_publish_flow
 from ncaa_quant.pipelines.retrain import retrain_gate_flow
 from ncaa_quant.pipelines.settle import settle_clv_flow
+from ncaa_quant.pipelines.slot_close import capture_slot_close_flow
 from ncaa_quant.pipelines.weekly import weekly_update_flow
 from ncaa_quant.utils.logging import configure_logging, get_logger
 
@@ -22,6 +23,7 @@ def serve_all() -> None:
     log.info("serving_all_deployments")
 
     ingest_odds_flow.serve(name="ingest_odds", cron=pipe.odds_ingest_cron)
+    capture_slot_close_flow.serve(name="capture_slot_close", cron=pipe.slot_close_poll_cron)
     postgame_ingest_flow.serve(name="postgame_ingest_sat", cron=pipe.postgame_ingest_cron_sat)
     postgame_ingest_flow.serve(name="postgame_ingest_hourly", cron=pipe.postgame_ingest_cron_hourly)
     weekly_update_flow.serve(name="weekly_update", cron=pipe.weekly_update_cron)
