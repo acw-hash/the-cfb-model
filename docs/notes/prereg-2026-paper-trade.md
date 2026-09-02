@@ -330,3 +330,157 @@ Recorded honestly at registration. **Not fixed in this task.**
 
 *Registered before `2026-09-03T22:00:00Z` (first Labor Day kickoff). A
 pre-registration written after outcomes exist is worth nothing.*
+
+---
+
+## Amendment 1 — baseline-convention eligibility for forward tickets
+
+**Amends:** this document (parent commit `0026fb4`, 2026-09-02T14:01:51Z)  
+**Written:** 2026-09-02 (before `2026-09-03T22:00:00Z`)  
+**Scope:** analysis-plan amendment only — **not** a config change. Does **not**
+edit `configs/betting.yaml` and does **not** trigger the §5 void rule.
+
+### A1.0 — Problem statement
+
+§1 freezes a **baseline selection convention** (CFBD week ≥ 2, public edge bar
+`edge >= 0.05`, side market only) used to define the S5 +0.0044 comparand.
+The frozen §12 config path (`min_edge_sides: 0.025`, all CFBD weeks) can accept
+tickets outside that population. Week 1 forward survivors (Auburn, Duke) are in
+that gap. Eligibility for the primary **n = 300** counter must be fixed before
+outcomes.
+
+**Population reference (current W1 step-4 set):** post-crosswalk exposure
+survivors at `as_of=2026-09-01T20:38:58Z` (S7-DET; 8 games). Step-5 survivors
+after QB gate: 2 games (Baylor @ Auburn, Tulane @ Duke). Source artifacts:
+`docs/notes/_artifacts/w1-qb-refresh/report.json`,
+`docs/notes/_artifacts/social-s7-xwalk-b/gate_rerun.json`.
+
+### A1.1 — Mismatch table (W1 step-4 set vs baseline convention axes)
+
+Baseline convention (§1): **week ≥ 2** AND **edge ≥ 0.05** AND **market == side**.
+A ticket is baseline-convention-eligible only when **all three** pass.
+
+| Matchup | Side | Edge | week ≥ 2 | edge ≥ 0.05 | market == side | All three (baseline-eligible) |
+|---------|------|-----:|:--------:|:-----------:|:--------------:|:-----------------------------:|
+| Northwestern State @ Louisiana Tech | Louisiana Tech | 0.1483 | **no** (W1) | yes | yes | **no** |
+| Baylor @ Auburn | Auburn | 0.1472 | **no** (W1) | yes | yes | **no** |
+| Portland State @ San Diego State | San Diego State | 0.1154 | **no** (W1) | yes | yes | **no** |
+| Tulane @ Duke | Duke | 0.1048 | **no** (W1) | yes | yes | **no** |
+| Marshall @ Penn State | Penn State | 0.0992 | **no** (W1) | yes | yes | **no** |
+| North Carolina A&T @ Georgia State | Georgia State | 0.0978 | **no** (W1) | yes | yes | **no** |
+| Eastern Illinois @ Minnesota | Minnesota | 0.0410 | **no** (W1) | **no** | yes | **no** |
+| Central Michigan @ New Mexico | New Mexico | 0.0264 | **no** (W1) | **no** | yes | **no** |
+
+**Per-axis counts (step-4, n = 8):**
+
+| Axis | Inside baseline convention | Outside |
+|------|---------------------------:|--------:|
+| week ≥ 2 | 0 | 8 |
+| edge ≥ 0.05 | 6 | 2 |
+| market == side | 8 | 0 |
+| **All three** | **0** | **8** |
+
+**Step-5 survivors (n = 2):** Baylor @ Auburn (edge 0.1472, stake 0.015,
+cap-bound) and Tulane @ Duke (edge 0.1048, stake 0.015, cap-bound). Both fail
+**week ≥ 2** only; both pass edge and side axes. Neither is
+baseline-convention-eligible.
+
+### A1.2 — Eligibility rule (operator selection required)
+
+Two pre-committed options. **Operator must select one** before the primary
+read gate opens. Until selected, the instrument is incomplete on this axis.
+
+#### Option (a) — BASELINE-MATCHED
+
+Only tickets meeting **week ≥ 2 AND edge ≥ 0.05 AND market == side** count
+toward **n = 300** on the tail-fill-excluded, same-book headline stratum.
+
+**Consequence:** Week 1 tickets (including Auburn and Duke) are logged and
+settled but **excluded from the primary read**. Comparison to the S5 +0.0044
+baseline is **exact** (same population definition as §1).
+
+#### Option (b) — ALL-CANDIDATES
+
+Every accepted ticket under the frozen §12 config path counts toward **n = 300**
+(tail-fill-excluded headline stratum unchanged).
+
+**Consequence:** The forward population is **not** the S5 314-ticket population.
+The +0.0044 comparison becomes **approximate** and must be **disclosed on every
+read**.
+
+**Operator selection:** `<SELECTED: a|b>`
+
+### A1.3 — Per-ticket field at recommendation time
+
+Every accepted forward ticket **must** record baseline-convention membership at
+**recommendation time** (never recomputed at settlement):
+
+| Field | Type | Semantics |
+|-------|------|-----------|
+| `baseline_convention_eligible` | `bool` | `true` iff week ≥ 2 AND edge ≥ 0.05 AND market == side at recommendation |
+| `baseline_convention_exclusion_axes` | `list[str]` | Empty when eligible; otherwise one or more of: `week_lt_2`, `edge_lt_0.05`, `market_not_side` |
+
+**Intended write location:** `RecommendationRecord`
+(`src/ncaa_quant/betting/clv.py`) at the moment a forward paper-trade
+recommendation is persisted — i.e. when `apply_bet_filters` accepts a candidate
+and the instrument write path materializes a `RecommendationRecord` (or
+equivalent staged row) with `recommended_at` set.
+
+**Current state (pre-kickoff, 2026-09-02):** **No forward per-ticket write path
+exists.** `candidates_enabled: false` in frozen §1 yaml; accepted W1 survivors
+exist only in probe artifacts, not in a recommendation store. The social
+sidecar (`export_social_candidates` → `CandidateRecord` in
+`src/ncaa_quant/social/candidates.py`) lacks these fields and is not the
+confirmatory instrument store. **`baseline_convention_eligible` must be captured
+at recommendation time or it is unrecoverable** — edge and week at accept are
+not guaranteed to be reconstructable from settlement inputs alone.
+
+### A1.4 — Projected n (2026 regular season, stopping week 15)
+
+Projection method: W1 observed step-5 survivors plus S5 P0-4 historical
+per-week acceptance rates (`docs/notes/_artifacts/social-s5/p0_4_selection.json`,
+55 weeks 2021–2024) applied to CFBD weeks **2–15** (14 weeks remaining after W1).
+Headline stratum: same-book, probability-valued, **tail-fill-excluded**
+(cap-bound only; S5 314 had 0 tail-fill; W1 step-5 both cap-bound at 0.015).
+
+| Rule | W1 contribution | Weeks 2–15 (median / week) | Weeks 2–15 (mean / week) | **Projected 2026 total** |
+|------|----------------:|---------------------------:|-------------------------:|-------------------------:|
+| **(a) BASELINE-MATCHED** | 0 (W1 excluded) | 14 × 6 = 84 | 14 × 5.71 ≈ 80 | **≈ 80–84** |
+| **(b) ALL-CANDIDATES** | 2 (Auburn, Duke) | 14 × 7 = 98 | 14 × 7.0 = 98 | **≈ 100** |
+
+S5 reference: `n_accepted_public` median 6/week (314 over 55 weeks); frozen
+§12-path `n_accepted_section12` median 7/week (385 over 55 weeks).
+
+**n = 300 reachable in 2026?** **No.** Under either rule, projected settled
+headline tickets at stopping week 15 are **well below 300** (≈ 80–84 under (a);
+≈ 100 under (b)).
+
+**Pre-committed outcome when n < 300 at stopping week:** per §6, the instrument
+reads **"not yet confirmed"** — not a failed test and not a promotion of
+backtest results.
+
+### A1.5 — Multi-season clause (pre-committed; n < 300 in 2026)
+
+Because **n = 300 is unreachable within the 2026 regular season** under either
+eligibility rule, the confirmatory instrument **continues across seasons** under
+the **same frozen config and accept-loop semantics** (§1–§2). The primary read
+occurs at **n = 300** settled tail-fill-excluded headline tickets whenever that
+count is first reached.
+
+**Void on config change:** Any change to `configs/betting.yaml`, production gate
+ordering, or accept-loop stake/bypass semantics in an intervening season
+**voids the instrument and restarts at n = 0** (§5 void rule unchanged). A new
+pre-registration is required after void.
+
+**Multi-season eligibility:** The rule selected in A1.2 (`<SELECTED: a|b>`)
+applies uniformly across all seasons in the instrument window.
+
+### A1.6 — Amendment epistemic ledger
+
+| Claim | Status |
+|-------|--------|
+| W1 step-4 mismatch measured (0/8 baseline-eligible) | MEASURED (S7-DET / w1-qb-refresh) |
+| Eligibility rule selected | **NOT SET** — `<SELECTED: a|b>` unfilled |
+| Per-ticket field write path exists | **NOT BUILT** — probe artifacts only |
+| n = 300 reachable in 2026 | **NO** (projected ≈ 80–100) |
+| This amendment triggers §5 void | **NO** — analysis plan only, not config |
