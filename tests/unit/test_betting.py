@@ -364,14 +364,15 @@ def test_clv_line_moved_against_us() -> None:
 
 
 def test_weekly_settlement_job() -> None:
-    from ncaa_quant.betting.clv import ClosingQuote
+    from ncaa_quant.betting.clv import ClosingQuote, build_recommendation_record
 
-    rec = RecommendationRecord(
+    rec = build_recommendation_record(
         recommendation_id="r1",
         game_id="g1",
         season=2024,
         week=5,
         side="HOME",
+        edge=0.10,
         bet_side_american=-110,
         bet_other_american=-110,
         recommended_at=datetime(2024, 10, 1, tzinfo=UTC),
@@ -476,26 +477,28 @@ def test_filter_exposure_and_ev() -> None:
 
 
 def test_settle_week_skips_missing_and_wrong_week() -> None:
-    from ncaa_quant.betting.clv import settle_week
+    from ncaa_quant.betting.clv import build_recommendation_record, settle_week
 
-    rec_ok = RecommendationRecord(
+    rec_ok = build_recommendation_record(
         recommendation_id="r1",
         game_id="g1",
         season=2024,
         week=5,
         side="HOME",
+        edge=0.10,
         bet_side_american=-110,
         bet_other_american=-110,
         recommended_at=datetime(2024, 10, 1, tzinfo=UTC),
         close_definition="odds_api_consensus",
         bet_line_source_row_id="snap:bet:r1",
     )
-    rec_other_week = RecommendationRecord(
+    rec_other_week = build_recommendation_record(
         recommendation_id="r2",
         game_id="g2",
         season=2024,
         week=6,
         side="AWAY",
+        edge=0.10,
         bet_side_american=-110,
         bet_other_american=-110,
         recommended_at=datetime(2024, 10, 8, tzinfo=UTC),

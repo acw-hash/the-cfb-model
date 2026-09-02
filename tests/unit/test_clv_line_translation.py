@@ -20,6 +20,7 @@ from ncaa_quant.betting.clv import (
     ClosingQuote,
     ClvError,
     RecommendationRecord,
+    build_recommendation_record,
     compute_clv,
     compute_line_shopping_capture,
     line_units_clv,
@@ -60,6 +61,7 @@ def _spread_rec(**overrides: object) -> RecommendationRecord:
         "season": 2024,
         "week": 5,
         "side": "HOME",
+        "edge": 0.10,
         "bet_side_american": -110,
         "bet_other_american": -110,
         "recommended_at": datetime(2024, 10, 1, tzinfo=UTC),
@@ -70,7 +72,7 @@ def _spread_rec(**overrides: object) -> RecommendationRecord:
         "bet_line_source_row_id": "snap:bet:g1:-6.5",
     }
     base.update(overrides)
-    return RecommendationRecord(**base)  # type: ignore[arg-type]
+    return build_recommendation_record(**base)  # type: ignore[arg-type]
 
 
 def _close(**overrides: object) -> ClosingQuote:
@@ -199,12 +201,13 @@ def test_unmoved_line_settles_as_same_line() -> None:
 
 
 def test_totals_translate_on_the_over_and_under_sides() -> None:
-    over = RecommendationRecord(
+    over = build_recommendation_record(
         recommendation_id="o1",
         game_id="g1",
         season=2024,
         week=5,
         side="over",
+        edge=0.10,
         bet_side_american=-110,
         bet_other_american=-110,
         recommended_at=datetime(2024, 10, 1, tzinfo=UTC),
@@ -453,7 +456,20 @@ def test_settle_passes_with_distinct_source_rows() -> None:
 
 
 def test_settle_raises_when_bet_source_row_missing() -> None:
-    rec = _spread_rec(bet_line_source_row_id=None)
+    rec = RecommendationRecord(
+        recommendation_id="r1",
+        game_id="g1",
+        season=2024,
+        week=5,
+        side="HOME",
+        bet_side_american=-110,
+        bet_other_american=-110,
+        recommended_at=datetime(2024, 10, 1, tzinfo=UTC),
+        close_definition="odds_api_consensus",
+        baseline_convention_eligible=True,
+        baseline_convention_exclusion_axes=(),
+        bet_line_source_row_id=None,
+    )
     close = _close()
     with pytest.raises(ClvError, match="bet_line_source_row_id"):
         settle(rec, same_book_close=close)

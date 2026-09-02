@@ -33,9 +33,9 @@ UNION = re.compile(
 # git ls-files + Python finditer at W9-D: exact live counts, not a
 # padded ceiling. Fail if any count differs. Re-measure after editing this
 # file or notes that quote the union.
-BASELINE_MATCHES = 609
-BASELINE_LINES = 456
-BASELINE_FILES = 97
+BASELINE_MATCHES = 617
+BASELINE_LINES = 464
+BASELINE_FILES = 102
 
 BINARY_SUFFIXES = {
     ".png",

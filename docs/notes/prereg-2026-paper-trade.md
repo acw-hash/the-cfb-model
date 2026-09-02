@@ -408,7 +408,7 @@ Every accepted ticket under the frozen §12 config path counts toward **n = 300*
 The +0.0044 comparison becomes **approximate** and must be **disclosed on every
 read**.
 
-**Operator selection:** `<SELECTED: a|b>`
+**Operator selection:** `<SELECTED: a>`
 
 ### A1.3 — Per-ticket field at recommendation time
 
@@ -480,7 +480,7 @@ applies uniformly across all seasons in the instrument window.
 | Claim | Status |
 |-------|--------|
 | W1 step-4 mismatch measured (0/8 baseline-eligible) | MEASURED (S7-DET / w1-qb-refresh) |
-| Eligibility rule selected | **NOT SET** — `<SELECTED: a|b>` unfilled |
+| Eligibility rule selected | **MEASURED** — rule **(a) BASELINE-MATCHED** |
 | Per-ticket field write path exists | **NOT BUILT** — probe artifacts only |
 | n = 300 reachable in 2026 | **NO** (projected ≈ 80–100) |
 | This amendment triggers §5 void | **NO** — analysis plan only, not config |

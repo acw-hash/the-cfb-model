@@ -25,7 +25,7 @@ from scripts.calibrate_social_threshold import CACHE_PATH, SEASONS, _select_publ
 from ncaa_quant.betting.clv import (  # noqa: E402
     PROBABILITY_VALUED_METHODS,
     ClosingQuote,
-    RecommendationRecord,
+    build_recommendation_record,
     settle,
     summarize_settlements,
 )
@@ -243,12 +243,13 @@ def main() -> int:
             event_time=bet_quote["event_time"],
         )
 
-        rec = RecommendationRecord(
+        rec = build_recommendation_record(
             recommendation_id=f"{b.season}-{b.week}-{b.game_id}-{b.bet_on}",
             game_id=str(b.game_id),
             season=int(b.season),
             week=int(b.week),
             side=str(bet_quote["side_label"]),
+            edge=float(b.edge),
             bet_side_american=float(bet_quote["side_american"]),
             bet_other_american=float(bet_quote["other_american"]),
             recommended_at=bet_quote["event_time"],
