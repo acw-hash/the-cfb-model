@@ -121,6 +121,7 @@ def build_recommendation_record(
     season: int,
     week: int,
     side: str,
+    edge: float,
     bet_side_american: float,
     bet_other_american: float,
     recommended_at: Any,
@@ -139,25 +140,23 @@ def build_recommendation_record(
     ``bet_line_source_row_id`` must identify the snapshot / CFBD row that priced
     the bet at recommendation time. Settlement (:func:`~ncaa_quant.betting.clv.settle`)
     raises when this id is missing or equals the close ``source_row_id``.
-    """
-    from ncaa_quant.betting.clv import RecommendationRecord
 
-    rid = str(bet_line_source_row_id).strip()
-    if not rid:
-        raise BacktestRunnerError(
-            "bet_line_source_row_id is required; refusing to build a recommendation "
-            "that cannot thread the CLV source-row guard"
-        )
-    return RecommendationRecord(
+    ``edge`` stamps ``baseline_convention_*`` fields at recommendation time.
+    """
+    from ncaa_quant.betting.clv import build_recommendation_record as _build
+
+    return _build(
         recommendation_id=str(recommendation_id),
         game_id=str(game_id),
         season=int(season),
         week=int(week),
         side=str(side),
+        edge=float(edge),
         bet_side_american=float(bet_side_american),
         bet_other_american=float(bet_other_american),
         recommended_at=recommended_at,
         close_definition=close_definition,  # type: ignore[arg-type]
+        bet_line_source_row_id=str(bet_line_source_row_id),
         book=str(book),
         market=market,  # type: ignore[arg-type]
         bet_line=None if bet_line is None else float(bet_line),
@@ -165,7 +164,6 @@ def build_recommendation_record(
         consensus_side_american=consensus_side_american,
         consensus_other_american=consensus_other_american,
         n_books_available=int(n_books_available),
-        bet_line_source_row_id=rid,
     )
 
 

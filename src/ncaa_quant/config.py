@@ -103,7 +103,15 @@ class BettingConfig(BaseModel):
     min_model_market_agreement: float = 7.0
     no_bet_on_stale: bool = True
     no_bet_on_qb_unknown: bool = True
+    odds_max_age_hours: float = 6.0
+    """Max age of the resolved odds snapshot vs ``as_of`` (playbook: fresh < 6h)."""
+
     max_weekly_exposure: float = 0.10
+    candidates_enabled: bool = False
+    """When False (default), publish uses the empty candidate stub (ADR 0017)."""
+
+    candidate_markets: list[str] = Field(default_factory=lambda: ["side"])
+    """Markets the S5 provider may emit. Totals ship tested but stay off until σ_t check."""
 
 
 class NotificationConfig(BaseModel):
@@ -150,12 +158,34 @@ class WebappConfig(BaseModel):
     fixture_artifacts_dir: str = "webapp/fixtures"
 
 
+class SocialConfig(BaseModel):
+    """Private local-only social sidecar (docs/social/TASKS-social.md S-series).
+
+    Never pushed to R2. Default off — enable only on the operator workstation
+    via ``NCAA_QUANT_SOCIAL__ENABLED=true``.
+    """
+
+    enabled: bool = False
+    output_dir: str = "data/social"
+    """Root for ``{output_dir}/{season}/w{week}/{refresh_kind}/candidates.json``."""
+
+    public_min_edge_sides: float = 0.045
+    """Public card edge floor for sides (applied by S2 on top of §12 filters)."""
+
+    public_min_edge_totals: float = 0.055
+    """Public card edge floor for totals."""
+
+    unit_fraction: float = 0.005
+    """Bankroll fraction per displayed stake unit (1 displayed unit = 0.5% bankroll)."""
+
+
 class PipelineConfig(BaseModel):
     """Schedules, promotion gates, and monitoring thresholds."""
 
     odds_snapshots_per_day: int = 6
     # 6×/day UTC (DESIGN §10); overridable.
     odds_ingest_cron: str = "0 0,4,8,12,16,20 * * *"
+    slot_close_poll_cron: str = "*/2 * * * *"
     postgame_ingest_cron_sat: str = "30 23 * * 6"
     postgame_ingest_cron_hourly: str = "0 0-3 * * 0"
     weekly_update_cron: str = "0 6 * * 0"
@@ -202,6 +232,7 @@ class AppConfig(BaseSettings):
     betting: BettingConfig = Field(default_factory=BettingConfig)
     pipeline: PipelineConfig = Field(default_factory=PipelineConfig)
     webapp: WebappConfig = Field(default_factory=WebappConfig)
+    social: SocialConfig = Field(default_factory=SocialConfig)
 
 
 class SecretsSettings(BaseSettings):

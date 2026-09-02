@@ -88,6 +88,7 @@ def test_export_stamps_vintage_from_producing_run(tmp_path: Path) -> None:
             export_enabled=False,
             tier_state_path=str(tmp_path / "tier.json"),
             tier_changes_path=str(tmp_path / "tier_changes.jsonl"),
+            publish_history_path=str(tmp_path / "publish_history"),
         ),
     )
     schedule = {

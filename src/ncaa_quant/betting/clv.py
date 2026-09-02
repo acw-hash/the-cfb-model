@@ -150,6 +150,15 @@ class RecommendationRecord:
     close_definition: CloseDefinition
     """Which close definition will be used at settlement (§2.7 / §3.4)."""
 
+    baseline_convention_eligible: bool
+    """Whether this ticket matches the frozen §1 baseline population (week ≥ 2,
+    edge ≥ 0.05, side market). Set at recommendation time only."""
+
+    baseline_convention_exclusion_axes: tuple[str, ...]
+    """Why the ticket is outside the §1 baseline population. Empty when eligible.
+    Ordered: ``week_lt_2``, ``edge_lt_0.05``, ``market_not_side``. Set at
+    recommendation time only — never recomputed at settlement."""
+
     book: str = ""
     """Book that supplied the bet price; settlement looks for this book's close."""
 
@@ -174,6 +183,76 @@ class RecommendationRecord:
     ``source_row_id`` is missing, and raises when the two resolve to the same row
     (§7.2 item 7 / Task 23-FIX P0-2).
     """
+
+    def __post_init__(self) -> None:
+        if self.baseline_convention_eligible:
+            if self.baseline_convention_exclusion_axes:
+                raise ClvError("baseline_convention_eligible=True requires empty exclusion_axes")
+        elif not self.baseline_convention_exclusion_axes:
+            raise ClvError("baseline_convention_eligible=False requires non-empty exclusion_axes")
+
+
+def build_recommendation_record(
+    *,
+    recommendation_id: str,
+    game_id: str,
+    season: int,
+    week: int,
+    side: str,
+    edge: float,
+    bet_side_american: float,
+    bet_other_american: float,
+    recommended_at: datetime,
+    close_definition: CloseDefinition,
+    bet_line_source_row_id: str,
+    book: str = "",
+    market: Market = "moneyline",
+    bet_line: float | None = None,
+    total_side: TotalSide | None = None,
+    consensus_side_american: float | None = None,
+    consensus_other_american: float | None = None,
+    n_books_available: int = 0,
+) -> RecommendationRecord:
+    """Build a :class:`RecommendationRecord` with baseline-convention fields stamped.
+
+    ``edge`` is required at recommendation time to compute
+    ``baseline_convention_eligible`` / ``baseline_convention_exclusion_axes``.
+    Settlement must never recompute these fields.
+    """
+    from ncaa_quant.betting.baseline_convention import compute_baseline_convention_eligibility
+
+    rid = str(bet_line_source_row_id).strip()
+    if not rid:
+        raise ClvError(
+            "bet_line_source_row_id is required; refusing to build a recommendation "
+            "that cannot thread the CLV source-row guard"
+        )
+    eligible, axes = compute_baseline_convention_eligibility(
+        week=int(week),
+        edge=float(edge),
+        market=str(market),
+    )
+    return RecommendationRecord(
+        recommendation_id=str(recommendation_id),
+        game_id=str(game_id),
+        season=int(season),
+        week=int(week),
+        side=str(side),
+        bet_side_american=float(bet_side_american),
+        bet_other_american=float(bet_other_american),
+        recommended_at=recommended_at,
+        close_definition=close_definition,
+        book=str(book),
+        market=market,
+        bet_line=None if bet_line is None else float(bet_line),
+        total_side=total_side,
+        consensus_side_american=consensus_side_american,
+        consensus_other_american=consensus_other_american,
+        n_books_available=int(n_books_available),
+        bet_line_source_row_id=rid,
+        baseline_convention_eligible=eligible,
+        baseline_convention_exclusion_axes=axes,
+    )
 
 
 @dataclass(frozen=True, slots=True)
@@ -490,6 +569,10 @@ def settle(
     Every settlement threads bet-time and close ``source_row_id`` values into
     :func:`assert_distinct_line_sources` (and :func:`compute_clv` on
     ``same_line`` rows). Missing either id raises — the guard is never skipped.
+
+    ``baseline_convention_eligible`` and ``baseline_convention_exclusion_axes``
+    are recommendation-time snapshots on the frozen :class:`RecommendationRecord`;
+    this function passes them through unchanged and never recomputes them.
     """
     rec = recommendation
     if same_book_close is not None:

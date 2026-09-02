@@ -579,17 +579,84 @@ def apply_bet_filters(
     *,
     betting_config: BettingConfig | None = None,
 ) -> tuple[list[BetCandidate], list[tuple[BetCandidate, tuple[FilterReason, ...]]]]:
-    """Run §12 filters; return accepted and rejected with reasons."""
+    """Run §12 filters in edge-descending order with threaded exposure state.
+
+    Stake is computed via :func:`~ncaa_quant.betting.kelly.recommended_stake`
+    before each filter call so weekly / team exposure caps can fire.
+    """
+    from ncaa_quant.betting.kelly import ExposureState, recommended_stake
+
     cfg = betting_config or load_config().betting
+    ordered = sorted(candidates, key=lambda c: float(c.edge), reverse=True)
     accepted: list[BetCandidate] = []
     rejected: list[tuple[BetCandidate, tuple[FilterReason, ...]]] = []
-    for cand in candidates:
-        result = evaluate_filters(cand, cfg)
+    exposure = ExposureState()
+    bets_this_week = 0
+
+    for cand in ordered:
+        if cand.p_win is not None and cand.american_odds is not None:
+            # Stake *before* exposure clamps — exposure caps are applied by
+            # evaluate_filters using the live ExposureState. Passing an
+            # already-shrunk stake would make MAX_*_EXPOSURE unreachable.
+            stake = recommended_stake(
+                float(cand.p_win),
+                float(cand.american_odds),
+                bankroll=1.0,
+                config=cfg,
+                weekly_exposure_so_far=0.0,
+                team_exposure_so_far=0.0,
+            )
+            proposed = float(stake.stake_fraction)
+        else:
+            proposed = 0.0
+
+        result = evaluate_filters(
+            cand,
+            cfg,
+            bets_this_week=bets_this_week,
+            weekly_exposure_so_far=float(exposure.weekly_total),
+            team_exposure_so_far=dict(exposure.per_team or {}),
+            proposed_stake_fraction=proposed,
+        )
         if result.accepted:
             accepted.append(cand)
+            bets_this_week += 1
+            if proposed > 0.0 and cand.team_ids:
+                exposure = exposure.with_bet(cand.team_ids, proposed)
+            elif proposed > 0.0:
+                exposure = ExposureState(
+                    weekly_total=float(exposure.weekly_total + proposed),
+                    per_team=dict(exposure.per_team or {}),
+                )
         else:
             rejected.append((cand, result.reasons))
     return accepted, rejected
+
+
+def _provider_build_candidates(
+    *,
+    season: int,
+    week: int,
+    as_of: datetime,
+    prediction_rows: list[dict[str, Any]],
+    stamped: list[StampedPrediction],
+    config: AppConfig,
+) -> tuple[list[BetCandidate], dict[str, dict[str, Any]]]:
+    """S5 odds provider when ``betting.candidates_enabled`` is True."""
+    from ncaa_quant.betting.provider import build_candidates_from_odds
+    from ncaa_quant.data.storage import ParquetStore
+
+    stamped_dicts = [p.to_dict() for p in stamped]
+    with ParquetStore(Path(config.paths.staged_dir)) as store:
+        return build_candidates_from_odds(
+            prediction_rows,
+            season=int(season),
+            week=int(week),
+            as_of=as_of,
+            store=store,
+            config=config,
+            stamped_predictions=stamped_dicts,
+        )
 
 
 def execute_predict_publish(
@@ -604,16 +671,32 @@ def execute_predict_publish(
     config: AppConfig | None = None,
     notifier: Notifier | None = None,
     as_of: datetime | None = None,
+    fixture: bool = False,
+    published_at: datetime | None = None,
+    social_candidate_details: Mapping[str, Mapping[str, Any]] | None = None,
 ) -> dict[str, Any]:
-    """Core predict/publish body (testable without Prefect parameter schema)."""
+    """Core predict/publish body (testable without Prefect parameter schema).
+
+    Parameters
+    ----------
+    fixture:
+        When True, the local social sidecar inherits ``\"fixture\": true``.
+        Does not affect webapp / R2 artifacts (those use their own fixture flag).
+    published_at:
+        Publish clock stamped on the social sidecar; defaults to now (UTC).
+    social_candidate_details:
+        Optional orientation inputs keyed by ``\"{game_id}:{market}\"`` for the
+        local social sidecar. Required when ``social.enabled`` and the filter
+        returns any candidates.
+    """
     cfg = config or load_config()
     ingest_failed = False
     ingest_error: str | None = None
     raw_root = Path(cfg.paths.raw_dir) / "odds_api"
+    clock = published_at if published_at is not None else datetime.now(tz=UTC)
+    clock = clock.replace(tzinfo=UTC) if clock.tzinfo is None else clock.astimezone(UTC)
 
-    resolved_as_of, as_of_source = resolve_week_publish_as_of(
-        season, week, as_of, config=cfg
-    )
+    resolved_as_of, as_of_source = resolve_week_publish_as_of(season, week, as_of, config=cfg)
 
     if simulate_ingest_failure:
         ingest_failed = True
@@ -639,8 +722,31 @@ def execute_predict_publish(
     raw_preds = predict(stale_ctx)
     stamped = stamp_predictions(raw_preds, stale_ctx)
 
-    build = build_candidates_fn or _default_build_candidates
-    candidates = build(stamped)
+    provider_details: dict[str, dict[str, Any]] = {}
+    if build_candidates_fn is not None:
+        candidates = build_candidates_fn(stamped)
+    elif cfg.betting.candidates_enabled:
+        candidates, provider_details = _provider_build_candidates(
+            season=season,
+            week=week,
+            as_of=resolved_as_of,
+            prediction_rows=list(raw_preds),
+            stamped=stamped,
+            config=cfg,
+        )
+    else:
+        candidates = _default_build_candidates(stamped)
+
+    details_for_social: Mapping[str, Mapping[str, Any]] | None = social_candidate_details
+    if provider_details:
+        merged_details: dict[str, dict[str, Any]] = {
+            k: dict(v) for k, v in provider_details.items()
+        }
+        if social_candidate_details:
+            for k, v in social_candidate_details.items():
+                merged_details[k] = dict(v)
+        details_for_social = merged_details
+
     accepted, rejected = apply_bet_filters(candidates, betting_config=cfg.betting)
 
     stale_rejections = [
@@ -679,6 +785,8 @@ def execute_predict_publish(
         "refresh_kind": refresh_kind,
         "as_of": resolved_as_of.isoformat(),
         "as_of_source": as_of_source,
+        "published_at": clock.isoformat().replace("+00:00", "Z"),
+        "fixture": bool(fixture),
         "ingest_failed": ingest_failed,
         "ingest_error": ingest_error,
         "stale": stale_ctx.to_dict(),
@@ -693,6 +801,37 @@ def execute_predict_publish(
             stale_ctx.sources[0].last_good_at.isoformat() if stale_ctx.sources else None
         ),
     }
+
+    if cfg.social.enabled:
+        try:
+            from ncaa_quant.social.candidates import (
+                export_social_candidates,
+                records_from_filter_result,
+            )
+
+            acc_dicts, rej_dicts = records_from_filter_result(
+                accepted,
+                rejected,
+                details=details_for_social,
+                betting=cfg.betting,
+            )
+            result["accepted"] = acc_dicts
+            result["rejected"] = rej_dicts
+            path = export_social_candidates(result, cfg)
+            result["social_export"] = {
+                "ok": True,
+                "path": str(path) if path is not None else None,
+            }
+        except Exception as exc:
+            log.warning("social_export_failed", error=str(exc))
+            notify(
+                AlertKind.SOCIAL_EXPORT_FAILURE,
+                "Ridge social candidate export failed",
+                str(exc),
+                config=cfg,
+                notifier=n,
+            )
+            result["social_export"] = {"ok": False, "error": str(exc)}
 
     if cfg.webapp.export_enabled:
         try:
@@ -727,6 +866,9 @@ def _run_helper_publish(
     notifier: Notifier | None = None,
     publish_scope: str = "sandbox",
     as_of: datetime | None = None,
+    fixture: bool = False,
+    published_at: datetime | None = None,
+    social_candidate_details: Mapping[str, Mapping[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Run predict/publish for test helpers; default scope is non-live ``sandbox/``.
 
@@ -753,6 +895,9 @@ def _run_helper_publish(
         config=inner_cfg,
         notifier=notifier,
         as_of=as_of,
+        fixture=fixture,
+        published_at=published_at,
+        social_candidate_details=social_candidate_details,
     )
 
     if not export_wanted or publish_scope == "live":
@@ -803,6 +948,8 @@ def run_predict_publish(
     notifier: Notifier | None = None,
     as_of: datetime | None = None,
     published_at: datetime | None = None,
+    fixture: bool = False,
+    social_candidate_details: Mapping[str, Mapping[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Idempotent wrapper around :func:`execute_predict_publish`."""
     cfg = config or load_config()
@@ -829,6 +976,9 @@ def run_predict_publish(
             config=cfg,
             notifier=notifier,
             as_of=as_of,
+            fixture=fixture,
+            published_at=clock,
+            social_candidate_details=social_candidate_details,
         )
 
     return run_idempotent(key, _run, config=cfg)
@@ -927,6 +1077,8 @@ def run_fixture_week_publish(
         predict_fn=_predict,
         config=config,
         notifier=notifier,
+        fixture=True,
+        published_at=_FIXTURE_WEEK5_PUBLISHED_AT,
     )
 
 

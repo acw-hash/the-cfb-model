@@ -1,0 +1,154 @@
+{
+  "status": "MEASURED",
+  "residual_deciles_all_games": {
+    "should_hold": "If the model has ATS skill, calibration gap should be flat or improve (realized\u2212claim less negative) as |model\u2212market| residual grows.",
+    "observed_gap_vs_decile_corr": 0.17837520769186127,
+    "deciles": [
+      {
+        "decile": 0,
+        "n": 350,
+        "mean_residual": 0.7400992007735897,
+        "mean_claimed_p_ats_home": 0.5027715450175682,
+        "realized_home_ats": 0.47714285714285715,
+        "gap": -0.02562868787471101
+      },
+      {
+        "decile": 1,
+        "n": 350,
+        "mean_residual": 2.3530853019626594,
+        "mean_claimed_p_ats_home": 0.49968022583233784,
+        "realized_home_ats": 0.5142857142857142,
+        "gap": 0.014605488453376392
+      },
+      {
+        "decile": 2,
+        "n": 349,
+        "mean_residual": 4.013350331925209,
+        "mean_claimed_p_ats_home": 0.49739748260395594,
+        "realized_home_ats": 0.5300859598853869,
+        "gap": 0.03268847728143093
+      },
+      {
+        "decile": 3,
+        "n": 350,
+        "mean_residual": 5.710196529166049,
+        "mean_claimed_p_ats_home": 0.49884372273167954,
+        "realized_home_ats": 0.47714285714285715,
+        "gap": -0.021700865588822393
+      },
+      {
+        "decile": 4,
+        "n": 349,
+        "mean_residual": 7.612355271748174,
+        "mean_claimed_p_ats_home": 0.5072093091217326,
+        "realized_home_ats": 0.4899713467048711,
+        "gap": -0.017237962416861485
+      },
+      {
+        "decile": 5,
+        "n": 350,
+        "mean_residual": 9.756563204965543,
+        "mean_claimed_p_ats_home": 0.5015263635804289,
+        "realized_home_ats": 0.5171428571428571,
+        "gap": 0.015616493562428224
+      },
+      {
+        "decile": 6,
+        "n": 349,
+        "mean_residual": 12.592460429017978,
+        "mean_claimed_p_ats_home": 0.5113897390280825,
+        "realized_home_ats": 0.47277936962750716,
+        "gap": -0.03861036940057533
+      },
+      {
+        "decile": 7,
+        "n": 350,
+        "mean_residual": 16.03151076464222,
+        "mean_claimed_p_ats_home": 0.487124924883863,
+        "realized_home_ats": 0.5171428571428571,
+        "gap": 0.03001793225899413
+      },
+      {
+        "decile": 8,
+        "n": 349,
+        "mean_residual": 20.914523275293686,
+        "mean_claimed_p_ats_home": 0.4515840825392131,
+        "realized_home_ats": 0.4584527220630373,
+        "gap": 0.00686863952382416
+      },
+      {
+        "decile": 9,
+        "n": 350,
+        "mean_residual": 31.9901737599323,
+        "mean_claimed_p_ats_home": 0.46659337021528324,
+        "realized_home_ats": 0.47714285714285715,
+        "gap": 0.010549486927573903
+      }
+    ]
+  },
+  "accepted_314_residual": {
+    "n": 314,
+    "min": 1.910127626968995,
+    "p25": 5.301105712722193,
+    "median": 6.058224440230873,
+    "p75": 6.49616194980797,
+    "p90": 6.8071553838752,
+    "max": 6.994340580950052,
+    "mean": 5.8065093158777605,
+    "n_in_top_point_of_window_ge_6": 164,
+    "share_ge_6": 0.5222929936305732,
+    "ceiling": 7.0,
+    "band_description": "Accepted residuals sit in [min, 7) by construction of min_model_market_agreement=7.0; report clustering below ceiling."
+  },
+  "filter_histogram": {
+    "status": "MEASURED",
+    "settings": {
+      "no_bet_on_qb_unknown": false,
+      "no_bet_on_stale": false,
+      "min_edge_sides": 0.025,
+      "min_model_market_agreement": 7.0,
+      "note": "Matches S3 historical replay flags"
+    },
+    "n_candidates_constructed": 3613,
+    "n_section12_accepted": 415,
+    "histogram": {
+      "edge_too_small": 322,
+      "stale_inputs": 0,
+      "qb_status_unknown": 0,
+      "model_market_disagree": 858,
+      "max_bets_per_week": 0,
+      "max_weekly_exposure": 1349,
+      "max_team_exposure": 0,
+      "non_positive_ev": 300
+    },
+    "provider_block_reasons": {
+      "no_snapshot": 643,
+      "kickoff_passed": 27,
+      "line_quarantined": 15
+    },
+    "zeros_among_required": [
+      "stale_inputs",
+      "qb_status_unknown",
+      "max_bets_per_week",
+      "max_team_exposure"
+    ]
+  },
+  "zero_filter_reasons": [
+    "stale_inputs",
+    "qb_status_unknown",
+    "max_bets_per_week",
+    "max_team_exposure"
+  ],
+  "stop_zero_filter_reason": true,
+  "exposure_call_path": {
+    "call_site": "scripts/calibrate_social_threshold.py:140 \u2192 apply_bet_filters(cands, betting_config=betting)",
+    "apply_bet_filters_implementation": "src/ncaa_quant/pipelines/predict.py:613-619",
+    "should_pass": [
+      "weekly_exposure_so_far=exposure.weekly_total (threaded)",
+      "team_exposure_so_far=dict(exposure.per_team)",
+      "proposed_stake_fraction=recommended_stake(...).stake_fraction"
+    ],
+    "observed": "apply_bet_filters DOES pass live ExposureState into evaluate_filters (weekly_exposure_so_far, team_exposure_so_far, proposed_stake_fraction). recommended_stake itself is called with weekly/team exposure hardcoded 0.0 so the stake is pre-clamp; evaluate_filters then applies caps. S3 path reaches evaluate_filters with populated exposure kwargs, not defaults.",
+    "populated_not_defaults": true
+  }
+}

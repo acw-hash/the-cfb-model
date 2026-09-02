@@ -1,0 +1,525 @@
+{
+  "analysis_as_of": "2026-09-01T22:30:00+00:00",
+  "step_counts": {
+    "step1_snapshot_stale_kickoff_quarantine": 90,
+    "step2_edge_ev_sigma": 84,
+    "step3_model_market_disagree": 28,
+    "step4_exposure_caps": 8,
+    "step5_qb_status_unknown": 2,
+    "start": 91
+  },
+  "step4_survivors": [
+    {
+      "game_id": "401869129",
+      "matchup": "Northwestern State @ Louisiana Tech",
+      "teams": [
+        {
+          "team": "Louisiana Tech",
+          "team_id": 2348,
+          "status": null,
+          "source_version": null,
+          "event_time": null,
+          "resolves": false
+        },
+        {
+          "team": "Northwestern State",
+          "team_id": 2466,
+          "status": null,
+          "source_version": null,
+          "event_time": null,
+          "resolves": false
+        }
+      ],
+      "qb_status_known": false,
+      "qb_status_source": "unchecked",
+      "edge": 0.1483,
+      "step3_rank": 1,
+      "passes_qb_gate": false
+    },
+    {
+      "game_id": "401856636",
+      "matchup": "Baylor @ Auburn",
+      "teams": [
+        {
+          "team": "Auburn",
+          "team_id": 2,
+          "status": "starter",
+          "source_version": "manual_v1",
+          "event_time": "2026-09-01T22:15:27.497134+00:00",
+          "resolves": true
+        },
+        {
+          "team": "Baylor",
+          "team_id": 239,
+          "status": "starter",
+          "source_version": "manual_v1",
+          "event_time": "2026-09-01T22:15:22.454398+00:00",
+          "resolves": true
+        }
+      ],
+      "qb_status_known": true,
+      "qb_status_source": "staged_asof",
+      "edge": 0.1472,
+      "step3_rank": 2,
+      "passes_qb_gate": true
+    },
+    {
+      "game_id": "401860879",
+      "matchup": "Portland State @ San Diego State",
+      "teams": [
+        {
+          "team": "San Diego State",
+          "team_id": 21,
+          "status": null,
+          "source_version": null,
+          "event_time": null,
+          "resolves": false
+        },
+        {
+          "team": "Portland State",
+          "team_id": 2502,
+          "status": null,
+          "source_version": null,
+          "event_time": null,
+          "resolves": false
+        }
+      ],
+      "qb_status_known": false,
+      "qb_status_source": "unchecked",
+      "edge": 0.1154,
+      "step3_rank": 3,
+      "passes_qb_gate": false
+    },
+    {
+      "game_id": "401858209",
+      "matchup": "Tulane @ Duke",
+      "teams": [
+        {
+          "team": "Duke",
+          "team_id": 150,
+          "status": "starter",
+          "source_version": "manual_v1",
+          "event_time": "2026-09-01T22:15:36.968358+00:00",
+          "resolves": true
+        },
+        {
+          "team": "Tulane",
+          "team_id": 2655,
+          "status": "starter",
+          "source_version": "manual_v1",
+          "event_time": "2026-09-01T22:15:32.064135+00:00",
+          "resolves": true
+        }
+      ],
+      "qb_status_known": true,
+      "qb_status_source": "staged_asof",
+      "edge": 0.1048,
+      "step3_rank": 4,
+      "passes_qb_gate": true
+    },
+    {
+      "game_id": "401858434",
+      "matchup": "Marshall @ Penn State",
+      "teams": [
+        {
+          "team": "Penn State",
+          "team_id": 213,
+          "status": "unknown",
+          "source_version": "manual_v1",
+          "event_time": "2026-09-01T22:24:09.289476+00:00",
+          "resolves": false
+        },
+        {
+          "team": "Marshall",
+          "team_id": 276,
+          "status": "starter",
+          "source_version": "manual_v1",
+          "event_time": "2026-09-01T22:15:42.189092+00:00",
+          "resolves": true
+        }
+      ],
+      "qb_status_known": false,
+      "qb_status_source": "unchecked",
+      "edge": 0.0992,
+      "step3_rank": 5,
+      "passes_qb_gate": false
+    },
+    {
+      "game_id": "401866623",
+      "matchup": "North Carolina A&T @ Georgia State",
+      "teams": [
+        {
+          "team": "Georgia State",
+          "team_id": 2247,
+          "status": "unknown",
+          "source_version": "manual_v1",
+          "event_time": "2026-09-01T22:24:19.204211+00:00",
+          "resolves": false
+        },
+        {
+          "team": "North Carolina A&T",
+          "team_id": 2448,
+          "status": "unknown",
+          "source_version": "manual_v1",
+          "event_time": "2026-09-01T22:24:13.972019+00:00",
+          "resolves": false
+        }
+      ],
+      "qb_status_known": false,
+      "qb_status_source": "unchecked",
+      "edge": 0.0978,
+      "step3_rank": 6,
+      "passes_qb_gate": false
+    },
+    {
+      "game_id": "401858422",
+      "matchup": "Eastern Illinois @ Minnesota",
+      "teams": [
+        {
+          "team": "Minnesota",
+          "team_id": 135,
+          "status": "unknown",
+          "source_version": "manual_v1",
+          "event_time": "2026-09-01T22:24:43.691921+00:00",
+          "resolves": false
+        },
+        {
+          "team": "Eastern Illinois",
+          "team_id": 2197,
+          "status": "unknown",
+          "source_version": "manual_v1",
+          "event_time": "2026-09-01T22:24:39.025013+00:00",
+          "resolves": false
+        }
+      ],
+      "qb_status_known": false,
+      "qb_status_source": "unchecked",
+      "edge": 0.041,
+      "step3_rank": 25,
+      "passes_qb_gate": false
+    },
+    {
+      "game_id": "401864498",
+      "matchup": "Central Michigan @ New Mexico",
+      "teams": [
+        {
+          "team": "New Mexico",
+          "team_id": 167,
+          "status": "unknown",
+          "source_version": "manual_v1",
+          "event_time": "2026-09-01T22:24:58.144394+00:00",
+          "resolves": false
+        },
+        {
+          "team": "Central Michigan",
+          "team_id": 2117,
+          "status": "unknown",
+          "source_version": "manual_v1",
+          "event_time": "2026-09-01T22:24:48.289809+00:00",
+          "resolves": false
+        }
+      ],
+      "qb_status_known": false,
+      "qb_status_source": "unchecked",
+      "edge": 0.0264,
+      "step3_rank": 28,
+      "passes_qb_gate": false
+    }
+  ],
+  "step5_survivors": [
+    {
+      "game_id": "401856636",
+      "matchup": "Baylor @ Auburn",
+      "teams": [
+        {
+          "team": "Auburn",
+          "team_id": 2,
+          "status": "starter",
+          "source_version": "manual_v1",
+          "event_time": "2026-09-01T22:15:27.497134+00:00",
+          "resolves": true
+        },
+        {
+          "team": "Baylor",
+          "team_id": 239,
+          "status": "starter",
+          "source_version": "manual_v1",
+          "event_time": "2026-09-01T22:15:22.454398+00:00",
+          "resolves": true
+        }
+      ],
+      "qb_status_known": true,
+      "qb_status_source": "staged_asof",
+      "edge": 0.1472,
+      "passes_qb_gate": true
+    },
+    {
+      "game_id": "401858209",
+      "matchup": "Tulane @ Duke",
+      "teams": [
+        {
+          "team": "Duke",
+          "team_id": 150,
+          "status": "starter",
+          "source_version": "manual_v1",
+          "event_time": "2026-09-01T22:15:36.968358+00:00",
+          "resolves": true
+        },
+        {
+          "team": "Tulane",
+          "team_id": 2655,
+          "status": "starter",
+          "source_version": "manual_v1",
+          "event_time": "2026-09-01T22:15:32.064135+00:00",
+          "resolves": true
+        }
+      ],
+      "qb_status_known": true,
+      "qb_status_source": "staged_asof",
+      "edge": 0.1048,
+      "passes_qb_gate": true
+    }
+  ],
+  "orphan_rows": [
+    {
+      "game_id": "401858201",
+      "team_id": 24,
+      "status": "starter",
+      "source_version": "manual_v1",
+      "event_time": "2026-08-25T23:13:33.548340+00:00",
+      "orphan_reason": "game not in current step-4 set",
+      "orphan_category": "other"
+    },
+    {
+      "game_id": "401858201",
+      "team_id": 62,
+      "status": "starter",
+      "source_version": "manual_v1",
+      "event_time": "2026-08-25T23:13:25.581134+00:00",
+      "orphan_reason": "game not in current step-4 set",
+      "orphan_category": "other"
+    },
+    {
+      "game_id": "401858202",
+      "team_id": 152,
+      "status": "starter",
+      "source_version": "manual_v1",
+      "event_time": "2026-08-25T23:06:37.865405+00:00",
+      "orphan_reason": "game not in current step-4 set",
+      "orphan_category": "other"
+    },
+    {
+      "game_id": "401858202",
+      "team_id": 258,
+      "status": "starter",
+      "source_version": "manual_v1",
+      "event_time": "2026-08-25T22:58:49.130903+00:00",
+      "orphan_reason": "game not in current step-4 set",
+      "orphan_category": "other"
+    },
+    {
+      "game_id": "401862693",
+      "team_id": 235,
+      "status": "starter",
+      "source_version": "manual_v1",
+      "event_time": "2026-08-25T23:07:31.490898+00:00",
+      "orphan_reason": "game not in current step-4 set",
+      "orphan_category": "other"
+    },
+    {
+      "game_id": "401862693",
+      "team_id": 2439,
+      "status": "unknown",
+      "source_version": "manual_v1",
+      "event_time": "2026-08-25T23:11:05.418853+00:00",
+      "orphan_reason": "game not in current step-4 set",
+      "orphan_category": "other"
+    },
+    {
+      "game_id": "401864496",
+      "team_id": 2005,
+      "status": "unknown",
+      "source_version": "manual_v1",
+      "event_time": "2026-09-01T22:24:29.043706+00:00",
+      "orphan_reason": "game not in current step-4 set",
+      "orphan_category": "s6_displaced"
+    },
+    {
+      "game_id": "401864496",
+      "team_id": 2184,
+      "status": "unknown",
+      "source_version": "manual_v1",
+      "event_time": "2026-09-01T22:24:24.020171+00:00",
+      "orphan_reason": "game not in current step-4 set",
+      "orphan_category": "s6_displaced"
+    },
+    {
+      "game_id": "401864499",
+      "team_id": 2230,
+      "status": "unknown",
+      "source_version": "manual_v1",
+      "event_time": "2026-09-01T22:24:34.039367+00:00",
+      "orphan_reason": "game not in current step-4 set",
+      "orphan_category": "s6_displaced"
+    },
+    {
+      "game_id": "401864499",
+      "team_id": 2449,
+      "status": "starter",
+      "source_version": "manual_v1",
+      "event_time": "2026-09-01T22:15:56.826099+00:00",
+      "orphan_reason": "game not in current step-4 set",
+      "orphan_category": "s6_displaced"
+    },
+    {
+      "game_id": "401864577",
+      "team_id": 55,
+      "status": "unknown",
+      "source_version": "manual_v1",
+      "event_time": "2026-08-25T23:11:26.402097+00:00",
+      "orphan_reason": "game not in current step-4 set",
+      "orphan_category": "other"
+    },
+    {
+      "game_id": "401864577",
+      "team_id": 2449,
+      "status": "starter",
+      "source_version": "manual_v1",
+      "event_time": "2026-08-25T23:11:35.668266+00:00",
+      "orphan_reason": "game not in current step-4 set",
+      "orphan_category": "other"
+    },
+    {
+      "game_id": "401866408",
+      "team_id": 16,
+      "status": "unknown",
+      "source_version": "manual_v1",
+      "event_time": "2026-08-25T23:11:12.268814+00:00",
+      "orphan_reason": "game not in current step-4 set",
+      "orphan_category": "other"
+    },
+    {
+      "game_id": "401866408",
+      "team_id": 2199,
+      "status": "starter",
+      "source_version": "manual_v1",
+      "event_time": "2026-08-25T23:11:19.676273+00:00",
+      "orphan_reason": "game not in current step-4 set",
+      "orphan_category": "other"
+    }
+  ],
+  "future_stamped_rows": [],
+  "operator_worklist": [
+    {
+      "game_id": "401869129",
+      "matchup": "Northwestern State @ Louisiana Tech",
+      "team": "Louisiana Tech",
+      "team_id": 2348,
+      "lookup_reason": "no row",
+      "current_status": "\u2014",
+      "current_source": "\u2014",
+      "current_event_time": "\u2014"
+    },
+    {
+      "game_id": "401869129",
+      "matchup": "Northwestern State @ Louisiana Tech",
+      "team": "Northwestern State",
+      "team_id": 2466,
+      "lookup_reason": "no row",
+      "current_status": "\u2014",
+      "current_source": "\u2014",
+      "current_event_time": "\u2014"
+    },
+    {
+      "game_id": "401860879",
+      "matchup": "Portland State @ San Diego State",
+      "team": "San Diego State",
+      "team_id": 21,
+      "lookup_reason": "no row",
+      "current_status": "\u2014",
+      "current_source": "\u2014",
+      "current_event_time": "\u2014"
+    },
+    {
+      "game_id": "401860879",
+      "matchup": "Portland State @ San Diego State",
+      "team": "Portland State",
+      "team_id": 2502,
+      "lookup_reason": "no row",
+      "current_status": "\u2014",
+      "current_source": "\u2014",
+      "current_event_time": "\u2014"
+    },
+    {
+      "game_id": "401858434",
+      "matchup": "Marshall @ Penn State",
+      "team": "Penn State",
+      "team_id": 213,
+      "lookup_reason": "status=unknown",
+      "current_status": "unknown",
+      "current_source": "manual_v1",
+      "current_event_time": "2026-09-01T22:24:09.289476+00:00"
+    },
+    {
+      "game_id": "401866623",
+      "matchup": "North Carolina A&T @ Georgia State",
+      "team": "Georgia State",
+      "team_id": 2247,
+      "lookup_reason": "status=unknown",
+      "current_status": "unknown",
+      "current_source": "manual_v1",
+      "current_event_time": "2026-09-01T22:24:19.204211+00:00"
+    },
+    {
+      "game_id": "401866623",
+      "matchup": "North Carolina A&T @ Georgia State",
+      "team": "North Carolina A&T",
+      "team_id": 2448,
+      "lookup_reason": "status=unknown",
+      "current_status": "unknown",
+      "current_source": "manual_v1",
+      "current_event_time": "2026-09-01T22:24:13.972019+00:00"
+    },
+    {
+      "game_id": "401858422",
+      "matchup": "Eastern Illinois @ Minnesota",
+      "team": "Minnesota",
+      "team_id": 135,
+      "lookup_reason": "status=unknown",
+      "current_status": "unknown",
+      "current_source": "manual_v1",
+      "current_event_time": "2026-09-01T22:24:43.691921+00:00"
+    },
+    {
+      "game_id": "401858422",
+      "matchup": "Eastern Illinois @ Minnesota",
+      "team": "Eastern Illinois",
+      "team_id": 2197,
+      "lookup_reason": "status=unknown",
+      "current_status": "unknown",
+      "current_source": "manual_v1",
+      "current_event_time": "2026-09-01T22:24:39.025013+00:00"
+    },
+    {
+      "game_id": "401864498",
+      "matchup": "Central Michigan @ New Mexico",
+      "team": "New Mexico",
+      "team_id": 167,
+      "lookup_reason": "status=unknown",
+      "current_status": "unknown",
+      "current_source": "manual_v1",
+      "current_event_time": "2026-09-01T22:24:58.144394+00:00"
+    },
+    {
+      "game_id": "401864498",
+      "matchup": "Central Michigan @ New Mexico",
+      "team": "Central Michigan",
+      "team_id": 2117,
+      "lookup_reason": "status=unknown",
+      "current_status": "unknown",
+      "current_source": "manual_v1",
+      "current_event_time": "2026-09-01T22:24:48.289809+00:00"
+    }
+  ],
+  "manual_v1_row_count_at_as_of": 27
+}

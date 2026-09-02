@@ -15,5 +15,12 @@ betting:
   min_model_market_agreement: 7.0
   no_bet_on_stale: true
   no_bet_on_qb_unknown: true
+  # Playbook: odds inputs fresh < 6h (snapshot age vs decision as_of).
+  odds_max_age_hours: 6
   # PLACEHOLDER — weekly aggregate exposure as fraction of bankroll (§12).
   max_weekly_exposure: 0.10
+  # S5: real odds→candidate provider; off until operator enables consciously.
+  candidates_enabled: false
+  # Totals implemented but disabled pending separate σ_total calibration.
+  candidate_markets:
+    - side

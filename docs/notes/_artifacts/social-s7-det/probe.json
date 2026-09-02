@@ -1,0 +1,338 @@
+{
+  "runs": [],
+  "post_xwalk_203858Z": {
+    "as_of": "2026-09-01T20:38:58+00:00",
+    "step_counts": {
+      "step1_snapshot_stale_kickoff_quarantine": 90,
+      "step2_edge_ev_sigma": 84,
+      "step3_model_market_disagree": 28,
+      "step4_exposure_caps": 8,
+      "step5_qb_status_unknown": 0,
+      "start": 91
+    },
+    "step4_ids": [
+      "401869129",
+      "401856636",
+      "401860879",
+      "401858209",
+      "401858434",
+      "401866623",
+      "401858422",
+      "401864498"
+    ],
+    "step4_matchups": [
+      "Northwestern State @ Louisiana Tech",
+      "Baylor @ Auburn",
+      "Portland State @ San Diego State",
+      "Tulane @ Duke",
+      "Marshall @ Penn State",
+      "North Carolina A&T @ Georgia State",
+      "Eastern Illinois @ Minnesota",
+      "Central Michigan @ New Mexico"
+    ],
+    "swapped_games": {
+      "401864496": {
+        "matchup": "Duquesne @ Air Force",
+        "edge": 0.0921,
+        "residual": 5.69,
+        "reasons": [
+          "qb_status_unknown"
+        ],
+        "ladder": "odds_api_snapshot",
+        "book": "fanduel"
+      },
+      "401864499": {
+        "matchup": "Fordham @ North Dakota State",
+        "edge": 0.0893,
+        "residual": 4.55,
+        "reasons": [
+          "qb_status_unknown"
+        ],
+        "ladder": "odds_api_snapshot",
+        "book": "draftkings"
+      },
+      "401869129": {
+        "matchup": "Northwestern State @ Louisiana Tech",
+        "edge": 0.1483,
+        "residual": 6.87,
+        "reasons": [
+          "qb_status_unknown"
+        ],
+        "ladder": "odds_api_snapshot",
+        "book": "draftkings"
+      },
+      "401860879": {
+        "matchup": "Portland State @ San Diego State",
+        "edge": 0.1154,
+        "residual": 6.96,
+        "reasons": [
+          "qb_status_unknown"
+        ],
+        "ladder": "odds_api_snapshot",
+        "book": "fanduel"
+      }
+    },
+    "step3_pool_size": 28,
+    "step3_top15": [
+      {
+        "game_id": "401869129",
+        "matchup": "Northwestern State @ Louisiana Tech",
+        "edge": 0.1483
+      },
+      {
+        "game_id": "401856636",
+        "matchup": "Baylor @ Auburn",
+        "edge": 0.1472
+      },
+      {
+        "game_id": "401860879",
+        "matchup": "Portland State @ San Diego State",
+        "edge": 0.1154
+      },
+      {
+        "game_id": "401858209",
+        "matchup": "Tulane @ Duke",
+        "edge": 0.1048
+      },
+      {
+        "game_id": "401858434",
+        "matchup": "Marshall @ Penn State",
+        "edge": 0.0992
+      },
+      {
+        "game_id": "401866623",
+        "matchup": "North Carolina A&T @ Georgia State",
+        "edge": 0.0978
+      },
+      {
+        "game_id": "401862697",
+        "matchup": "Houston Christian @ Rice",
+        "edge": 0.0952
+      },
+      {
+        "game_id": "401864496",
+        "matchup": "Duquesne @ Air Force",
+        "edge": 0.0921
+      },
+      {
+        "game_id": "401864499",
+        "matchup": "Fordham @ North Dakota State",
+        "edge": 0.0893
+      },
+      {
+        "game_id": "401856780",
+        "matchup": "Coastal Carolina @ West Virginia",
+        "edge": 0.0875
+      },
+      {
+        "game_id": "401858435",
+        "matchup": "Indiana State @ Purdue",
+        "edge": 0.0849
+      },
+      {
+        "game_id": "401856775",
+        "matchup": "Utah Tech @ BYU",
+        "edge": 0.0804
+      },
+      {
+        "game_id": "401856666",
+        "matchup": "Furman @ Tennessee",
+        "edge": 0.0797
+      },
+      {
+        "game_id": "401867973",
+        "matchup": "Norfolk State @ Old Dominion",
+        "edge": 0.0788
+      },
+      {
+        "game_id": "401858204",
+        "matchup": "Akron @ Wake Forest",
+        "edge": 0.0765
+      }
+    ]
+  },
+  "s7_xwalk_b_223000Z": {
+    "as_of": "2026-09-01T22:30:00+00:00",
+    "step_counts": {
+      "step1_snapshot_stale_kickoff_quarantine": 90,
+      "step2_edge_ev_sigma": 84,
+      "step3_model_market_disagree": 28,
+      "step4_exposure_caps": 8,
+      "step5_qb_status_unknown": 2,
+      "start": 91
+    },
+    "step4_ids": [
+      "401869129",
+      "401856636",
+      "401860879",
+      "401858209",
+      "401858434",
+      "401866623",
+      "401858422",
+      "401864498"
+    ],
+    "step4_matchups": [
+      "Northwestern State @ Louisiana Tech",
+      "Baylor @ Auburn",
+      "Portland State @ San Diego State",
+      "Tulane @ Duke",
+      "Marshall @ Penn State",
+      "North Carolina A&T @ Georgia State",
+      "Eastern Illinois @ Minnesota",
+      "Central Michigan @ New Mexico"
+    ],
+    "swapped_games": {
+      "401864496": {
+        "matchup": "Duquesne @ Air Force",
+        "edge": 0.0921,
+        "residual": 5.69,
+        "reasons": [
+          "qb_status_unknown"
+        ],
+        "ladder": "odds_api_snapshot_fallback",
+        "book": "fanduel"
+      },
+      "401864499": {
+        "matchup": "Fordham @ North Dakota State",
+        "edge": 0.0893,
+        "residual": 4.55,
+        "reasons": [
+          "qb_status_unknown"
+        ],
+        "ladder": "odds_api_snapshot_fallback",
+        "book": "draftkings"
+      },
+      "401869129": {
+        "matchup": "Northwestern State @ Louisiana Tech",
+        "edge": 0.1483,
+        "residual": 6.87,
+        "reasons": [
+          "qb_status_unknown"
+        ],
+        "ladder": "odds_api_snapshot_fallback",
+        "book": "draftkings"
+      },
+      "401860879": {
+        "matchup": "Portland State @ San Diego State",
+        "edge": 0.1154,
+        "residual": 6.96,
+        "reasons": [
+          "qb_status_unknown"
+        ],
+        "ladder": "odds_api_snapshot_fallback",
+        "book": "fanduel"
+      }
+    },
+    "step3_pool_size": 28,
+    "step3_top15": [
+      {
+        "game_id": "401869129",
+        "matchup": "Northwestern State @ Louisiana Tech",
+        "edge": 0.1483
+      },
+      {
+        "game_id": "401856636",
+        "matchup": "Baylor @ Auburn",
+        "edge": 0.1472
+      },
+      {
+        "game_id": "401860879",
+        "matchup": "Portland State @ San Diego State",
+        "edge": 0.1154
+      },
+      {
+        "game_id": "401858209",
+        "matchup": "Tulane @ Duke",
+        "edge": 0.1048
+      },
+      {
+        "game_id": "401858434",
+        "matchup": "Marshall @ Penn State",
+        "edge": 0.0992
+      },
+      {
+        "game_id": "401866623",
+        "matchup": "North Carolina A&T @ Georgia State",
+        "edge": 0.0978
+      },
+      {
+        "game_id": "401862697",
+        "matchup": "Houston Christian @ Rice",
+        "edge": 0.0952
+      },
+      {
+        "game_id": "401864496",
+        "matchup": "Duquesne @ Air Force",
+        "edge": 0.0921
+      },
+      {
+        "game_id": "401864499",
+        "matchup": "Fordham @ North Dakota State",
+        "edge": 0.0893
+      },
+      {
+        "game_id": "401856780",
+        "matchup": "Coastal Carolina @ West Virginia",
+        "edge": 0.0875
+      },
+      {
+        "game_id": "401858435",
+        "matchup": "Indiana State @ Purdue",
+        "edge": 0.0849
+      },
+      {
+        "game_id": "401856775",
+        "matchup": "Utah Tech @ BYU",
+        "edge": 0.0804
+      },
+      {
+        "game_id": "401856666",
+        "matchup": "Furman @ Tennessee",
+        "edge": 0.0797
+      },
+      {
+        "game_id": "401867973",
+        "matchup": "Norfolk State @ Old Dominion",
+        "edge": 0.0788
+      },
+      {
+        "game_id": "401858204",
+        "matchup": "Akron @ Wake Forest",
+        "edge": 0.0765
+      }
+    ]
+  },
+  "stability_runs": [
+    [
+      "401869129",
+      "401856636",
+      "401860879",
+      "401858209",
+      "401858434",
+      "401866623",
+      "401858422",
+      "401864498"
+    ],
+    [
+      "401869129",
+      "401856636",
+      "401860879",
+      "401858209",
+      "401858434",
+      "401866623",
+      "401858422",
+      "401864498"
+    ],
+    [
+      "401869129",
+      "401856636",
+      "401860879",
+      "401858209",
+      "401858434",
+      "401866623",
+      "401858422",
+      "401864498"
+    ]
+  ],
+  "stability_all_identical": true
+}

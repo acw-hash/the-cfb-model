@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #070c14; }
+  a { color: #ef5a24; text-decoration: none; }
+  a:hover { color: #ff7a49; }
+</style>
+</helmet>
+
+<div style="display:flex; flex-direction:column; gap:56px; padding:56px; background:#070c14; font-family:Archivo, 'Helvetica Neue', Helvetica, sans-serif; align-items:flex-start;">
+
+  <div style="display:flex; flex-direction:column; gap:12px;">
+    <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.22em; color:#4d5f76; text-transform:uppercase;">01 / ratings → lines → edges</div>
+    <div style="position:relative; width:1500px; height:500px; overflow:hidden; background:#101b2c; background-image:linear-gradient(to right, rgba(255,255,255,0.028) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.028) 1px, transparent 1px); background-size:100px 95px; background-position:0 0;">
+      <svg viewBox="0 0 1500 500" width="1500" height="500" style="position:absolute; inset:0;" aria-hidden="true">
+        <g stroke="rgba(226,235,248,0.10)" stroke-width="1" fill="none">
+          <line x1="75" y1="55" x2="1185" y2="157"></line>
+          <line x1="80" y1="175" x2="1432" y2="247"></line>
+          <line x1="80" y1="218" x2="1432" y2="250"></line>
+          <line x1="82" y1="312" x2="1432" y2="252"></line>
+          <line x1="95" y1="452" x2="700" y2="500"></line>
+        </g>
+        <g stroke="rgba(226,235,248,0.34)" stroke-width="1" fill="none">
+          <line x1="1088" y1="352" x2="1430" y2="352"></line>
+          <line x1="1100" y1="352" x2="1100" y2="368"></line>
+          <line x1="1145" y1="352" x2="1145" y2="366"></line>
+          <line x1="1190" y1="352" x2="1190" y2="372"></line>
+          <line x1="1235" y1="352" x2="1235" y2="366"></line>
+          <line x1="1280" y1="352" x2="1280" y2="368"></line>
+          <line x1="1325" y1="352" x2="1325" y2="366"></line>
+          <line x1="1381" y1="352" x2="1381" y2="372"></line>
+        </g>
+      </svg>
+      <div style="position:absolute; top:45px; left:58px; width:30px; height:30px; border-top:1px solid rgba(226,235,248,0.42); border-left:1px solid rgba(226,235,248,0.42);"></div>
+      <div style="position:absolute; top:45px; right:70px; width:30px; height:30px; border-top:1px solid rgba(226,235,248,0.42); border-right:1px solid rgba(226,235,248,0.42);"></div>
+      <div style="position:absolute; bottom:50px; left:58px; width:30px; height:30px; border-bottom:1px solid rgba(226,235,248,0.42); border-left:1px solid rgba(226,235,248,0.42);"></div>
+      <div style="position:absolute; bottom:50px; right:70px; width:30px; height:30px; border-bottom:1px solid rgba(226,235,248,0.42); border-right:1px solid rgba(226,235,248,0.42);"></div>
+      <div style="position:absolute; top:150px; right:70px; display:flex; flex-direction:column; align-items:flex-end;">
+        <div style="font-size:76px; font-weight:600; line-height:1; color:#f5f3ef; letter-spacing:0.22em; margin-right:-0.22em;">RIDGE</div>
+        <div style="margin-top:34px; font-size:15px; font-weight:500; color:#7c8fa6; letter-spacing:0.42em; margin-right:-0.42em; white-space:nowrap;">RATINGS → LINES → EDGES</div>
+        <div style="margin-top:13px; width:46px; height:3px; background:#ef5a24;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:12px;">
+    <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.22em; color:#4d5f76; text-transform:uppercase;">02 / the gap is the bet</div>
+    <div style="position:relative; width:1500px; height:500px; overflow:hidden; background:#101b2c; background-image:linear-gradient(to right, rgba(255,255,255,0.028) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.028) 1px, transparent 1px); background-size:100px 95px; background-position:0 0;">
+      <svg viewBox="0 0 1500 500" width="1500" height="500" style="position:absolute; inset:0;" aria-hidden="true">
+        <g stroke="rgba(226,235,248,0.10)" stroke-width="1" fill="none">
+          <line x1="75" y1="55" x2="1185" y2="157"></line>
+          <line x1="80" y1="175" x2="1432" y2="247"></line>
+          <line x1="80" y1="218" x2="1432" y2="250"></line>
+          <line x1="82" y1="312" x2="1432" y2="252"></line>
+          <line x1="95" y1="452" x2="700" y2="500"></line>
+        </g>
+        <g stroke="rgba(226,235,248,0.34)" stroke-width="1" fill="none">
+          <line x1="1088" y1="352" x2="1430" y2="352"></line>
+          <line x1="1100" y1="352" x2="1100" y2="368"></line>
+          <line x1="1145" y1="352" x2="1145" y2="366"></line>
+          <line x1="1190" y1="352" x2="1190" y2="372"></line>
+          <line x1="1235" y1="352" x2="1235" y2="366"></line>
+          <line x1="1280" y1="352" x2="1280" y2="368"></line>
+          <line x1="1325" y1="352" x2="1325" y2="366"></line>
+          <line x1="1381" y1="352" x2="1381" y2="372"></line>
+        </g>
+      </svg>
+      <div style="position:absolute; top:45px; left:58px; width:30px; height:30px; border-top:1px solid rgba(226,235,248,0.42); border-left:1px solid rgba(226,235,248,0.42);"></div>
+      <div style="position:absolute; top:45px; right:70px; width:30px; height:30px; border-top:1px solid rgba(226,235,248,0.42); border-right:1px solid rgba(226,235,248,0.42);"></div>
+      <div style="position:absolute; bottom:50px; left:58px; width:30px; height:30px; border-bottom:1px solid rgba(226,235,248,0.42); border-left:1px solid rgba(226,235,248,0.42);"></div>
+      <div style="position:absolute; bottom:50px; right:70px; width:30px; height:30px; border-bottom:1px solid rgba(226,235,248,0.42); border-right:1px solid rgba(226,235,248,0.42);"></div>
+      <div style="position:absolute; top:150px; right:70px; display:flex; flex-direction:column; align-items:flex-end;">
+        <div style="font-size:76px; font-weight:600; line-height:1; color:#f5f3ef; letter-spacing:0.22em; margin-right:-0.22em;">RIDGE</div>
+        <div style="margin-top:34px; font-size:15px; font-weight:500; color:#7c8fa6; letter-spacing:0.42em; margin-right:-0.42em; white-space:nowrap;">THE GAP IS THE BET</div>
+        <div style="margin-top:13px; width:46px; height:3px; background:#ef5a24;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:12px;">
+    <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.22em; color:#4d5f76; text-transform:uppercase;">03 / mostly we pass</div>
+    <div style="position:relative; width:1500px; height:500px; overflow:hidden; background:#101b2c; background-image:linear-gradient(to right, rgba(255,255,255,0.028) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.028) 1px, transparent 1px); background-size:100px 95px; background-position:0 0;">
+      <svg viewBox="0 0 1500 500" width="1500" height="500" style="position:absolute; inset:0;" aria-hidden="true">
+        <g stroke="rgba(226,235,248,0.10)" stroke-width="1" fill="none">
+          <line x1="75" y1="55" x2="1185" y2="157"></line>
+          <line x1="80" y1="175" x2="1432" y2="247"></line>
+          <line x1="80" y1="218" x2="1432" y2="250"></line>
+          <line x1="82" y1="312" x2="1432" y2="252"></line>
+          <line x1="95" y1="452" x2="700" y2="500"></line>
+        </g>
+        <g stroke="rgba(226,235,248,0.34)" stroke-width="1" fill="none">
+          <line x1="1088" y1="352" x2="1430" y2="352"></line>
+          <line x1="1100" y1="352" x2="1100" y2="368"></line>
+          <line x1="1145" y1="352" x2="1145" y2="366"></line>
+          <line x1="1190" y1="352" x2="1190" y2="372"></line>
+          <line x1="1235" y1="352" x2="1235" y2="366"></line>
+          <line x1="1280" y1="352" x2="1280" y2="368"></line>
+          <line x1="1325" y1="352" x2="1325" y2="366"></line>
+          <line x1="1381" y1="352" x2="1381" y2="372"></line>
+        </g>
+      </svg>
+      <div style="position:absolute; top:45px; left:58px; width:30px; height:30px; border-top:1px solid rgba(226,235,248,0.42); border-left:1px solid rgba(226,235,248,0.42);"></div>
+      <div style="position:absolute; top:45px; right:70px; width:30px; height:30px; border-top:1px solid rgba(226,235,248,0.42); border-right:1px solid rgba(226,235,248,0.42);"></div>
+      <div style="position:absolute; bottom:50px; left:58px; width:30px; height:30px; border-bottom:1px solid rgba(226,235,248,0.42); border-left:1px solid rgba(226,235,248,0.42);"></div>
+      <div style="position:absolute; bottom:50px; right:70px; width:30px; height:30px; border-bottom:1px solid rgba(226,235,248,0.42); border-right:1px solid rgba(226,235,248,0.42);"></div>
+      <div style="position:absolute; top:150px; right:70px; display:flex; flex-direction:column; align-items:flex-end;">
+        <div style="font-size:76px; font-weight:600; line-height:1; color:#f5f3ef; letter-spacing:0.22em; margin-right:-0.22em;">RIDGE</div>
+        <div style="margin-top:34px; font-size:15px; font-weight:500; color:#7c8fa6; letter-spacing:0.42em; margin-right:-0.42em; white-space:nowrap;">MOSTLY WE PASS</div>
+        <div style="margin-top:13px; width:46px; height:3px; background:#ef5a24;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:12px;">
+    <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.22em; color:#4d5f76; text-transform:uppercase;">04 / μ · σ · clv</div>
+    <div style="position:relative; width:1500px; height:500px; overflow:hidden; background:#101b2c; background-image:linear-gradient(to right, rgba(255,255,255,0.028) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.028) 1px, transparent 1px); background-size:100px 95px; background-position:0 0;">
+      <svg viewBox="0 0 1500 500" width="1500" height="500" style="position:absolute; inset:0;" aria-hidden="true">
+        <g stroke="rgba(226,235,248,0.10)" stroke-width="1" fill="none">
+          <line x1="75" y1="55" x2="1185" y2="157"></line>
+          <line x1="80" y1="175" x2="1432" y2="247"></line>
+          <line x1="80" y1="218" x2="1432" y2="250"></line>
+          <line x1="82" y1="312" x2="1432" y2="252"></line>
+          <line x1="95" y1="452" x2="700" y2="500"></line>
+        </g>
+        <g stroke="rgba(226,235,248,0.34)" stroke-width="1" fill="none">
+          <line x1="1088" y1="352" x2="1430" y2="352"></line>
+          <line x1="1100" y1="352" x2="1100" y2="368"></line>
+          <line x1="1145" y1="352" x2="1145" y2="366"></line>
+          <line x1="1190" y1="352" x2="1190" y2="372"></line>
+          <line x1="1235" y1="352" x2="1235" y2="366"></line>
+          <line x1="1280" y1="352" x2="1280" y2="368"></line>
+          <line x1="1325" y1="352" x2="1325" y2="366"></line>
+          <line x1="1381" y1="352" x2="1381" y2="372"></line>
+        </g>
+      </svg>
+      <div style="position:absolute; top:45px; left:58px; width:30px; height:30px; border-top:1px solid rgba(226,235,248,0.42); border-left:1px solid rgba(226,235,248,0.42);"></div>
+      <div style="position:absolute; top:45px; right:70px; width:30px; height:30px; border-top:1px solid rgba(226,235,248,0.42); border-right:1px solid rgba(226,235,248,0.42);"></div>
+      <div style="position:absolute; bottom:50px; left:58px; width:30px; height:30px; border-bottom:1px solid rgba(226,235,248,0.42); border-left:1px solid rgba(226,235,248,0.42);"></div>
+      <div style="position:absolute; bottom:50px; right:70px; width:30px; height:30px; border-bottom:1px solid rgba(226,235,248,0.42); border-right:1px solid rgba(226,235,248,0.42);"></div>
+      <div style="position:absolute; top:150px; right:70px; display:flex; flex-direction:column; align-items:flex-end;">
+        <div style="font-size:76px; font-weight:600; line-height:1; color:#f5f3ef; letter-spacing:0.22em; margin-right:-0.22em;">RIDGE</div>
+        <div style="margin-top:34px; font-size:15px; font-weight:500; color:#7c8fa6; letter-spacing:0.42em; margin-right:-0.42em; white-space:nowrap;">μ · σ · CLV</div>
+        <div style="margin-top:13px; width:46px; height:3px; background:#ef5a24;"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</x-dc>
+</body>
+</html>

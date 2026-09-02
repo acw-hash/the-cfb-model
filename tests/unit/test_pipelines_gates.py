@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-from ncaa_quant.betting.clv import RecommendationRecord
+from ncaa_quant.betting.clv import RecommendationRecord, build_recommendation_record
 from ncaa_quant.config import AppConfig, PipelineConfig
 from ncaa_quant.pipelines.gates import (
     evaluate_bet_confirmation,
@@ -14,12 +14,13 @@ from ncaa_quant.pipelines.gates import (
 
 
 def _rec(*, bet_line: float | None = -3.5) -> RecommendationRecord:
-    return RecommendationRecord(
+    return build_recommendation_record(
         recommendation_id="r1",
         game_id="g1",
         season=2024,
         week=5,
         side="HOME",
+        edge=0.10,
         bet_side_american=-110,
         bet_other_american=-110,
         recommended_at=datetime(2024, 10, 1, tzinfo=UTC),

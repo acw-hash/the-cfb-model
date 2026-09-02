@@ -1,0 +1,36 @@
+{
+  "status": "MEASURED",
+  "row_match": {
+    "n": 314,
+    "keys_equal": true,
+    "max_abs_p_win_delta": 0.0,
+    "covered_mismatch": 0
+  },
+  "should_hold": "Headline \u00a72.7 probability CLV is the same_line half only; moved rows are line_units and must not be pooled. If halves differ materially, the headline describes only one of them.",
+  "same_line": {
+    "n": 158,
+    "mean_claim": 0.6391628535002144,
+    "realized_cover": 0.5,
+    "gap_realized_minus_claim": -0.1391628535002144,
+    "unit_pnl": -15.153354012190796,
+    "mean_u_pnl": -0.09590730387462529
+  },
+  "moved_line": {
+    "n": 156,
+    "mean_claim": 0.6427378943294598,
+    "realized_cover": 0.48717948717948717,
+    "gap_realized_minus_claim": -0.15555840714997266,
+    "unit_pnl": -28.581508987615727,
+    "mean_u_pnl": -0.18321480120266492
+  },
+  "halves_differ_materially": false,
+  "n_same": 158,
+  "n_moved": 156,
+  "vig": {
+    "breakeven_cover_rate_m110": 0.5238095238095238,
+    "mean_prob_clv_needed_vs_half_close": 0.023809523809523836,
+    "headline_same_book_prob_clv": 0.004440985412038113,
+    "one_line": "+0.0044 against 0.0238 needed to clear -110 from a 0.50 close \u2014 short by factor 5.4x",
+    "interpretation": "If the required CLV to clear vig is ~0.024 and we observe +0.0044, the \u221243.7u needs no bug: the headline edge is an order of magnitude too small to overcome the juice."
+  }
+}

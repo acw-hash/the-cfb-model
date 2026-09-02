@@ -6,8 +6,10 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { GameRow } from "@/components/GameRow/GameRow";
 import { SlateGroupHeader } from "@/components/SlateGroupHeader/SlateGroupHeader";
 import { SortControl } from "@/components/SortControl/SortControl";
+import { TeamSearch } from "@/components/TeamSearch/TeamSearch";
 import { ThisWeekHeader } from "@/components/ThisWeekHeader/ThisWeekHeader";
 import type { RefreshKind } from "@/lib/artifacts/types";
+import { filterGamesByQuery, parseSearchQuery } from "@/lib/this-week/search";
 import {
   DEFAULT_SLATE_ORDER,
   groupSlate,
@@ -25,7 +27,7 @@ interface ThisWeekSlateProps {
   refreshKind: RefreshKind;
   games: ThisWeekClientGame[];
   initialOrder?: SlateOrder;
-  /** When true (This Week route), order is mirrored to ?order= without a refetch. */
+  /** When true (This Week route), order and query mirror to the URL without a refetch. */
   syncUrl?: boolean;
 }
 
@@ -40,8 +42,20 @@ function writeOrderToUrl(order: SlateOrder): void {
   window.history.replaceState(null, "", next);
 }
 
+function writeQueryToUrl(query: string): void {
+  const url = new URL(window.location.href);
+  const trimmed = query.trim();
+  if (!trimmed) {
+    url.searchParams.delete("q");
+  } else {
+    url.searchParams.set("q", trimmed);
+  }
+  const next = `${url.pathname}${url.search}${url.hash}`;
+  window.history.replaceState(null, "", next);
+}
+
 /**
- * Client slate: sort/group already-loaded games. Toggle never refetches.
+ * Client slate: filter, sort, and group already-loaded games. Controls never refetch.
  */
 export function ThisWeekSlate({
   season,
@@ -53,17 +67,24 @@ export function ThisWeekSlate({
   syncUrl = false,
 }: ThisWeekSlateProps): React.ReactElement {
   const [order, setOrder] = useState<SlateOrder>(initialOrder);
+  const [query, setQuery] = useState("");
   const timeZone = useMemo(() => Intl.DateTimeFormat().resolvedOptions().timeZone, []);
 
   useEffect(() => {
     if (!syncUrl) {
       return;
     }
-    const fromUrl = parseSlateOrder(new URLSearchParams(window.location.search).get("order"));
-    setOrder(fromUrl);
+    const params = new URLSearchParams(window.location.search);
+    setOrder(parseSlateOrder(params.get("order")));
+    setQuery(parseSearchQuery(params.get("q")));
   }, [syncUrl]);
 
-  const groups = useMemo(() => groupSlate(games, order, timeZone), [games, order, timeZone]);
+  const filteredGames = useMemo(() => filterGamesByQuery(games, query), [games, query]);
+
+  const groups = useMemo(
+    () => groupSlate(filteredGames, order, timeZone),
+    [filteredGames, order, timeZone],
+  );
 
   const handleOrder = useCallback(
     (next: SlateOrder) => {
@@ -75,6 +96,27 @@ export function ThisWeekSlate({
     [syncUrl],
   );
 
+  const handleQuery = useCallback(
+    (next: string) => {
+      setQuery(next);
+      if (syncUrl) {
+        writeQueryToUrl(next);
+      }
+    },
+    [syncUrl],
+  );
+
+  const clearQuery = useCallback(() => {
+    setQuery("");
+    if (syncUrl) {
+      writeQueryToUrl("");
+    }
+  }, [syncUrl]);
+
+  const trimmedQuery = query.trim();
+  const showNoMatches = trimmedQuery.length > 0 && filteredGames.length === 0;
+  const liveMessage = trimmedQuery ? `${filteredGames.length} games match` : "";
+
   return (
     <>
       <div className={styles.sticky}>
@@ -84,20 +126,35 @@ export function ThisWeekSlate({
           publishedAt={publishedAt}
           refreshKind={refreshKind}
         />
-        <SortControl value={order} onChange={handleOrder} />
+        <div className={styles.controls}>
+          <TeamSearch value={query} onChange={handleQuery} onClear={clearQuery} />
+          <SortControl value={order} onChange={handleOrder} />
+        </div>
+        <p className={styles.live} aria-live="polite" aria-atomic="true">
+          {liveMessage}
+        </p>
       </div>
-      <div className={styles.slate} data-testid="slate" data-order={order}>
-        {groups.map((group) => (
-          <section key={group.id} className={styles.group} data-group={group.id}>
-            <SlateGroupHeader label={group.label} />
-            {group.games.map((game) => (
-              <Link key={game.game_id} href={`/game/${game.game_id}`} className={styles.rowLink}>
-                <GameRow game={game} />
-              </Link>
-            ))}
-          </section>
-        ))}
-      </div>
+      {showNoMatches ? (
+        <p className={styles.noMatches} data-testid="search-no-matches">
+          No games match that team.{" "}
+          <button type="button" className={styles.clearSearch} onClick={clearQuery}>
+            Clear search
+          </button>
+        </p>
+      ) : (
+        <div className={styles.slate} data-testid="slate" data-order={order}>
+          {groups.map((group) => (
+            <section key={group.id} className={styles.group} data-group={group.id}>
+              <SlateGroupHeader label={group.label} />
+              {group.games.map((game) => (
+                <Link key={game.game_id} href={`/game/${game.game_id}`} className={styles.rowLink}>
+                  <GameRow game={game} />
+                </Link>
+              ))}
+            </section>
+          ))}
+        </div>
+      )}
     </>
   );
 }

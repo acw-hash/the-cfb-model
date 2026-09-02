@@ -3,6 +3,8 @@ pipeline:
   odds_snapshots_per_day: 6
   # UTC cron for Prefect ingest_odds deployment (6 slots).
   odds_ingest_cron: "0 0,4,8,12,16,20 * * *"
+  # V4-B1a: poll for due kickoff slots every 2 minutes (UTC); no-op when none due.
+  slot_close_poll_cron: "*/2 * * * *"
   # Mapping-layer retrain gates by week-of-season (DESIGN §9.7: ~5 and ~10).
   retrain_gate_weeks:
     - 5

@@ -1,0 +1,15 @@
+{
+  "generated_at": "2026-08-25T20:10:00+00:00",
+  "n_314": 314,
+  "row_match_s4": true,
+  "one_sentence_reading": "AUC ~ 0.5 and BSS <= 0 -> no per-game ATS discrimination exists; H4 and H5 are the same finding and no selection rule fixes it.",
+  "phase1_branch": "H4_H5_collapse_writeup_only_no_new_rule",
+  "artifacts": {
+    "p0_1": "MEASURED",
+    "p0_2": "MEASURED_NO_DISCRIMINATION",
+    "p0_3": "MEASURED",
+    "p0_4": "MEASURED",
+    "p0_5": "MEASURED",
+    "p0_6": "MEASURED"
+  }
+}

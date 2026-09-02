@@ -1,0 +1,33 @@
+{
+  "status": "MEASURED",
+  "settings": {
+    "no_bet_on_qb_unknown": false,
+    "no_bet_on_stale": false,
+    "min_edge_sides": 0.025,
+    "min_model_market_agreement": 7.0,
+    "note": "Matches S3 historical replay flags"
+  },
+  "n_candidates_constructed": 3613,
+  "n_section12_accepted": 415,
+  "histogram": {
+    "edge_too_small": 322,
+    "stale_inputs": 0,
+    "qb_status_unknown": 0,
+    "model_market_disagree": 858,
+    "max_bets_per_week": 0,
+    "max_weekly_exposure": 1349,
+    "max_team_exposure": 0,
+    "non_positive_ev": 300
+  },
+  "provider_block_reasons": {
+    "no_snapshot": 643,
+    "kickoff_passed": 27,
+    "line_quarantined": 15
+  },
+  "zeros_among_required": [
+    "stale_inputs",
+    "qb_status_unknown",
+    "max_bets_per_week",
+    "max_team_exposure"
+  ]
+}

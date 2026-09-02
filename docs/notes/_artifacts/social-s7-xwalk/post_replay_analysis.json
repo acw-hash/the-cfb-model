@@ -1,0 +1,72 @@
+{
+  "analysis_as_of": "2026-09-01T20:38:58+00:00",
+  "crosswalk_summary": {
+    "events_in_pull": 146,
+    "matched": 146,
+    "unmatched": 0,
+    "match_rate": 1.0,
+    "unmatched_events": []
+  },
+  "odds_summary": {
+    "games_with_spread_odds": 90,
+    "games_without_spread_odds": 1
+  },
+  "gate_step_counts": {
+    "step1_snapshot_stale_kickoff_quarantine": 90,
+    "step2_edge_ev_sigma": 84,
+    "step3_model_market_disagree": 28,
+    "step4_exposure_caps": 8,
+    "step5_qb_status_unknown": 0,
+    "start": 91
+  },
+  "qb_worklist": [
+    {
+      "game_id": "401869129",
+      "matchup": "Northwestern State @ Louisiana Tech",
+      "home_team": "Louisiana Tech",
+      "away_team": "Northwestern State"
+    },
+    {
+      "game_id": "401856636",
+      "matchup": "Baylor @ Auburn",
+      "home_team": "Auburn",
+      "away_team": "Baylor"
+    },
+    {
+      "game_id": "401860879",
+      "matchup": "Portland State @ San Diego State",
+      "home_team": "San Diego State",
+      "away_team": "Portland State"
+    },
+    {
+      "game_id": "401858209",
+      "matchup": "Tulane @ Duke",
+      "home_team": "Duke",
+      "away_team": "Tulane"
+    },
+    {
+      "game_id": "401858434",
+      "matchup": "Marshall @ Penn State",
+      "home_team": "Penn State",
+      "away_team": "Marshall"
+    },
+    {
+      "game_id": "401866623",
+      "matchup": "North Carolina A&T @ Georgia State",
+      "home_team": "Georgia State",
+      "away_team": "North Carolina A&T"
+    },
+    {
+      "game_id": "401858422",
+      "matchup": "Eastern Illinois @ Minnesota",
+      "home_team": "Minnesota",
+      "away_team": "Eastern Illinois"
+    },
+    {
+      "game_id": "401864498",
+      "matchup": "Central Michigan @ New Mexico",
+      "home_team": "New Mexico",
+      "away_team": "Central Michigan"
+    }
+  ]
+}

@@ -1,0 +1,168 @@
+{
+  "status": "MEASURED_NO_DISCRIMINATION",
+  "should_hold": "If there is anything to select on: realized cover rate rises monotonically with claim, and the top bin sits above -110 break-even (0.5238).",
+  "row_match": {
+    "n": 314,
+    "keys_equal": true,
+    "max_abs_p_win_delta": 0.0,
+    "covered_mismatch": 0
+  },
+  "breakeven_m110": 0.5238095238095238,
+  "bins_314": [
+    {
+      "bin": 1,
+      "n": 62,
+      "mean_claim": 0.6071952596685608,
+      "realized_cover_rate": 0.5161290322580645,
+      "wilson_95": [
+        0.3944724746061819,
+        0.6359034579349472
+      ],
+      "unit_pnl": 0.9285163231198972,
+      "n_cover": 32
+    },
+    {
+      "bin": 2,
+      "n": 63,
+      "mean_claim": 0.6300234795092032,
+      "realized_cover_rate": 0.42857142857142855,
+      "wilson_95": [
+        0.3139672637328724,
+        0.5513860491740598
+      ],
+      "unit_pnl": -32.11807429960594,
+      "n_cover": 27
+    },
+    {
+      "bin": 3,
+      "n": 63,
+      "mean_claim": 0.6420767969950628,
+      "realized_cover_rate": 0.5873015873015873,
+      "wilson_95": [
+        0.46415095351811103,
+        0.7004172195956385
+      ],
+      "unit_pnl": 24.557168008526403,
+      "n_cover": 37
+    },
+    {
+      "bin": 4,
+      "n": 63,
+      "mean_claim": 0.6524954618758206,
+      "realized_cover_rate": 0.42857142857142855,
+      "wilson_95": [
+        0.3139672637328724,
+        0.5513860491740598
+      ],
+      "unit_pnl": -33.14596751749915,
+      "n_cover": 27
+    },
+    {
+      "bin": 5,
+      "n": 63,
+      "mean_claim": 0.6723683293814819,
+      "realized_cover_rate": 0.5079365079365079,
+      "wilson_95": [
+        0.38762677115387556,
+        0.6273339718564653
+      ],
+      "unit_pnl": -3.9565055143477528,
+      "n_cover": 32
+    }
+  ],
+  "bins_flatness": {
+    "binomial_se_approx_per_bin": 0.06299407883487121,
+    "top_vs_bottom_wilson_separated": false,
+    "realized_rates_monotonic_nondecreasing": false,
+    "top_bin_above_breakeven_0_524": false,
+    "distinguishable_from_flat": false,
+    "note": "With ~63/bin, SE\u22480.063. Do not claim a trend the CIs do not support."
+  },
+  "auc_p_win_vs_cover_314": {
+    "auc": 0.49281801582471096,
+    "ci_95": [
+      0.42854969308947105,
+      0.5563894503072386
+    ],
+    "n_boot_used": 2000,
+    "n": 314
+  },
+  "spearman_p_win_vs_cover_314": {
+    "spearman_rho": -0.01243882854293447,
+    "pvalue": 0.8262247263852281,
+    "ci_95": [
+      -0.12356264259975146,
+      0.09764359208512119
+    ],
+    "n": 314
+  },
+  "all_games_p_ats_home": {
+    "n": 3491,
+    "auc": {
+      "auc": 0.5044988572715413,
+      "ci_95": [
+        0.4851369322145819,
+        0.523581740896978
+      ],
+      "n_boot_used": 2000,
+      "n": 3491
+    },
+    "spearman": {
+      "spearman_rho": 0.007791543464338338,
+      "pvalue": 0.6453705104338758,
+      "ci_95": [
+        -0.025742296566865882,
+        0.040841109012692056
+      ],
+      "n": 3491
+    },
+    "mean_claim": 0.49240088125663567,
+    "realized_home_cover": 0.4932684044686336
+  },
+  "bss": {
+    "p_ats_home_all_games": {
+      "brier_model": 0.287646035117011,
+      "brier_baseline": 0.24995468562160203,
+      "baseline_rate": 0.4932684044686336,
+      "bss": -0.15079273029699714,
+      "n": 3491
+    },
+    "p_ml_home_all_games": {
+      "brier_model": 0.1871228524152138,
+      "brier_baseline": 0.2341318129920076,
+      "baseline_rate": 0.625968992248062,
+      "bss": 0.20077989392410567,
+      "n": 3612
+    },
+    "p_ml_home_on_314": {
+      "brier_model": 0.20589609074626403,
+      "brier_baseline": 0.2402531542861779,
+      "baseline_rate": 0.5987261146496815,
+      "bss": 0.1430035898675004,
+      "n": 314
+    },
+    "p_win_on_314": {
+      "brier_model": 0.2724846445164383,
+      "brier_baseline": 0.24995943040285606,
+      "baseline_rate": 0.49363057324840764,
+      "bss": -0.09011548024924942,
+      "n": 314
+    }
+  },
+  "instrument_control_p_ml_home_on_314": {
+    "n": 314,
+    "auc": {
+      "auc": 0.7254728132387708,
+      "ci_95": [
+        0.6649344024995161,
+        0.7789583559413998
+      ],
+      "n_boot_used": 2000,
+      "n": 314
+    },
+    "ats_auc_314": 0.49281801582471096,
+    "ml_auc_314": 0.7254728132387708,
+    "instrument_suspect": false
+  },
+  "one_sentence_reading": "AUC ~ 0.5 and BSS <= 0 -> no per-game ATS discrimination exists; H4 and H5 are the same finding and no selection rule fixes it."
+}
