@@ -187,13 +187,9 @@ class RecommendationRecord:
     def __post_init__(self) -> None:
         if self.baseline_convention_eligible:
             if self.baseline_convention_exclusion_axes:
-                raise ClvError(
-                    "baseline_convention_eligible=True requires empty exclusion_axes"
-                )
+                raise ClvError("baseline_convention_eligible=True requires empty exclusion_axes")
         elif not self.baseline_convention_exclusion_axes:
-            raise ClvError(
-                "baseline_convention_eligible=False requires non-empty exclusion_axes"
-            )
+            raise ClvError("baseline_convention_eligible=False requires non-empty exclusion_axes")
 
 
 def build_recommendation_record(

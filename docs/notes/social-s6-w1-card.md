@@ -564,3 +564,115 @@ starters are known and fails when either team is missing or `unknown`.
 Snapshot ladder rung is `odds_api_snapshot_fallback` (1.92 h > 5-min post-2022 tolerance) but
 within the 6-hour staleness wall — `is_stale=false` on all constructed candidates.
 
+---
+
+## S7-DET — is the accept loop deterministic? (2026-09-01)
+
+**Branch:** `social-s1-s2`  
+**Task:** read-only. No Odds API, no writes, no publish. Report only — no fix.
+
+**Artifacts checked:**
+
+| Run | Artifact | `analysis_as_of` | Snapshot `event_time` |
+|-----|----------|------------------|------------------------|
+| S6-W1-CARD-B | `docs/notes/_artifacts/social-s6-w1-card/analysis.json` | `2026-09-01T20:38:58Z` | `2026-09-01T20:34:56.940488Z` |
+| S7-XWALK replay | `docs/notes/_artifacts/social-s7-xwalk/post_replay_analysis.json` | `2026-09-01T20:38:58Z` | same |
+| S7-XWALK-B | `docs/notes/_artifacts/social-s7-xwalk-b/gate_rerun.json` | `2026-09-01T22:30:00Z` | same |
+
+**Probe:** three re-runs of `run_analysis` at `as_of=2026-09-01T20:38:58Z` (post-crosswalk
+staged state); artifact `docs/notes/_artifacts/social-s7-det/probe.json`.
+
+### 1 — Artifact confirmation
+
+**Not a reporting error.** Stored step-4 lists genuinely differ.
+
+**S6-W1-CARD-B** (`analysis.json` → `gate.qb_worklist`, pre-crosswalk staged state):
+
+| game_id | matchup |
+|--------:|---------|
+| 401856636 | Baylor @ Auburn |
+| 401858209 | Tulane @ Duke |
+| 401858434 | Marshall @ Penn State |
+| 401866623 | NC A&T @ Georgia State |
+| 401864496 | Duquesne @ Air Force |
+| 401864499 | Fordham @ NDSU |
+| 401858422 | Eastern Illinois @ Minnesota |
+| 401864498 | Central Michigan @ New Mexico |
+
+**S7-XWALK-B** (`gate_rerun.json` → `step4_qb_detail`, post-crosswalk staged state):
+
+| game_id | matchup |
+|--------:|---------|
+| 401869129 | Northwestern State @ Louisiana Tech |
+| 401856636 | Baylor @ Auburn |
+| 401860879 | Portland State @ San Diego State |
+| 401858209 | Tulane @ Duke |
+| 401858434 | Marshall @ Penn State |
+| 401866623 | NC A&T @ Georgia State |
+| 401858422 | Eastern Illinois @ Minnesota |
+| 401864498 | Central Michigan @ New Mexico |
+
+Six games are common. **Swapped out:** Duquesne @ Air Force, Fordham @ NDSU.
+**Swapped in:** Northwestern State @ LA Tech, Portland State @ SDSU.
+
+S7-XWALK replay (`post_replay_analysis.json`) at the **same** `analysis_as_of`
+(`20:38:58Z`) matches the S7-XWALK-B step-4 set exactly — confirming the S6 vs S7
+split is not an S7-XWALK-B reporting artifact.
+
+### 2 — Why the sets differ
+
+**Root cause: crosswalk replay changed candidate inputs, not non-determinism in the
+accept loop.**
+
+Between S6-W1-CARD-B and S7-XWALK replay the S7 crosswalk fix attached `game_id`s to
+34 previously-unmatched Odds API events on the same raw archive
+(`20260901T203456940488Z.json`). Spread coverage on the 91-game slate rose from
+**56 → 90**; step-3 pool rose from **21 → 28**.
+
+| game_id | matchup | S6 (pre-xwalk) | S7 (post-xwalk) |
+|--------:|---------|----------------|-----------------|
+| 401869129 | Northwestern State @ LA Tech | `no_snapshot`, edge **0.0** | snapshot, edge **0.1483** (#1 in step-3 pool) |
+| 401860879 | Portland State @ SDSU | `no_snapshot`, edge **0.0** | snapshot, edge **0.1154** (#3) |
+| 401864496 | Duquesne @ Air Force | snapshot, edge **0.0921** (#8) | snapshot, edge **0.0921** (#8) — displaced |
+| 401864499 | Fordham @ NDSU | snapshot, edge **0.0893** (#9) | snapshot, edge **0.0893** (#9) — displaced |
+
+Duquesne and Fordham still construct candidates post-crosswalk; they are simply
+out-ranked once Northwestern State and Portland State enter the step-3 pool with
+higher edges. The exposure cap accepts **8** games from a **28**-game pool sorted by
+edge descending — ranks #8–#9 no longer fit.
+
+**Checks requested:**
+
+| Hypothesis | Finding |
+|------------|---------|
+| Tie-breaking on equal edge | **Ruled out** — zero duplicate edge values among 28 step-3 survivors at post-xwalk `as_of`. |
+| Dict/set iteration order | **Ruled out** — accept loop uses `sorted(..., key=edge, reverse=True)` (`_s6_w1_card.py` step 4; production `apply_bet_filters` line 590). `team_exp` is a plain `dict` but iteration order does not affect sort order. |
+| MC seeding per candidate | **Ruled out** — `build_candidates_from_odds` called with `n_draws=20_000`, `seed=42` on every run. |
+| `qb_status` read upstream of step 4 | **Yes, but inert for step 4** — `qb_status_known_for_game` runs in `build_candidates_from_odds` and sets `BetCandidate.qb_status_known`. In probe ordering, QB is **step 5** (after exposure). QB row writes between S7 replay (`20:38Z`) and S7-XWALK-B (`22:30Z`) changed step 5 only (0 → 2 survivors); **step 4 unchanged** (8 survivors, identical game set). |
+
+**Clarification on “steps 1–3 identical counts”:** true for **S7-XWALK replay vs
+S7-XWALK-B** (90 / 84 / 28 / 8 in both). **Not** true for **S6-W1-CARD-B vs
+S7-XWALK-B** (S6: 56 / 53 / 21; S7: 90 / 84 / 28) — the crosswalk fix changed steps
+1–3 as well as step 4.
+
+### 3 — Stability re-run (three trials)
+
+`run_analysis(as_of=2026-09-01T20:38:58Z)` executed three times on current staged
+data (post-crosswalk). All three returned the identical step-4 `game_id` list:
+
+`401869129, 401856636, 401860879, 401858209, 401858434, 401866623, 401858422,
+401864498`
+
+**Verdict: accept loop is deterministic** for fixed inputs (`as_of`, staged
+snapshots, crosswalk, QB store, predictions, `seed=42`).
+
+### 4 — S5 P0-4 top-*k* overlap of 1.0
+
+**Not affected.** P0-4 (`docs/notes/_artifacts/social-s5/p0_4_selection.json`) measured
+`mean_overlap_fraction = 1.0` on the frozen **314-ticket** historical population
+(2021–2024 weeks 2+). That artifact is independent of the 2026 week-1 crosswalk
+replay. The verbatim overlay string `"accept_loop_top_k_overlap": "1.0"` attached to
+current-slate survivors is a citation of the S5 finding, not a re-measurement on this
+slate. Crosswalk coverage expansion changes which 2026 games enter the step-3 pool but
+does not invalidate or re-open the historical P0-4 result.
+

@@ -20,9 +20,7 @@ from ncaa_quant.betting.clv import (
 
 
 def test_baseline_eligible_ticket() -> None:
-    eligible, axes = compute_baseline_convention_eligibility(
-        week=5, edge=0.10, market="spread"
-    )
+    eligible, axes = compute_baseline_convention_eligibility(week=5, edge=0.10, market="spread")
     assert eligible is True
     assert axes == ()
 
@@ -45,26 +43,20 @@ def test_baseline_eligible_ticket() -> None:
 
 
 def test_baseline_week_one_ticket() -> None:
-    eligible, axes = compute_baseline_convention_eligibility(
-        week=1, edge=0.1472, market="spread"
-    )
+    eligible, axes = compute_baseline_convention_eligibility(week=1, edge=0.1472, market="spread")
     assert eligible is False
     assert axes == ("week_lt_2",)
 
 
 def test_baseline_sub_threshold_edge_ticket() -> None:
-    eligible, axes = compute_baseline_convention_eligibility(
-        week=5, edge=0.04, market="spread"
-    )
+    eligible, axes = compute_baseline_convention_eligibility(week=5, edge=0.04, market="spread")
     assert eligible is False
     assert axes == ("edge_lt_0.05",)
     assert BASELINE_CONVENTION_MIN_EDGE_SIDES == 0.05
 
 
 def test_baseline_two_axis_failure_ordered() -> None:
-    eligible, axes = compute_baseline_convention_eligibility(
-        week=1, edge=0.04, market="total"
-    )
+    eligible, axes = compute_baseline_convention_eligibility(week=1, edge=0.04, market="total")
     assert eligible is False
     assert axes == ("week_lt_2", "edge_lt_0.05", "market_not_side")
 
@@ -125,8 +117,6 @@ def test_w1_step5_survivors_dry_run() -> None:
         ("Duke", 0.1048),
     )
     for side, edge in cases:
-        eligible, axes = compute_baseline_convention_eligibility(
-            week=1, edge=edge, market="spread"
-        )
+        eligible, axes = compute_baseline_convention_eligibility(week=1, edge=edge, market="spread")
         assert eligible is False
         assert axes == ("week_lt_2",), f"{side} edge={edge}"
