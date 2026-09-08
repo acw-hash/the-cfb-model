@@ -1,0 +1,26 @@
+{
+  "grade_export_wall_s": 0.223,
+  "grade_status_counts": {
+    "graded": 99,
+    "game_not_final": 789
+  },
+  "export_results_status": {
+    "graded": 99,
+    "game_not_final": 789
+  },
+  "artifact_sizes": {
+    "meta.json": 904,
+    "results_2026.json": 804333,
+    "team_ratings_2026.json": 107,
+    "track_record.json": 6303,
+    "week_predictions.json": 151761
+  },
+  "shared_published_at": "2026-09-08T14:30:28Z",
+  "pointer_keys": [
+    "results_current_season",
+    "team_ratings",
+    "track_record",
+    "week_predictions"
+  ],
+  "has_results_pointer_key": false
+}

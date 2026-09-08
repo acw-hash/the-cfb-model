@@ -1,0 +1,81 @@
+{
+  "bucket": "ridge-artifacts",
+  "content_hashes": {
+    "meta.json": "3679cf210f7f26c19ed3a29141429fa2eb76c65ec932cfa4838eec99d1bcbe59",
+    "results_2026.json": "eb7f7c85c26e3de0b26e042ed919622b071b2e4f53ec9b43e2b4a2897a583f29",
+    "team_ratings_2026.json": "1fde54deb45bd771f9c18236f365ff056c090b4576df1492e3ce8c14f6ff6d5d",
+    "track_record.json": "0bb29a010c47326ac7c14a47f0e719d373ceb449827797532d9d0c48489c934b",
+    "week_predictions.json": "3322f013d861389b0daa1c691a9cc1f2fe81060136fd97e690041b3a59658f69"
+  },
+  "meta_last": true,
+  "revalidation": null,
+  "upload_order": [
+    "results_2026.json",
+    "team_ratings_2026.json",
+    "track_record.json",
+    "week_predictions.json",
+    "meta.json"
+  ],
+  "uploads": [
+    {
+      "bytes": 804333,
+      "elapsed_ms": 500,
+      "key": "sandbox/v1/2026/w2/tuesday_primary/results_2026.json",
+      "sha256": "eb7f7c85c26e3de0b26e042ed919622b071b2e4f53ec9b43e2b4a2897a583f29"
+    },
+    {
+      "bytes": 804333,
+      "elapsed_ms": 530,
+      "key": "sandbox/latest/results_2026.json",
+      "sha256": "eb7f7c85c26e3de0b26e042ed919622b071b2e4f53ec9b43e2b4a2897a583f29"
+    },
+    {
+      "bytes": 107,
+      "elapsed_ms": 234,
+      "key": "sandbox/v1/2026/w2/tuesday_primary/team_ratings_2026.json",
+      "sha256": "1fde54deb45bd771f9c18236f365ff056c090b4576df1492e3ce8c14f6ff6d5d"
+    },
+    {
+      "bytes": 107,
+      "elapsed_ms": 202,
+      "key": "sandbox/latest/team_ratings_2026.json",
+      "sha256": "1fde54deb45bd771f9c18236f365ff056c090b4576df1492e3ce8c14f6ff6d5d"
+    },
+    {
+      "bytes": 6303,
+      "elapsed_ms": 187,
+      "key": "sandbox/v1/2026/w2/tuesday_primary/track_record.json",
+      "sha256": "0bb29a010c47326ac7c14a47f0e719d373ceb449827797532d9d0c48489c934b"
+    },
+    {
+      "bytes": 6303,
+      "elapsed_ms": 219,
+      "key": "sandbox/latest/track_record.json",
+      "sha256": "0bb29a010c47326ac7c14a47f0e719d373ceb449827797532d9d0c48489c934b"
+    },
+    {
+      "bytes": 151761,
+      "elapsed_ms": 265,
+      "key": "sandbox/v1/2026/w2/tuesday_primary/week_predictions.json",
+      "sha256": "3322f013d861389b0daa1c691a9cc1f2fe81060136fd97e690041b3a59658f69"
+    },
+    {
+      "bytes": 151761,
+      "elapsed_ms": 202,
+      "key": "sandbox/latest/week_predictions.json",
+      "sha256": "3322f013d861389b0daa1c691a9cc1f2fe81060136fd97e690041b3a59658f69"
+    },
+    {
+      "bytes": 904,
+      "elapsed_ms": 172,
+      "key": "sandbox/v1/2026/w2/tuesday_primary/meta.json",
+      "sha256": "3679cf210f7f26c19ed3a29141429fa2eb76c65ec932cfa4838eec99d1bcbe59"
+    },
+    {
+      "bytes": 904,
+      "elapsed_ms": 187,
+      "key": "sandbox/latest/meta.json",
+      "sha256": "3679cf210f7f26c19ed3a29141429fa2eb76c65ec932cfa4838eec99d1bcbe59"
+    }
+  ]
+}

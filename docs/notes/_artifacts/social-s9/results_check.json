@@ -1,0 +1,13 @@
+{
+  "statuses": {
+    "graded": 99,
+    "game_not_final": 789
+  },
+  "fixture_present": false,
+  "schema_versions": {
+    "results": "1.3.0",
+    "week": "1.3.0",
+    "meta": "1.3.0"
+  },
+  "ok": true
+}

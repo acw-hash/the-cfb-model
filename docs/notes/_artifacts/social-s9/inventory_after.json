@@ -1,0 +1,397 @@
+{
+  "captured_at_utc": "2026-09-08T15:14:23Z",
+  "bucket": "ridge-artifacts",
+  "object_count": 65,
+  "objects": [
+    {
+      "key": "latest/meta.json",
+      "bytes": 904,
+      "last_modified_utc": "2026-09-08T14:30:31Z",
+      "etag": "0f0cef3e574fab81e46766ce7a7e0ac5"
+    },
+    {
+      "key": "latest/results_2024.json",
+      "bytes": 59909,
+      "last_modified_utc": "2026-08-18T01:06:45Z",
+      "etag": "429ad1ad616e2560a38e966632b56901"
+    },
+    {
+      "key": "latest/team_ratings_2024.json",
+      "bytes": 991908,
+      "last_modified_utc": "2026-08-18T01:06:46Z",
+      "etag": "e58b26f1c38536d3f315b418bb5758fd"
+    },
+    {
+      "key": "latest/team_ratings_2026.json",
+      "bytes": 107,
+      "last_modified_utc": "2026-09-08T14:30:30Z",
+      "etag": "253492d9b61ca9bc9d76a8c913858689"
+    },
+    {
+      "key": "latest/track_record.json",
+      "bytes": 6303,
+      "last_modified_utc": "2026-09-08T14:30:30Z",
+      "etag": "2186fad4f43c58c8c0632654447b606d"
+    },
+    {
+      "key": "latest/week_predictions.json",
+      "bytes": 154180,
+      "last_modified_utc": "2026-09-08T14:30:31Z",
+      "etag": "3ac00dea2096b88233cd76f5c3f8b318"
+    },
+    {
+      "key": "sandbox/latest/meta.json",
+      "bytes": 904,
+      "last_modified_utc": "2026-09-08T15:14:23Z",
+      "etag": "1fdb9d73e21f9ac578335b604f1f11f0"
+    },
+    {
+      "key": "sandbox/latest/results_2024.json",
+      "bytes": 59909,
+      "last_modified_utc": "2026-08-25T12:20:54Z",
+      "etag": "429ad1ad616e2560a38e966632b56901"
+    },
+    {
+      "key": "sandbox/latest/results_2026.json",
+      "bytes": 804333,
+      "last_modified_utc": "2026-09-08T15:14:21Z",
+      "etag": "88bea32b6416553c8073c90ff0f8a06c"
+    },
+    {
+      "key": "sandbox/latest/team_ratings_2024.json",
+      "bytes": 991908,
+      "last_modified_utc": "2026-08-25T12:20:55Z",
+      "etag": "e58b26f1c38536d3f315b418bb5758fd"
+    },
+    {
+      "key": "sandbox/latest/team_ratings_2026.json",
+      "bytes": 107,
+      "last_modified_utc": "2026-09-08T15:14:21Z",
+      "etag": "253492d9b61ca9bc9d76a8c913858689"
+    },
+    {
+      "key": "sandbox/latest/track_record.json",
+      "bytes": 6303,
+      "last_modified_utc": "2026-09-08T15:14:22Z",
+      "etag": "2186fad4f43c58c8c0632654447b606d"
+    },
+    {
+      "key": "sandbox/latest/week_predictions.json",
+      "bytes": 151761,
+      "last_modified_utc": "2026-09-08T15:14:22Z",
+      "etag": "03eb229439d238594317e512cc9c5d7b"
+    },
+    {
+      "key": "sandbox/v1/2024/w5/daily_refresh/meta.json",
+      "bytes": 904,
+      "last_modified_utc": "2026-08-18T14:22:57Z",
+      "etag": "8b5b3ffbc7bcae26727caefced7b0903"
+    },
+    {
+      "key": "sandbox/v1/2024/w5/daily_refresh/team_ratings_2024.json",
+      "bytes": 107,
+      "last_modified_utc": "2026-08-18T14:22:55Z",
+      "etag": "849d09b08692004e401d12629b5aada5"
+    },
+    {
+      "key": "sandbox/v1/2024/w5/daily_refresh/track_record.json",
+      "bytes": 6303,
+      "last_modified_utc": "2026-08-18T14:22:55Z",
+      "etag": "132c7a724be549f093d445a0d726b19e"
+    },
+    {
+      "key": "sandbox/v1/2024/w5/daily_refresh/week_predictions.json",
+      "bytes": 2441,
+      "last_modified_utc": "2026-08-18T14:22:56Z",
+      "etag": "dd4123829d41bf4179fd5539c2436ed2"
+    },
+    {
+      "key": "sandbox/v1/2024/w5/tuesday_primary/meta.json",
+      "bytes": 923,
+      "last_modified_utc": "2026-08-25T12:20:57Z",
+      "etag": "ff32cbe812cdf2572f69fa48b411bb5e"
+    },
+    {
+      "key": "sandbox/v1/2024/w5/tuesday_primary/results_2024.json",
+      "bytes": 59909,
+      "last_modified_utc": "2026-08-25T12:20:54Z",
+      "etag": "429ad1ad616e2560a38e966632b56901"
+    },
+    {
+      "key": "sandbox/v1/2024/w5/tuesday_primary/team_ratings_2024.json",
+      "bytes": 991908,
+      "last_modified_utc": "2026-08-25T12:20:55Z",
+      "etag": "e58b26f1c38536d3f315b418bb5758fd"
+    },
+    {
+      "key": "sandbox/v1/2024/w5/tuesday_primary/track_record.json",
+      "bytes": 6322,
+      "last_modified_utc": "2026-08-25T12:20:56Z",
+      "etag": "04893a9a7cfe25d3c0d57c11f999401e"
+    },
+    {
+      "key": "sandbox/v1/2024/w5/tuesday_primary/week_predictions.json",
+      "bytes": 99558,
+      "last_modified_utc": "2026-08-25T12:20:56Z",
+      "etag": "f3f3bb8108024fadbb5fe4ffff7db4ee"
+    },
+    {
+      "key": "sandbox/v1/2024/w6/tuesday_primary/meta.json",
+      "bytes": 906,
+      "last_modified_utc": "2026-08-19T23:43:42Z",
+      "etag": "d9fe71313992b1a9c6c23f8062c10d48"
+    },
+    {
+      "key": "sandbox/v1/2024/w6/tuesday_primary/team_ratings_2024.json",
+      "bytes": 107,
+      "last_modified_utc": "2026-08-19T23:43:41Z",
+      "etag": "e8600c297811b531df285e300a9180d0"
+    },
+    {
+      "key": "sandbox/v1/2024/w6/tuesday_primary/track_record.json",
+      "bytes": 6303,
+      "last_modified_utc": "2026-08-19T23:43:41Z",
+      "etag": "da2493ec30070f3cda05b6b73baecc24"
+    },
+    {
+      "key": "sandbox/v1/2024/w6/tuesday_primary/week_predictions.json",
+      "bytes": 3625,
+      "last_modified_utc": "2026-08-19T23:43:42Z",
+      "etag": "9ca4092ad75910eff077dc68b7059458"
+    },
+    {
+      "key": "sandbox/v1/2026/w1/tuesday_primary/meta.json",
+      "bytes": 904,
+      "last_modified_utc": "2026-08-25T12:56:40Z",
+      "etag": "21403c73fd88c1d2802b477f34f623f1"
+    },
+    {
+      "key": "sandbox/v1/2026/w1/tuesday_primary/team_ratings_2026.json",
+      "bytes": 107,
+      "last_modified_utc": "2026-08-25T12:56:39Z",
+      "etag": "c6b65d7487ff705aa9e9d667c81ad79e"
+    },
+    {
+      "key": "sandbox/v1/2026/w1/tuesday_primary/track_record.json",
+      "bytes": 6303,
+      "last_modified_utc": "2026-08-25T12:56:39Z",
+      "etag": "f99df457070e3b6b558582e5ebfc72a5"
+    },
+    {
+      "key": "sandbox/v1/2026/w1/tuesday_primary/week_predictions.json",
+      "bytes": 176249,
+      "last_modified_utc": "2026-08-25T12:56:39Z",
+      "etag": "c04c7f4e79b1b39378f767192595aa1f"
+    },
+    {
+      "key": "sandbox/v1/2026/w2/tuesday_primary/meta.json",
+      "bytes": 904,
+      "last_modified_utc": "2026-09-08T15:14:23Z",
+      "etag": "1fdb9d73e21f9ac578335b604f1f11f0"
+    },
+    {
+      "key": "sandbox/v1/2026/w2/tuesday_primary/results_2026.json",
+      "bytes": 804333,
+      "last_modified_utc": "2026-09-08T15:14:20Z",
+      "etag": "88bea32b6416553c8073c90ff0f8a06c"
+    },
+    {
+      "key": "sandbox/v1/2026/w2/tuesday_primary/team_ratings_2026.json",
+      "bytes": 107,
+      "last_modified_utc": "2026-09-08T15:14:21Z",
+      "etag": "253492d9b61ca9bc9d76a8c913858689"
+    },
+    {
+      "key": "sandbox/v1/2026/w2/tuesday_primary/track_record.json",
+      "bytes": 6303,
+      "last_modified_utc": "2026-09-08T15:14:22Z",
+      "etag": "2186fad4f43c58c8c0632654447b606d"
+    },
+    {
+      "key": "sandbox/v1/2026/w2/tuesday_primary/week_predictions.json",
+      "bytes": 151761,
+      "last_modified_utc": "2026-09-08T15:14:22Z",
+      "etag": "03eb229439d238594317e512cc9c5d7b"
+    },
+    {
+      "key": "v1/2024/w5/daily_refresh/meta.json",
+      "bytes": 904,
+      "last_modified_utc": "2026-08-14T14:28:55Z",
+      "etag": "43bf7b4f2657e933049c92e94ea71737"
+    },
+    {
+      "key": "v1/2024/w5/daily_refresh/team_ratings_2024.json",
+      "bytes": 107,
+      "last_modified_utc": "2026-08-14T14:28:54Z",
+      "etag": "bf3472cb517ce97e343c902dc2751895"
+    },
+    {
+      "key": "v1/2024/w5/daily_refresh/track_record.json",
+      "bytes": 5605,
+      "last_modified_utc": "2026-08-14T14:28:55Z",
+      "etag": "3f85efe9e8201e2b922ede57b921c4e2"
+    },
+    {
+      "key": "v1/2024/w5/daily_refresh/week_predictions.json",
+      "bytes": 2569,
+      "last_modified_utc": "2026-08-14T14:28:55Z",
+      "etag": "56ad6c11fd80f8b812bcff612d4e544f"
+    },
+    {
+      "key": "v1/2024/w5/tuesday_primary/meta.json",
+      "bytes": 923,
+      "last_modified_utc": "2026-08-18T01:06:47Z",
+      "etag": "ff32cbe812cdf2572f69fa48b411bb5e"
+    },
+    {
+      "key": "v1/2024/w5/tuesday_primary/results_2024.json",
+      "bytes": 59909,
+      "last_modified_utc": "2026-08-18T01:06:45Z",
+      "etag": "429ad1ad616e2560a38e966632b56901"
+    },
+    {
+      "key": "v1/2024/w5/tuesday_primary/team_ratings_2024.json",
+      "bytes": 991908,
+      "last_modified_utc": "2026-08-18T01:06:46Z",
+      "etag": "e58b26f1c38536d3f315b418bb5758fd"
+    },
+    {
+      "key": "v1/2024/w5/tuesday_primary/track_record.json",
+      "bytes": 6322,
+      "last_modified_utc": "2026-08-18T01:06:46Z",
+      "etag": "04893a9a7cfe25d3c0d57c11f999401e"
+    },
+    {
+      "key": "v1/2024/w5/tuesday_primary/week_predictions.json",
+      "bytes": 99558,
+      "last_modified_utc": "2026-08-18T01:06:47Z",
+      "etag": "f3f3bb8108024fadbb5fe4ffff7db4ee"
+    },
+    {
+      "key": "v1/2024/w6/tuesday_primary/meta.json",
+      "bytes": 906,
+      "last_modified_utc": "2026-08-14T14:28:59Z",
+      "etag": "01f5748ec58598f57f70bdcf2f3f6ca6"
+    },
+    {
+      "key": "v1/2024/w6/tuesday_primary/team_ratings_2024.json",
+      "bytes": 107,
+      "last_modified_utc": "2026-08-14T14:28:58Z",
+      "etag": "40262a948279e27abdb7eafad7c8ee78"
+    },
+    {
+      "key": "v1/2024/w6/tuesday_primary/track_record.json",
+      "bytes": 5605,
+      "last_modified_utc": "2026-08-14T14:28:59Z",
+      "etag": "ed6f01270abd1bf6646674eb14af19e1"
+    },
+    {
+      "key": "v1/2024/w6/tuesday_primary/week_predictions.json",
+      "bytes": 3861,
+      "last_modified_utc": "2026-08-14T14:28:59Z",
+      "etag": "736b3a6407769edc7b9f9dbc684445d9"
+    },
+    {
+      "key": "v1/2026/w1/daily_refresh/meta.json",
+      "bytes": 902,
+      "last_modified_utc": "2026-08-27T11:33:25Z",
+      "etag": "ce2081dc2b19444a47a340ca6d98a636"
+    },
+    {
+      "key": "v1/2026/w1/daily_refresh/team_ratings_2026.json",
+      "bytes": 107,
+      "last_modified_utc": "2026-08-27T11:33:24Z",
+      "etag": "3a23960609d513fbde9e092d28073cea"
+    },
+    {
+      "key": "v1/2026/w1/daily_refresh/track_record.json",
+      "bytes": 6303,
+      "last_modified_utc": "2026-08-27T11:33:24Z",
+      "etag": "2f0898e4a10b38d9356916a8d5c0564a"
+    },
+    {
+      "key": "v1/2026/w1/daily_refresh/week_predictions.json",
+      "bytes": 177685,
+      "last_modified_utc": "2026-08-27T11:33:25Z",
+      "etag": "60210de7908f9165d56f9eff3ad05794"
+    },
+    {
+      "key": "v1/2026/w1/tuesday_primary/meta.json",
+      "bytes": 904,
+      "last_modified_utc": "2026-09-01T18:04:32Z",
+      "etag": "84100e1756813b0c0ee7beeecf513093"
+    },
+    {
+      "key": "v1/2026/w1/tuesday_primary/team_ratings_2026.json",
+      "bytes": 107,
+      "last_modified_utc": "2026-09-01T18:04:30Z",
+      "etag": "2f6588ad2a5ecd0ae2e1aaabc3a0a698"
+    },
+    {
+      "key": "v1/2026/w1/tuesday_primary/track_record.json",
+      "bytes": 6303,
+      "last_modified_utc": "2026-09-01T18:04:30Z",
+      "etag": "575be6be322a59d851c43ff71501f864"
+    },
+    {
+      "key": "v1/2026/w1/tuesday_primary/week_predictions.json",
+      "bytes": 163447,
+      "last_modified_utc": "2026-09-01T18:04:31Z",
+      "etag": "be886efe00f77c5de4b1d7d3e9d7c51a"
+    },
+    {
+      "key": "v1/2026/w2/tuesday_primary/meta.json",
+      "bytes": 904,
+      "last_modified_utc": "2026-09-08T14:30:31Z",
+      "etag": "0f0cef3e574fab81e46766ce7a7e0ac5"
+    },
+    {
+      "key": "v1/2026/w2/tuesday_primary/team_ratings_2026.json",
+      "bytes": 107,
+      "last_modified_utc": "2026-09-08T14:30:29Z",
+      "etag": "253492d9b61ca9bc9d76a8c913858689"
+    },
+    {
+      "key": "v1/2026/w2/tuesday_primary/track_record.json",
+      "bytes": 6303,
+      "last_modified_utc": "2026-09-08T14:30:30Z",
+      "etag": "2186fad4f43c58c8c0632654447b606d"
+    },
+    {
+      "key": "v1/2026/w2/tuesday_primary/week_predictions.json",
+      "bytes": 154180,
+      "last_modified_utc": "2026-09-08T14:30:31Z",
+      "etag": "3ac00dea2096b88233cd76f5c3f8b318"
+    },
+    {
+      "key": "v2/2024/w5/tuesday_primary/meta.json",
+      "bytes": 906,
+      "last_modified_utc": "2026-08-14T14:06:44Z",
+      "etag": "67cbd2419115ffb1d4131c4611a1f4a0"
+    },
+    {
+      "key": "v2/2024/w5/tuesday_primary/results_2024.json",
+      "bytes": 59698,
+      "last_modified_utc": "2026-08-14T14:06:41Z",
+      "etag": "47f3e055b87fc59336a909ceb9299b15"
+    },
+    {
+      "key": "v2/2024/w5/tuesday_primary/team_ratings_2024.json",
+      "bytes": 991889,
+      "last_modified_utc": "2026-08-14T14:06:43Z",
+      "etag": "792cc77112fbb7cb4b380588a167638e"
+    },
+    {
+      "key": "v2/2024/w5/tuesday_primary/track_record.json",
+      "bytes": 5605,
+      "last_modified_utc": "2026-08-14T14:06:43Z",
+      "etag": "5efc86bfaf795052289a9d9c863ea0ba"
+    },
+    {
+      "key": "v2/2024/w5/tuesday_primary/week_predictions.json",
+      "bytes": 107245,
+      "last_modified_utc": "2026-08-14T14:06:44Z",
+      "etag": "ea40cb70adfaa8255244ee2c51e4da6f"
+    }
+  ]
+}

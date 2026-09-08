@@ -568,13 +568,34 @@ def test_compute_conviction_suppression_on_stale_age() -> None:
 def test_export_publish_artifacts_with_injected_schedule(tmp_path: Path) -> None:
     staged = tmp_path / "staged"
     teams_dir = staged / "teams" / "season=2026"
+    games_dir = staged / "games" / "season=2026" / "week=1"
     teams_dir.mkdir(parents=True)
+    games_dir.mkdir(parents=True)
     pd.DataFrame(
         [
             {"team_id": 1, "school": "Home"},
             {"team_id": 2, "school": "Away"},
         ]
     ).to_parquet(teams_dir / "part.parquet", index=False)
+    kickoff = pd.Timestamp("2026-09-05T16:00:00Z")
+    pd.DataFrame(
+        [
+            {
+                "game_id": 401000001,
+                "season": 2026,
+                "week": 1,
+                "home_team_id": 1,
+                "away_team_id": 2,
+                "start_date": kickoff,
+                "event_time": kickoff,
+                "neutral_site": False,
+                "conference_game": False,
+                "home_points": None,
+                "away_points": None,
+                "completed": False,
+            }
+        ]
+    ).to_parquet(games_dir / "part.parquet", index=False)
     cfg = AppConfig(
         paths=PathsConfig(staged_dir=str(staged), data_dir=str(tmp_path / "data")),
         webapp=WebappConfig(
@@ -816,13 +837,44 @@ def test_grade_export_with_tmp_staged(tmp_path: Path) -> None:
 
 
 def test_export_publish_artifacts_stale_stamp(tmp_path: Path) -> None:
+    staged = tmp_path / "staged"
+    teams_dir = staged / "teams" / "season=2026"
+    games_dir = staged / "games" / "season=2026" / "week=1"
+    teams_dir.mkdir(parents=True)
+    games_dir.mkdir(parents=True)
+    pd.DataFrame(
+        [
+            {"team_id": 1, "school": "Home"},
+            {"team_id": 2, "school": "Away"},
+        ]
+    ).to_parquet(teams_dir / "part.parquet", index=False)
+    kickoff = pd.Timestamp("2026-09-05T16:00:00Z")
+    pd.DataFrame(
+        [
+            {
+                "game_id": 401000002,
+                "season": 2026,
+                "week": 1,
+                "home_team_id": 1,
+                "away_team_id": 2,
+                "start_date": kickoff,
+                "event_time": kickoff,
+                "neutral_site": False,
+                "conference_game": False,
+                "home_points": None,
+                "away_points": None,
+                "completed": False,
+            }
+        ]
+    ).to_parquet(games_dir / "part.parquet", index=False)
     cfg = AppConfig(
+        paths=PathsConfig(staged_dir=str(staged), data_dir=str(tmp_path / "data")),
         webapp=WebappConfig(
             export_enabled=False,
             tier_state_path=str(tmp_path / "tier.json"),
             tier_changes_path=str(tmp_path / "tier_changes.jsonl"),
             publish_history_path=str(tmp_path / "publish_history"),
-        )
+        ),
     )
     publish = {
         "season": 2026,

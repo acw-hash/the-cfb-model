@@ -1,0 +1,44 @@
+{
+  "captured_at_utc": "2026-09-08T15:14:20Z",
+  "bucket": "ridge-artifacts",
+  "prefix": "latest/",
+  "object_count": 6,
+  "objects": [
+    {
+      "key": "latest/meta.json",
+      "local_path": "backup_latest_20260908\\meta.json",
+      "bytes": 904,
+      "sha256": "df9eb2026782dd113efac3d732b332d92e02b5ba2142818461c6615d544f05ab"
+    },
+    {
+      "key": "latest/results_2024.json",
+      "local_path": "backup_latest_20260908\\results_2024.json",
+      "bytes": 59909,
+      "sha256": "b5c71da8f3502cb0b8fcab6ab1bbdb9688031e471d6e9306e957f79252be4032"
+    },
+    {
+      "key": "latest/team_ratings_2024.json",
+      "local_path": "backup_latest_20260908\\team_ratings_2024.json",
+      "bytes": 991908,
+      "sha256": "6c15eed9d203f0c1fcd4d96caf2832ab3fbc841cc4a2cdd008c92836d27939ca"
+    },
+    {
+      "key": "latest/team_ratings_2026.json",
+      "local_path": "backup_latest_20260908\\team_ratings_2026.json",
+      "bytes": 107,
+      "sha256": "1fde54deb45bd771f9c18236f365ff056c090b4576df1492e3ce8c14f6ff6d5d"
+    },
+    {
+      "key": "latest/track_record.json",
+      "local_path": "backup_latest_20260908\\track_record.json",
+      "bytes": 6303,
+      "sha256": "0bb29a010c47326ac7c14a47f0e719d373ceb449827797532d9d0c48489c934b"
+    },
+    {
+      "key": "latest/week_predictions.json",
+      "local_path": "backup_latest_20260908\\week_predictions.json",
+      "bytes": 154180,
+      "sha256": "f4304f28113b46cc42fa2d02548ddd0910082bc9e0135bbd12e0f801d04e08dc"
+    }
+  ]
+}

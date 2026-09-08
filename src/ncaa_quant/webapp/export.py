@@ -1510,7 +1510,22 @@ def export_publish_artifacts(
         )
         + "\n",
     }
+
+    # Option A (S8): grade export ships with every live publish generation so
+    # §1.1 shared-published_at holds. Fixture path stays separate (fixture:true).
+    results: dict[str, Any] | None = None
+    from ncaa_quant.webapp.grade import LIVE_PUBLISH_MIN_SEASON, grade_export
+
+    if season >= LIVE_PUBLISH_MIN_SEASON:
+        results = grade_export(season=season, published_at=clock, config=cfg)
+        artifacts[f"results_{season}.json"] = (
+            json.dumps(results, indent=2, sort_keys=True) + "\n"
+        )
+
     meta["artifact_pointers"]["team_ratings"] = f"latest/team_ratings_{season}.json"
+    # Pointer key is results_current_season (set in build_meta). Do not invent "results".
+    if "results" in meta["artifact_pointers"]:
+        meta["artifact_pointers"]["results"] = f"latest/results_{season}.json"
     artifacts["meta.json"] = json.dumps(meta, indent=2, sort_keys=True) + "\n"
 
     history_path = append_publish_history(week_preds, root=history_root)
@@ -1535,6 +1550,7 @@ def export_publish_artifacts(
         "meta": meta,
         "track_record": track,
         "team_ratings": team_ratings,
+        "results": results,
         "tier_distribution": tier_distribution(week_preds.get("games") or []),
         "push": push_result,
         "publish_history_path": str(history_path),

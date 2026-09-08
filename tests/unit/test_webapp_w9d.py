@@ -75,13 +75,34 @@ def test_vintage_label_for_run_maps_known_walkforwards() -> None:
 def test_export_stamps_vintage_from_producing_run(tmp_path: Path) -> None:
     staged = tmp_path / "staged"
     teams_dir = staged / "teams" / "season=2026"
+    games_dir = staged / "games" / "season=2026" / "week=1"
     teams_dir.mkdir(parents=True)
+    games_dir.mkdir(parents=True)
     pd.DataFrame(
         [
             {"team_id": 1, "school": "Home"},
             {"team_id": 2, "school": "Away"},
         ]
     ).to_parquet(teams_dir / "part.parquet", index=False)
+    kickoff = pd.Timestamp("2026-09-05T16:00:00Z")
+    pd.DataFrame(
+        [
+            {
+                "game_id": 401000001,
+                "season": 2026,
+                "week": 1,
+                "home_team_id": 1,
+                "away_team_id": 2,
+                "start_date": kickoff,
+                "event_time": kickoff,
+                "neutral_site": False,
+                "conference_game": False,
+                "home_points": None,
+                "away_points": None,
+                "completed": False,
+            }
+        ]
+    ).to_parquet(games_dir / "part.parquet", index=False)
     cfg = AppConfig(
         paths=PathsConfig(staged_dir=str(staged), data_dir=str(tmp_path / "data")),
         webapp=WebappConfig(
@@ -168,13 +189,34 @@ def test_week_model_identity_omits_registered_at_meta_keeps_it(tmp_path: Path) -
 
     staged = tmp_path / "staged"
     teams_dir = staged / "teams" / "season=2026"
+    games_dir = staged / "games" / "season=2026" / "week=1"
     teams_dir.mkdir(parents=True)
+    games_dir.mkdir(parents=True)
     pd.DataFrame(
         [
             {"team_id": 1, "school": "Home"},
             {"team_id": 2, "school": "Away"},
         ]
     ).to_parquet(teams_dir / "part.parquet", index=False)
+    kickoff = pd.Timestamp("2026-09-05T16:00:00Z")
+    pd.DataFrame(
+        [
+            {
+                "game_id": 401000001,
+                "season": 2026,
+                "week": 1,
+                "home_team_id": 1,
+                "away_team_id": 2,
+                "start_date": kickoff,
+                "event_time": kickoff,
+                "neutral_site": False,
+                "conference_game": False,
+                "home_points": None,
+                "away_points": None,
+                "completed": False,
+            }
+        ]
+    ).to_parquet(games_dir / "part.parquet", index=False)
     cfg = AppConfig(
         paths=PathsConfig(staged_dir=str(staged), data_dir=str(tmp_path / "data")),
         webapp=WebappConfig(

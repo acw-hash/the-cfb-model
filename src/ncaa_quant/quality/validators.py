@@ -427,14 +427,16 @@ def check_snapshot_monotonicity(
     snapshots: pd.DataFrame,
     games: pd.DataFrame | None = None,
 ) -> list[CheckFinding]:
-    """Within (game_key, book, market), event_time must be unique; last pre-kickoff < kickoff.
+    """Within (game_key, book, market, side), event_time must be unique; last pre-kickoff < kickoff.
 
-    From docs/historical_odds_change_set.md Task 7 additions.
+    ``side`` is required: each snapshot emits both sides of a market (home/away,
+    over/under) at the same ``event_time``. Omitting it false-fails every
+    two-sided book quote. From docs/historical_odds_change_set.md Task 7.
     """
     if snapshots.empty:
         return []
     findings: list[CheckFinding] = []
-    key_cols = ["game_key", "book", "market", "event_time"]
+    key_cols = ["game_key", "book", "market", "side", "event_time"]
     if all(c in snapshots.columns for c in key_cols):
         dup = snapshots.duplicated(subset=key_cols, keep=False)
         if dup.any():

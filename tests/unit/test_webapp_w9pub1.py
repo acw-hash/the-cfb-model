@@ -10,7 +10,7 @@ from typing import Any
 import pandas as pd
 import pytest
 
-from ncaa_quant.config import AppConfig, PipelineConfig, WebappConfig
+from ncaa_quant.config import AppConfig, PathsConfig, PipelineConfig, WebappConfig
 from ncaa_quant.evaluation.backtest_runner import load_staged_games
 from ncaa_quant.evaluation.walkforward import WeekDecisionCalendar, week_decision_as_of
 from ncaa_quant.pipelines.common import IdempotencyStore, PartitionKey
@@ -329,13 +329,44 @@ def test_idempotency_same_day_noop_different_day_runs(tmp_path: Path) -> None:
 def test_export_writes_history_with_export_disabled(tmp_path: Path) -> None:
     hist = tmp_path / "publish_history"
     tier = tmp_path / "tier.json"
+    staged = tmp_path / "staged"
+    teams_dir = staged / "teams" / "season=2026"
+    games_dir = staged / "games" / "season=2026" / "week=1"
+    teams_dir.mkdir(parents=True)
+    games_dir.mkdir(parents=True)
+    pd.DataFrame(
+        [
+            {"team_id": 1, "school": "Home"},
+            {"team_id": 2, "school": "Away"},
+        ]
+    ).to_parquet(teams_dir / "part.parquet", index=False)
+    kickoff = pd.Timestamp("2026-08-29T16:00:00Z")
+    pd.DataFrame(
+        [
+            {
+                "game_id": 401856766,
+                "season": 2026,
+                "week": 1,
+                "home_team_id": 1,
+                "away_team_id": 2,
+                "start_date": kickoff,
+                "event_time": kickoff,
+                "neutral_site": False,
+                "conference_game": False,
+                "home_points": None,
+                "away_points": None,
+                "completed": False,
+            }
+        ]
+    ).to_parquet(games_dir / "part.parquet", index=False)
     cfg = AppConfig(
+        paths=PathsConfig(staged_dir=str(staged), data_dir=str(tmp_path / "data")),
         webapp=WebappConfig(
             export_enabled=False,
             publish_history_path=str(hist),
             tier_state_path=str(tier),
             tier_changes_path=str(tmp_path / "tiers.jsonl"),
-        )
+        ),
     )
     publish = {
         "season": 2026,
@@ -411,13 +442,44 @@ def test_history_line_carries_post_gate_null_bands(tmp_path: Path) -> None:
     """
     hist = tmp_path / "publish_history"
     tier = tmp_path / "tier.json"
+    staged = tmp_path / "staged"
+    teams_dir = staged / "teams" / "season=2026"
+    games_dir = staged / "games" / "season=2026" / "week=1"
+    teams_dir.mkdir(parents=True)
+    games_dir.mkdir(parents=True)
+    pd.DataFrame(
+        [
+            {"team_id": 1, "school": "Home"},
+            {"team_id": 2, "school": "Away"},
+        ]
+    ).to_parquet(teams_dir / "part.parquet", index=False)
+    kickoff = pd.Timestamp("2026-08-29T16:00:00Z")
+    pd.DataFrame(
+        [
+            {
+                "game_id": 401000001,
+                "season": 2026,
+                "week": 1,
+                "home_team_id": 1,
+                "away_team_id": 2,
+                "start_date": kickoff,
+                "event_time": kickoff,
+                "neutral_site": False,
+                "conference_game": False,
+                "home_points": None,
+                "away_points": None,
+                "completed": False,
+            }
+        ]
+    ).to_parquet(games_dir / "part.parquet", index=False)
     cfg = AppConfig(
+        paths=PathsConfig(staged_dir=str(staged), data_dir=str(tmp_path / "data")),
         webapp=WebappConfig(
             export_enabled=False,
             publish_history_path=str(hist),
             tier_state_path=str(tier),
             tier_changes_path=str(tmp_path / "tiers.jsonl"),
-        )
+        ),
     )
     # Same incoherent heads as test_coherence_gate_nulls_incoherent_margin_interval.
     publish = {

@@ -330,3 +330,33 @@ JSONL line and from live `latest/week_predictions.json`.
 expected 12 / observed 10 also fails the stated expect. No product fix applied
 in this verify. Orphans retained.
 
+---
+
+## Session note — 2026-09-08 (post T+ / social S8–S18)
+
+- **Week-1 postgame ingest:** first pass was scores-only (`--endpoints games`);
+  91 of 99 games lacked play-grain data; corrected with
+  `plays,drives,advanced --force`. `n_obs` 5997 → 6096.
+- **Three week-2 `tuesday_primary` publishes.** Live set is v3,
+  `published_at=2026-09-08T15:34:11Z`, 86 games, `rating_digest` `d4b06285`,
+  `registered_at=2026-08-17T20:41:49Z`, 10 R2 keys.
+- **S8:** `grade_export` wired into `export_publish_artifacts` (Option A).
+  `results_2026.json` live for the first time, 99 graded, all week 1,
+  `graded_from` `daily_refresh` 2026-08-27.
+- **S13:** Prefect work pool + worker up; `ingest_odds` firing again after
+  5 weeks dead. Keep-alive is foreground shells only, not durable.
+- **S14:** `snapshot_event_time_unique` key gained `side`; 3650 → 0 failures.
+- **Test baseline re-set** 952 → 1052 (verified no test deletions since
+  2026-08-24).
+- **Open findings:** quarantine not enforced (`is_quarantined` has no call
+  sites in consuming pipelines); `build_meta` silent fallback to
+  `2024-08-01T12:00:00Z`; verifier check 3 hardcodes week-1 IDs; T+ block
+  asserts a `rating_digest` the schema doesn't carry and expects 12 keys
+  not 10; `predict_publish` / `postgame_ingest` / `weekly_update` /
+  `settle_clv` all still config-only.
+- **Week-1 readout:** 99 graded, margin interval 65/84 = 0.774 vs nominal
+  0.80, MAE 16.286, Brier 0.098. MAE by snapshot age: 10.24 on the 8
+  Aug 29–30 games, 17.81 on the 60 Sept 5 games, same `graded_from`.
+  Three of the top ten misses are FBS favorites over FCS opponents with
+  no `filter_history` rating (pooled FCS prior).
+
