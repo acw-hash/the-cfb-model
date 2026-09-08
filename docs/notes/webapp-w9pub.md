@@ -223,3 +223,110 @@ slot). Banner first fires at:
 
 T+ VERIFY complete. Live `latest/` coherent with operator week-1 publish.
 No rollback trigger. Orphans retained by design.
+
+
+---
+
+## T+ VERIFY ? v3 live publish (2026-09-08 week-2)
+
+Read-only against live R2 + workstation. No re-publish, push, deploy, or
+product fix. Notes append + one commit only.
+
+**Verdict: ROLLBACK TRIGGER ? stop. Do not treat v3 as verified-clean.**
+
+Source log: `publish_w2_live_v3.log` (predict+export completed
+`~2026-09-08T15:34:16Z` / 11:34 ET). `scripts/publish_week2.py` only prints
+`webapp_export.ok`, so a full `push_artifacts_to_r2` return dict is **not** in
+the log; per-key audit below is reconstructed from R2 object listing + SHA-256
+of GET bodies for the v3 upload window, plus log lines for revalidation.
+
+### 1. Push audit
+
+**Log (verbatim fragments):**
+
+```
+2026-09-08 11:34:16 [info     ] webapp_revalidate_ok           status_code=200
+webapp_export = True
+```
+
+**Reconstructed uploads (10 keys ? not the expected 12):**
+
+| Key | Bytes | SHA-256 | Last-modified (UTC) |
+|-----|------:|---------|---------------------|
+| `v1/2026/w2/tuesday_primary/results_2026.json` | 804333 | `318c515589739c2a7606462ec6507a7e47df991ade75b091a2e4a2a4dbeb7e25` | 2026-09-08T15:34:13Z |
+| `latest/results_2026.json` | 804333 | `318c5155?dbeb7e25` | 2026-09-08T15:34:13Z |
+| `v1/2026/w2/tuesday_primary/team_ratings_2026.json` | 107 | `7de8edb41b53b14abea6c2b7ef72c353f15441913df1b2069af0ecec3e76564a` | 2026-09-08T15:34:14Z |
+| `latest/team_ratings_2026.json` | 107 | `7de8edb4?3e76564a` | 2026-09-08T15:34:14Z |
+| `v1/2026/w2/tuesday_primary/track_record.json` | 6303 | `a06037d49e382cc5de1ed2ebf7f0f220f947f4d3b819e33689e42ec943112b88` | 2026-09-08T15:34:14Z |
+| `latest/track_record.json` | 6303 | `a06037d4?43112b88` | 2026-09-08T15:34:14Z |
+| `v1/2026/w2/tuesday_primary/week_predictions.json` | 154266 | `bd96caa0b7b48e36cc26b56d67901930f71a59f74dc3431ca8cf4e91ed0594a0` | 2026-09-08T15:34:15Z |
+| `latest/week_predictions.json` | 154266 | `bd96caa0?ed0594a0` | 2026-09-08T15:34:15Z |
+| `v1/2026/w2/tuesday_primary/meta.json` | 904 | `c97e8770d51664db13ca91bcf28a741953963629762f618d6e7498eb0e4e56ef` | 2026-09-08T15:34:15Z |
+| `latest/meta.json` | 904 | `c97e8770?0e4e56ef` | 2026-09-08T15:34:16Z |
+
+| Field | Observed |
+|-------|----------|
+| Upload key count | **10** (5 artifacts ? versioned+latest) ? **expected 12 ? FAIL** |
+| `meta_last` (ordering) | **consistent with True** ? `latest/meta.json` last-modified after other `latest/*` from this batch |
+| Revalidation | **ok**, HTTP **200** (`webapp_revalidate_ok`) |
+| `audit_leaked_secret_names` | **absent** from `push_artifacts_to_r2` return (same as W9-PUB); post-hoc credential-pattern scan on five live artifacts: **empty** |
+
+### 2. GET `latest/*` from R2
+
+| Check | Observed | Gate |
+|-------|----------|------|
+| `meta.champion_model.registered_at` | **`2026-08-17T20:41:49Z`** (not fallback) | PASS |
+| `latest/results_2026.json` present | yes | PASS |
+| graded / postgame_missing / no_pre_kickoff_publish | **99** / **0** / **0** | PASS |
+| `fixture` key on results | **absent** | PASS |
+| Shared `published_at` (meta, week, track, team_ratings_2026, results_2026) | **`2026-09-08T15:34:11Z`** all five | PASS |
+| `schema_version` | **1.3.0** all five | PASS |
+| `week_predictions` row count | **86** | PASS |
+
+`meta.champion_model` verbatim:
+`{"champion_version":2,"model_version":"production-v0_reduced_v3","registered_at":"2026-08-17T20:41:49Z","registry_name":"ncaa-quant"}`
+
+### 3. Suppression count (`week_predictions`)
+
+Coherence-suppressed rows (`margin_interval_lo` and `margin_interval_hi` both null): **20** / 86.
+
+IDs: `401866417`, `401864500`, `401858215`, `401860882`, `401858222`, `401856672`, `401858218`, `401868008`, `401868187`, `401864503`, `401864506`, `401856784`, `401856787`, `401866413`, `401856791`, `401867929`, `401856785`, `401856786`, `401866416`, `401856789`.
+
+(Week-1 rehearsal baseline was 15/99 ? informational; not used as a hard gate here.)
+
+### 4. Publish history `2026_w2.jsonl` ? **ROLLBACK TRIGGER**
+
+| Line | `refresh_kind` | `published_at` | n games | carries `d4b06285`? |
+|------|----------------|----------------|--------:|---------------------|
+| 0 | `tuesday_primary` | `2026-09-08T14:09:14Z` | 86 | no |
+| 1 | `tuesday_primary` | `2026-09-08T14:30:28Z` | 86 | no |
+| 2 (newest) | `tuesday_primary` | `2026-09-08T15:34:11Z` | 86 | **no** |
+
+Three `tuesday_primary` lines: **yes**. Newest carries digest `d4b06285`: **NO**.
+
+Predict log *did* compute
+`rating_digest=d4b062850728825520a87e39139a9567754ae41c92970227db7f60fe4267b718`
+and stamps it on prediction rows, but `week_predictions` / history objects have
+**no** `rating_digest` / `digest` field ? digest is absent from the newest
+JSONL line and from live `latest/week_predictions.json`.
+
+**ROLLBACK TRIGGER:** criterion ?newest carries digest d4b06285? failed.
+
+### 5. Full `latest/` inventory
+
+| Key | Size | Last-modified (UTC) | Disposition |
+|-----|------|---------------------|-------------|
+| `latest/meta.json` | 904 | 2026-09-08T15:34:16.121Z | live 2026 w2 v3 |
+| `latest/week_predictions.json` | 154266 | 2026-09-08T15:34:15.583Z | live 2026 w2 v3 |
+| `latest/track_record.json` | 6303 | 2026-09-08T15:34:14.975Z | live 2026 w2 v3 |
+| `latest/team_ratings_2026.json` | 107 | 2026-09-08T15:34:14.460Z | live 2026 w2 v3 |
+| `latest/results_2026.json` | 804333 | 2026-09-08T15:34:13.970Z | live 2026 w2 v3 (S8) |
+| `latest/results_2024.json` | 59909 | 2026-08-18T01:06:45.411Z | **orphan ? RETAINED** (not deleted) |
+| `latest/team_ratings_2024.json` | 991908 | 2026-08-18T01:06:46.695Z | **orphan ? RETAINED** (not deleted) |
+
+### Acceptance
+
+**STOP.** Item 4 digest gate failed (ROLLBACK TRIGGER). Item 1 key-count
+expected 12 / observed 10 also fails the stated expect. No product fix applied
+in this verify. Orphans retained.
+
