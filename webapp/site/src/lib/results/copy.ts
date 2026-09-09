@@ -27,4 +27,10 @@ export const FIXTURE_GRADES_COPY =
 export const EMPTY_LIVE_COPY =
   "Results available after Week 1 completes. Live grading for 2026 has not started yet — this is the empty launch state, not a missing file.";
 
+/** Count line for season-schedule placeholders collapsed out of the graded list. */
+export function gameNotFinalCountCopy(count: number): string {
+  const noun = count === 1 ? "game" : "games";
+  return `${count} ${noun} not yet final — kept in the artifact, listed here so the season schedule is not omitted. Final score not available; not treated as a miss.`;
+}
+
 export const MISSING_METRIC_COPY = "Not in the recorded artifact";

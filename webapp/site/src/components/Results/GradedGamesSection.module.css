@@ -38,3 +38,11 @@
 .list {
   border-top: 1px solid var(--border-subtle);
 }
+
+.notFinalCount {
+  margin: var(--space-4) 0 0;
+  font-size: var(--type-b2-size);
+  line-height: var(--type-b2-line);
+  color: var(--text-secondary);
+  max-width: 40rem;
+}

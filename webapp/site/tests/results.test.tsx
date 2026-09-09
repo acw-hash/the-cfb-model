@@ -26,6 +26,7 @@ import {
   NO_SINGLE_NUMBER_COPY,
   SCOPE_COPY,
   VERDICT_LAY_SUMMARY,
+  gameNotFinalCountCopy,
 } from "@/lib/results/copy";
 import {
   cloneTrackRecordMissingMetric,
@@ -232,6 +233,45 @@ describe("graded games", () => {
     expect(html).toContain('data-testid="graded-games-empty"');
     expect(html).toContain("empty launch state");
     expect(html).not.toContain("error");
+  });
+
+  it("mixed graded / not-final collapses not-final to a count line", () => {
+    const clones = cloneUngradedStatuses();
+    const notFinal = clones.find((g) => g.grade_status === "game_not_final")!;
+    const noPublish = clones.find((g) => g.grade_status === "no_pre_kickoff_publish")!;
+    const postgame = clones.find((g) => g.grade_status === "postgame_missing")!;
+    const gradedTemplate = loadResults().games.find((g) => g.grade_status === "graded")!;
+    const mixed: ResultsSeason = {
+      schema_version: "1.1.0",
+      season: 2026,
+      published_at: "2026-09-08T15:34:11Z",
+      grading_rule: "last_pre_kickoff_publish",
+      fixture: true,
+      games: [
+        { ...gradedTemplate, game_id: "mixed-graded-1" },
+        { ...gradedTemplate, game_id: "mixed-graded-2" },
+        { ...notFinal, game_id: "mixed-not-final-a" },
+        { ...notFinal, game_id: "mixed-not-final-b" },
+        { ...notFinal, game_id: "mixed-not-final-c" },
+        { ...noPublish, game_id: "mixed-no-publish" },
+        { ...postgame, game_id: "mixed-postgame" },
+      ],
+    };
+
+    const html = renderToStaticMarkup(<GradedGamesSection results={mixed} />);
+    const gradedRows = (html.match(/data-grade-status="graded"/g) ?? []).length;
+    const notFinalRows = (html.match(/data-grade-status="game_not_final"/g) ?? []).length;
+    expect(mixed.fixture).toBe(true);
+    expect(gradedRows).toBe(2);
+    expect(notFinalRows).toBe(0);
+    expect(html).toContain('data-testid="game-not-final-count"');
+    expect(html).toContain('data-count="3"');
+    expect(html).toContain(gameNotFinalCountCopy(3));
+    expect(html).toContain('data-grade-status="no_pre_kickoff_publish"');
+    expect(html).toContain('data-grade-status="postgame_missing"');
+    expect(html).toContain('data-testid="graded-game-mixed-no-publish"');
+    expect(html).toContain('data-testid="graded-game-mixed-postgame"');
+    expect(html).not.toContain('data-testid="graded-game-mixed-not-final-a"');
   });
 });
 
