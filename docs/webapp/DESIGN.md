@@ -116,7 +116,10 @@ Top-level object:
 
 ### 1.3 `results_<season>.json`
 
-Graded past games for one season. Each row pairs the **last pre-kickoff publish** with realized outcomes.
+Season results file. The exporter ships **one row per scheduled game** for the
+season (full schedule), not only completed/graded games. Graded rows pair a
+selected pre-kickoff publish with realized outcomes; other rows are explicit
+placeholders with `grade_status` set and prediction/outcome fields null.
 
 Top-level:
 
@@ -126,19 +129,45 @@ Top-level:
   "season": 2024,
   "published_at": "2024-12-15T08:00:00Z",
   "grading_rule": "last_pre_kickoff_publish",
-  "games": [ /* GradedGame[] */ ]
+  "games": [ /* GradedGame[] — full season schedule */ ]
 }
 ```
 
+#### Row statuses (`grade_status`)
+
+| Status | Meaning |
+|--------|---------|
+| `graded` | Game final with scores; a pre-kickoff publish was selected and fields filled |
+| `game_not_final` | Schedule placeholder — game not completed yet; prediction/score fields null |
+| `no_pre_kickoff_publish` | Game final, but no publish existed with `published_at` strictly before kickoff |
+| `postgame_missing` | Marked completed but final score fields missing — cannot grade |
+
+Ungraded statuses are **included** in the artifact (never silently dropped). The
+Results UI may collapse high-volume `game_not_final` rows to a count line while
+still rendering `no_pre_kickoff_publish` / `postgame_missing` as explicit rows.
+
 #### Grading rule — which publish snapshot grades a game
 
-For each completed game, select the prediction row with the latest `published_at` strictly **before** `kickoff_utc` among publishes for that `(game_id)`:
+For each **completed** game with usable scores, select among publishes for that
+`game_id` whose `published_at` is strictly **before** `kickoff_utc`:
 
-1. Prefer highest-precedence `refresh_kind`: `t_minus_1h` > `t_minus_6h` > `daily_refresh` > `tuesday_primary`.
+1. Prefer highest-precedence `refresh_kind`: `t_minus_1h` > `t_minus_6h` > `daily_refresh` > `tuesday_primary` (`REFRESH_KIND_PRECEDENCE` — **do not change** without an explicit task).
 2. Within the same kind, take the latest `published_at`.
-3. If no pre-kickoff publish exists (data gap), the game is **excluded** from results with `grade_status: "no_pre_kickoff_publish"`.
 
-This mirrors the production decision-point ladder in DESIGN §9.8 and ensures grades reflect what Ridge would have shown before kickoff, not postgame knowledge.
+**Semantics (kind first, recency second):** a higher-precedence kind always
+beats a lower one, even when the lower-kind snapshot is more recent. Example: a
+9-day-old `daily_refresh` outranks a 4-day-old `tuesday_primary`. That is the
+intended ladder (mirrors DESIGN §9.8 decision points), **not** “the freshest
+pre-kickoff view Ridge showed.” Grades therefore reflect the highest-kind
+pre-kickoff publish available, not necessarily the chronologically last one.
+
+If no pre-kickoff publish exists, the row stays in the file with
+`grade_status: "no_pre_kickoff_publish"` (not excluded).
+
+A paired re-grade of week-1 (91 games, Aug 27 `daily_refresh`-winning snapshots
+vs Sept 1) found mean absolute-error delta −0.28 with 95% CI [−0.77, 0.16] —
+no measured accuracy cost in that window, though only 8 games were completed
+then, so the evidence is weak.
 
 #### `GradedGame` record
 
@@ -148,10 +177,10 @@ This mirrors the production decision-point ladder in DESIGN §9.8 and ensures gr
 | `week` | int | |
 | `kickoff_utc` | string | |
 | `home_team`, `away_team` | string | |
-| `home_points`, `away_points` | int | Final including OT |
-| `actual_margin` | int | `home_points − away_points` |
-| `actual_total` | int | Sum of scores |
-| `graded_from` | object | `{ refresh_kind, published_at }` — winning snapshot |
+| `home_points`, `away_points` | int \| null | Final including OT; null on placeholders |
+| `actual_margin` | int \| null | `home_points − away_points` |
+| `actual_total` | int \| null | Sum of scores |
+| `graded_from` | object \| null | `{ refresh_kind, published_at }` — winning snapshot; null if ungraded |
 | `mu_margin`, `sigma_margin` | float \| null | As published pre-kickoff |
 | `margin_interval_lo`, `margin_interval_hi`, `margin_interval_nominal` | float \| null | |
 | `mu_total`, `total_interval_*` | float \| null | |
@@ -159,9 +188,9 @@ This mirrors the production decision-point ladder in DESIGN §9.8 and ensures gr
 | `conviction_tier`, `conviction_team`, `conviction_label` | various | As published pre-kickoff |
 | `margin_interval_hit` | bool \| null | `lo ≤ actual_margin ≤ hi`; null if interval absent |
 | `total_interval_hit` | bool \| null | Same for total interval |
-| `home_win` | bool | `actual_margin > 0` |
+| `home_win` | bool | `actual_margin > 0` when scored; `false` placeholder default when unscored |
 | `p_win_home_realized` | float \| null | 1.0 or 0.0 for Brier post-hoc; not displayed as a "pick" |
-| `grade_status` | string | `"graded"` \| `"no_pre_kickoff_publish"` |
+| `grade_status` | string | `"graded"` \| `"game_not_final"` \| `"no_pre_kickoff_publish"` \| `"postgame_missing"` |
 
 ### 1.4 `track_record.json`
 
