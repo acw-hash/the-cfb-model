@@ -381,6 +381,11 @@ def test_coherence_gate_nulls_incoherent_margin_interval() -> None:
     assert game["margin_interval_lo"] is None
     assert game["margin_interval_hi"] is None
     assert game["margin_interval_nominal"] is None
+    assert game["null_reason"] == "incoherent_margin_interval"
+    # Coherence null_reason is not a σ-refusal — probabilities stay publishable.
+    assert game["sigma_margin"] == pytest.approx(20.0)
+    assert game["sigma_margin_credible"] is True
+    assert game["p_win_home"] == pytest.approx(0.99)
 
 
 def test_coherence_gate_does_not_suppress_skewed_but_coherent_row() -> None:
@@ -403,6 +408,7 @@ def test_coherence_gate_does_not_suppress_skewed_but_coherent_row() -> None:
     assert game["margin_interval_lo"] == pytest.approx(-26.837)
     assert game["margin_interval_hi"] == pytest.approx(54.837)
     assert game["margin_interval_nominal"] == pytest.approx(0.8)
+    assert game["null_reason"] is None
 
 
 def test_incoherent_band_assertion_bite() -> None:

@@ -38,6 +38,7 @@ export function cloneNullMarginInterval(game: GamePrediction): GamePrediction {
     margin_interval_lo: null,
     margin_interval_hi: null,
     margin_interval_nominal: null,
+    null_reason: game.null_reason ?? "incoherent_margin_interval",
   };
 }
 

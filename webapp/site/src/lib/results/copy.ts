@@ -33,4 +33,16 @@ export function gameNotFinalCountCopy(count: number): string {
   return `${count} ${noun} not yet final — kept in the artifact, listed here so the season schedule is not omitted. Final score not available; not treated as a miss.`;
 }
 
+/**
+ * §1.8 display labels for known `null_reason` codes.
+ * Unknown codes fall back to underscore→space in `nullReasonFootnote`.
+ * A code with no label must never render blank.
+ */
+export const NULL_REASON_LABELS: Record<string, string> = {
+  incoherent_margin_interval:
+    "Quantile bounds were not coherent with the point forecast.",
+  cold_start_insufficient: "cold start insufficient",
+  no_credible_members: "no credible members",
+};
+
 export const MISSING_METRIC_COPY = "Not in the recorded artifact";

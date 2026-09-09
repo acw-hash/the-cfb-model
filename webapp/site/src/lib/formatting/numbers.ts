@@ -1,3 +1,5 @@
+import { NULL_REASON_LABELS } from "@/lib/results/copy";
+
 const MINUS = "\u2212";
 
 export const ABSENT = "\u2014";
@@ -191,5 +193,5 @@ export function nullReasonFootnote(nullReason: string | null | undefined): strin
   if (!nullReason) {
     return null;
   }
-  return nullReason.replaceAll("_", " ");
+  return NULL_REASON_LABELS[nullReason] ?? nullReason.replaceAll("_", " ");
 }

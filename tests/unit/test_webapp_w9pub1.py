@@ -547,6 +547,7 @@ def test_history_line_carries_post_gate_null_bands(tmp_path: Path) -> None:
     assert wp_game["margin_interval_lo"] is None
     assert wp_game["margin_interval_hi"] is None
     assert wp_game["margin_interval_nominal"] is None
+    assert wp_game["null_reason"] == "incoherent_margin_interval"
 
     file_path = publish_history_file(hist, season=2026, week=1)
     records = load_publish_history_file(file_path)
@@ -557,6 +558,7 @@ def test_history_line_carries_post_gate_null_bands(tmp_path: Path) -> None:
     assert hist_game["margin_interval_lo"] is None
     assert hist_game["margin_interval_hi"] is None
     assert hist_game["margin_interval_nominal"] is None
+    assert hist_game["null_reason"] == "incoherent_margin_interval"
     assert hist_game["game_id"] == "401000001"
 
 

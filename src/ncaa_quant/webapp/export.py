@@ -17,6 +17,9 @@ from ncaa_quant.pipelines.predict import RefreshKind
 
 SCHEMA_VERSION = "1.3.0"
 
+#: Set on GamePrediction when the coherence gate nulls margin_interval_* (§1.8).
+NULL_REASON_INCOHERENT_MARGIN_INTERVAL = "incoherent_margin_interval"
+
 ConvictionTier = Literal["strong_lean", "clear_lean", "lean", "toss_up"]
 
 #: W1A tier enter thresholds (docs/webapp/DESIGN.md §2.2, amended 2026-08-13).
@@ -322,19 +325,24 @@ def apply_margin_interval_coherence_gate(
     lo: float | None,
     hi: float | None,
     nominal: float | None,
-) -> tuple[float | None, float | None, float | None]:
+) -> tuple[float | None, float | None, float | None, str | None]:
     """Null ``margin_interval_*`` unless sorted q10 < mu < q90 before the CQR add.
 
     No ``|mu|`` cutoff and no position/asymmetry gate. Missing heads are not a
     failure: stub rows without quantile columns still publish their CQR bounds.
+
+    When this gate suppresses an otherwise-present interval, the fourth return
+    value is ``NULL_REASON_INCOHERENT_MARGIN_INTERVAL`` for the published
+    ``null_reason`` field (§1.8). It does not imply a σ-refusal: callers must
+    keep computing credibility from the pre-gate row.
     """
     if lo is None and hi is None and nominal is None:
-        return None, None, None
+        return None, None, None, None
     if q10 is None or q90 is None:
-        return lo, hi, nominal
+        return lo, hi, nominal, None
     if margin_quantile_heads_coherent(mu, q10, q90):
-        return lo, hi, nominal
-    return None, None, None
+        return lo, hi, nominal, None
+    return None, None, None, NULL_REASON_INCOHERENT_MARGIN_INTERVAL
 
 
 def assert_no_incoherent_margin_interval(
@@ -727,13 +735,15 @@ def build_game_prediction(
     margin_lo = _optional_float(_field(row, "margin_interval_lo", "cqr_lo", "pred_margin_q05"))
     margin_hi = _optional_float(_field(row, "margin_interval_hi", "cqr_hi", "pred_margin_q95"))
     margin_nominal = _optional_float(_field(row, "margin_interval_nominal", "cqr_nominal"))
-    margin_lo, margin_hi, margin_nominal = apply_margin_interval_coherence_gate(
-        mu=mu_margin,
-        q10=q10,
-        q90=q90,
-        lo=margin_lo,
-        hi=margin_hi,
-        nominal=margin_nominal,
+    margin_lo, margin_hi, margin_nominal, coherence_null_reason = (
+        apply_margin_interval_coherence_gate(
+            mu=mu_margin,
+            q10=q10,
+            q90=q90,
+            lo=margin_lo,
+            hi=margin_hi,
+            nominal=margin_nominal,
+        )
     )
     assert_no_incoherent_margin_interval(
         mu=mu_margin,
@@ -742,6 +752,12 @@ def build_game_prediction(
         lo=margin_lo,
         hi=margin_hi,
     )
+    # Prefer an upstream ADR 0014 reason; otherwise carry the coherence-gate code.
+    row_null_reason = _field(row, "null_reason")
+    if row_null_reason is not None and row_null_reason != "":
+        published_null_reason: str | None = str(row_null_reason)
+    else:
+        published_null_reason = coherence_null_reason
 
     game: dict[str, Any] = {
         "game_id": str(_field(row, "game_id") or schedule.get("game_id", "")),
@@ -779,7 +795,7 @@ def build_game_prediction(
         "is_stale": bool(row.get("is_stale", False)),
         "stale_stamp": row.get("stale_stamp"),
         "stale_sources": stale_sources or [],
-        "null_reason": _field(row, "null_reason"),
+        "null_reason": published_null_reason,
         "vintage_label": vintage_label,
         "ensemble_scope_label": ensemble_scope_label,
         "feature_time_label": feature_time_label,

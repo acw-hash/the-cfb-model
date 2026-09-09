@@ -4,6 +4,7 @@ import {
   TOTAL_INTERVAL_ABSENT_REASON,
 } from "@/lib/game-detail/absence";
 import type { RatingPoint } from "@/lib/game-detail/ratings";
+import { nullReasonFootnote } from "@/lib/formatting/numbers";
 
 import { ForecastBlock } from "./ForecastBlock";
 import { MatchupHeader } from "./MatchupHeader";
@@ -22,6 +23,15 @@ interface GameDetailProps {
 
 /** Full uncertainty presentation for one game (§5.2). */
 export function GameDetail({ game, homeSeries, awaySeries }: GameDetailProps): React.ReactElement {
+  const marginAbsentReason =
+    game.margin_interval_lo == null || game.margin_interval_hi == null
+      ? (nullReasonFootnote(game.null_reason) ?? MARGIN_INTERVAL_ABSENT_REASON)
+      : undefined;
+  const totalAbsentReason =
+    game.total_interval_lo == null || game.total_interval_hi == null
+      ? TOTAL_INTERVAL_ABSENT_REASON
+      : undefined;
+
   return (
     <article className={styles.page} data-testid="game-detail">
       <MatchupHeader
@@ -40,11 +50,7 @@ export function GameDetail({ game, homeSeries, awaySeries }: GameDetailProps): R
         nominal={game.margin_interval_nominal}
         signed
         nullReason={game.null_reason}
-        intervalAbsentReason={
-          game.margin_interval_lo == null || game.margin_interval_hi == null
-            ? MARGIN_INTERVAL_ABSENT_REASON
-            : undefined
-        }
+        intervalAbsentReason={marginAbsentReason}
       />
       <ForecastBlock
         label="Total"
@@ -56,11 +62,7 @@ export function GameDetail({ game, homeSeries, awaySeries }: GameDetailProps): R
         nominal={game.total_interval_nominal}
         signed={false}
         nullReason={game.null_reason}
-        intervalAbsentReason={
-          game.total_interval_lo == null || game.total_interval_hi == null
-            ? TOTAL_INTERVAL_ABSENT_REASON
-            : undefined
-        }
+        intervalAbsentReason={totalAbsentReason}
       />
       <ProbabilityList game={game} />
       <RevisionBlock
