@@ -96,7 +96,29 @@ than the blended 0.774, and the 0.800 half is defensible.
 
 ## Open work, priority order
 
-0. **NEW — the mean head disagrees with the quantile heads, only on
+0. **ROOT CAUSE FOUND — `rating_uncertainty` in the ENet member.** Written up
+   in `docs/notes/finding-rating-uncertainty.md`; read that, not this summary.
+   The ENet carries coef_z +4.05 on `rating_uncertainty` (sum of both teams'
+   Kalman posterior SDs on off_epa). On pooled-prior games it contributes the
+   majority of published μ — +59.6 of BYU–Utah Tech's +76.7 — pushing μ above
+   its own q90. Stack weights LGBM 0.384 / ENet 0.616; the ENet is the excess
+   on 17/17 failures, and the epistemic mix reduces it rather than causing it.
+   **Structural flaw:** all 555 absent-side training rows have the *visitor*
+   missing (home-absent n=0), so the model fused "uncertainty is high" with
+   "the home team wins big." The feature is symmetric but was fitted on
+   one-sided evidence. **Not a bug to remove:** dropping it fixes 17/17
+   coherences and moves week-1 MAE 16.27 → 24.39. Week-1 values run ~6× the
+   training mean, so production is extrapolating an unconstrained linear term
+   past its fitted range. Options and rejected approaches are in the note.
+   Decision required; do not patch.
+
+   Ruled out en route (do not reopen): epistemic mix as cause, sparse tail
+   data, unstable quantile boosters, monotone constraints on the μ head.
+   `ensemble_weight_dampen` is unrelated — a monthly weight EMA, still
+   unimplemented, still item 12.
+
+0b. ~~The mean head disagrees with the quantile heads~~ — root cause above.
+   Original framing:  the mean head disagrees with the quantile heads, only on
    pooled-prior games.** The interval-suppression gate is
    `not (q10 < mu < q90)`: the point estimate falls outside its own 10th–90th
    percentile band. That fires on **15 of 49** games with a `filter_history`-
@@ -167,7 +189,9 @@ than the blended 0.774, and the 0.800 half is defensible.
 7. **W-RATINGS-WIRE.** `execute_predict_publish` never passes `filter_history`
    to `export_publish_artifacts`, so `team_ratings_2026.json` ships
    `teams: {}` (107 bytes) and Game Detail rating trajectories (§5.2) have
-   never rendered. The defect is the caller.
+   never rendered. The exporter works when fed history — `v2/2024/w5`
+   team_ratings is 991,889 bytes against 107-byte stubs elsewhere. The defect
+   is the caller.
 
 8. **Read-only R2 token.** No public read path: `lib/artifacts/r2.ts` signs a
    GET with a server-side credential. `webapp/site/.env.local` holds

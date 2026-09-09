@@ -39,8 +39,7 @@ export function gameNotFinalCountCopy(count: number): string {
  * A code with no label must never render blank.
  */
 export const NULL_REASON_LABELS: Record<string, string> = {
-  incoherent_margin_interval:
-    "Quantile bounds were not coherent with the point forecast.",
+  incoherent_margin_interval: "Quantile bounds were not coherent with the point forecast.",
   cold_start_insufficient: "cold start insufficient",
   no_credible_members: "no credible members",
 };
