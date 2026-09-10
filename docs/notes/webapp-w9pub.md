@@ -360,3 +360,130 @@ in this verify. Orphans retained.
   Three of the top ten misses are FBS favorites over FCS opponents with
   no `filter_history` rating (pooled FCS prior).
 
+
+---
+
+## THU VERIFY — week-2 `daily_refresh` live publish (2026-09-10)
+
+Read-only against live R2 + workstation. No re-publish, push, deploy, or
+product fix. Notes append + one commit only.
+
+**Verdict: no product ROLLBACK TRIGGER.** Content gates pass. Verifier exit 1
+is the known week-1-hardcoded early-kickoff check (open finding from T+ /
+session note). Published with known betting-language ratchet drift (below).
+
+Source log: `publish_w2_thu.log` (predict+export completed
+`~2026-09-10T13:34:24Z` / 09:34 ET). `scripts/publish_week2_thu.py` only
+prints `webapp_export.ok`, so per-key push audit is reconstructed from R2
+listing + SHA-256 of GET bodies, plus log lines for revalidation.
+
+### 1. Push audit (reconstructed)
+
+**Log (verbatim fragments):**
+
+```
+2026-09-10 09:34:24 [info     ] webapp_revalidate_ok           status_code=200
+webapp_export = True
+```
+
+`rating_digest=d4b062850728825520a87e39139a9567754ae41c92970227db7f60fe4267b718`
+(identical to Tuesday v3). `n_obs=6096`. `n_candidates=0`.
+
+**Reconstructed uploads (10 keys — 5 artifacts × versioned+latest):**
+
+| Key | Bytes | SHA-256 | Last-modified (UTC) |
+|-----|------:|---------|---------------------|
+| `v1/2026/w2/daily_refresh/results_2026.json` | 804333 | (pair of latest) | 2026-09-10T13:34:19Z |
+| `latest/results_2026.json` | 804333 | `e3ea13f35efe1449c6952f1565798a386e4633285970ec999549ad56e9e1a0db` | 2026-09-10T13:34:20Z |
+| `v1/2026/w2/daily_refresh/team_ratings_2026.json` | 107 | (pair) | 2026-09-10T13:34:21Z |
+| `latest/team_ratings_2026.json` | 107 | `036804bfd54dcfea06c3d460cf37cb2821c13be3e8453962e735a9fb93465ae6` | 2026-09-10T13:34:21Z |
+| `v1/2026/w2/daily_refresh/track_record.json` | 6303 | (pair) | 2026-09-10T13:34:21Z |
+| `latest/track_record.json` | 6303 | `efc8d8a0ca9d2d9a238e6aad5ef1606f7f15cd9004759cd33bb154ba629118e8` | 2026-09-10T13:34:22Z |
+| `v1/2026/w2/daily_refresh/week_predictions.json` | 154572 | (pair) | 2026-09-10T13:34:22Z |
+| `latest/week_predictions.json` | 154572 | `21cb73324f1c4c01708db4c7700dbfc6e393bdc173d155e7cb0ac3976923cbf5` | 2026-09-10T13:34:23Z |
+| `v1/2026/w2/daily_refresh/meta.json` | 902 | (pair) | 2026-09-10T13:34:23Z |
+| `latest/meta.json` | 902 | `4d84b8eae96ae2f84353b16cc5aa6df4ada338d3d5bd7184604bd643b79ddd76` | 2026-09-10T13:34:23Z |
+
+| Field | Observed |
+|-------|----------|
+| Upload key count | **10** (same shape as Tuesday v3) |
+| `meta_last` | **True** — `latest/meta.json` last-modified after other batch `latest/*` |
+| Revalidation | **ok**, HTTP **200** |
+| `audit_leaked_secret_names` | absent from push return (script does not print it); post-hoc credential-pattern scan on live GET bodies: **empty** |
+
+Orphans retained: `latest/results_2024.json`, `latest/team_ratings_2024.json` (unchanged since 2026-08-18).
+
+### 2. `scripts/verify_published_artifacts.py latest/`
+
+Exit code **1**.
+
+```
+[FAIL] 3_early_kickoffs: {week-1 IDs → None}   # known: hardcodes week-1 game_ids
+[PASS] 7_game_id_shape
+[PASS] 8_kickoff_gt_as_of  (as_of=2026-09-10T10:00:00+00:00)
+[PASS] 9_schema_and_fixture  (schema 1.3.0; fixture null)
+[PASS] 10_identity_stamps  (registered_at=2026-08-17T20:41:49Z)
+[PASS] meta_last_readable
+[PASS] schema_major
+```
+
+Not treated as product rollback — same open finding as T+ session note
+(“verifier check 3 hardcodes week-1 IDs”).
+
+### 3. GET `latest/*`
+
+| Check | Observed | Gate |
+|-------|----------|------|
+| `refresh_kind` | `daily_refresh` (meta + week) | PASS |
+| `as_of` / `as_of_source` | `2026-09-10T10:00:00+00:00` / `operator` | PASS |
+| Published rows | **86** | PASS |
+| `stale_stamp` non-null | **0** | PASS |
+| `schema_version` | **1.3.0** (unchanged from Tuesday) | PASS |
+| `fixture` key | **absent** | PASS |
+| Shared `published_at` | **`2026-09-10T13:34:17Z`** (meta, week, track, team_ratings_2026, results_2026) | PASS |
+| `meta.champion_model.registered_at` | **`2026-08-17T20:41:49Z`** | PASS |
+| `next_expected_publish_utc` | **`2026-09-11T13:34:17Z`** | (reported) |
+| `results_2026.json` | graded **99** / postgame_missing **0** / no_pre_kickoff_publish **0** (also 789 `game_not_final`) | PASS |
+| Fix B `null_reason` | **20** / 20 coherence-suppressed rows = `incoherent_margin_interval` (Tuesday suppressed count was also **20**; Tuesday had `null_reason=null`) | PASS |
+
+### 4. Diff vs `backup_latest_20260910/week_predictions.json` (Tuesday)
+
+Rating digest identical (`d4b06285…`). Per-`game_id` watch fields
+(`mu_margin`, `sigma_margin`, margin interval lo/hi, `mu_total`, `p_win_home`,
+`conviction_tier`): **no changes**.
+
+Observed per-game diffs only:
+- `published_at` (86)
+- `refresh_kind` (86)
+- `null_reason` (20: `None` → `incoherent_margin_interval`)
+
+Top-level also: `as_of`, `published_at`, `refresh_kind` (expected). **No other
+differences.**
+
+### 5. Publish history `2026_w2.jsonl`
+
+| Lines | `refresh_kind` |
+|------:|----------------|
+| 3 | `tuesday_primary` |
+| 1 | `daily_refresh` (`2026-09-10T13:34:17Z`, 86 games) |
+
+**PASS** (3 + 1).
+
+### 6. `tier_revised_since_primary`
+
+**0** / 86 (`False` on every row). **PASS.**
+
+### 7. Known ratchet failure (published with it known)
+
+`make test` betting-language ratchet: **620/467/104** vs pin **618/465/103**.
+Exact +2 matches from `docs/notes/ridge-handoff-2026-09-08-final.md` L260/L263
+(“Best Bets”), introduced in `824a56d`. Notes-only; not on export/push/site
+copy surfaces. No re-pin in this verify.
+
+### Acceptance
+
+Live week-2 `daily_refresh` coherent with operator `as_of`. Fix B
+`null_reason` live for the first time (20 rows). No prediction/tier drift vs
+Tuesday backup beyond expected stamp fields. Verifier check 3 remains a
+false fail on non-week-1 slates. Ratchet drift known and recorded.
+
