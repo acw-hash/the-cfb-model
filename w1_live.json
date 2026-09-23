@@ -1,0 +1,1436 @@
+{
+  "source": "data\\results\\latest_results_2026.json",
+  "schema_version": "1.3.0",
+  "season": 2026,
+  "published_at": "2026-09-08T15:34:11Z",
+  "week_filter": 1,
+  "n_graded": 99,
+  "n_forecast": 99,
+  "mae": 16.28590592854423,
+  "mae_ci95": [
+    13.99197515400127,
+    18.720685955102468
+  ],
+  "median_ae": 14.629333172796258,
+  "interval_hits": 65,
+  "interval_n": 84,
+  "brier": 0.09818062383087346,
+  "by_kickoff_date": {
+    "2026-08-29": {
+      "n": 7,
+      "mae": 9.289780613498776
+    },
+    "2026-08-30": {
+      "n": 1,
+      "mae": 16.896313356003397
+    },
+    "2026-09-03": {
+      "n": 6,
+      "mae": 21.695038185304366
+    },
+    "2026-09-04": {
+      "n": 8,
+      "mae": 10.912518337547368
+    },
+    "2026-09-05": {
+      "n": 60,
+      "mae": 17.80564888809535
+    },
+    "2026-09-06": {
+      "n": 16,
+      "mae": 14.850170217442995
+    },
+    "2026-09-07": {
+      "n": 1,
+      "mae": 6.967876698369857
+    }
+  },
+  "per_game": [
+    {
+      "game_id": "401858434",
+      "kickoff_utc": "2026-09-05T19:30:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.33099537037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 29.51916181790507,
+      "actual_margin": 45,
+      "abs_error": 15.480838182094931,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401858436",
+      "kickoff_utc": "2026-09-05T01:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 8.560162037037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 6.4987958169764894,
+      "actual_margin": 39,
+      "abs_error": 32.50120418302351,
+      "margin_interval_hit": false
+    },
+    {
+      "game_id": "401868170",
+      "kickoff_utc": "2026-09-05T23:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.476828703703704,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 37.68099911038453,
+      "actual_margin": 31,
+      "abs_error": 6.680999110384533,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401864496",
+      "kickoff_utc": "2026-09-05T17:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.226828703703704,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 32.80780872446719,
+      "actual_margin": 34,
+      "abs_error": 1.1921912755328066,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401864499",
+      "kickoff_utc": "2026-09-05T19:30:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.33099537037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 36.80089498115516,
+      "actual_margin": 38,
+      "abs_error": 1.1991050188448398,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401858427",
+      "kickoff_utc": "2026-09-06T00:00:00Z",
+      "kickoff_date": "2026-09-06",
+      "snapshot_age_days": 9.51849537037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 42.29458108477561,
+      "actual_margin": 62,
+      "abs_error": 19.705418915224392,
+      "margin_interval_hit": null
+    },
+    {
+      "game_id": "401856665",
+      "kickoff_utc": "2026-09-05T16:45:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.216412037037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 18.0099577575607,
+      "actual_margin": 57,
+      "abs_error": 38.9900422424393,
+      "margin_interval_hit": false
+    },
+    {
+      "game_id": "401866411",
+      "kickoff_utc": "2026-09-06T02:00:00Z",
+      "kickoff_date": "2026-09-06",
+      "snapshot_age_days": 9.601828703703704,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 40.19288038310326,
+      "actual_margin": 52,
+      "abs_error": 11.807119616896742,
+      "margin_interval_hit": null
+    },
+    {
+      "game_id": "401858426",
+      "kickoff_utc": "2026-09-05T20:15:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.36224537037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 29.969283556794913,
+      "actual_margin": 40,
+      "abs_error": 10.030716443205087,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401856668",
+      "kickoff_utc": "2026-09-05T23:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.476828703703704,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 27.802939429629937,
+      "actual_margin": 50,
+      "abs_error": 22.197060570370063,
+      "margin_interval_hit": false
+    },
+    {
+      "game_id": "401856664",
+      "kickoff_utc": "2026-09-05T00:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 8.51849537037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 25.96727486471413,
+      "actual_margin": 51,
+      "abs_error": 25.03272513528587,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401864425",
+      "kickoff_utc": "2026-09-03T23:00:00Z",
+      "kickoff_date": "2026-09-03",
+      "snapshot_age_days": 7.476828703703704,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 32.470675958036615,
+      "actual_margin": 47,
+      "abs_error": 14.529324041963385,
+      "margin_interval_hit": false
+    },
+    {
+      "game_id": "401858208",
+      "kickoff_utc": "2026-09-05T16:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.185162037037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 31.15568807828093,
+      "actual_margin": 63,
+      "abs_error": 31.84431192171907,
+      "margin_interval_hit": false
+    },
+    {
+      "game_id": "401866627",
+      "kickoff_utc": "2026-09-05T19:30:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.33099537037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 30.938441305912423,
+      "actual_margin": 52,
+      "abs_error": 21.061558694087577,
+      "margin_interval_hit": false
+    },
+    {
+      "game_id": "401868356",
+      "kickoff_utc": "2026-09-05T21:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.39349537037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 36.38956017414838,
+      "actual_margin": 46,
+      "abs_error": 9.610439825851621,
+      "margin_interval_hit": false
+    },
+    {
+      "game_id": "401858432",
+      "kickoff_utc": "2026-09-05T16:30:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.20599537037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 37.25807289199329,
+      "actual_margin": 53,
+      "abs_error": 15.741927108006713,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401862697",
+      "kickoff_utc": "2026-09-05T23:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.476828703703704,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 27.90400829813326,
+      "actual_margin": 28,
+      "abs_error": 0.09599170186674044,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401856771",
+      "kickoff_utc": "2026-09-05T23:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.476828703703704,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 42.777740167720886,
+      "actual_margin": 68,
+      "abs_error": 25.222259832279114,
+      "margin_interval_hit": null
+    },
+    {
+      "game_id": "401856658",
+      "kickoff_utc": "2026-09-05T19:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.310162037037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 48.00708087743774,
+      "actual_margin": 60,
+      "abs_error": 11.992919122562263,
+      "margin_interval_hit": false
+    },
+    {
+      "game_id": "401858209",
+      "kickoff_utc": "2026-09-05T19:30:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.33099537037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 13.272501773411268,
+      "actual_margin": 14,
+      "abs_error": 0.7274982265887324,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401858211",
+      "kickoff_utc": "2026-09-05T23:30:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.497662037037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 45.398429002512906,
+      "actual_margin": 70,
+      "abs_error": 24.601570997487094,
+      "margin_interval_hit": null
+    },
+    {
+      "game_id": "401862701",
+      "kickoff_utc": "2026-09-05T16:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.185162037037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 47.8747612836538,
+      "actual_margin": 56,
+      "abs_error": 8.125238716346203,
+      "margin_interval_hit": null
+    },
+    {
+      "game_id": "401856767",
+      "kickoff_utc": "2026-09-03T23:00:00Z",
+      "kickoff_date": "2026-09-03",
+      "snapshot_age_days": 7.476828703703704,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 42.566966340526506,
+      "actual_margin": 67,
+      "abs_error": 24.433033659473494,
+      "margin_interval_hit": null
+    },
+    {
+      "game_id": "401856769",
+      "kickoff_utc": "2026-09-05T00:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 8.51849537037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 45.280792968471715,
+      "actual_margin": 45,
+      "abs_error": 0.2807929684717152,
+      "margin_interval_hit": null
+    },
+    {
+      "game_id": "401869129",
+      "kickoff_utc": "2026-09-05T23:30:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.497662037037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 37.35058453596463,
+      "actual_margin": 74,
+      "abs_error": 36.64941546403537,
+      "margin_interval_hit": false
+    },
+    {
+      "game_id": "401864577",
+      "kickoff_utc": "2026-08-29T21:30:00Z",
+      "kickoff_date": "2026-08-29",
+      "snapshot_age_days": 2.4143287037037036,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 14.51344407921583,
+      "actual_margin": 26,
+      "abs_error": 11.48655592078417,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401861962",
+      "kickoff_utc": "2026-09-05T16:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.185162037037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 34.280079369269394,
+      "actual_margin": 49,
+      "abs_error": 14.719920630730606,
+      "margin_interval_hit": false
+    },
+    {
+      "game_id": "401856667",
+      "kickoff_utc": "2026-09-05T19:30:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.33099537037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 18.537007285187983,
+      "actual_margin": 52,
+      "abs_error": 33.46299271481202,
+      "margin_interval_hit": false
+    },
+    {
+      "game_id": "401864498",
+      "kickoff_utc": "2026-09-06T02:00:00Z",
+      "kickoff_date": "2026-09-06",
+      "snapshot_age_days": 9.601828703703704,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 10.858971688218276,
+      "actual_margin": 31,
+      "abs_error": 20.141028311781724,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401858422",
+      "kickoff_utc": "2026-09-04T00:00:00Z",
+      "kickoff_date": "2026-09-04",
+      "snapshot_age_days": 7.5184953703703705,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 45.55736645832535,
+      "actual_margin": 52,
+      "abs_error": 6.4426335416746525,
+      "margin_interval_hit": null
+    },
+    {
+      "game_id": "401868140",
+      "kickoff_utc": "2026-09-05T23:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.476828703703704,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 37.60453086341628,
+      "actual_margin": 42,
+      "abs_error": 4.395469136583721,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401869142",
+      "kickoff_utc": "2026-09-06T00:00:00Z",
+      "kickoff_date": "2026-09-06",
+      "snapshot_age_days": 9.51849537037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 32.84895289672357,
+      "actual_margin": 31,
+      "abs_error": 1.848952896723567,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401856774",
+      "kickoff_utc": "2026-09-06T02:00:00Z",
+      "kickoff_date": "2026-09-06",
+      "snapshot_age_days": 9.601828703703704,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 45.13692291240032,
+      "actual_margin": 63,
+      "abs_error": 17.863077087599677,
+      "margin_interval_hit": false
+    },
+    {
+      "game_id": "401856773",
+      "kickoff_utc": "2026-09-06T01:30:00Z",
+      "kickoff_date": "2026-09-06",
+      "snapshot_age_days": 9.58099537037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 48.640421609501665,
+      "actual_margin": 28,
+      "abs_error": 20.640421609501665,
+      "margin_interval_hit": null
+    },
+    {
+      "game_id": "401864424",
+      "kickoff_utc": "2026-09-03T23:00:00Z",
+      "kickoff_date": "2026-09-03",
+      "snapshot_age_days": 7.476828703703704,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 34.540107502645576,
+      "actual_margin": 35,
+      "abs_error": 0.4598924973544243,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401856775",
+      "kickoff_utc": "2026-09-06T00:00:00Z",
+      "kickoff_date": "2026-09-06",
+      "snapshot_age_days": 9.51849537037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 46.76191610791573,
+      "actual_margin": 56,
+      "abs_error": 9.23808389208427,
+      "margin_interval_hit": null
+    },
+    {
+      "game_id": "401858202",
+      "kickoff_utc": "2026-08-29T19:30:00Z",
+      "kickoff_date": "2026-08-29",
+      "snapshot_age_days": 2.3309953703703705,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 2.9814998887973,
+      "actual_margin": 26,
+      "abs_error": 23.018500111202698,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401856666",
+      "kickoff_utc": "2026-09-05T19:30:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.33099537037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 45.7227692675895,
+      "actual_margin": 47,
+      "abs_error": 1.2772307324105014,
+      "margin_interval_hit": null
+    },
+    {
+      "game_id": "401856669",
+      "kickoff_utc": "2026-09-05T23:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.476828703703704,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 39.19351429364864,
+      "actual_margin": 19,
+      "abs_error": 20.19351429364864,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401862699",
+      "kickoff_utc": "2026-09-05T23:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.476828703703704,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 21.818563829111053,
+      "actual_margin": 10,
+      "abs_error": 11.818563829111053,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401856634",
+      "kickoff_utc": "2026-09-05T16:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.185162037037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 7.853202991711314,
+      "actual_margin": 38,
+      "abs_error": 30.146797008288686,
+      "margin_interval_hit": false
+    },
+    {
+      "game_id": "401856772",
+      "kickoff_utc": "2026-09-05T19:45:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.341412037037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": -1.0472445117173,
+      "actual_margin": 14,
+      "abs_error": 15.0472445117173,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401856660",
+      "kickoff_utc": "2026-09-05T23:30:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.497662037037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": -4.551763060713326,
+      "actual_margin": 41,
+      "abs_error": 45.55176306071333,
+      "margin_interval_hit": false
+    },
+    {
+      "game_id": "401858437",
+      "kickoff_utc": "2026-09-06T20:00:00Z",
+      "kickoff_date": "2026-09-06",
+      "snapshot_age_days": 10.351828703703704,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 14.221514759360485,
+      "actual_margin": 14,
+      "abs_error": 0.2215147593604847,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401856770",
+      "kickoff_utc": "2026-09-05T23:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.476828703703704,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 36.16959621499886,
+      "actual_margin": 23,
+      "abs_error": 13.169596214998862,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401866623",
+      "kickoff_utc": "2026-09-04T23:00:00Z",
+      "kickoff_date": "2026-09-04",
+      "snapshot_age_days": 8.476828703703704,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 32.501062886354205,
+      "actual_margin": 49,
+      "abs_error": 16.498937113645795,
+      "margin_interval_hit": false
+    },
+    {
+      "game_id": "401867973",
+      "kickoff_utc": "2026-09-05T22:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.435162037037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 46.62469747301826,
+      "actual_margin": 21,
+      "abs_error": 25.62469747301826,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401856779",
+      "kickoff_utc": "2026-09-05T17:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.226828703703704,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 44.82528920813034,
+      "actual_margin": 28,
+      "abs_error": 16.825289208130343,
+      "margin_interval_hit": null
+    },
+    {
+      "game_id": "401858428",
+      "kickoff_utc": "2026-09-05T23:30:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.497662037037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 0.5974569953963591,
+      "actual_margin": 1,
+      "abs_error": 0.4025430046036409,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401858438",
+      "kickoff_utc": "2026-09-06T23:30:00Z",
+      "kickoff_date": "2026-09-06",
+      "snapshot_age_days": 10.497662037037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 30.381878946100134,
+      "actual_margin": 28,
+      "abs_error": 2.3818789461001337,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401869960",
+      "kickoff_utc": "2026-09-05T16:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.185162037037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 22.403863196523453,
+      "actual_margin": 7,
+      "abs_error": 15.403863196523453,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401856662",
+      "kickoff_utc": "2026-09-05T23:30:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.497662037037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 14.493199181734326,
+      "actual_margin": 49,
+      "abs_error": 34.506800818265674,
+      "margin_interval_hit": false
+    },
+    {
+      "game_id": "401860878",
+      "kickoff_utc": "2026-09-05T22:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.435162037037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 1.728093847014968,
+      "actual_margin": 22,
+      "abs_error": 20.271906152985032,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401856659",
+      "kickoff_utc": "2026-09-05T17:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.226828703703704,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 42.0620099972516,
+      "actual_margin": 32,
+      "abs_error": 10.0620099972516,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401856776",
+      "kickoff_utc": "2026-09-04T00:00:00Z",
+      "kickoff_date": "2026-09-04",
+      "snapshot_age_days": 7.5184953703703705,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 17.185946870152552,
+      "actual_margin": -1,
+      "abs_error": 18.185946870152552,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401856768",
+      "kickoff_utc": "2026-09-04T01:00:00Z",
+      "kickoff_date": "2026-09-04",
+      "snapshot_age_days": 7.560162037037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 45.267515215212455,
+      "actual_margin": 52,
+      "abs_error": 6.732484784787545,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401867866",
+      "kickoff_utc": "2026-09-05T23:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.476828703703704,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 38.62933317279626,
+      "actual_margin": 24,
+      "abs_error": 14.629333172796258,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401864432",
+      "kickoff_utc": "2026-09-06T02:30:00Z",
+      "kickoff_date": "2026-09-06",
+      "snapshot_age_days": 9.622662037037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 0.050909968950003825,
+      "actual_margin": 35,
+      "abs_error": 34.94909003105,
+      "margin_interval_hit": false
+    },
+    {
+      "game_id": "401858207",
+      "kickoff_utc": "2026-09-05T16:30:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.20599537037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 19.105636196054824,
+      "actual_margin": 45,
+      "abs_error": 25.894363803945176,
+      "margin_interval_hit": false
+    },
+    {
+      "game_id": "401862698",
+      "kickoff_utc": "2026-09-05T18:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.26849537037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 37.22282607157089,
+      "actual_margin": 24,
+      "abs_error": 13.222826071570893,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401856663",
+      "kickoff_utc": "2026-09-04T00:00:00Z",
+      "kickoff_date": "2026-09-04",
+      "snapshot_age_days": 7.5184953703703705,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 47.29381818818163,
+      "actual_margin": 40,
+      "abs_error": 7.293818188181632,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401870790",
+      "kickoff_utc": "2026-09-06T01:00:00Z",
+      "kickoff_date": "2026-09-06",
+      "snapshot_age_days": 9.560162037037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 35.35491562364842,
+      "actual_margin": 37,
+      "abs_error": 1.6450843763515834,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401856635",
+      "kickoff_utc": "2026-09-05T20:15:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.36224537037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 47.11029266700638,
+      "actual_margin": 17,
+      "abs_error": 30.110292667006377,
+      "margin_interval_hit": null
+    },
+    {
+      "game_id": "401868316",
+      "kickoff_utc": "2026-09-05T23:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.476828703703704,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 29.84020006569072,
+      "actual_margin": 25,
+      "abs_error": 4.84020006569072,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401856777",
+      "kickoff_utc": "2026-09-05T19:30:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.33099537037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 4.977954231550008,
+      "actual_margin": 19,
+      "abs_error": 14.022045768449992,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401862696",
+      "kickoff_utc": "2026-09-05T19:30:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.33099537037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 45.99601108316151,
+      "actual_margin": 27,
+      "abs_error": 18.996011083161513,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401856766",
+      "kickoff_utc": "2026-08-29T16:00:00Z",
+      "kickoff_date": "2026-08-29",
+      "snapshot_age_days": 2.185162037037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 17.62007904910668,
+      "actual_margin": -5,
+      "abs_error": 22.62007904910668,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401856636",
+      "kickoff_utc": "2026-09-05T19:30:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.33099537037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 14.44376872736332,
+      "actual_margin": 1,
+      "abs_error": 13.44376872736332,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401858425",
+      "kickoff_utc": "2026-09-05T16:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.185162037037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 25.951942909034265,
+      "actual_margin": 36,
+      "abs_error": 10.048057090965735,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401862700",
+      "kickoff_utc": "2026-09-05T19:30:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.33099537037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 46.60207527505295,
+      "actual_margin": 29,
+      "abs_error": 17.602075275052947,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401858204",
+      "kickoff_utc": "2026-09-03T23:00:00Z",
+      "kickoff_date": "2026-09-03",
+      "snapshot_age_days": 7.476828703703704,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 28.03582461825202,
+      "actual_margin": 22,
+      "abs_error": 6.035824618252018,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401866408",
+      "kickoff_utc": "2026-08-29T22:30:00Z",
+      "kickoff_date": "2026-08-29",
+      "snapshot_age_days": 2.4559953703703705,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 12.38748324038375,
+      "actual_margin": 11,
+      "abs_error": 1.3874832403837498,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401864570",
+      "kickoff_utc": "2026-08-29T23:00:00Z",
+      "kickoff_date": "2026-08-29",
+      "snapshot_age_days": 2.4768287037037036,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 15.488383709013831,
+      "actual_margin": 17,
+      "abs_error": 1.5116162909861686,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401866409",
+      "kickoff_utc": "2026-09-03T23:00:00Z",
+      "kickoff_date": "2026-09-03",
+      "snapshot_age_days": 7.476828703703704,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 31.013587615134316,
+      "actual_margin": 4,
+      "abs_error": 27.013587615134316,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401858431",
+      "kickoff_utc": "2026-09-06T00:00:00Z",
+      "kickoff_date": "2026-09-06",
+      "snapshot_age_days": 9.51849537037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 48.13619057854706,
+      "actual_margin": 16,
+      "abs_error": 32.13619057854706,
+      "margin_interval_hit": null
+    },
+    {
+      "game_id": "401858435",
+      "kickoff_utc": "2026-09-04T23:00:00Z",
+      "kickoff_date": "2026-09-04",
+      "snapshot_age_days": 8.476828703703704,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 39.343316908308736,
+      "actual_margin": 25,
+      "abs_error": 14.343316908308736,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401856778",
+      "kickoff_utc": "2026-09-05T16:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.185162037037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 20.51110716791423,
+      "actual_margin": 13,
+      "abs_error": 7.511107167914229,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401860879",
+      "kickoff_utc": "2026-09-06T01:30:00Z",
+      "kickoff_date": "2026-09-06",
+      "snapshot_age_days": 9.58099537037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 46.77195420999179,
+      "actual_margin": 33,
+      "abs_error": 13.77195420999179,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401866410",
+      "kickoff_utc": "2026-09-05T16:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.185162037037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 32.7303623360314,
+      "actual_margin": -7,
+      "abs_error": 39.7303623360314,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401858429",
+      "kickoff_utc": "2026-09-05T00:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 8.51849537037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 0.7412726580219545,
+      "actual_margin": 10,
+      "abs_error": 9.258727341978046,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401858430",
+      "kickoff_utc": "2026-09-05T16:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.185162037037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 6.850700271441189,
+      "actual_margin": 28,
+      "abs_error": 21.14929972855881,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401856637",
+      "kickoff_utc": "2026-09-05T23:45:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.508078703703704,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 18.015082012361244,
+      "actual_margin": 45,
+      "abs_error": 26.984917987638756,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401864497",
+      "kickoff_utc": "2026-09-06T02:00:00Z",
+      "kickoff_date": "2026-09-06",
+      "snapshot_age_days": 9.601828703703704,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 1.4549765636829914,
+      "actual_margin": -15,
+      "abs_error": 16.45497656368299,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401870763",
+      "kickoff_utc": "2026-09-05T23:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.476828703703704,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 17.350622358174437,
+      "actual_margin": 3,
+      "abs_error": 14.350622358174437,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401858424",
+      "kickoff_utc": "2026-09-04T01:00:00Z",
+      "kickoff_date": "2026-09-04",
+      "snapshot_age_days": 7.560162037037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 20.490415820192492,
+      "actual_margin": 19,
+      "abs_error": 1.4904158201924922,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401856780",
+      "kickoff_utc": "2026-09-05T16:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.185162037037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 17.250121135486957,
+      "actual_margin": 7,
+      "abs_error": 10.250121135486957,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401862695",
+      "kickoff_utc": "2026-09-05T23:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.476828703703704,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 11.899109373611775,
+      "actual_margin": 18,
+      "abs_error": 6.1008906263882245,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401864494",
+      "kickoff_utc": "2026-08-29T19:00:00Z",
+      "kickoff_date": "2026-08-29",
+      "snapshot_age_days": 2.310162037037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 19.853541925295744,
+      "actual_margin": 16,
+      "abs_error": 3.853541925295744,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401864495",
+      "kickoff_utc": "2026-09-04T22:30:00Z",
+      "kickoff_date": "2026-09-04",
+      "snapshot_age_days": 8.45599537037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 10.312593473435538,
+      "actual_margin": -6,
+      "abs_error": 16.312593473435538,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401858201",
+      "kickoff_utc": "2026-08-29T23:00:00Z",
+      "kickoff_date": "2026-08-29",
+      "snapshot_age_days": 2.4768287037037036,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 11.150687756732227,
+      "actual_margin": 10,
+      "abs_error": 1.1506877567322267,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401858433",
+      "kickoff_utc": "2026-09-05T19:30:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.33099537037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 17.122348105857633,
+      "actual_margin": 7,
+      "abs_error": 10.122348105857633,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401862693",
+      "kickoff_utc": "2026-08-30T02:00:00Z",
+      "kickoff_date": "2026-08-30",
+      "snapshot_age_days": 2.6018287037037036,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 10.896313356003395,
+      "actual_margin": -6,
+      "abs_error": 16.896313356003397,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401858212",
+      "kickoff_utc": "2026-09-07T23:30:00Z",
+      "kickoff_date": "2026-09-07",
+      "snapshot_age_days": 11.497662037037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": -9.967876698369857,
+      "actual_margin": -3,
+      "abs_error": 6.967876698369857,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401860880",
+      "kickoff_utc": "2026-09-05T23:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.476828703703704,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 40.29333107549373,
+      "actual_margin": -12,
+      "abs_error": 52.29333107549373,
+      "margin_interval_hit": null
+    },
+    {
+      "game_id": "401858423",
+      "kickoff_utc": "2026-09-03T22:00:00Z",
+      "kickoff_date": "2026-09-03",
+      "snapshot_age_days": 7.435162037037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 41.69856667964856,
+      "actual_margin": -16,
+      "abs_error": 57.69856667964856,
+      "margin_interval_hit": false
+    },
+    {
+      "game_id": "401856661",
+      "kickoff_utc": "2026-09-06T23:30:00Z",
+      "kickoff_date": "2026-09-06",
+      "snapshot_age_days": 10.497662037037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 9.463500160776722,
+      "actual_margin": 3,
+      "abs_error": 6.4635001607767215,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401862694",
+      "kickoff_utc": "2026-09-05T19:30:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 9.33099537037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 31.828524947262764,
+      "actual_margin": -2,
+      "abs_error": 33.828524947262764,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401858210",
+      "kickoff_utc": "2026-09-06T02:30:00Z",
+      "kickoff_date": "2026-09-06",
+      "snapshot_age_days": 9.622662037037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": 7.334431523415141,
+      "actual_margin": -21,
+      "abs_error": 28.33443152341514,
+      "margin_interval_hit": true
+    },
+    {
+      "game_id": "401858206",
+      "kickoff_utc": "2026-09-05T01:00:00Z",
+      "kickoff_date": "2026-09-05",
+      "snapshot_age_days": 8.560162037037037,
+      "graded_from": {
+        "published_at": "2026-08-27T11:33:22Z",
+        "refresh_kind": "daily_refresh"
+      },
+      "mu_margin": -17.189301975342648,
+      "actual_margin": -39,
+      "abs_error": 21.810698024657352,
+      "margin_interval_hit": true
+    }
+  ]
+}

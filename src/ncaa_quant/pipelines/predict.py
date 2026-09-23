@@ -17,6 +17,7 @@ from tenacity import retry, stop_after_attempt, wait_exponential
 
 from ncaa_quant.betting.filters import BetCandidate, FilterReason, evaluate_filters
 from ncaa_quant.config import AppConfig, BettingConfig, load_config
+from ncaa_quant.pipelines.cadence import check_odds_cadence
 from ncaa_quant.pipelines.common import PartitionKey, run_idempotent
 from ncaa_quant.pipelines.notifications import AlertKind, Notifier, build_notifier, notify
 from ncaa_quant.pipelines.stale import (
@@ -423,32 +424,6 @@ class RefreshKind(StrEnum):
     DAILY_REFRESH = "daily_refresh"
     T_MINUS_6H = "t_minus_6h"
     T_MINUS_1H = "t_minus_1h"
-
-
-def check_odds_cadence(
-    *,
-    raw_root: Path | str,
-    expected_per_day: int,
-    tolerance: int,
-    window_hours: int = 24,
-    now: datetime | None = None,
-) -> dict[str, Any]:
-    """Return cadence stats; caller decides whether to alert."""
-    root = Path(raw_root)
-    clock = now if now is not None else datetime.now(tz=UTC)
-    cutoff = clock.timestamp() - window_hours * 3600
-    count = 0
-    if root.is_dir():
-        for path in root.rglob("*.json"):
-            if path.stat().st_mtime >= cutoff:
-                count += 1
-    minimum = max(0, expected_per_day - tolerance)
-    shortfall = count < minimum
-    return {
-        "snapshots_24h": count,
-        "expected_minimum": minimum,
-        "shortfall": shortfall,
-    }
 
 
 def production_week_predictions_path(season: int, week: int) -> Path:

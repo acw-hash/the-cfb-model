@@ -1,5 +1,9 @@
 """Prefect flows for ingestion, training, prediction, and weekly refresh."""
 
+from ncaa_quant.pipelines.cadence import (
+    odds_cadence_watchdog_flow,
+    register_odds_cadence_watchdog,
+)
 from ncaa_quant.pipelines.odds import ingest_odds_flow, serve_ingest_odds
 from ncaa_quant.pipelines.postgame import postgame_ingest_flow
 from ncaa_quant.pipelines.predict import (
@@ -16,8 +20,10 @@ from ncaa_quant.pipelines.weekly import weekly_update_flow
 __all__ = [
     "RefreshKind",
     "ingest_odds_flow",
+    "odds_cadence_watchdog_flow",
     "postgame_ingest_flow",
     "predict_publish_flow",
+    "register_odds_cadence_watchdog",
     "retrain_gate_flow",
     "run_chaos_stale_publish",
     "run_fixture_week_publish",

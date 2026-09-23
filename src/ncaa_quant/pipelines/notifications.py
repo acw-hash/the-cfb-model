@@ -100,7 +100,7 @@ class NtfyNotifier:
             headers["Authorization"] = f"Bearer {self._auth_token}"
         resp = self._client.post(url, content=alert.body.encode("utf-8"), headers=headers)
         resp.raise_for_status()
-        log.info("ntfy_sent", kind=alert.kind, topic=self._topic)
+        log.info("ntfy_sent", kind=alert.kind, topic_set=True)
         return True
 
 
