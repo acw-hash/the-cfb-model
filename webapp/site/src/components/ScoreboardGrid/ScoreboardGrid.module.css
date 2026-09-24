@@ -1,0 +1,32 @@
+/**
+ * Shared This Week scoreboard column template.
+ * Header and GameRow must use the same classes so labels cannot drift.
+ */
+
+.withMarket,
+.modelOnly {
+  display: grid;
+  column-gap: var(--space-3);
+  align-items: center;
+}
+
+/* kick | teams | model margin | model win | tier | rule | market margin | market win */
+.withMarket {
+  grid-template-columns: 4.5rem minmax(0, 1fr) 3.25rem 2.75rem 4.5rem 1px 3.25rem 2.75rem;
+}
+
+.modelOnly {
+  grid-template-columns: 4.5rem minmax(0, 1fr) 3.25rem 2.75rem 4.5rem;
+}
+
+@media (max-width: 640px) {
+  .withMarket {
+    grid-template-columns: minmax(0, 1fr) 3rem 3rem;
+    column-gap: var(--space-2);
+  }
+
+  .modelOnly {
+    grid-template-columns: minmax(0, 1fr) 3rem;
+    column-gap: var(--space-2);
+  }
+}

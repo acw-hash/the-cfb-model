@@ -673,25 +673,45 @@ No team-color theming in v1. No gradient backgrounds.
 
 ### 4.3 Component patterns
 
-**Game row** — scores-app density; forecast column stacks favorite + win chance:
+**Game row** — Apple Sports scoreboard density; unsigned figures beside the favored team:
 ```
-[Kickoff]  Away @ Home
-           Michigan by 4.2
-           68%
-           Lean Michigan · [Revised?]
+[Kickoff]  Away Team                 15.6  85%  Strong │  2.3  54%
+           Home Team                   —    —          │   —    —
 ```
-- Left: kickoff time (local + UTC tooltip)
-- Center: teams (away @ home), B2 weight; neutral-site icon if set
-- Right (forecast column): N1 team-named margin; optional N2 win chance; interval range deferred to Game Detail on This Week (clarity)
-- Below forecast: tier chip, optional revised dot, per-game stale badge on a separate `.meta` row
-- Divider: `--border-subtle`; no card shadow
+- Left (desktop): kickoff **time only** (local; UTC tooltip). Date lives in the day group header.
+- Center: two-line team stack (away / home), T3, ellipsis truncation; neutral-site marker if set
+- Model group: unsigned `|mu_margin|` (N1, weight 600) + favored win % (N2) on the favored team's line; exact 0 → `PK` centered; null → `—` on the home line only
+- Tier: short word from `conviction_tier` (`Strong` / `Clear` / `Lean` / `Toss-up`); Toss-up centered; revised marker beside tier; hidden when suppressed
+- Market group (when odds present): same unsigned placement from `market_home_margin` / de-vigged favorite win %; hairline `--border-subtle` rule separates groups; **no** per-row "MARKET" label; **no** O/U on the list
+- Sticky column headers once under the page chrome: `MODEL · WIN · TIER │ MARKET · WIN` (mobile: `MODEL  MKT`; win % hidden)
+- Legend (C2): "Figures are expected winning margin, shown beside the favored team."
+- Divider: `--border-subtle`; no card shadow; whole row tappable
+- Forbidden: model−market delta, highlight, color, or sort by disagreement
 
-> **AMENDED (clarity, 2026-09-24).** See §4.2 amendment — team-named margins;
-> This Week omits the interval line at phone width.
+> **AMENDED (scoreboard density, 2026-09-24).** Replaces team-named + stacked
+> market column on This Week. Team names appear once per row; numbers sit on
+> the favored team's line. Interval band and O/U remain Game Detail only.
+>
+> **AMENDED (clarity, 2026-09-24).** See §4.2 amendment — team-named margins
+> remain on Game Detail ForecastBlock / plain summary; This Week uses unsigned
+> scoreboard placement above.
+>
+> <details>
+> <summary>Superseded §4.3 game-row sketch (pre-scoreboard)</summary>
+>
+> ```
+> [Kickoff]  Away @ Home
+>            Michigan by 4.2
+>            68%
+>            Lean Michigan · [Revised?]
+> ```
+> Market column (W-ODDS) stacked margin / win / O/U with a per-row "MARKET" label.
+>
+> </details>
 
 **Interval band** — team-named margin; optional quiet range line. No error-bar graphics on This Week. *(W-ODDS exception: Game Detail “Model and market” may use one monochrome margin number line — see §5.2 and ADR-ODDS-SNAPSHOT.)*
 
-**Tier chip** — pill, C1 type; labels from `conviction_label`; Toss-up uses muted fill (`--bg-secondary`).
+**Tier chip** — Game Detail / Results: pill, C1 type; labels from `conviction_label`; Toss-up uses muted fill (`--bg-secondary`). This Week scoreboard uses the short tier word from `conviction_tier` instead of the pill.
 
 **Stale / revised badges** — C1 caps; stale uses `--semantic-stale`; revised uses `--semantic-revised` outline only.
 
@@ -734,16 +754,15 @@ Field-to-artifact mapping is mandatory: nothing on screen without a named source
 | Matchup | `away_team`, `home_team`, `neutral_site` |
 | Headline margin | `mu_margin` |
 | Interval | `margin_interval_lo`, `margin_interval_hi` |
-| Tier chip | `conviction_label` (hidden if null) |
+| Tier (short word) | `conviction_tier` → Strong / Clear / Lean / Toss-up (hidden if null) |
 | Revised dot | `tier_revised_since_primary` |
 | Per-game stale | `stale_stamp` when `is_stale` |
 | Sort/group | Client-side by `kickoff_utc` or `conviction_tier` order |
 | Page-level odds as-of line | `odds_snapshot.snapshot_at`, `odds_snapshot.source.provider` |
-| Market margin (team-named) | `odds_snapshot.games[].market_home_margin` (+ home/away from `week_predictions`) |
-| Market win prob | `odds_snapshot.games[].p_win_home_market` |
-| Market O/U | `odds_snapshot.games[].total_points` |
+| Market margin (unsigned) | `odds_snapshot.games[].market_home_margin` |
+| Market win prob (favorite) | `odds_snapshot.games[].p_win_home_market` (de-vigged; beside market favorite) |
 | Carried-forward label | `odds_snapshot.games[].carried_forward` |
-| Thin / absent market | `null` cells → "—"; `market_thin` |
+| Thin / absent market | `null` → "—" on home line; `market_thin` |
 
 **Empty states:**
 
@@ -753,25 +772,27 @@ Field-to-artifact mapping is mandatory: nothing on screen without a named source
 
 **Stale states:** Site banner per §3.2; per-game STALE badge; suppressed tiers when §2.4 applies. Odds snapshot staleness (30 h label / 72 h hide) is separate from model-input `STALE(odds, …)` and from §2.4 — do not conflate.
 
-**Mobile:** Single-column list; sticky published_at bar; tap row → Game Detail. Market figures sit on a second line under the model column.
+**Mobile (<640px):** Line 0 = time · short tier; lines 1–2 = teams + MODEL margin | MKT margin; win % hidden; sticky header `MODEL  MKT`.
 
-> **AMENDED (clarity, 2026-09-24).** Game rows show team-named favorite + margin
-> (`Texas A&M by 8.9`) and, when credible, the favored team's win chance from
-> `p_win_home`. The interval range is omitted on This Week rows (too long at
-> 390px in team-named form) and lives on Game Detail. A session-dismissible
-> “How to read this” key sits above the slate. Sort/group, stale badges, revised
-> dot, and tier suppression are unchanged.
+> **AMENDED (scoreboard density, 2026-09-24).** Unsigned-beside-favored placement;
+> sticky MODEL/WIN/TIER│MARKET/WIN headers; legend under title; O/U and interval
+> band off the list; kickoff time-only; short tier word from `conviction_tier`.
+>
+> **AMENDED (clarity, 2026-09-24).** Game Detail / summary still use team-named
+> favorite + margin. A session-dismissible “How to read this” key sits above the
+> slate. Sort/group, stale badges, revised marker, and tier suppression are
+> unchanged.
 >
 > **AMENDED (W-ODDS).** When `ODDS_SNAPSHOT_ENABLED` and a fresh
-> `odds_snapshot.json` are present, each row gains a Market column (desktop) /
-> second line (mobile) that visually rhymes with the model column but stays
-> secondary (`--text-secondary`). No sort or filter by model-vs-market
-> disagreement.
+> `odds_snapshot.json` are present, each row gains market figures in the same
+> scoreboard placement (secondary `--text-secondary`). No sort or filter by
+> model-vs-market disagreement. O/U is Game Detail only.
 >
 > <details>
-> <summary>Superseded §5.1 row presentation (pre-clarity)</summary>
+> <summary>Superseded §5.1 row presentation (pre-scoreboard)</summary>
 >
-> Headline margin as signed `mu_margin`; interval `[lo, hi]` on the row.
+> Team-named favorite + margin on the row; stacked Market column with O/U;
+> full kickoff date+time inside each row; `conviction_label` pill chip.
 >
 > </details>
 
@@ -798,17 +819,21 @@ Field-to-artifact mapping is mandatory: nothing on screen without a named source
 
 | UI element | Artifact field |
 |------------|----------------|
-| Comparison table Model \| Market | `mu_margin` / `market_home_margin`; `mu_total` / `total_points`; `p_win_home` / `p_win_home_market` |
-| Consensus spread (C2) | `spread_home_points`, `spread_book_count` |
+| Comparison table Model \| Market | Unsigned `|mu_margin|` / `|market_home_margin|`; `mu_total` / `total_points`; favored win % from `p_win_home` / `p_win_home_market` |
+| Attribution line (always visible) | `source.provider`, `snapshot_at` — `Odds: {provider} · as of {time}` |
+| About these odds (`<details>`, closed) | `consensus_method`, book counts, `spread_home_points`, provider URL, context disclaimer + `/results` link |
 | Margin number line | model interval + μ + market tick — narrow exception to §4.3 “no error-bar graphics” (ADR-ODDS-SNAPSHOT); monochrome; `aria-label` |
-| Footnote | `consensus_method`, `snapshot_at`, book counts, provider attribution, link to `/results` |
 
-σ-suppressed games: model column shows honest absence per §1.8; market still renders.
+σ-suppressed games: model column shows honest absence per §1.8; market still renders. Team names appear once in the matchup header — not repeated inside the table cells.
 
 **Empty/stale:** Missing game → 404. Suppressed σ → hide probability bars; show `null_reason`.
 
 **Mobile:** Vertical stack — margin → model and market → tier → trajectories → provenance.
 
+> **AMENDED (scoreboard density, 2026-09-24).** Model-and-market table uses
+> unsigned margins and favored win %; footnotes collapse behind “About these
+> odds”; attribution stays visible outside the disclosure.
+>
 > **AMENDED (clarity, 2026-09-24).** Lead with a plain-English summary built from
 > `mu_margin`, `p_win_home`, and interval fields (team-named margins; “N in 10”
 > from `margin_interval_nominal`). σ labels use “Typical miss.” Conviction tier
@@ -818,10 +843,10 @@ Field-to-artifact mapping is mandatory: nothing on screen without a named source
 > direction is good (higher `off_epa` / higher `def_epa` = better; see notes/14.md).
 >
 > <details>
-> <summary>Superseded §5.2 presentation (pre-clarity)</summary>
+> <summary>Superseded §5.2 presentation (pre-scoreboard / pre-clarity)</summary>
 >
-> Signed margin μ, σ glyph, Probabilities list with Home win, provenance strip
-> always expanded below the chart.
+> Team-named “Team by n” in Model-and-market cells; always-visible footnote
+> paragraph; signed margin μ, σ glyph, Probabilities list with Home win.
 >
 > </details>
 

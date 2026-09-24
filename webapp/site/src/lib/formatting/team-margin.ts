@@ -57,6 +57,24 @@ export function formatTeamNamedMargin(
   return `${team} by ${magnitude}`;
 }
 
+/**
+ * Unsigned winning margin for scoreboard placement (beside the favored team).
+ * Exact 0 → "PK". Null / non-finite → null (caller shows "—" on the home line).
+ */
+export function formatUnsignedMargin(
+  mu: number | null | undefined,
+  sigma?: number | null,
+): string | null {
+  if (mu == null || !Number.isFinite(mu)) {
+    return null;
+  }
+  if (mu === 0) {
+    return "PK";
+  }
+  const decimals = sigmaDecimalPlaces(sigma ?? null);
+  return clampDecimals(Math.abs(mu), decimals);
+}
+
 /** One interval end as "{Team} by {n}". Zero → "even". */
 export function formatTeamNamedBound(
   value: number,

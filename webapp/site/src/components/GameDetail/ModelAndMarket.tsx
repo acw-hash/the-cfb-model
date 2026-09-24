@@ -3,11 +3,15 @@ import { OddsTimestamp } from "@/components/OddsTimestamp/OddsTimestamp";
 import type { OddsGameView } from "@/lib/odds/types";
 import {
   formatConsensusSpreadBook,
-  formatMarketTeamNamedMargin,
   formatMarketTotal,
+  formatUnsignedMarketMargin,
 } from "@/lib/formatting/market-margin";
-import { formatProbability, formatTotal } from "@/lib/formatting/numbers";
-import { formatTeamNamedMargin } from "@/lib/formatting/team-margin";
+import { ABSENT, formatProbability, formatTotal } from "@/lib/formatting/numbers";
+import {
+  favoredSideFromMargin,
+  favoredWinProbability,
+  formatUnsignedMargin,
+} from "@/lib/formatting/team-margin";
 
 import { MarginNumberLine } from "./MarginNumberLine";
 
@@ -29,8 +33,16 @@ interface ModelAndMarketProps {
   timeZone?: string;
 }
 
+function cellUnsigned(value: string | null): string {
+  if (value == null) {
+    return ABSENT;
+  }
+  return value;
+}
+
 /**
- * Game Detail “Model and market” block — after Margin, before trajectories.
+ * Game Detail “Model and market” block — unsigned figures; team names stay
+ * in the matchup header. Footnotes collapse behind “About these odds”.
  */
 export function ModelAndMarket({
   homeTeam,
@@ -47,19 +59,27 @@ export function ModelAndMarket({
   provider,
   timeZone,
 }: ModelAndMarketProps): React.ReactElement {
-  const modelMargin = formatTeamNamedMargin(muMargin, homeTeam, awayTeam, null, pWinHome) ?? "—";
-  const marketMargin = formatMarketTeamNamedMargin(
-    odds.market_home_margin,
-    homeTeam,
-    awayTeam,
-    odds.p_win_home_market,
-  );
-  const modelTotal = muTotal != null ? (formatTotal(muTotal) ?? "—") : "—";
+  const modelMargin = cellUnsigned(formatUnsignedMargin(muMargin, null));
+  const marketMargin = cellUnsigned(formatUnsignedMarketMargin(odds.market_home_margin));
+  const modelTotal = muTotal != null ? (formatTotal(muTotal) ?? ABSENT) : ABSENT;
   const marketTotal = formatMarketTotal(odds.total_points);
-  const modelWin =
-    pWinHomeCredible && pWinHome != null ? (formatProbability(pWinHome) ?? "—") : "—";
-  const marketWin =
-    odds.p_win_home_market != null ? (formatProbability(odds.p_win_home_market) ?? "—") : "—";
+
+  const modelWinRaw =
+    pWinHomeCredible && pWinHome != null ? favoredWinProbability(muMargin, pWinHome) : null;
+  const modelWin = formatProbability(modelWinRaw) ?? ABSENT;
+
+  const marketSide = favoredSideFromMargin(odds.market_home_margin, odds.p_win_home_market);
+  let marketWin = ABSENT;
+  if (odds.p_win_home_market != null && Number.isFinite(odds.p_win_home_market)) {
+    if (odds.market_home_margin == null || !Number.isFinite(odds.market_home_margin)) {
+      marketWin = formatProbability(odds.p_win_home_market) ?? ABSENT;
+    } else if (marketSide === "away") {
+      marketWin = formatProbability(1 - odds.p_win_home_market) ?? ABSENT;
+    } else {
+      marketWin = formatProbability(odds.p_win_home_market) ?? ABSENT;
+    }
+  }
+
   const bookSpread = formatConsensusSpreadBook(odds.spread_home_points, homeTeam);
 
   return (
@@ -75,9 +95,11 @@ export function ModelAndMarket({
         </thead>
         <tbody>
           <tr>
-            <th scope="row">Expected margin</th>
+            <th scope="row">Margin</th>
             <td>
-              <Figure variant="n1">{modelMargin}</Figure>
+              <Figure variant="n1" className={styles.modelEmphasis}>
+                {modelMargin}
+              </Figure>
             </td>
             <td>
               <Figure variant="n2" className={styles.market}>
@@ -85,16 +107,17 @@ export function ModelAndMarket({
               </Figure>
             </td>
           </tr>
-          {bookSpread ? (
-            <tr className={styles.sub}>
-              <th scope="row" />
-              <td />
-              <td className={styles.note}>
-                Consensus spread: {bookSpread}
-                {odds.spread_book_count > 0 ? ` · ${odds.spread_book_count} books` : ""}
-              </td>
-            </tr>
-          ) : null}
+          <tr>
+            <th scope="row">Win %</th>
+            <td>
+              <Figure variant="n2">{modelWin}</Figure>
+            </td>
+            <td>
+              <Figure variant="n2" className={styles.market}>
+                {marketWin}
+              </Figure>
+            </td>
+          </tr>
           <tr>
             <th scope="row">Total</th>
             <td>
@@ -103,17 +126,6 @@ export function ModelAndMarket({
             <td>
               <Figure variant="n2" className={styles.market}>
                 {marketTotal}
-              </Figure>
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">Win probability (home)</th>
-            <td>
-              <Figure variant="n2">{modelWin}</Figure>
-            </td>
-            <td>
-              <Figure variant="n2" className={styles.market}>
-                {marketWin}
               </Figure>
             </td>
           </tr>
@@ -143,12 +155,29 @@ export function ModelAndMarket({
         </p>
       ) : null}
 
-      <p className={styles.footnote}>
-        Consensus: {consensusMethod.replace(/_/g, " ")}. Snapshot{" "}
-        <OddsTimestamp iso={snapshotAt} timeZone={timeZone} />. {provider} (the-odds-api.com).
-        Consensus figures are shown for context. Ridge does not compare them to its forecasts to
-        suggest wagers — see <a href="/results">Track record</a>.
+      <p className={styles.attribution} data-testid="odds-attribution">
+        Odds: {provider} · as of <OddsTimestamp iso={snapshotAt} timeZone={timeZone} />
       </p>
+
+      <details className={styles.about}>
+        <summary className={styles.aboutSummary}>About these odds</summary>
+        <div className={styles.aboutBody}>
+          {bookSpread ? (
+            <p className={styles.note}>
+              Consensus spread: {bookSpread}
+              {odds.spread_book_count > 0 ? ` · ${odds.spread_book_count} books` : ""}
+              {odds.total_book_count > 0 ? ` · totals ${odds.total_book_count} books` : ""}
+              {odds.h2h_book_count > 0 ? ` · moneyline ${odds.h2h_book_count} books` : ""}
+            </p>
+          ) : null}
+          <p className={styles.footnote}>
+            Consensus: {consensusMethod.replace(/_/g, " ")}. Snapshot{" "}
+            <OddsTimestamp iso={snapshotAt} timeZone={timeZone} />. {provider} (the-odds-api.com).
+            Consensus figures are shown for context. Ridge does not compare them to its forecasts to
+            suggest wagers — see <a href="/results">Track record</a>.
+          </p>
+        </div>
+      </details>
     </section>
   );
 }

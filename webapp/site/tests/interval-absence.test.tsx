@@ -75,8 +75,8 @@ describe("W10-UI — §1.8 honest interval absence", () => {
     expect(html).toContain(muText!.replace(/&/g, "&amp;"));
   });
 
-  it("Game row team names use B2 scale, not T3", () => {
-    expect(GAME_ROW_CSS).toContain("font-size: var(--type-b2-size)");
-    expect(GAME_ROW_CSS).not.toContain("var(--type-t3-size)");
+  it("Game row team names use T3 scale (scoreboard density)", () => {
+    expect(GAME_ROW_CSS).toContain("font-size: var(--type-t3-size)");
+    expect(GAME_ROW_CSS).not.toContain("font-size: var(--type-b2-size)");
   });
 });

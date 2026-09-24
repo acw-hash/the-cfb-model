@@ -51,6 +51,35 @@ export function formatKickoffLocal(
   return { local, utc };
 }
 
+/**
+ * Time-only kickoff for This Week scoreboard rows (date lives in the day group).
+ * UTC string remains available for tooltips.
+ */
+export function formatKickoffTimeOnly(
+  kickoffUtc: string | null | undefined,
+  timeZone?: string,
+): {
+  local: string;
+  utc: string;
+} {
+  if (kickoffUtc == null) {
+    return { local: ABSENT_KICKOFF, utc: ABSENT_KICKOFF };
+  }
+  const date = new Date(kickoffUtc);
+  const local = new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    ...(timeZone != null ? { timeZone } : {}),
+  }).format(date);
+  const utc = new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    timeZone: "UTC",
+    timeZoneName: "short",
+  }).format(date);
+  return { local, utc };
+}
+
 /** Relative time from now to published_at (§3 freshness display). */
 export function formatRelativeAge(iso: string, now: Date = new Date()): string {
   const then = new Date(iso);

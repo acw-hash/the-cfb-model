@@ -1,14 +1,12 @@
 .key {
-  margin: 0;
-  padding: var(--space-2) var(--space-4) var(--space-3);
+  margin: 0 0 var(--space-2);
+  padding: 0 var(--space-4);
   font-size: var(--type-c2-size);
   line-height: var(--type-c2-line);
+  font-weight: var(--type-c2-weight);
   color: var(--text-secondary);
-}
-
-.label {
-  font-weight: var(--type-c1-weight);
-  color: var(--text-secondary);
+  max-width: 40rem;
+  background: transparent;
 }
 
 .dismiss {
@@ -22,4 +20,10 @@
   line-height: inherit;
   cursor: pointer;
   text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  .key {
+    padding: 0 var(--space-3);
+  }
 }

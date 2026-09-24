@@ -10,6 +10,7 @@ import {
   formatTeamNamedInterval,
   formatTeamNamedMargin,
   formatTypicalMiss,
+  formatUnsignedMargin,
   formatWinChanceSentence,
   isCleanTenthNominal,
   nominalAsNIn10,
@@ -31,9 +32,11 @@ describe("formatTeamNamedMargin", () => {
     expect(favoredSideFromMargin(0, 0.49)).toBe("away");
   });
 
-  it("returns null for null margin", () => {
-    expect(formatTeamNamedMargin(null, "A", "B")).toBeNull();
-    expect(formatTeamNamedMargin(undefined, "A", "B")).toBeNull();
+  it("formats unsigned magnitude and PK", () => {
+    expect(formatUnsignedMargin(15.6, 13.8)).toBe("15.6");
+    expect(formatUnsignedMargin(-2.3, null)).toBe("2.3");
+    expect(formatUnsignedMargin(0, 13.8)).toBe("PK");
+    expect(formatUnsignedMargin(null)).toBeNull();
   });
 });
 

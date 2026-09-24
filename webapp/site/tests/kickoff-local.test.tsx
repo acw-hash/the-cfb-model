@@ -10,7 +10,7 @@ import { MatchupHeader } from "@/components/GameDetail/MatchupHeader";
 import { GameRow } from "@/components/GameRow/GameRow";
 import { GradedGameRow } from "@/components/Results/GradedGameRow";
 import type { ResultsSeason, WeekPredictions } from "@/lib/artifacts/types";
-import { formatKickoffLocal } from "@/lib/formatting/time";
+import { formatKickoffLocal, formatKickoffTimeOnly } from "@/lib/formatting/time";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const FIXTURE_DIR = path.resolve(__dirname, "../../fixtures");
@@ -60,6 +60,15 @@ describe("formatKickoffLocal — visitor timezone (W10-FIX)", () => {
 
   it("null kickoff stays absent", () => {
     expect(formatKickoffLocal(null, "America/New_York")).toEqual({ local: "—", utc: "—" });
+    expect(formatKickoffTimeOnly(null, "America/New_York")).toEqual({ local: "—", utc: "—" });
+  });
+
+  it("time-only omits weekday and date", () => {
+    const full = formatKickoffLocal(INDIANA_MARYLAND_KICKOFF, "America/New_York");
+    const time = formatKickoffTimeOnly(INDIANA_MARYLAND_KICKOFF, "America/New_York");
+    expect(time.local).toMatch(/12:00\s*PM/);
+    expect(time.local).not.toMatch(/Sep/);
+    expect(full.local).toContain(time.local);
   });
 });
 
@@ -89,7 +98,10 @@ describe("kickoff surfaces share visitor-local formatting", () => {
     );
     const gradedHtml = renderToStaticMarkup(<GradedGameRow game={graded!} timeZone={tz} />);
 
-    expect(row).toContain(expected);
+    // This Week scoreboard: time only. Detail / Results keep the full local stamp.
+    const timeOnly = formatKickoffTimeOnly(INDIANA_MARYLAND_KICKOFF, tz).local;
+    expect(row).toContain(timeOnly);
+    expect(row).not.toContain(expected);
     expect(detail).toContain(expected);
     expect(gradedHtml).toContain(expected);
     // Visible local text is 12:00 PM; tooltip may still cite 4:00 PM UTC.

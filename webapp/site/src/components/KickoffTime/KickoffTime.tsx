@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 
 import { Figure } from "@/components/Figure/Figure";
-import { formatKickoffLocal } from "@/lib/formatting/time";
+import { formatKickoffLocal, formatKickoffTimeOnly } from "@/lib/formatting/time";
 
 type KickoffFigureVariant = "b2" | "c2";
 
@@ -11,6 +11,11 @@ interface KickoffTimeProps {
   kickoffUtc: string | null | undefined;
   variant?: KickoffFigureVariant;
   className?: string;
+  /**
+   * When true, show time only ("7:30 PM") — This Week scoreboard rows.
+   * Date remains in the day group header; UTC stays in the tooltip.
+   */
+  timeOnly?: boolean;
   /**
    * Viewer IANA timezone. Production omits this and resolves in the browser.
    * Tests pass an explicit zone so SSR markup matches visitor-local output.
@@ -28,6 +33,7 @@ export function KickoffTime({
   kickoffUtc,
   variant = "c2",
   className,
+  timeOnly = false,
   timeZone: timeZoneProp,
   "data-testid": dataTestId,
 }: KickoffTimeProps): React.ReactElement {
@@ -35,7 +41,9 @@ export function KickoffTime({
     () => timeZoneProp ?? Intl.DateTimeFormat().resolvedOptions().timeZone,
     [timeZoneProp],
   );
-  const kickoff = formatKickoffLocal(kickoffUtc, timeZone);
+  const kickoff = timeOnly
+    ? formatKickoffTimeOnly(kickoffUtc, timeZone)
+    : formatKickoffLocal(kickoffUtc, timeZone);
   const title = kickoffUtc == null ? undefined : kickoff.utc;
 
   return (

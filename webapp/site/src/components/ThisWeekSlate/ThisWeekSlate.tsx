@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { GameRow } from "@/components/GameRow/GameRow";
 import { HowToReadKey } from "@/components/HowToReadKey/HowToReadKey";
 import { OddsAsOf } from "@/components/OddsAsOf/OddsAsOf";
+import { SlateColumnHeader } from "@/components/SlateColumnHeader/SlateColumnHeader";
 import { SlateGroupHeader } from "@/components/SlateGroupHeader/SlateGroupHeader";
 import { SortControl } from "@/components/SortControl/SortControl";
 import { TeamSearch } from "@/components/TeamSearch/TeamSearch";
@@ -132,6 +133,7 @@ export function ThisWeekSlate({
           publishedAt={publishedAt}
           refreshKind={refreshKind}
         />
+        <HowToReadKey />
         {odds ? <OddsAsOf odds={odds} timeZone={timeZone} /> : null}
         <div className={styles.controls}>
           <TeamSearch value={query} onChange={handleQuery} onClear={clearQuery} />
@@ -140,8 +142,8 @@ export function ThisWeekSlate({
         <p className={styles.live} aria-live="polite" aria-atomic="true">
           {liveMessage}
         </p>
+        {!showNoMatches ? <SlateColumnHeader showMarket={Boolean(odds)} /> : null}
       </div>
-      <HowToReadKey />
       {showNoMatches ? (
         <p className={styles.noMatches} data-testid="search-no-matches">
           No games match that team.{" "}
@@ -150,7 +152,7 @@ export function ThisWeekSlate({
           </button>
         </p>
       ) : (
-        <div className={styles.slate} data-testid="slate" data-order={order}>
+        <div className={styles.slate} data-testid="slate" data-order={order} role="table">
           {groups.map((group) => (
             <section key={group.id} className={styles.group} data-group={group.id}>
               <SlateGroupHeader label={group.label} />

@@ -39,17 +39,17 @@
   font-weight: var(--type-c1-weight);
 }
 
+.modelEmphasis {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
 .market {
   color: var(--text-secondary);
 }
 
-.sub td,
-.sub th {
-  border-bottom: none;
-  padding-top: 0;
-}
-
 .note {
+  margin: 0 0 var(--space-2);
   color: var(--text-tertiary);
   font-size: var(--type-c2-size);
   line-height: var(--type-c2-line);
@@ -61,12 +61,34 @@
   color: var(--text-tertiary);
 }
 
-.footnote {
+.attribution {
   margin: var(--space-3) 0 0;
   font-size: var(--type-c2-size);
   line-height: var(--type-c2-line);
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
+}
+
+.about {
+  margin: var(--space-2) 0 0;
   max-width: 42rem;
+}
+
+.aboutSummary {
+  font-size: var(--type-c2-size);
+  line-height: var(--type-c2-line);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.aboutBody {
+  margin-top: var(--space-2);
+}
+
+.footnote {
+  margin: 0;
+  font-size: var(--type-c2-size);
+  line-height: var(--type-c2-line);
+  color: var(--text-tertiary);
 }
 
 .footnote a {

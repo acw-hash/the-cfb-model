@@ -7,10 +7,8 @@ import styles from "./HowToReadKey.module.css";
 const SEEN_KEY = "ridge-howto-read-seen";
 
 /**
- * Quiet one-line key above the This Week slate.
- * Session-dismissible like FirstVisitDisclaimer (sessionStorage seen flag).
- * Does not quote enter thresholds as hard floors — hysteresis can hold a tier
- * while the shown win chance sits below the enter band (DESIGN §2.3).
+ * Quiet dismissible C2 line under the This Week title.
+ * Session-dismissible (sessionStorage). Tier / stickiness lives on About.
  */
 export function HowToReadKey(): React.ReactElement | null {
   const [visible, setVisible] = useState(false);
@@ -41,12 +39,8 @@ export function HowToReadKey(): React.ReactElement | null {
 
   return (
     <p className={styles.key} data-testid="how-to-read-key">
-      <span className={styles.label}>How to read this. </span>
-      Each row names the favored team and the predicted margin (&quot;by X&quot; = expected winning
-      margin), then the favored team&apos;s win chance when the model can show one. When market odds
-      are shown, they use the same scale for context — not a bet suggestion. Conviction tiers
-      (Strong lean, Clear lean, Lean, Toss-up) label how decisive the forecast looks. Tiers are
-      sticky: a game near a line keeps its label until the chance moves clearly.{" "}
+      Numbers sit beside the team they favor. Market odds are shown for context, not as bet
+      suggestions.{" "}
       <button
         type="button"
         className={styles.dismiss}

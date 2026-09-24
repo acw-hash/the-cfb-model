@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { DESIGN_TIER_ENTER, TIER_ENTER, tierExplainerSentence } from "@/lib/formatting/tier-copy";
+import {
+  DESIGN_TIER_ENTER,
+  TIER_ENTER,
+  shortTierWord,
+  tierExplainerSentence,
+} from "@/lib/formatting/tier-copy";
 
 describe("TIER_ENTER matches DESIGN §2.2", () => {
   it("does not drift from documented enter thresholds", () => {
@@ -10,6 +15,16 @@ describe("TIER_ENTER matches DESIGN §2.2", () => {
     expect(TIER_ENTER.strong_lean).toBe(0.85);
     expect(TIER_ENTER.clear_lean).toBe(0.7);
     expect(TIER_ENTER.lean).toBe(0.575);
+  });
+});
+
+describe("shortTierWord", () => {
+  it("maps conviction_tier to the short scoreboard word", () => {
+    expect(shortTierWord("strong_lean")).toBe("Strong");
+    expect(shortTierWord("clear_lean")).toBe("Clear");
+    expect(shortTierWord("lean")).toBe("Lean");
+    expect(shortTierWord("toss_up")).toBe("Toss-up");
+    expect(shortTierWord(null)).toBeNull();
   });
 });
 

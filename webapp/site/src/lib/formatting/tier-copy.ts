@@ -1,3 +1,5 @@
+import type { ConvictionTier } from "@/lib/artifacts/types";
+
 /**
  * DESIGN §2.2 enter thresholds — single site source for UI explainers.
  * Source of truth: docs/webapp/DESIGN.md §2.2 (Strong ≥ 0.85, Clear ≥ 0.70,
@@ -10,6 +12,48 @@ export const TIER_ENTER = {
   clear_lean: 0.7,
   lean: 0.575,
 } as const;
+
+/**
+ * Short tier word for This Week scoreboard rows — derived from
+ * `conviction_tier` (artifact field), not by parsing `conviction_label`.
+ * Hidden when tier is null (σ-suppressed).
+ */
+export function shortTierWord(tier: ConvictionTier | null | undefined): string | null {
+  if (tier == null) {
+    return null;
+  }
+  switch (tier) {
+    case "strong_lean":
+      return "Strong";
+    case "clear_lean":
+      return "Clear";
+    case "lean":
+      return "Lean";
+    case "toss_up":
+      return "Toss-up";
+    default:
+      return null;
+  }
+}
+
+/** Aria / spoken form of the short tier ("strong lean", "toss-up"). */
+export function shortTierAria(tier: ConvictionTier | null | undefined): string | null {
+  if (tier == null) {
+    return null;
+  }
+  switch (tier) {
+    case "strong_lean":
+      return "strong lean";
+    case "clear_lean":
+      return "clear lean";
+    case "lean":
+      return "lean";
+    case "toss_up":
+      return "toss-up";
+    default:
+      return null;
+  }
+}
 
 /** Documented §2.2 enter values — tests fail if TIER_ENTER drifts. */
 export const DESIGN_TIER_ENTER = {

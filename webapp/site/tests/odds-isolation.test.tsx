@@ -125,7 +125,11 @@ describe("odds isolation", () => {
       />,
     );
     expect(html).toContain("model-and-market");
-    expect(html).toContain("Texas A&amp;M by 3.5");
+    expect(html).toContain(">3.5<");
+    expect(html).toContain("About these odds");
+    expect(html).toContain('data-testid="odds-attribution"');
+    // Team-named market wording is gone from the comparison table (unsigned only).
+    expect(html).not.toMatch(/Expected margin[\s\S]*Texas A&amp;M by/);
   });
 
   it("carried_forward label", () => {

@@ -151,6 +151,20 @@ Or: Vercel dashboard → Project → Deployments → that URL → **Instant Roll
 2. Redeploy **from main via git push** (GitHub integration). Do **not**
    `vercel deploy --archive` from a working copy for rollback.
 
+## Rollback (scoreboard density UI)
+
+Pre-scoreboard production deployment (Ready immediately before the scoreboard
+density promote on 2026-09-24):
+
+`https://the-cfb-model-22g890fa1-alecs-projects-2eeacfd8.vercel.app`
+
+```bash
+npx vercel rollback https://the-cfb-model-22g890fa1-alecs-projects-2eeacfd8.vercel.app
+```
+
+Or Instant Rollback in the Vercel dashboard to that URL. Prefer rolling the
+site UI this way rather than `--archive` from a working copy.
+
 ## Stale Worker isolate
 
 After any Worker env/var change (`FORCE_SANDBOX`, secrets, `wrangler.toml` vars),

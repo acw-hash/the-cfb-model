@@ -21,6 +21,7 @@ export const HOW_IT_WORKS_TITLE = "How the model works";
 export const HOW_IT_WORKS_PARAGRAPHS_LEAD = [
   "I keep a rating for every team's offense and defense. After each completed game, those ratings update. Early in the season they wobble. By midseason they usually settle.",
   "A second step turns those ratings into a predicted margin (who's favored and by how many points) and a predicted total for both teams combined. Week to week, most of the change comes from the ratings moving.",
+  "Conviction tiers (Strong lean, Clear lean, Lean, Toss-up) label how decisive a forecast looks. Tiers are sticky: a game near a cutoff keeps its label until the chance moves clearly past it.",
 ] as const;
 
 /** Fallback range sentence when no example game / nominal is available. */

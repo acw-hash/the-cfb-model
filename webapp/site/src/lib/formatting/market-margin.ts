@@ -1,5 +1,9 @@
 import { formatProbability, sigmaDecimalPlaces } from "@/lib/formatting/numbers";
-import { favoredSideFromMargin, formatTeamNamedMargin } from "@/lib/formatting/team-margin";
+import {
+  favoredSideFromMargin,
+  formatTeamNamedMargin,
+  formatUnsignedMargin,
+} from "@/lib/formatting/team-margin";
 
 /**
  * Market margin on the same home-minus-away scale as mu_margin.
@@ -19,6 +23,16 @@ export function formatMarketTeamNamedMargin(
     return "Even";
   }
   return formatTeamNamedMargin(marketHomeMargin, homeTeam, awayTeam, null, pWinHomeMarket) ?? "—";
+}
+
+/**
+ * Unsigned market margin for scoreboard / Model-and-market cells.
+ * Null → null (caller places "—" on the home line). Exact 0 → "PK".
+ */
+export function formatUnsignedMarketMargin(
+  marketHomeMargin: number | null | undefined,
+): string | null {
+  return formatUnsignedMargin(marketHomeMargin, null);
 }
 
 /**
