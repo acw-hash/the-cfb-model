@@ -1,4 +1,5 @@
 import { Figure } from "@/components/Figure/Figure";
+import { OddsTimestamp } from "@/components/OddsTimestamp/OddsTimestamp";
 import type { OddsGameView } from "@/lib/odds/types";
 import {
   formatConsensusSpreadBook,
@@ -25,6 +26,7 @@ interface ModelAndMarketProps {
   snapshotAt: string;
   consensusMethod: string;
   provider: string;
+  timeZone?: string;
 }
 
 /**
@@ -43,6 +45,7 @@ export function ModelAndMarket({
   snapshotAt,
   consensusMethod,
   provider,
+  timeZone,
 }: ModelAndMarketProps): React.ReactElement {
   const modelMargin = formatTeamNamedMargin(muMargin, homeTeam, awayTeam, null, pWinHome) ?? "—";
   const marketMargin = formatMarketTeamNamedMargin(
@@ -128,14 +131,23 @@ export function ModelAndMarket({
 
       {odds.carried_forward ? (
         <p className={styles.carried} data-testid="carried-forward-label">
-          Last pre-kickoff snapshot.
+          Last pre-kickoff snapshot
+          {odds.captured_at ? (
+            <>
+              {" · "}
+              <OddsTimestamp iso={odds.captured_at} timeZone={timeZone} />.
+            </>
+          ) : (
+            "."
+          )}
         </p>
       ) : null}
 
       <p className={styles.footnote}>
-        Consensus: {consensusMethod.replace(/_/g, " ")}. Snapshot {snapshotAt}. {provider}{" "}
-        (the-odds-api.com). Consensus figures are shown for context. Ridge does not compare them to
-        its forecasts to suggest wagers — see <a href="/results">Track record</a>.
+        Consensus: {consensusMethod.replace(/_/g, " ")}. Snapshot{" "}
+        <OddsTimestamp iso={snapshotAt} timeZone={timeZone} />. {provider} (the-odds-api.com).
+        Consensus figures are shown for context. Ridge does not compare them to its forecasts to
+        suggest wagers — see <a href="/results">Track record</a>.
       </p>
     </section>
   );

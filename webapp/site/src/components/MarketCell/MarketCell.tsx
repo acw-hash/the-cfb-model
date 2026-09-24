@@ -1,4 +1,5 @@
 import { Figure } from "@/components/Figure/Figure";
+import { OddsTimestamp } from "@/components/OddsTimestamp/OddsTimestamp";
 import type { OddsGameView } from "@/lib/odds/types";
 import {
   formatMarketTeamNamedMargin,
@@ -14,6 +15,28 @@ interface MarketCellProps {
   awayTeam: string;
   /** Desktop: stacked column. Mobile: single compact line. */
   variant?: "desktop" | "mobile";
+  timeZone?: string;
+}
+
+function CarriedForwardLabel({
+  capturedAt,
+  timeZone,
+}: {
+  capturedAt: string | undefined;
+  timeZone?: string;
+}): React.ReactElement {
+  if (!capturedAt) {
+    return (
+      <span className={styles.carried} data-testid="carried-forward-label">
+        Last pre-kickoff snapshot.
+      </span>
+    );
+  }
+  return (
+    <span className={styles.carried} data-testid="carried-forward-label">
+      Last pre-kickoff snapshot · <OddsTimestamp iso={capturedAt} timeZone={timeZone} />.
+    </span>
+  );
 }
 
 /**
@@ -24,6 +47,7 @@ export function MarketCell({
   homeTeam,
   awayTeam,
   variant = "desktop",
+  timeZone,
 }: MarketCellProps): React.ReactElement | null {
   if (!odds) {
     return null;
@@ -38,6 +62,9 @@ export function MarketCell({
   const win = formatMarketWinChance(odds.market_home_margin, odds.p_win_home_market);
   const total = formatMarketTotal(odds.total_points);
   const ou = total === "—" ? "—" : `O/U ${total}`;
+  const carried = odds.carried_forward ? (
+    <CarriedForwardLabel capturedAt={odds.captured_at} timeZone={timeZone} />
+  ) : null;
 
   if (variant === "mobile") {
     return (
@@ -50,9 +77,7 @@ export function MarketCell({
         <Figure variant="n2" className={styles.value}>
           {`${margin} · ${win} · ${ou}`}
         </Figure>
-        {odds.carried_forward ? (
-          <span className={styles.carried}>Last pre-kickoff snapshot.</span>
-        ) : null}
+        {carried}
       </div>
     );
   }
@@ -73,9 +98,7 @@ export function MarketCell({
       <Figure variant="n2" className={styles.value}>
         {ou}
       </Figure>
-      {odds.carried_forward ? (
-        <span className={styles.carried}>Last pre-kickoff snapshot.</span>
-      ) : null}
+      {carried}
     </div>
   );
 }

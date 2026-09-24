@@ -130,3 +130,30 @@ Optional channels: `NTFY_TOPIC` / `NTFY_AUTH_TOKEN`, or
 
 R2 writes use the Worker **binding** (no S3 keys in the Worker). Do not put
 `ODDS_API_KEY` in Vercel.
+
+## Rollback (production odds)
+
+Pre-W-ODDS production deployment (Ready, created before `dcecd89` go-live):
+
+`https://the-cfb-model-fnlw8jpvl-alecs-projects-2eeacfd8.vercel.app`
+
+**Primary** — Instant Rollback to that deployment:
+
+```bash
+npx vercel rollback https://the-cfb-model-fnlw8jpvl-alecs-projects-2eeacfd8.vercel.app
+```
+
+Or: Vercel dashboard → Project → Deployments → that URL → **Instant Rollback**.
+
+**Secondary** — hide odds without rolling the whole site:
+
+1. `npx vercel env rm ODDS_SNAPSHOT_ENABLED production --yes`
+2. Redeploy **from main via git push** (GitHub integration). Do **not**
+   `vercel deploy --archive` from a working copy for rollback.
+
+## Stale Worker isolate
+
+After any Worker env/var change (`FORCE_SANDBOX`, secrets, `wrangler.toml` vars),
+run one authenticated `POST /run` and confirm the response `sandbox` flag and
+write keys (`odds/…` vs `sandbox/odds/…`) before trusting the next cron. A
+stale isolate can briefly keep the previous `FORCE_SANDBOX` value.

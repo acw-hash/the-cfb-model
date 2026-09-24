@@ -25,15 +25,17 @@ this task only. Other FORBIDDEN items unchanged.
 
 ### Rollback (do not run unless needed)
 
-```bash
-cd webapp/site   # or repo root linked to the-cfb-model
-npx vercel env rm ODDS_SNAPSHOT_ENABLED production --yes
-# Or set false instead of remove:
-# npx vercel env add ODDS_SNAPSHOT_ENABLED production --value false --yes --force
-npx vercel deploy --prod --yes --archive=tgz
-```
+Pre-W-ODDS Ready deployment:
+`https://the-cfb-model-fnlw8jpvl-alecs-projects-2eeacfd8.vercel.app`
 
-**Time-to-effect:** Production rebuild typically **1–3 minutes** after `vercel deploy --prod` completes (alias flip). Unsetting the flag without redeploy does **not** hide odds until the next production deployment picks up the env change. Instant hide = redeploy (or promote a prior deployment that lacked the flag).
+**Primary:** `npx vercel rollback https://the-cfb-model-fnlw8jpvl-alecs-projects-2eeacfd8.vercel.app`
+(or dashboard Instant Rollback).
+
+**Secondary:** remove `ODDS_SNAPSHOT_ENABLED` from production, then redeploy from
+**main via git push** — never `--archive` from a working copy.
+
+After any Worker env/var change, verify with one `POST /run` before trusting cron
+(stale-isolate note; see `docs/runbooks/odds_refresh.md`).
 
 ### Still open
 - Cycle (b) ~23:45Z against **live** (carry-forward checks; rollback if fail)

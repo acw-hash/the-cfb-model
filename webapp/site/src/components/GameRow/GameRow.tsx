@@ -83,6 +83,7 @@ export function GameRow({ game, odds, timeZone }: GameRowProps): React.ReactElem
               homeTeam={game.home_team}
               awayTeam={game.away_team}
               variant="mobile"
+              timeZone={timeZone}
             />
           </div>
         ) : null}
@@ -113,6 +114,7 @@ export function GameRow({ game, odds, timeZone }: GameRowProps): React.ReactElem
             homeTeam={game.home_team}
             awayTeam={game.away_team}
             variant="desktop"
+            timeZone={timeZone}
           />
         </div>
       ) : null}

@@ -145,7 +145,8 @@ describe("odds isolation", () => {
     const html = renderToStaticMarkup(
       <GameRow game={sampleGame} odds={odds} timeZone="America/New_York" />,
     );
-    expect(html).toContain("Last pre-kickoff snapshot.");
+    expect(html).toContain("Last pre-kickoff snapshot");
+    expect(html).toContain('data-testid="carried-forward-label"');
   });
 
   it("number line has aria-label", () => {
