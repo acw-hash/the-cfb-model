@@ -1,4 +1,5 @@
 import type { GamePrediction } from "@/lib/artifacts/types";
+import type { OddsGameView, OddsPageContext } from "@/lib/odds/types";
 import {
   MARGIN_INTERVAL_ABSENT_REASON,
   TOTAL_INTERVAL_ABSENT_REASON,
@@ -8,6 +9,7 @@ import { formatTotal, nullReasonFootnote } from "@/lib/formatting/numbers";
 
 import { ForecastBlock } from "./ForecastBlock";
 import { MatchupHeader } from "./MatchupHeader";
+import { ModelAndMarket } from "./ModelAndMarket";
 import { MoreDetail } from "./MoreDetail";
 import { PlainSummary } from "./PlainSummary";
 import { ProvenanceStrip } from "./ProvenanceStrip";
@@ -16,20 +18,34 @@ import { RevisionBlock } from "./RevisionBlock";
 
 import styles from "./GameDetail.module.css";
 
+type OddsMetaFields = {
+  snapshot_at: OddsPageContext["snapshot_at"];
+  provider: OddsPageContext["provider"];
+  consensus_method: OddsPageContext["consensus_method"];
+};
+
 interface GameDetailProps {
   game: GamePrediction;
   homeSeries: RatingPoint[];
   awaySeries: RatingPoint[];
+  odds?: OddsGameView | null;
+  oddsMeta?: OddsMetaFields | null;
 }
 
 /**
- * Full uncertainty presentation for one game (§5.2, clarity).
+ * Full uncertainty presentation for one game (§5.2, clarity + W-ODDS).
  *
  * Cover/over probabilities were withdrawn in schema 1.2.0 (ADR 0015) and are
  * not available to collapse. Win chance lives in the plain summary; provenance
  * sits in More detail.
  */
-export function GameDetail({ game, homeSeries, awaySeries }: GameDetailProps): React.ReactElement {
+export function GameDetail({
+  game,
+  homeSeries,
+  awaySeries,
+  odds = null,
+  oddsMeta = null,
+}: GameDetailProps): React.ReactElement {
   const marginAbsentReason =
     game.margin_interval_lo == null || game.margin_interval_hi == null
       ? (nullReasonFootnote(game.null_reason) ?? MARGIN_INTERVAL_ABSENT_REASON)
@@ -65,6 +81,22 @@ export function GameDetail({ game, homeSeries, awaySeries }: GameDetailProps): R
         awayTeam={game.away_team}
         pWinHome={game.p_win_home}
       />
+      {odds && oddsMeta ? (
+        <ModelAndMarket
+          homeTeam={game.home_team}
+          awayTeam={game.away_team}
+          muMargin={game.mu_margin}
+          marginLo={game.margin_interval_lo}
+          marginHi={game.margin_interval_hi}
+          muTotal={game.mu_total}
+          pWinHome={game.p_win_home}
+          pWinHomeCredible={game.p_win_home_credible}
+          odds={odds}
+          snapshotAt={oddsMeta.snapshot_at}
+          consensusMethod={oddsMeta.consensus_method}
+          provider={oddsMeta.provider}
+        />
+      ) : null}
       <ForecastBlock
         label="Total"
         billing="secondary"
@@ -93,7 +125,7 @@ export function GameDetail({ game, homeSeries, awaySeries }: GameDetailProps): R
           throughWeek={game.week}
         />
       ) : null}
-      <MoreDetail note="Numbers below are model metadata for this publish, not odds lines.">
+      <MoreDetail note="Numbers below are model metadata for this publish.">
         <ProvenanceStrip game={game} />
       </MoreDetail>
     </article>

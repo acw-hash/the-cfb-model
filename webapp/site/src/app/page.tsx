@@ -5,6 +5,7 @@ import { ThisWeekSlate } from "@/components/ThisWeekSlate/ThisWeekSlate";
 import { loadArtifact } from "@/lib/artifacts/loader";
 import { isSchemaVersionSupported } from "@/lib/artifacts/schema-version";
 import type { MetaArtifact, WeekPredictions } from "@/lib/artifacts/types";
+import { loadOddsPageContext } from "@/lib/odds/load";
 import { projectThisWeekGames } from "@/lib/this-week/project";
 import { DEFAULT_SLATE_ORDER } from "@/lib/this-week/sort";
 
@@ -40,6 +41,9 @@ export default async function ThisWeekPage(): Promise<React.ReactElement> {
     return <MaintenanceState />;
   }
 
+  // Odds are optional — never MaintenanceState (ADR-ODDS-SNAPSHOT).
+  const odds = await loadOddsPageContext();
+
   if (week.games.length === 0) {
     return (
       <main className={styles.page} data-testid="this-week-root">
@@ -64,6 +68,7 @@ export default async function ThisWeekPage(): Promise<React.ReactElement> {
         games={projectThisWeekGames(week.games)}
         initialOrder={DEFAULT_SLATE_ORDER}
         syncUrl
+        odds={odds}
       />
     </main>
   );

@@ -1,0 +1,38 @@
+#:schema node_modules/wrangler/config-schema.json
+name = "ridge-odds-refresh"
+main = "src/index.ts"
+compatibility_date = "2024-11-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Cron list — each entry costs ~3 Odds API credits (markets × regions).
+# Add e.g. "0 15 * * 6" for Saturday 15:00 UTC without code changes.
+[triggers]
+crons = ["0 13 * * *"]
+
+# Bind to the same R2 bucket as Ridge artifacts (ridge-artifacts / preview).
+# Override via `wrangler.toml` local vars or `wrangler deploy --env …`.
+[[r2_buckets]]
+binding = "ARTIFACTS"
+bucket_name = "ridge-artifacts"
+preview_bucket_name = "ridge-artifacts"
+
+[vars]
+# Supported predictions schema major (live meta is 1.x).
+SUPPORTED_SCHEMA_MAJOR = "1"
+# Floor for x-requests-remaining before alerting.
+ODDS_REQUESTS_REMAINING_FLOOR = "100"
+# Live writes to odds/ + latest/odds_snapshot.json. Set "true" only for sandbox
+# rehearsals. Operator L7 gate overridden 2026-09-24 for production go-live.
+FORCE_SANDBOX = "false"
+
+# Secrets (wrangler secret put …):
+#   ODDS_API_KEY
+#   WEBAPP_REVALIDATE_SECRET
+#   VERCEL_AUTOMATION_BYPASS_SECRET
+#   MANUAL_RUN_SECRET
+#   NTFY_TOPIC (optional)
+#   NTFY_SERVER (optional, default https://ntfy.sh)
+#   NTFY_AUTH_TOKEN (optional)
+#   TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID (optional)
+#   PREVIEW_REVALIDATE_URL  — Phase 3 sandbox → preview /api/revalidate
+#   WEBAPP_REVALIDATE_URL   — production only; leave unset until L7 live flip

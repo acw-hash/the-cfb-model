@@ -42,10 +42,11 @@ export function HowToReadKey(): React.ReactElement | null {
   return (
     <p className={styles.key} data-testid="how-to-read-key">
       <span className={styles.label}>How to read this. </span>
-      Each row names the favored team and the predicted margin, then the favored team&apos;s win
-      chance when the model can show one. Conviction tiers (Strong lean, Clear lean, Lean, Toss-up)
-      label how decisive the forecast looks. Tiers are sticky: a game near a line keeps its label
-      until the chance moves clearly.{" "}
+      Each row names the favored team and the predicted margin (&quot;by X&quot; = expected winning
+      margin), then the favored team&apos;s win chance when the model can show one. When market odds
+      are shown, they use the same scale for context — not a bet suggestion. Conviction tiers
+      (Strong lean, Clear lean, Lean, Toss-up) label how decisive the forecast looks. Tiers are
+      sticky: a game near a line keeps its label until the chance moves clearly.{" "}
       <button
         type="button"
         className={styles.dismiss}

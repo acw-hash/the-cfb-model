@@ -1,10 +1,12 @@
 import { Figure } from "@/components/Figure/Figure";
 import { IntervalBand } from "@/components/IntervalBand/IntervalBand";
 import { KickoffTime } from "@/components/KickoffTime/KickoffTime";
+import { MarketCell } from "@/components/MarketCell/MarketCell";
 import { RevisedMarker } from "@/components/RevisedMarker/RevisedMarker";
 import { StaleBadge } from "@/components/StaleBadge/StaleBadge";
 import { TierChip } from "@/components/TierChip/TierChip";
 import type { GamePrediction, ThisWeekGame } from "@/lib/artifacts/types";
+import type { OddsGameView } from "@/lib/odds/types";
 import { formatProbability } from "@/lib/formatting/numbers";
 import { favoredWinProbability } from "@/lib/formatting/team-margin";
 
@@ -34,6 +36,8 @@ type GameRowModel = Pick<
 
 interface GameRowProps {
   game: GameRowModel | GamePrediction;
+  /** Optional market snapshot for this game (ODDS_SNAPSHOT_ENABLED). */
+  odds?: OddsGameView | null;
   /** Test injection — production resolves visitor TZ inside KickoffTime. */
   timeZone?: string;
 }
@@ -46,13 +50,14 @@ function rowWinChance(game: GameRowModel | GamePrediction): string | null {
   return formatProbability(pFav);
 }
 
-/** Scores-app density game row (§4.3, clarity). */
-export function GameRow({ game, timeZone }: GameRowProps): React.ReactElement {
+/** Scores-app density game row (§4.3, clarity + W-ODDS market column). */
+export function GameRow({ game, odds, timeZone }: GameRowProps): React.ReactElement {
   const matchup = `${game.away_team} @ ${game.home_team}`;
   const winChance = rowWinChance(game);
+  const showMarket = Boolean(odds);
 
   return (
-    <article className={styles.row}>
+    <article className={showMarket ? styles.rowWithMarket : styles.row} data-testid="game-row">
       <div className={styles.kickoff}>
         <KickoffTime
           kickoffUtc={game.kickoff_utc}
@@ -71,6 +76,16 @@ export function GameRow({ game, timeZone }: GameRowProps): React.ReactElement {
             </span>
           ) : null}
         </h3>
+        {showMarket ? (
+          <div className={styles.marketMobile}>
+            <MarketCell
+              odds={odds}
+              homeTeam={game.home_team}
+              awayTeam={game.away_team}
+              variant="mobile"
+            />
+          </div>
+        ) : null}
       </div>
 
       <div className={styles.right}>
@@ -90,6 +105,17 @@ export function GameRow({ game, timeZone }: GameRowProps): React.ReactElement {
           <StaleBadge staleStamp={game.stale_stamp} sources={game.stale_sources} />
         </div>
       </div>
+
+      {showMarket ? (
+        <div className={styles.marketDesktop}>
+          <MarketCell
+            odds={odds}
+            homeTeam={game.home_team}
+            awayTeam={game.away_team}
+            variant="desktop"
+          />
+        </div>
+      ) : null}
     </article>
   );
 }

@@ -1,0 +1,7 @@
+.sandbox-seed/
+node_modules/
+.wrangler/
+dist/
+.dev.vars
+.cf-deploy.env
+*.log

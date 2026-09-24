@@ -7,6 +7,7 @@ import { isSchemaVersionSupported } from "@/lib/artifacts/schema-version";
 import type { TeamRatings, WeekPredictions } from "@/lib/artifacts/types";
 import { lookupTeam, seriesForTeam } from "@/lib/game-detail/ratings";
 import { projectGameDetailGame } from "@/lib/game-detail/project";
+import { loadOddsPageContext } from "@/lib/odds/load";
 
 /**
  * ISR fallback 6h (§3) — same as This Week. Primary freshness is on-demand
@@ -83,11 +84,24 @@ export default async function GamePage({ params }: GamePageProps): Promise<React
     awaySeries = [];
   }
 
+  const oddsCtx = await loadOddsPageContext();
+  const oddsGame = oddsCtx?.byGameId[game.game_id] ?? null;
+
   return (
     <GameDetail
       game={projectGameDetailGame(game)}
       homeSeries={homeSeries}
       awaySeries={awaySeries}
+      odds={oddsGame}
+      oddsMeta={
+        oddsCtx
+          ? {
+              snapshot_at: oddsCtx.snapshot_at,
+              provider: oddsCtx.provider,
+              consensus_method: oddsCtx.consensus_method,
+            }
+          : null
+      }
     />
   );
 }

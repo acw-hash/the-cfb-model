@@ -5,11 +5,13 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { GameRow } from "@/components/GameRow/GameRow";
 import { HowToReadKey } from "@/components/HowToReadKey/HowToReadKey";
+import { OddsAsOf } from "@/components/OddsAsOf/OddsAsOf";
 import { SlateGroupHeader } from "@/components/SlateGroupHeader/SlateGroupHeader";
 import { SortControl } from "@/components/SortControl/SortControl";
 import { TeamSearch } from "@/components/TeamSearch/TeamSearch";
 import { ThisWeekHeader } from "@/components/ThisWeekHeader/ThisWeekHeader";
 import type { RefreshKind } from "@/lib/artifacts/types";
+import type { OddsPageContext } from "@/lib/odds/types";
 import { filterGamesByQuery, parseSearchQuery } from "@/lib/this-week/search";
 import {
   DEFAULT_SLATE_ORDER,
@@ -30,6 +32,8 @@ interface ThisWeekSlateProps {
   initialOrder?: SlateOrder;
   /** When true (This Week route), order and query mirror to the URL without a refetch. */
   syncUrl?: boolean;
+  /** Optional odds snapshot context (ODDS_SNAPSHOT_ENABLED). */
+  odds?: OddsPageContext | null;
 }
 
 function writeOrderToUrl(order: SlateOrder): void {
@@ -66,6 +70,7 @@ export function ThisWeekSlate({
   games,
   initialOrder = DEFAULT_SLATE_ORDER,
   syncUrl = false,
+  odds = null,
 }: ThisWeekSlateProps): React.ReactElement {
   const [order, setOrder] = useState<SlateOrder>(initialOrder);
   const [query, setQuery] = useState("");
@@ -127,6 +132,7 @@ export function ThisWeekSlate({
           publishedAt={publishedAt}
           refreshKind={refreshKind}
         />
+        {odds ? <OddsAsOf odds={odds} timeZone={timeZone} /> : null}
         <div className={styles.controls}>
           <TeamSearch value={query} onChange={handleQuery} onClear={clearQuery} />
           <SortControl value={order} onChange={handleOrder} />
@@ -150,7 +156,7 @@ export function ThisWeekSlate({
               <SlateGroupHeader label={group.label} />
               {group.games.map((game) => (
                 <Link key={game.game_id} href={`/game/${game.game_id}`} className={styles.rowLink}>
-                  <GameRow game={game} />
+                  <GameRow game={game} odds={odds?.byGameId[game.game_id] ?? null} />
                 </Link>
               ))}
             </section>

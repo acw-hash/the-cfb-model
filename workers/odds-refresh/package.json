@@ -1,0 +1,23 @@
+{
+  "name": "ridge-odds-refresh",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "export-team-map": "node scripts/export-team-map.mjs",
+    "dev:scheduled": "wrangler dev --test-scheduled",
+    "sandbox:live": "tsx scripts/sandbox-live-run.ts"
+  },
+  "devDependencies": {
+    "@aws-sdk/client-s3": "^3.787.0",
+    "@cloudflare/workers-types": "^4.20250417.0",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.3",
+    "vitest": "^3.0.9",
+    "wrangler": "4.14.4",
+    "yaml": "^2.7.1"
+  }
+}

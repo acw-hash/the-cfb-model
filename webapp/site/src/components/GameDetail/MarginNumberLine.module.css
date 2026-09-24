@@ -1,0 +1,67 @@
+.wrap {
+  margin: var(--space-4) 0 var(--space-2);
+  max-width: 36rem;
+}
+
+.axis {
+  position: relative;
+  height: 28px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.bracket {
+  position: absolute;
+  top: 10px;
+  height: 2px;
+  background: var(--text-secondary);
+  opacity: 0.55;
+}
+
+.bracket::before,
+.bracket::after {
+  content: "";
+  position: absolute;
+  top: -4px;
+  width: 1px;
+  height: 10px;
+  background: var(--text-secondary);
+  opacity: 0.7;
+}
+
+.bracket::before {
+  left: 0;
+}
+
+.bracket::after {
+  right: 0;
+}
+
+.mu {
+  position: absolute;
+  top: 6px;
+  width: 8px;
+  height: 8px;
+  margin-left: -4px;
+  border-radius: 50%;
+  background: var(--text-primary);
+}
+
+.market {
+  position: absolute;
+  top: 4px;
+  width: 8px;
+  height: 8px;
+  margin-left: -4px;
+  border-radius: 50%;
+  border: 1.5px solid var(--text-secondary);
+  background: transparent;
+}
+
+.ends {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--space-1);
+  font-size: var(--type-c2-size);
+  line-height: var(--type-c2-line);
+  color: var(--text-tertiary);
+}

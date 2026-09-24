@@ -4,7 +4,7 @@
 **Status:** W0 — spec only; no application code in this task  
 **Authority:** Parent system spec is `docs/DESIGN.md`; this document governs the public webapp only.
 
-Ridge is a read-only view over `predict_publish` outputs. It is **not** a betting-recommendations product: no picks, no lines, no edge claims, anywhere on the site or in its artifacts.
+Ridge is a read-only view over `predict_publish` outputs (plus a separate daily odds snapshot). It is **not** a betting-recommendations product: no picks, no edges, no wager CTAs. Consensus sportsbook odds may appear for context only via `odds_snapshot.json` (ADR-ODDS-SNAPSHOT).
 
 ---
 
@@ -23,8 +23,9 @@ Evidence for current backend shapes is recorded in `docs/notes/webapp-spec.md` (
 | `results_<season>.json` | Graded completed games for one season | After each postgame ingest + grade export |
 | `track_record.json` | Aggregate evaluation metrics (23-readout) | On promotion or quarterly refresh |
 | `team_ratings_<season>.json` | Stage-1 rating trajectories | Weekly (Sun 06:00) + on publish |
+| `odds_snapshot.json` | Current-week consensus market odds (schema `1.0.0`, independent) | Daily Worker cron (≈13:00 UTC) + manual `POST /run` |
 
-All files share the same `published_at` ISO-8601 UTC timestamp for a given publish generation. Object keys are versioned: `v{schema_version}/{season}/w{week}/{refresh_kind}/week_predictions.json` plus an `latest/` alias symlinked by the push script.
+Publish artifacts (`meta`, `week_predictions`, `results_*`, `track_record`, `team_ratings_*`) share the same `published_at` ISO-8601 UTC timestamp for a given publish generation. Object keys are versioned: `v{schema_version}/{season}/w{week}/{refresh_kind}/week_predictions.json` plus an `latest/` alias symlinked by the push script. The odds snapshot has its **own** `snapshot_at` and is **not** part of a publish generation — an odds refresh must not create a publish-history line or a pre-kickoff snapshot for `grade_export` (ADR-ODDS-SNAPSHOT).
 
 ### 1.2 `week_predictions.json`
 
@@ -110,7 +111,7 @@ Top-level object:
 
 **FBS scope:** all scheduled FBS games for the target `(season, week)` — regular season and postseason FBS matchups. FCS opponents appear as the away/home team name but the game is included when it is on the FBS schedule ingest (`classification=fbs`).
 
-**Odds API / market-number exclusion:** no spread, total, moneyline, book, or market-implied field appears in this contract. Cover and over probabilities (`p_ats_home` / `p_ou_over`) **are** computed against the CFBD closing spread and total (median of staged `lines_historical` where `line_type == "close"`; see `_lookup_closes` and `spread_cover_probs`). Those quantities and the `ats_close` / `ou_close` calibrators remain **internal only** — they are not present in published artifacts as of schema **1.2.0**. ADR 0015. A name-based field diff cannot detect an invertible leak from (`μ`, `σ`, close-conditional `p`); withdrawal is the control.
+**Odds API / market-number exclusion (narrowed):** no spread, total, moneyline, book, or market-implied field appears in `week_predictions.json` or any other *publish* artifact. Cover and over probabilities (`p_ats_home` / `p_ou_over`) **are** computed against the CFBD closing spread and total (median of staged `lines_historical` where `line_type == "close"`; see `_lookup_closes` and `spread_cover_probs`). Those quantities and the `ats_close` / `ou_close` calibrators remain **internal only** — they are not present in published artifacts as of schema **1.2.0**. ADR 0015. A name-based field diff cannot detect an invertible leak from (`μ`, `σ`, close-conditional `p`); withdrawal is the control. **Consensus sportsbook odds for the current week may appear on Ridge only via the separate `odds_snapshot.json` artifact** (ADR-ODDS-SNAPSHOT). That file is produced by the odds-refresh Worker, not by `predict_publish`, and must never be merged into `week_predictions`.
 
 **Withdrawn (1.2.0):** `p_cover_home`, `p_cover_home_credible`, `p_over`, `p_over_credible`. Pipeline columns `p_ats_home` / `p_ou_over` are unchanged. `p_win_home` is retained (no line).
 
@@ -492,12 +493,17 @@ flowchart LR
     PU[R2 push]
     PP --> EX --> PU
   end
+  subgraph odds_worker["Cloudflare Worker (cron)"]
+    CR[odds-refresh]
+  end
   subgraph cloud["Public edge"]
     R2[(Cloudflare R2)]
     NX[Next.js on Vercel]
     R2 -->|HTTPS GET| NX
   end
   PU -->|S3 API write| R2
+  CR -->|R2 binding write odds keys| R2
+  CR -->|POST /api/revalidate| NX
   User([Visitor]) --> NX
 ```
 
@@ -508,6 +514,7 @@ flowchart LR
 3. **`r2_push`** — uploads to R2 with `latest/` pointers; POST Vercel **on-demand revalidation** webhook (secret in workstation `.env` only).
 4. **Next.js** — Server Components fetch from R2 public URL (or Cloudflare Worker proxy if bucket is private-with-signed-edge); cache with ISR.
 5. **Pages** render read-only views; no mutation endpoints in v1.
+6. **Daily ≈13:00 UTC** — Cloudflare Worker `odds-refresh` reads `latest/meta.json` + `latest/week_predictions.json`, calls The Odds API once (~3 credits), writes `odds/…` + `latest/odds_snapshot.json` (or `sandbox/` when fixture/offseason), then POSTs `/api/revalidate` with Bearer **and** `x-vercel-protection-bypass` (W7 lesson). An odds refresh is not a publish.
 
 **Site suite (W9-1):** GitHub Actions `.github/workflows/site.yml` runs `npm ci`, `npm run typecheck`, `npm run lint`, `npm run test`, `npm run build` on every push and PR that touches `webapp/site/**`. Vercel `buildCommand` is `npm run guard` (typecheck + lint + test + `next build`). A failing guard fails the deploy, not only a local run. `installCommand` is `npm ci`.
 
@@ -538,11 +545,14 @@ flowchart LR
 |-------|----------|-------|
 | R2 bucket objects (JSON) | **Private**; server-side credentialed read (SigV4) | No public object URLs. Next.js Server Components fetch with read-only R2 API credentials in Vercel server env. World-readable public-read is **not** the live posture. |
 | Vercel app | **Public** (operator-accepted for launch readiness) | Static + SSR; env vars = R2 read credentials + revalidation secret (server-only). `noindex` via `X-Robots-Tag` + `robots.ts`. |
-| R2 write credential | **Workstation only** | Never in Vercel, never in git |
+| R2 write credential (publish artifacts) | **Workstation only** | Never in Vercel, never in git |
+| R2 write (odds keys) | **Worker R2 binding**, code-allowlisted to `odds/`, `latest/odds_snapshot.json`, `sandbox/` | Must not write `week_predictions`, `meta`, `results_*`, `publish_history/` |
 | MLflow UI | **Never public** | DESIGN §10; localhost bind |
 | Prefect UI | **Never public** | DESIGN §10 |
 | Workstation / DuckDB / Parquet | **Never public** | No inbound ports |
-| CFBD / Odds API keys | **Workstation only** | Webapp consumes zero credits (§3.5) |
+| CFBD API key | **Workstation only** | Unchanged |
+| Odds API key | **Workstation *and* Worker secret `ODDS_API_KEY`** | Never in Vercel / Next.js. Webapp still consumes zero Odds credits (§3.5) |
+| Revalidate secret | Workstation + Worker (`WEBAPP_REVALIDATE_SECRET`) | Worker also sends `x-vercel-protection-bypass` |
 
 #### Public-read R2 — DEFERRED
 
@@ -563,9 +573,11 @@ Cross-reference: CFBD Terms §2 (API key stays server-side, never in a public re
 | Vercel Hobby | 100 GB bandwidth / mo | Excess bandwidth | < 5 GB/mo at launch |
 | Vercel ISR / functions | 100 GB-hrs compute | Heavy SSR | Minimal (mostly static) |
 | Cloudflare R2 storage | 10 GB | > 10 GB stored | < 500 MB (JSON seasons) |
-| R2 Class A ops | 10 M / mo | Writes | ~100 pushes/mo |
+| R2 Class A ops | 10 M / mo | Writes | ~100 pushes/mo + ~2 Worker odds objects/day |
 | R2 Class B ops | 1 M / mo | Reads | ~50k reads/mo at moderate traffic |
 | R2 egress | Free to internet | — | $0 |
+| Cloudflare Workers (cron) | 100k req/day class | Paid plan | 1–2 scheduled runs/day + rare manual |
+| The Odds API (Worker) | Plan quota | Overage | ~3 credits/day per cron entry (`markets×regions`) |
 
 **Hard ceiling: $20/mo.** Turn-off order if approached:
 
@@ -578,12 +590,14 @@ At forecast-only traffic, the architecture remains **~$0/mo** on free tiers.
 
 ### 3.5 Zero-credit confirmation
 
-The webapp **consumes no CFBD or Odds API credits**. All flows:
+The **Next.js webapp** consumes no CFBD or Odds API credits. All webapp flows:
 
 - `predict_publish` → workstation ingestion (CFBD/Odds) — **private, not called by Ridge**
 - `artifact_export` → reads local Parquet/DuckDB — **private**
 - `r2_push` → S3 write — **no CFBD/Odds**
 - Next.js → HTTP GET R2 JSON — **no CFBD/Odds**
+
+Odds API spend for the public snapshot is incurred **only** by the Cloudflare odds-refresh Worker (~3 credits per scheduled run with `markets=h2h,spreads,totals&regions=us`). Vercel env must never hold `ODDS_API_KEY`.
 
 Schedule/score facts in artifacts are **pre-computed** on the workstation from historical ingests. The CFBD terms-of-use question for *public display* of those facts is flagged in §6 — it is a legal review item, not a technical credit question.
 
@@ -675,7 +689,7 @@ No team-color theming in v1. No gradient backgrounds.
 > **AMENDED (clarity, 2026-09-24).** See §4.2 amendment — team-named margins;
 > This Week omits the interval line at phone width.
 
-**Interval band** — team-named margin; optional quiet range line. No error-bar graphics.
+**Interval band** — team-named margin; optional quiet range line. No error-bar graphics on This Week. *(W-ODDS exception: Game Detail “Model and market” may use one monochrome margin number line — see §5.2 and ADR-ODDS-SNAPSHOT.)*
 
 **Tier chip** — pill, C1 type; labels from `conviction_label`; Toss-up uses muted fill (`--bg-secondary`).
 
@@ -724,6 +738,12 @@ Field-to-artifact mapping is mandatory: nothing on screen without a named source
 | Revised dot | `tier_revised_since_primary` |
 | Per-game stale | `stale_stamp` when `is_stale` |
 | Sort/group | Client-side by `kickoff_utc` or `conviction_tier` order |
+| Page-level odds as-of line | `odds_snapshot.snapshot_at`, `odds_snapshot.source.provider` |
+| Market margin (team-named) | `odds_snapshot.games[].market_home_margin` (+ home/away from `week_predictions`) |
+| Market win prob | `odds_snapshot.games[].p_win_home_market` |
+| Market O/U | `odds_snapshot.games[].total_points` |
+| Carried-forward label | `odds_snapshot.games[].carried_forward` |
+| Thin / absent market | `null` cells → "—"; `market_thin` |
 
 **Empty states:**
 
@@ -731,9 +751,9 @@ Field-to-artifact mapping is mandatory: nothing on screen without a named source
 - **No games:** Empty `games[]` → "No FBS games scheduled this week."
 - **Pre-first-publish:** Missing `latest/` → "Opening week forecasts publish Tuesday 06:00 UTC."
 
-**Stale states:** Site banner per §3.2; per-game STALE badge; suppressed tiers when §2.4 applies.
+**Stale states:** Site banner per §3.2; per-game STALE badge; suppressed tiers when §2.4 applies. Odds snapshot staleness (30 h label / 72 h hide) is separate from model-input `STALE(odds, …)` and from §2.4 — do not conflate.
 
-**Mobile:** Single-column list; sticky published_at bar; tap row → Game Detail.
+**Mobile:** Single-column list; sticky published_at bar; tap row → Game Detail. Market figures sit on a second line under the model column.
 
 > **AMENDED (clarity, 2026-09-24).** Game rows show team-named favorite + margin
 > (`Texas A&M by 8.9`) and, when credible, the favored team's win chance from
@@ -741,6 +761,12 @@ Field-to-artifact mapping is mandatory: nothing on screen without a named source
 > 390px in team-named form) and lives on Game Detail. A session-dismissible
 > “How to read this” key sits above the slate. Sort/group, stale badges, revised
 > dot, and tier suppression are unchanged.
+>
+> **AMENDED (W-ODDS).** When `ODDS_SNAPSHOT_ENABLED` and a fresh
+> `odds_snapshot.json` are present, each row gains a Market column (desktop) /
+> second line (mobile) that visually rhymes with the model column but stays
+> secondary (`--text-secondary`). No sort or filter by model-vs-market
+> disagreement.
 >
 > <details>
 > <summary>Superseded §5.1 row presentation (pre-clarity)</summary>
@@ -757,6 +783,7 @@ Field-to-artifact mapping is mandatory: nothing on screen without a named source
 |------------|----------------|
 | Matchup header | `home_team`, `away_team`, `kickoff_utc`, `neutral_site` |
 | Margin block | `mu_margin`, `sigma_margin`, interval fields |
+| Model and market block | See below (W-ODDS) |
 | Total block (secondary) | `mu_total`, `sigma_total`, total interval |
 | Win probability | `p_win_home`, `p_win_home_credible` |
 | Tier | `conviction_label`, `conviction_basis` |
@@ -767,9 +794,20 @@ Field-to-artifact mapping is mandatory: nothing on screen without a named source
 | Null reason | `null_reason` |
 | Rating trajectories | `team_ratings_<season>.teams[home_team_id].weeks`, same for away |
 
+**Model and market block** (after Margin, before trajectories; gated by `ODDS_SNAPSHOT_ENABLED`):
+
+| UI element | Artifact field |
+|------------|----------------|
+| Comparison table Model \| Market | `mu_margin` / `market_home_margin`; `mu_total` / `total_points`; `p_win_home` / `p_win_home_market` |
+| Consensus spread (C2) | `spread_home_points`, `spread_book_count` |
+| Margin number line | model interval + μ + market tick — narrow exception to §4.3 “no error-bar graphics” (ADR-ODDS-SNAPSHOT); monochrome; `aria-label` |
+| Footnote | `consensus_method`, `snapshot_at`, book counts, provider attribution, link to `/results` |
+
+σ-suppressed games: model column shows honest absence per §1.8; market still renders.
+
 **Empty/stale:** Missing game → 404. Suppressed σ → hide probability bars; show `null_reason`.
 
-**Mobile:** Vertical stack — margin → tier → trajectories → provenance.
+**Mobile:** Vertical stack — margin → model and market → tier → trajectories → provenance.
 
 > **AMENDED (clarity, 2026-09-24).** Lead with a plain-English summary built from
 > `mu_margin`, `p_win_home`, and interval fields (team-named margins; “N in 10”
@@ -872,7 +910,7 @@ Field-to-artifact mapping is mandatory: nothing on screen without a named source
 
 ### 6.1 Site-wide disclaimer (draft)
 
-> **Ridge** publishes automated college football **forecasts with uncertainty** from a private statistical model. These are **not** betting recommendations. Ridge does not publish sportsbook lines, implied edges, suggested wagers, or expected profits. Forecasts can be wrong. Past interval hit rates and track-record metrics do not guarantee future performance. For entertainment and informational purposes only. © {year} Ridge.
+> **Ridge** publishes automated college football **forecasts with uncertainty** from a private statistical model. These are **not** betting recommendations. Ridge shows a daily snapshot of sportsbook consensus odds for context. It does not compare them to its forecasts to suggest wagers, and does not publish picks, edges, or expected profits. Forecasts can be wrong. Past interval hit rates and track-record metrics do not guarantee future performance. For entertainment and informational purposes only. © {year} Ridge.
 
 ### 6.2 Responsible gambling copy (US audience)
 
@@ -888,8 +926,9 @@ Field-to-artifact mapping is mandatory: nothing on screen without a named source
 | L4 | **Privacy / analytics posture** | v1: no third-party analytics by default. If added, cookie/consent review required. Vercel request logs only. |
 | L5 | **Age gating** | No age verification in v1; responsible-gambling link present. Whether sufficient is a legal question. |
 | L6 | **Accessibility** | WCAG 2.1 AA target for public site; not verified in W0. |
+| L7 | **Sportsbook odds display** | Public display of The Odds API consensus odds (no individual book names, logos, prices, or affiliate links). Confirm: (a) Odds API display terms satisfied by optional attribution + non-resale posture; (b) state-level gambling-adjacent content rules for an informational forecasting site that now surfaces sportsbook consensus numbers; (c) whether responsible-gambling copy (§6.2) remains sufficient. **Status: OPEN — production `ODDS_SNAPSHOT_ENABLED=true` blocked until sign-off.** |
 
-**These items are flagged, not resolved.** Launch blocked on human/legal sign-off for L1–L3 at minimum.
+**These items are flagged, not resolved.** Launch blocked on human/legal sign-off for L1–L3 at minimum. Production odds display additionally blocked on **L7**.
 
 ---
 

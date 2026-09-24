@@ -31,10 +31,11 @@ export const WHAT_RIDGE_WONT_SHOW_TITLE = "What Ridge won't show you";
 
 /**
  * Explicit exception to the betting-language grep gate: this section states
- * the product refusal (no picks, lines, or betting advice).
+ * the product refusal (no picks / edges / wager suggestions). Consensus odds
+ * may appear for context only (ADR-ODDS-SNAPSHOT).
  */
 export const WHAT_RIDGE_WONT_SHOW_PARAGRAPHS = [
-  "Ridge doesn't publish picks, sportsbook lines, or betting advice. I use lines behind the scenes to check the model after games are played, but they stay off the site. Ridge is about what's likely to happen on the field. Betting is a different question, and this site doesn't try to answer it.",
+  "Ridge shows a daily snapshot of sportsbook consensus odds for context. It does not compare them to its forecasts to suggest wagers, and does not publish picks, edges, or expected profits. I use lines behind the scenes to check the model after games are played. Ridge is about what's likely to happen on the field — betting is a different question, and this site doesn't try to answer it.",
 ] as const;
 
 export const UPDATE_SCHEDULE_TITLE = "When forecasts update";
@@ -53,11 +54,11 @@ export const WORKED_EXAMPLE_FALLBACK =
   "When a week of forecasts is available, this section walks through one game with live numbers. Right now there is no slate to read, so here is the shape: a favored team and margin, a win chance, a range for the final margin, and a conviction tier that only labels how decisive the forecast looks.";
 
 /**
- * §6.1 site-wide disclaimer — substantive text unchanged.
+ * §6.1 site-wide disclaimer — ADR-ODDS-SNAPSHOT wording.
  * `{year}` is substituted at render time.
  */
 export const DISCLAIMER_TEMPLATE =
-  "Ridge publishes automated college football forecasts with uncertainty from a private statistical model. These are not betting recommendations. Ridge does not publish sportsbook lines, implied edges, suggested wagers, or expected profits. Forecasts can be wrong. Past interval hit rates and track-record metrics do not guarantee future performance. For entertainment and informational purposes only. © {year} Ridge.";
+  "Ridge publishes automated college football forecasts with uncertainty from a private statistical model. These are not betting recommendations. Ridge shows a daily snapshot of sportsbook consensus odds for context. It does not compare them to its forecasts to suggest wagers, and does not publish picks, edges, or expected profits. Forecasts can be wrong. Past interval hit rates and track-record metrics do not guarantee future performance. For entertainment and informational purposes only. © {year} Ridge.";
 
 /** §6.2 responsible gambling — substantive text unchanged. */
 export const RESPONSIBLE_GAMBLING_COPY =
@@ -65,7 +66,10 @@ export const RESPONSIBLE_GAMBLING_COPY =
 
 /** Short footer line — same substance, discoverable without dumping the full block. */
 export const FOOTER_DISCLAIMER_SHORT =
-  "Forecasts with uncertainty — not betting recommendations. No lines, picks, or edge claims.";
+  "Forecasts with uncertainty — not betting recommendations. Consensus odds for context only — no picks or edge claims.";
+
+export const ODDS_API_ATTRIBUTION =
+  "Odds data: The Odds API (the-odds-api.com). Attribution appreciated; not required by provider terms.";
 
 export const CFBD_ATTRIBUTION =
   "Schedule, score, and team-name data displayed on Ridge are derived from CollegeFootballData (collegefootballdata.com). Ridge is not affiliated with CollegeFootballData.";

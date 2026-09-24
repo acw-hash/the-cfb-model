@@ -219,7 +219,7 @@ W3–W5 depend on W2 only (parallelizable after W2). W6 depends on W2. W7 depend
 ## Explicitly out of scope (all W tasks)
 
 - Betting recommendations, picks, edges, Kelly, CLV UI
-- Odds API or sportsbook line display
+- Model-minus-market edges / value UI; individual sportsbook names, logos, affiliate links
 - MLflow / Prefect / workstation public exposure
 - User accounts, subscriptions, paywalls
 - 2025 lockbox season evaluation claims

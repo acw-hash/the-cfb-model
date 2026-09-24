@@ -196,7 +196,10 @@ describe("About page — stranger test and §6 copy", () => {
     const expected = disclaimerForYear(2026);
     expect(html).toContain(expected);
     expect(DISCLAIMER_TEMPLATE).toContain("not betting recommendations");
-    expect(DISCLAIMER_TEMPLATE).toContain("does not publish sportsbook lines");
+    expect(DISCLAIMER_TEMPLATE).toContain(
+      "shows a daily snapshot of sportsbook consensus odds for context",
+    );
+    expect(DISCLAIMER_TEMPLATE).toContain("does not publish picks, edges, or expected profits");
     expect(expected).toContain("© 2026 Ridge");
   });
 
@@ -248,9 +251,11 @@ describe("About page — stranger test and §6 copy", () => {
 
   it("states what Ridge will not show, including the product refusal", () => {
     const html = renderToStaticMarkup(<AboutPage year={2026} />);
-    expect(html).toContain("Ridge doesn&#x27;t publish picks");
-    expect(html).toContain("stay off the site");
-    expect(WHAT_RIDGE_WONT_SHOW_PARAGRAPHS[0]).toContain("doesn't publish picks");
+    expect(html).toContain("daily snapshot of sportsbook consensus odds");
+    expect(html).toContain("does not publish picks, edges, or expected profits");
+    expect(WHAT_RIDGE_WONT_SHOW_PARAGRAPHS[0]).toContain(
+      "does not publish picks, edges, or expected profits",
+    );
   });
 
   it("does not invent age-gating, jurisdiction, or contact identity", () => {

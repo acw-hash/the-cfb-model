@@ -76,3 +76,11 @@ publish_w2_live*.log
 
 # Local R2 rollback snapshots (never commit)
 backup_latest_*/
+
+# W-ODDS Phase 3 local preview pull (live+sandbox merge)
+webapp/fixtures/_phase3_sandbox_preview/
+
+.vercel
+.env*
+.env.local
+

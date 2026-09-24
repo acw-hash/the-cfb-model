@@ -1,0 +1,17 @@
+.line {
+  margin: 0;
+  padding: 0 var(--space-4) var(--space-2);
+  font-size: var(--type-c2-size);
+  line-height: var(--type-c2-line);
+  font-weight: var(--type-c2-weight);
+  color: var(--text-tertiary);
+}
+
+.delayed {
+  margin: 0;
+  padding: 0 var(--space-4) var(--space-2);
+  font-size: var(--type-c2-size);
+  line-height: var(--type-c2-line);
+  font-weight: var(--type-c2-weight);
+  color: var(--semantic-stale);
+}

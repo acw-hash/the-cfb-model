@@ -220,10 +220,11 @@ describe("σ-gating is authoritative", () => {
 });
 
 describe("forbidden copy", () => {
-  it("Game Detail UI files do not mention pick, bet, edge, or market", () => {
+  it("Game Detail UI files do not mention pick, bet, edge, or sportsbook", () => {
     const srcDir = path.resolve(__dirname, "../src");
     const roots = [path.join(srcDir, "components", "GameDetail"), path.join(srcDir, "app", "game")];
-    const forbidden = /\b(picks?|bets?|betting|edges?|sportsbook|market)\b/i;
+    // "market" / "consensus" are allowed (W-ODDS context column). Recommendation framing is not.
+    const forbidden = /\b(picks?|bets?|betting|edges?|sportsbook)\b/i;
     const hits: string[] = [];
     function walk(dir: string): void {
       for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {

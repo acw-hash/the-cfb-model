@@ -1,0 +1,16 @@
+# Repo-root ignores for `vercel deploy --archive=tgz` (project Root Directory = webapp/site).
+# Keep /src and /configs — site tests resolve schema JSON under src/ncaa_quant/.
+# Do NOT bare-name `src` (that would drop webapp/site/src).
+/.git
+/data
+/docs
+/scripts
+/tests
+/workers
+/node_modules
+/*.parquet
+/*.duckdb
+/webapp/site/node_modules
+/webapp/site/.next
+/webapp/fixtures/_phase3_sandbox_preview
+/webapp/site/docs/screenshots
