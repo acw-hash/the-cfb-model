@@ -190,12 +190,12 @@ paste into DESIGN.md from this task):
 
 ### Deploy follow-up (post e706852)
 
-Vercel `npm run guard` failed on `tests/visual.test.tsx`: Vitest CJS/ESM
-interop on Linux leaves `react.act` undefined via named and namespace imports
-(even when `act` appears in `Object.keys`). Fixed by resolving `act` from
-`createRequire("react")` first, then namespace/default fallbacks. Also listed
-`src/lib/visual/copy.ts` in `webapp/site/scripts/check-published-copy.mjs`.
-`npm run guard` exit 0 locally after both.
+Vercel `npm run guard` failed repeatedly on `tests/visual.test.tsx` under Linux
+Vitest interop: named/`React.act` undefined, then `createRequire` not a function.
+Final approach: **no act** — use `flushSync` from `react-dom` for setState from
+native events, plus `settle()`/`waitFor` so `useEffect` (`?step=`) runs. Also
+listed `src/lib/visual/copy.ts` in `check-published-copy.mjs`. Verified with
+local `npm run guard` exit 0 before push.
 
 ---
 

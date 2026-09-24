@@ -1,47 +1,18 @@
 /**
  * @vitest-environment happy-dom
  *
- * Vitest on Vercel Linux breaks ESM named/namespace access to react.act
- * (keys list `act` but the value is undefined; the real fn is on `.default`
- * or the CJS module). Prefer act over flushSync so useEffect (URL ?step=)
- * is flushed.
+ * Do not import react.act or createRequire — both break under Vitest on Vercel
+ * Linux (undefined act bindings / createRequire not a function). Use flushSync
+ * from react-dom to flush setState from native listeners, and a macrotask
+ * settle() so useEffect (URL ?step=) runs after render.
  */
-import { createRequire } from "node:module";
-import * as ReactNS from "react";
 import type { ReactNode } from "react";
+import { flushSync } from "react-dom";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import ModelWalkthrough from "@/components/ModelWalkthrough/ModelWalkthrough";
 import { PAGE, STEPS } from "@/lib/visual/copy";
-
-type ActFn = (callback: () => void) => void;
-
-function resolveAct(): ActFn {
-  // Prefer CJS: Vitest ESM interop on Vercel Linux lists `act` on the namespace
-  // but the binding is undefined; the real function is on the CJS export.
-  const cjs = createRequire(import.meta.url)("react") as { act?: unknown };
-  if (typeof cjs.act === "function") {
-    return cjs.act as ActFn;
-  }
-  const ns = ReactNS as typeof ReactNS & {
-    act?: unknown;
-    default?: { act?: unknown };
-  };
-  for (const candidate of [ns.act, ns.default?.act]) {
-    if (typeof candidate === "function") {
-      return candidate as ActFn;
-    }
-  }
-  throw new Error(
-    `Could not resolve react.act (cjs=${typeof cjs.act}, ns=${typeof ns.act}, default=${typeof ns.default?.act}). ` +
-      `NS keys: ${Object.keys(ns).sort().join(", ")}`,
-  );
-}
-
-const act = resolveAct();
-
-(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
 vi.mock("next/link", () => ({
   default: ({
@@ -64,6 +35,28 @@ function setStepQuery(step: number | null): void {
   window.history.replaceState({}, "", path);
 }
 
+/** Yield so React useEffect runs under happy-dom (flushSync does not run effects). */
+async function settle(): Promise<void> {
+  await Promise.resolve();
+  await Promise.resolve();
+  await new Promise<void>((resolve) => {
+    setTimeout(resolve, 0);
+  });
+}
+
+async function waitFor(predicate: () => boolean, label: string, timeoutMs = 2000): Promise<void> {
+  const start = Date.now();
+  while (Date.now() - start < timeoutMs) {
+    if (predicate()) {
+      return;
+    }
+    await new Promise<void>((resolve) => {
+      setTimeout(resolve, 10);
+    });
+  }
+  throw new Error(`waitFor timed out: ${label}`);
+}
+
 describe("/visual ModelWalkthrough", () => {
   let container: HTMLDivElement;
   let root: Root;
@@ -76,16 +69,17 @@ describe("/visual ModelWalkthrough", () => {
   });
 
   afterEach(() => {
-    act(() => {
+    flushSync(() => {
       root.unmount();
     });
     container.remove();
   });
 
-  function renderWalkthrough(): void {
-    act(() => {
+  async function renderWalkthrough(): Promise<void> {
+    flushSync(() => {
       root.render(<ModelWalkthrough />);
     });
+    await settle();
   }
 
   function stepTitle(): string {
@@ -94,90 +88,103 @@ describe("/visual ModelWalkthrough", () => {
     return h2?.textContent ?? "";
   }
 
-  function clickButton(label: string): void {
+  async function clickButton(label: string): Promise<void> {
     const buttons = [...container.querySelectorAll("button")];
     const btn = buttons.find((b) => b.textContent?.trim() === label);
     expect(btn, `expected button "${label}"`).toBeDefined();
-    act(() => {
+    flushSync(() => {
       btn!.dispatchEvent(new MouseEvent("click", { bubbles: true }));
     });
+    await settle();
   }
 
-  function pressKey(key: string): void {
-    act(() => {
-      window.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true }));
+  async function pressKey(key: string): Promise<void> {
+    flushSync(() => {
+      window.dispatchEvent(
+        new KeyboardEvent("keydown", {
+          key,
+          code: key,
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
     });
+    await settle();
   }
 
-  it("renders step 1 by default", () => {
-    renderWalkthrough();
+  it("renders step 1 by default", async () => {
+    await renderWalkthrough();
     expect(stepTitle()).toBe(STEPS[0].title);
     expect(container.textContent).toContain(PAGE.stepOf(1, STEPS.length));
     expect(container.textContent).toContain(PAGE.exampleTag);
   });
 
-  it("opens step 4 when ?step=4 is in the URL", () => {
+  it("opens step 4 when ?step=4 is in the URL", async () => {
     setStepQuery(4);
-    renderWalkthrough();
-    expect(stepTitle()).toBe(STEPS[3].title);
+    await renderWalkthrough();
+    await waitFor(() => stepTitle() === STEPS[3].title, "step 4 title from ?step=4");
     expect(container.textContent).toContain(PAGE.stepOf(4, STEPS.length));
   });
 
-  it("Next and Back change steps", () => {
-    renderWalkthrough();
-    clickButton(PAGE.next);
-    expect(stepTitle()).toBe(STEPS[1].title);
-    clickButton(PAGE.back);
-    expect(stepTitle()).toBe(STEPS[0].title);
+  it("Next and Back change steps", async () => {
+    await renderWalkthrough();
+    await clickButton(PAGE.next);
+    await waitFor(() => stepTitle() === STEPS[1].title, "after Next");
+    await clickButton(PAGE.back);
+    await waitFor(() => stepTitle() === STEPS[0].title, "after Back");
   });
 
-  it("arrow keys change steps", () => {
-    renderWalkthrough();
-    pressKey("ArrowRight");
-    expect(stepTitle()).toBe(STEPS[1].title);
-    pressKey("ArrowLeft");
-    expect(stepTitle()).toBe(STEPS[0].title);
+  it("arrow keys change steps", async () => {
+    await renderWalkthrough();
+    await pressKey("ArrowRight");
+    await waitFor(() => stepTitle() === STEPS[1].title, "after ArrowRight");
+    await pressKey("ArrowLeft");
+    await waitFor(() => stepTitle() === STEPS[0].title, "after ArrowLeft");
   });
 
-  it("last step button reads Start over and returns to step 1", () => {
+  it("last step button reads Start over and returns to step 1", async () => {
     setStepQuery(STEPS.length);
-    renderWalkthrough();
-    expect(stepTitle()).toBe(STEPS[STEPS.length - 1].title);
+    await renderWalkthrough();
+    await waitFor(() => stepTitle() === STEPS[STEPS.length - 1].title, "last step from ?step=");
     const restart = [...container.querySelectorAll("button")].find(
       (b) => b.textContent?.trim() === PAGE.restart,
     );
     expect(restart, "expected Start over").toBeDefined();
-    act(() => {
+    flushSync(() => {
       restart!.dispatchEvent(new MouseEvent("click", { bubbles: true }));
     });
-    expect(stepTitle()).toBe(STEPS[0].title);
+    await settle();
+    await waitFor(() => stepTitle() === STEPS[0].title, "after Start over");
   });
 
-  it("shows Illustrative example on every step", () => {
-    renderWalkthrough();
+  it("shows Illustrative example on every step", async () => {
+    await renderWalkthrough();
     for (let i = 0; i < STEPS.length; i++) {
       if (i > 0) {
-        clickButton(PAGE.next);
+        await clickButton(PAGE.next);
       }
+      await waitFor(() => stepTitle() === STEPS[i].title, `step ${i + 1} title`);
       expect(container.textContent).toContain(PAGE.exampleTag);
-      expect(stepTitle()).toBe(STEPS[i].title);
     }
   });
 
-  it("step 4 with both models off shows Forecast unavailable", () => {
+  it("step 4 with both models off shows Forecast unavailable", async () => {
     setStepQuery(4);
-    renderWalkthrough();
-    expect(stepTitle()).toBe(STEPS[3].title);
-    // Ensemble member toggles use aria-pressed; spine step buttons do not.
+    await renderWalkthrough();
+    await waitFor(() => stepTitle() === STEPS[3].title, "step 4 for ensemble");
     const modelButtons = [...container.querySelectorAll("button[aria-pressed]")];
     expect(modelButtons.length).toBeGreaterThanOrEqual(2);
     for (const btn of modelButtons) {
       if (btn.getAttribute("aria-pressed") === "true") {
-        act(() => {
+        flushSync(() => {
           btn.dispatchEvent(new MouseEvent("click", { bubbles: true }));
         });
+        await settle();
       }
     }
-    expect(container.textContent).toContain("Forecast unavailable");
+    await waitFor(
+      () => (container.textContent ?? "").includes("Forecast unavailable"),
+      "Forecast unavailable",
+    );
   });
 });
