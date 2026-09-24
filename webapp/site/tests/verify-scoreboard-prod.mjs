@@ -100,7 +100,11 @@ results.push({ check: "odds attribution outside details", ok: (await attribution
 await goto("/");
 await page.emulateMedia({ colorScheme: "dark" });
 await page.evaluate(() => document.documentElement.setAttribute("data-theme", "dark"));
-const rule = await page.locator("[data-testid=game-row]").first().locator('[aria-hidden="true"]').count();
+const rule = await page
+  .locator("[data-testid=game-row]")
+  .first()
+  .locator('[aria-hidden="true"]')
+  .count();
 results.push({ check: "row has aria-hidden rule candidate", ok: rule > 0 });
 const marketMargin = page.locator("[data-testid=market-margin]").first();
 results.push({ check: "market margin visible", ok: (await marketMargin.count()) === 1 });
