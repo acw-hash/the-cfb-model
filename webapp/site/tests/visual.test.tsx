@@ -1,25 +1,45 @@
 /**
  * @vitest-environment happy-dom
  *
- * Do not use `import { act } from "react"` — under Vitest CJS interop on Vercel
- * Linux the named export is undefined ("act is not a function"). Use the
- * namespace export instead. Prefer act over flushSync so useEffect (URL ?step=)
+ * Vitest on Vercel Linux breaks ESM named/namespace access to react.act
+ * (keys list `act` but the value is undefined; the real fn is on `.default`
+ * or the CJS module). Prefer act over flushSync so useEffect (URL ?step=)
  * is flushed.
  */
-import * as React from "react";
+import { createRequire } from "node:module";
+import * as ReactNS from "react";
+import type { ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import ModelWalkthrough from "@/components/ModelWalkthrough/ModelWalkthrough";
 import { PAGE, STEPS } from "@/lib/visual/copy";
 
-if (typeof React.act !== "function") {
+type ActFn = (callback: () => void) => void;
+
+function resolveAct(): ActFn {
+  // Prefer CJS: Vitest ESM interop on Vercel Linux lists `act` on the namespace
+  // but the binding is undefined; the real function is on the CJS export.
+  const cjs = createRequire(import.meta.url)("react") as { act?: unknown };
+  if (typeof cjs.act === "function") {
+    return cjs.act as ActFn;
+  }
+  const ns = ReactNS as typeof ReactNS & {
+    act?: unknown;
+    default?: { act?: unknown };
+  };
+  for (const candidate of [ns.act, ns.default?.act]) {
+    if (typeof candidate === "function") {
+      return candidate as ActFn;
+    }
+  }
   throw new Error(
-    `React.act is not a function (got ${typeof React.act}). ` +
-      `React exports present: ${Object.keys(React).sort().join(", ")}`,
+    `Could not resolve react.act (cjs=${typeof cjs.act}, ns=${typeof ns.act}, default=${typeof ns.default?.act}). ` +
+      `NS keys: ${Object.keys(ns).sort().join(", ")}`,
   );
 }
-const act = React.act;
+
+const act = resolveAct();
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -30,7 +50,7 @@ vi.mock("next/link", () => ({
     className,
   }: {
     href: string;
-    children: React.ReactNode;
+    children: ReactNode;
     className?: string;
   }) => (
     <a href={href} className={className}>

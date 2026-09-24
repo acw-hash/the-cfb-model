@@ -190,12 +190,12 @@ paste into DESIGN.md from this task):
 
 ### Deploy follow-up (post e706852)
 
-Vercel `npm run guard` failed on `tests/visual.test.tsx`: named
-`import { act } from "react"` resolved to undefined under Vitest CJS interop on
-Linux (`act is not a function`). Fixed by using `React.act` from
-`import * as React from "react"`. Also listed `src/lib/visual/copy.ts` in
-`webapp/site/scripts/check-published-copy.mjs` (site-local guard; would have
-been the next failure after tests). `npm run guard` exit 0 locally after both.
+Vercel `npm run guard` failed on `tests/visual.test.tsx`: Vitest CJS/ESM
+interop on Linux leaves `react.act` undefined via named and namespace imports
+(even when `act` appears in `Object.keys`). Fixed by resolving `act` from
+`createRequire("react")` first, then namespace/default fallbacks. Also listed
+`src/lib/visual/copy.ts` in `webapp/site/scripts/check-published-copy.mjs`.
+`npm run guard` exit 0 locally after both.
 
 ---
 
