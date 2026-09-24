@@ -70,21 +70,13 @@ def run_odds_cadence_watchdog(
 ) -> dict[str, Any]:
     """Evaluate odds raw-archive cadence and notify on shortfall."""
     cfg = config or load_config()
-    root = (
-        Path(raw_root)
-        if raw_root is not None
-        else Path(cfg.paths.raw_dir) / "odds_api"
-    )
+    root = Path(raw_root) if raw_root is not None else Path(cfg.paths.raw_dir) / "odds_api"
     expected = (
         int(expected_per_day)
         if expected_per_day is not None
         else int(cfg.pipeline.odds_snapshots_per_day)
     )
-    tol = (
-        int(tolerance)
-        if tolerance is not None
-        else int(cfg.pipeline.odds_cadence_tolerance)
-    )
+    tol = int(tolerance) if tolerance is not None else int(cfg.pipeline.odds_cadence_tolerance)
     cadence = check_odds_cadence(
         raw_root=root,
         expected_per_day=expected,

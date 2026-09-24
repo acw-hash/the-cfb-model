@@ -1534,9 +1534,7 @@ def export_publish_artifacts(
 
     if season >= LIVE_PUBLISH_MIN_SEASON:
         results = grade_export(season=season, published_at=clock, config=cfg)
-        artifacts[f"results_{season}.json"] = (
-            json.dumps(results, indent=2, sort_keys=True) + "\n"
-        )
+        artifacts[f"results_{season}.json"] = json.dumps(results, indent=2, sort_keys=True) + "\n"
 
     meta["artifact_pointers"]["team_ratings"] = f"latest/team_ratings_{season}.json"
     # Pointer key is results_current_season (set in build_meta). Do not invent "results".
