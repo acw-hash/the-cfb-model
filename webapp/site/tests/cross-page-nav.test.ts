@@ -25,6 +25,7 @@ describe("W6 site navigation", () => {
     expect(header).toContain('href: "/"');
     expect(header).toContain('href: "/results"');
     expect(header).toContain('href: "/about"');
+    expect(header).toContain('href: "/visual"');
     expect(header).not.toMatch(/href:\s*["'][^"']*\?/);
     expect(header).toContain("Ridge");
   });

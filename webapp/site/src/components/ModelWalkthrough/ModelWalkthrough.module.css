@@ -1,0 +1,810 @@
+/* /visual walkthrough. Tokens are the DESIGN §4.1 set defined in globals.css. */
+
+.root {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 24px 20px 56px;
+  color: var(--text-primary);
+  font-family:
+    "SF Pro Text",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    system-ui,
+    sans-serif;
+}
+
+.root :where(svg text, .num) {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* ---------- intro ---------- */
+
+.intro {
+  max-width: 640px;
+  margin-bottom: 28px;
+}
+
+.title {
+  font-family:
+    "SF Pro Display",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    system-ui,
+    sans-serif;
+  font-size: 28px;
+  line-height: 32px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0 0 8px;
+}
+
+.lede {
+  font-size: 17px;
+  line-height: 24px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ---------- spine ---------- */
+
+.spine {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  margin: 0 0 32px;
+}
+
+.group {
+  grid-row: 1;
+  font-size: 11px;
+  line-height: 14px;
+  color: var(--text-secondary);
+  border-top: 1px solid var(--border-subtle);
+  padding: 6px 8px 14px 0;
+  margin-right: 10px;
+}
+
+.groupActive {
+  color: var(--text-primary);
+  border-top-color: var(--text-primary);
+}
+
+.node {
+  grid-row: 2;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 0 8px 0 0;
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.node::before {
+  content: "";
+  position: absolute;
+  top: 13px;
+  left: 28px;
+  right: 0;
+  height: 1px;
+  background: var(--border-subtle);
+}
+
+.node:last-child::before {
+  display: none;
+}
+
+.nodeDone::before {
+  background: var(--text-primary);
+}
+
+.dot {
+  position: relative;
+  z-index: 1;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-primary);
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.nodeDone .dot {
+  border-color: var(--text-primary);
+  color: var(--text-primary);
+}
+
+.nodeCurrent .dot {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.nodeLabel {
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.nodeCurrent .nodeLabel,
+.nodeDone .nodeLabel {
+  color: var(--text-primary);
+}
+
+.node:hover .nodeLabel {
+  color: var(--text-primary);
+}
+
+.node:focus-visible,
+.button:focus-visible,
+.seg button:focus-visible,
+.memberToggle:focus-visible,
+.range:focus-visible,
+.check input:focus-visible,
+.link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ---------- stage ---------- */
+
+.stageHead {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 24px;
+}
+
+.counter {
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin: 0 0 4px;
+}
+
+.stageTitle {
+  font-family:
+    "SF Pro Display",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    system-ui,
+    sans-serif;
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.pager {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.button {
+  font: inherit;
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 500;
+  padding: 7px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.button:hover:not(:disabled) {
+  background: var(--bg-secondary);
+}
+
+.button:disabled {
+  color: var(--text-tertiary);
+  cursor: default;
+}
+
+.buttonPrimary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.buttonPrimary:hover:not(:disabled) {
+  background: var(--accent);
+  opacity: 0.88;
+}
+
+.stageBody {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: 40px;
+  align-items: start;
+}
+
+.figure {
+  min-width: 0;
+}
+
+.text {
+  font-size: 17px;
+  line-height: 24px;
+}
+
+.text p {
+  margin: 0 0 14px;
+}
+
+.tech {
+  margin-top: 22px;
+  padding: 16px 18px;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+}
+
+.techHeading {
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+
+.tech p {
+  font-size: 15px;
+  line-height: 21px;
+  color: var(--text-secondary);
+  margin: 0 0 10px;
+}
+
+.formula {
+  display: block;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-subtle);
+  font-family:
+    "SF Pro Text",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    system-ui,
+    sans-serif;
+  font-size: 15px;
+  line-height: 22px;
+  font-style: italic;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.exampleTag {
+  display: inline-block;
+  font-size: 11px;
+  line-height: 14px;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  padding: 2px 8px;
+  margin-bottom: 12px;
+}
+
+.closing {
+  margin: 48px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-subtle);
+  font-size: 15px;
+  line-height: 20px;
+  color: var(--text-secondary);
+  max-width: 640px;
+}
+
+.link {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+/* ---------- shared figure bits ---------- */
+
+.chart {
+  width: 100%;
+  min-height: 120px;
+}
+
+.chart svg {
+  display: block;
+  overflow: visible;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  margin: 18px 0 0;
+}
+
+.seg {
+  display: inline-flex;
+  flex-wrap: wrap;
+  padding: 2px;
+  background: var(--bg-secondary);
+  border-radius: 9px;
+}
+
+.seg button {
+  font: inherit;
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.seg button[aria-pressed="true"] {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  box-shadow: 0 0 0 1px var(--border-subtle);
+}
+
+.sliderRow {
+  display: grid;
+  grid-template-columns: 172px minmax(0, 1fr) 64px;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  font-size: 15px;
+  line-height: 20px;
+}
+
+.sliderRow label {
+  color: var(--text-secondary);
+}
+
+.sliderValue {
+  text-align: right;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.range {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  line-height: 20px;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.check input {
+  accent-color: var(--accent);
+  width: 16px;
+  height: 16px;
+  margin: 0;
+}
+
+.readout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 14px 20px;
+  margin: 18px 0 0;
+  padding: 14px 0 0;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.readout div {
+  min-width: 0;
+}
+
+.readout dt {
+  font-size: 13px;
+  line-height: 16px;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}
+
+.readout dd {
+  margin: 0;
+  font-size: 17px;
+  line-height: 22px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.note {
+  font-size: 15px;
+  line-height: 21px;
+  color: var(--text-secondary);
+  margin: 14px 0 0;
+  min-height: 42px;
+}
+
+.note strong {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* ---------- step 4: ensemble diagram ---------- */
+
+.flow {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, 0.9fr);
+  gap: 28px;
+  align-items: stretch;
+}
+
+.flowCol {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+
+.flowCol + .flowCol::before {
+  content: "";
+  position: absolute;
+  left: -22px;
+  top: 50%;
+  width: 16px;
+  height: 1px;
+  background: var(--text-tertiary);
+}
+
+.flowHead {
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin: 0 0 2px;
+}
+
+.featureItem {
+  font-size: 15px;
+  line-height: 19px;
+  padding: 8px 10px;
+  border-left: 2px solid var(--border-subtle);
+}
+
+.featureItem small {
+  display: block;
+  font-size: 13px;
+  line-height: 16px;
+  color: var(--text-secondary);
+}
+
+.memberToggle {
+  font: inherit;
+  text-align: left;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.memberToggle[aria-pressed="false"] {
+  background: var(--bg-secondary);
+  color: var(--text-tertiary);
+}
+
+.memberName {
+  display: block;
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 600;
+}
+
+.memberKind {
+  display: block;
+  font-size: 13px;
+  line-height: 16px;
+  color: var(--text-secondary);
+}
+
+.memberNum {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 8px;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.memberNum b {
+  font-size: 17px;
+  line-height: 22px;
+  font-weight: 500;
+}
+
+.memberNum span {
+  font-size: 13px;
+  line-height: 16px;
+  color: var(--text-secondary);
+}
+
+.memberToggle[aria-pressed="false"] .memberNum span,
+.memberToggle[aria-pressed="false"] .memberKind {
+  color: var(--text-tertiary);
+}
+
+.weightBar {
+  display: flex;
+  height: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+  background: var(--bg-secondary);
+  margin: 4px 0 10px;
+}
+
+.weightBar span {
+  display: block;
+  height: 100%;
+  transition: width 220ms ease;
+}
+
+.output {
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--text-primary);
+}
+
+.outputBig {
+  display: block;
+  font-size: 28px;
+  line-height: 32px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.outputSmall {
+  display: block;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.outputUnavailable {
+  border-color: var(--border-subtle);
+}
+
+.outputUnavailable .outputBig {
+  font-size: 17px;
+  line-height: 22px;
+}
+
+/* ---------- step 7: tier chip ---------- */
+
+.chip {
+  display: inline-block;
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--text-primary);
+  white-space: nowrap;
+}
+
+.chipMuted {
+  border-color: transparent;
+  background: var(--bg-secondary);
+}
+
+/* ---------- step 8: game row replica ---------- */
+
+.row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 0;
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.rowKick {
+  font-size: 13px;
+  line-height: 16px;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.rowTeams {
+  font-size: 17px;
+  line-height: 22px;
+  font-weight: 600;
+}
+
+.rowTeams span {
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.rowNum {
+  font-variant-numeric: tabular-nums lining-nums;
+  white-space: nowrap;
+}
+
+.rowNum b {
+  font-size: 17px;
+  line-height: 22px;
+  font-weight: 500;
+}
+
+.rowNum span {
+  font-size: 15px;
+  line-height: 20px;
+  color: var(--text-secondary);
+  margin-left: 6px;
+}
+
+.rowTier {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.stale {
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 500;
+  color: var(--semantic-stale);
+  white-space: nowrap;
+}
+
+.fieldList {
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+}
+
+.fieldList li {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  gap: 12px;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--text-secondary);
+}
+
+.fieldList code {
+  font-family: inherit;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.fieldNull code {
+  color: var(--text-tertiary);
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 880px) {
+  .stageBody {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+}
+
+@media (max-width: 720px) {
+  .root {
+    padding: 16px 16px 48px;
+  }
+
+  .spine {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    margin-bottom: 24px;
+  }
+
+  .group {
+    display: none;
+  }
+
+  .node {
+    grid-row: 1;
+    align-items: center;
+    padding: 0;
+  }
+
+  .node::before {
+    left: calc(50% + 14px);
+    right: calc(-50% + 14px);
+  }
+
+  .nodeLabel {
+    display: none;
+  }
+
+  .stageHead {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pager {
+    order: 2;
+  }
+
+  .pager .button {
+    flex: 1;
+  }
+
+  .flow {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 22px;
+  }
+
+  .flowCol + .flowCol::before {
+    left: 20px;
+    top: -16px;
+    width: 1px;
+    height: 12px;
+  }
+
+  .sliderRow {
+    grid-template-columns: minmax(0, 1fr) 64px;
+  }
+
+  .sliderRow label {
+    grid-column: 1 / -1;
+  }
+
+  .row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 6px 12px;
+  }
+
+  .rowKick {
+    grid-column: 1 / -1;
+  }
+
+  .fieldList li {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dot,
+  .weightBar span {
+    transition: none;
+  }
+}

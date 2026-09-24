@@ -63,6 +63,7 @@ PUBLISHED_COPY_SURFACES: tuple[str, ...] = (
     "webapp/site/src/lib/about/copy.ts",
     "webapp/site/src/lib/results/copy.ts",
     "webapp/site/src/lib/game-detail/absence.ts",
+    "webapp/site/src/lib/visual/copy.ts",
     "webapp/site/src/lib/game-detail/provenance.ts",
     "src/ncaa_quant/webapp/export.py",
     "webapp/fixtures/week_predictions.json",

@@ -17,10 +17,15 @@ const LINKS = [
     label: "About",
     match: (p: string) => p === "/about" || p.startsWith("/about/"),
   },
+  {
+    href: "/visual",
+    label: "Visual",
+    match: (p: string) => p === "/visual" || p.startsWith("/visual/"),
+  },
 ] as const;
 
 /**
- * Persistent minimal chrome (§4 restraint): Ridge wordmark + three page links.
+ * Persistent minimal chrome (§4 restraint): Ridge wordmark + four page links.
  * Canonical hrefs only — page-local query state on Results or This Week is not preserved.
  */
 export function SiteHeader(): React.ReactElement {

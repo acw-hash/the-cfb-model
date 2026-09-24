@@ -30,6 +30,7 @@
     "eslint": "^9.16.0",
     "eslint-config-next": "^15.1.0",
     "eslint-plugin-ridge": "file:./eslint-plugin-ridge",
+    "happy-dom": "^15.11.7",
     "prettier": "^3.4.2",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8"
