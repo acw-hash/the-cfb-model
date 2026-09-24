@@ -25,6 +25,7 @@ const PUBLISHED_COPY_SURFACES = [
   "src/lib/results/copy.ts",
   "src/lib/game-detail/absence.ts",
   "src/lib/game-detail/provenance.ts",
+  "src/lib/visual/copy.ts",
 ];
 
 function walkCopyModules(dir, acc = []) {

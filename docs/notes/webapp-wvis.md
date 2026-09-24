@@ -188,6 +188,15 @@ paste into DESIGN.md from this task):
 - Relative imports retained from handoff (repo also supports `@/`).
 - See **happy-dom** under Acceptance counts for the test-environment decision.
 
+### Deploy follow-up (post e706852)
+
+Vercel `npm run guard` failed on `tests/visual.test.tsx`: named
+`import { act } from "react"` resolved to undefined under Vitest CJS interop on
+Linux (`act is not a function`). Fixed by using `React.act` from
+`import * as React from "react"`. Also listed `src/lib/visual/copy.ts` in
+`webapp/site/scripts/check-published-copy.mjs` (site-local guard; would have
+been the next failure after tests). `npm run guard` exit 0 locally after both.
+
 ---
 
 ## Out of scope (honored)

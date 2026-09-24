@@ -1,14 +1,26 @@
 /**
  * @vitest-environment happy-dom
+ *
+ * Do not use `import { act } from "react"` — under Vitest CJS interop on Vercel
+ * Linux the named export is undefined ("act is not a function"). Use the
+ * namespace export instead. Prefer act over flushSync so useEffect (URL ?step=)
+ * is flushed.
  */
-import React, { act } from "react";
+import * as React from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import ModelWalkthrough from "@/components/ModelWalkthrough/ModelWalkthrough";
 import { PAGE, STEPS } from "@/lib/visual/copy";
 
-// React 19 act() under happy-dom
+if (typeof React.act !== "function") {
+  throw new Error(
+    `React.act is not a function (got ${typeof React.act}). ` +
+      `React exports present: ${Object.keys(React).sort().join(", ")}`,
+  );
+}
+const act = React.act;
+
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
 vi.mock("next/link", () => ({
