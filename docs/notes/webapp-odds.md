@@ -7,10 +7,40 @@ Phase 3 cycles (b)–(d) remain open against live.
 
 ## Production go-live (operator override)
 
-**Timestamp (UTC):** recorded at deploy time below.  
+**Timestamp (UTC):** `2026-09-24T20:05:31Z` (live odds write) /
+`2026-09-24T20:08Z` approx (production site aliased).  
 **Decision:** Operator accepted incomplete L7 / carry-forward / cron proof for
 this task only. Other FORBIDDEN items unchanged.
 
+| Step | Result |
+|------|--------|
+| Pre-flight code on main | Was **not** merged; committed + pushed `dcecd89` before prod deploy |
+| Live slate | 2026 w4, 71 games, `fixture` absent |
+| Worker | `FORCE_SANDBOX=false`, `WEBAPP_REVALIDATE_URL` set (prod) |
+| Live `/run` | keys `odds/2026/w4/2026-09-24T20:05.json` + `latest/odds_snapshot.json`; matched 71 / unmatched 0; credits remaining 99646; revalidate **200** |
+| First `/run` after flip | briefly wrote sandbox (stale isolate); immediate redeploy + re-run wrote **live** |
+| Vercel Production | `ODDS_SNAPSHOT_ENABLED=true`; `ODDS_R2_PREFIX` **not** on Production |
+| Prod URL | https://the-cfb-model.vercel.app — Market column + Model and market; Odds as of Thu 8:05 PM UTC; footer new copy; spot-check margin 20.5 matches live history |
+| Screenshots | `webapp/site/docs/screenshots/odds/production-golive/` (8 PNGs) |
+
+### Rollback (do not run unless needed)
+
+```bash
+cd webapp/site   # or repo root linked to the-cfb-model
+npx vercel env rm ODDS_SNAPSHOT_ENABLED production --yes
+# Or set false instead of remove:
+# npx vercel env add ODDS_SNAPSHOT_ENABLED production --value false --yes --force
+npx vercel deploy --prod --yes --archive=tgz
+```
+
+**Time-to-effect:** Production rebuild typically **1–3 minutes** after `vercel deploy --prod` completes (alias flip). Unsetting the flag without redeploy does **not** hide odds until the next production deployment picks up the env change. Instant hide = redeploy (or promote a prior deployment that lacked the flag).
+
+### Still open
+- Cycle (b) ~23:45Z against **live** (carry-forward checks; rollback if fail)
+- Cycle (c) Fri 13:00 UTC cron
+- Cycle (d) failure drill — **local / sandbox-forced only**, never live ODDS_API_KEY overwrite
+
+## Phase 3 continuation (2026-09-24 afternoon)
 
 ### Step 0–1
 - Cloudflare OAuth + Vercel login OK; linked existing `the-cfb-model` (no new project).
