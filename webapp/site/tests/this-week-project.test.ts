@@ -31,7 +31,6 @@ const FORBIDDEN_DTO_KEYS = [
   "home_team_id",
   "away_team_id",
   "conference_game",
-  "sigma_margin_credible",
   "margin_interval_nominal",
   "mu_total",
   "sigma_total",
@@ -39,8 +38,6 @@ const FORBIDDEN_DTO_KEYS = [
   "total_interval_lo",
   "total_interval_hi",
   "total_interval_nominal",
-  "p_win_home",
-  "p_win_home_credible",
   "p_cover_home",
   "p_cover_home_credible",
   "p_over",
@@ -64,6 +61,16 @@ describe("projectThisWeekGame", () => {
     expect(Object.keys(dto).sort()).toEqual([...THIS_WEEK_GAME_KEYS].sort());
     expect(dto.p_favored).toBe(source!.conviction_basis!.p_favored);
     expect(dto.game_id).toBe(source!.game_id);
+  });
+
+  it("carries p_win_home and credibility flags for row win chance", () => {
+    const week = loadFixture();
+    const source = week.games.find((g) => g.p_win_home != null);
+    expect(source).toBeDefined();
+    const dto = projectThisWeekGame(source as GamePrediction);
+    expect(dto.p_win_home).toBe(source!.p_win_home);
+    expect(dto.p_win_home_credible).toBe(source!.p_win_home_credible);
+    expect(dto.sigma_margin_credible).toBe(source!.sigma_margin_credible);
   });
 
   it("sets p_favored null when conviction_basis is absent", () => {

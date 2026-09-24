@@ -37,6 +37,7 @@ export interface ThisWeekGame {
   neutral_site: boolean;
   mu_margin: number | null;
   sigma_margin: number | null;
+  sigma_margin_credible: boolean;
   margin_interval_lo: number | null;
   margin_interval_hi: number | null;
   null_reason: string | null;
@@ -48,6 +49,8 @@ export interface ThisWeekGame {
   stale_sources: StaleSource[];
   /** Derived from conviction_basis.p_favored. Null if the basis is absent. */
   p_favored: number | null;
+  p_win_home: number | null;
+  p_win_home_credible: boolean;
 }
 
 export interface GamePrediction {

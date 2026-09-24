@@ -1,0 +1,15 @@
+.block {
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.body {
+  margin: 0 0 var(--space-2);
+  font-size: var(--type-b1-size);
+  line-height: var(--type-b1-line);
+  color: var(--text-primary);
+}
+
+.body:last-child {
+  margin-bottom: 0;
+}

@@ -75,6 +75,12 @@ describe("formatProbability", () => {
   it("uses one decimal when < 10%", () => {
     expect(formatProbability(0.094)).toBe("9.4%");
   });
+
+  it("rounds half up at .5 so Lean enter 0.575 displays as 58%", () => {
+    expect(formatProbability(0.575)).toBe("58%");
+    expect(formatProbability(0.7)).toBe("70%");
+    expect(formatProbability(0.85)).toBe("85%");
+  });
 });
 
 describe("formatIntervalParts", () => {

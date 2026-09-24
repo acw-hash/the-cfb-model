@@ -172,6 +172,9 @@ export function RatingTrajectoryChart({
         scales={scales}
         throughWeek={throughWeek}
       />
+      <p className={styles.seriesNote} data-testid="offense-direction">
+        Higher is better on offense. Values are relative to the league average.
+      </p>
       <Panel
         title="Defense"
         dimension="def"
@@ -180,6 +183,10 @@ export function RatingTrajectoryChart({
         scales={scales}
         throughWeek={throughWeek}
       />
+      <p className={styles.seriesNote} data-testid="defense-direction">
+        Higher is better on defense. The rating measures EPA suppressed, so a larger number means a
+        tougher defense.
+      </p>
       <div className={styles.xAxis} aria-hidden="true">
         {weeks.map((week) => (
           <span

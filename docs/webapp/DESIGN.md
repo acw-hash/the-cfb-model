@@ -639,22 +639,43 @@ No team-color theming in v1. No gradient backgrounds.
 | Probability | Percent, 0 decimals if ≥ 10%; 1 decimal if < 10% | `68%`, `9.4%` |
 | Precision cap | Never more decimals than σ warrants | If σ rounded to 0.1, μ to 0.1 |
 
+> **AMENDED (clarity, 2026-09-24).** Operator decision: visible margins use
+> team-named wording (`Michigan by 4.2`) instead of signed home-margin
+> (`+4.2`). Interval ends are team-named (`Rutgers by 8.1 to Michigan by 16.5`).
+> Visible σ labels use “Typical miss: ±13.8 pts.” The underlying numeric
+> values, rounding, and artifact fields are unchanged. Signed formatting
+> helpers remain for Actual margin on Results graded rows.
+>
+> <details>
+> <summary>Superseded §4.2 margin / σ / interval presentation (pre-clarity)</summary>
+>
+> | Quantity | Format | Example |
+> |----------|--------|---------|
+> | Margin μ | Sign always shown; 1 decimal | `+4.2`, `−1.0` |
+> | Margin σ | 1 decimal; prefix "σ" in labels | `σ 13.8` |
+> | Interval | `μ [lo, hi]` inline quiet band | `+4.2 [−8.1, +16.5]` |
+>
+> </details>
+
 ### 4.3 Component patterns
 
-**Game row** — scores-app density; forecast column stacks μ and interval on separate lines:
+**Game row** — scores-app density; forecast column stacks favorite + win chance:
 ```
 [Kickoff]  Away @ Home
-           +4.2
-           [−8, +17]
-           Lean Home · [Revised?]
+           Michigan by 4.2
+           68%
+           Lean Michigan · [Revised?]
 ```
 - Left: kickoff time (local + UTC tooltip)
 - Center: teams (away @ home), B2 weight; neutral-site icon if set
-- Right (forecast column): N1 margin μ on its own line; N2 interval `[lo, hi]` on the line below (brackets `--text-tertiary`, bounds `--text-secondary`); when bounds are null, `—` at Primary weight on the interval line per §1.8
-- Below forecast: tier chip, optional revised dot, per-game stale badge on a separate `.meta` row — not inline with the interval
+- Right (forecast column): N1 team-named margin; optional N2 win chance; interval range deferred to Game Detail on This Week (clarity)
+- Below forecast: tier chip, optional revised dot, per-game stale badge on a separate `.meta` row
 - Divider: `--border-subtle`; no card shadow
 
-**Interval band** — text-only `μ [lo, hi]`; no error-bar graphics, no shaded chart junk.
+> **AMENDED (clarity, 2026-09-24).** See §4.2 amendment — team-named margins;
+> This Week omits the interval line at phone width.
+
+**Interval band** — team-named margin; optional quiet range line. No error-bar graphics.
 
 **Tier chip** — pill, C1 type; labels from `conviction_label`; Toss-up uses muted fill (`--bg-secondary`).
 
@@ -714,6 +735,20 @@ Field-to-artifact mapping is mandatory: nothing on screen without a named source
 
 **Mobile:** Single-column list; sticky published_at bar; tap row → Game Detail.
 
+> **AMENDED (clarity, 2026-09-24).** Game rows show team-named favorite + margin
+> (`Texas A&M by 8.9`) and, when credible, the favored team's win chance from
+> `p_win_home`. The interval range is omitted on This Week rows (too long at
+> 390px in team-named form) and lives on Game Detail. A session-dismissible
+> “How to read this” key sits above the slate. Sort/group, stale badges, revised
+> dot, and tier suppression are unchanged.
+>
+> <details>
+> <summary>Superseded §5.1 row presentation (pre-clarity)</summary>
+>
+> Headline margin as signed `mu_margin`; interval `[lo, hi]` on the row.
+>
+> </details>
+
 ### 5.2 Game Detail (`/game/[gameId]`)
 
 **Purpose:** Full uncertainty presentation for one game.
@@ -735,6 +770,22 @@ Field-to-artifact mapping is mandatory: nothing on screen without a named source
 **Empty/stale:** Missing game → 404. Suppressed σ → hide probability bars; show `null_reason`.
 
 **Mobile:** Vertical stack — margin → tier → trajectories → provenance.
+
+> **AMENDED (clarity, 2026-09-24).** Lead with a plain-English summary built from
+> `mu_margin`, `p_win_home`, and interval fields (team-named margins; “N in 10”
+> from `margin_interval_nominal`). σ labels use “Typical miss.” Conviction tier
+> includes a one-sentence explainer from §2.2 thresholds (`TIER_ENTER` in site
+> code). Cover/over probabilities remain withdrawn (ADR 0015) — provenance moves
+> into a collapsed “More detail” section. Rating chart panels caption which
+> direction is good (higher `off_epa` / higher `def_epa` = better; see notes/14.md).
+>
+> <details>
+> <summary>Superseded §5.2 presentation (pre-clarity)</summary>
+>
+> Signed margin μ, σ glyph, Probabilities list with Home win, provenance strip
+> always expanded below the chart.
+>
+> </details>
 
 ### 5.3 Results / Track Record (`/results`)
 
@@ -764,6 +815,19 @@ Field-to-artifact mapping is mandatory: nothing on screen without a named source
 
 **Verdict display (exact):** **NOT CURRENTLY FIT TO BET** — with the full plain-language paragraph from §1.4 verbatim.
 
+> **AMENDED (clarity, 2026-09-24).** Operator decision: the verdict banner is
+> **no longer rendered** on `/results`. `track_record.verdict` remains in the
+> artifact and schema unchanged; the frontend simply stops displaying it. Track-
+> record metrics table (values, CIs, n, labels) is unchanged.
+>
+> <details>
+> <summary>Superseded §5.3 verdict display (pre-clarity)</summary>
+>
+> **Verdict display (exact):** **NOT CURRENTLY FIT TO BET** — with the full
+> plain-language paragraph from §1.4 verbatim. Component: `VerdictBlock`.
+>
+> </details>
+
 **Empty states:** No results file → "Results available after Week 1 completes." Offseason shows last season.
 
 **Backend deliverable (named in TASKS.md):** `grade_export` seam — builds `results_<season>.json` per §1.3 grading rule. **Not assumed to exist today.**
@@ -786,6 +850,21 @@ Field-to-artifact mapping is mandatory: nothing on screen without a named source
 | Responsible gambling | §6.2 |
 
 **Mobile:** Single column; disclaimer always visible before fold on first visit (dismissible per session).
+
+> **AMENDED (clarity, 2026-09-24).** About opens with first-person plain sentences
+> on what Ridge does, a live worked example from `week_predictions`, how the
+> model works without jargon-first framing, an explicit “what Ridge will not
+> show” section, update cadence from `meta.publish_schedule`, and honesty copy
+> that no longer references the Results verdict. §6.1 / §6.2 remain verbatim
+> with anchors `#disclaimer` and `#responsible-gambling`.
+>
+> <details>
+> <summary>Superseded §5.4 About structure (pre-clarity)</summary>
+>
+> Identity blurb; MODEL_SECTIONS (how-it-works / what-numbers-mean /
+> data-and-cadence); honesty list including fit-to-bet verdict reference.
+>
+> </details>
 
 ---
 

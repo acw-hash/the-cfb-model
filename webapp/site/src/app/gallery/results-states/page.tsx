@@ -5,7 +5,6 @@ import { GradedGamesSection } from "@/components/Results/GradedGamesSection";
 import { MetricRow } from "@/components/Results/MetricRow";
 import { ResultsPage } from "@/components/Results/ResultsPage";
 import { TrackRecordSection } from "@/components/Results/TrackRecordSection";
-import { VerdictBlock } from "@/components/Results/VerdictBlock";
 import { loadArtifact } from "@/lib/artifacts/loader";
 import type { ResultsSeason, TrackRecord } from "@/lib/artifacts/types";
 import { EMPTY_LIVE_COPY } from "@/lib/results/copy";
@@ -54,13 +53,6 @@ export default async function ResultsStatesPage(): Promise<React.ReactElement> {
         </div>
         <GalleryThemeToggle />
       </header>
-
-      <section className={styles.section} data-testid="state-verdict">
-        <h2 className={styles.sectionTitle}>Verdict</h2>
-        <div className={styles.statePanel}>
-          <VerdictBlock verdict={track.verdict} />
-        </div>
-      </section>
 
       <section className={styles.section} data-testid="state-ci">
         <h2 className={styles.sectionTitle}>CI treatment</h2>

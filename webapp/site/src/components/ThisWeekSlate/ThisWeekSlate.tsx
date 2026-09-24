@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { GameRow } from "@/components/GameRow/GameRow";
+import { HowToReadKey } from "@/components/HowToReadKey/HowToReadKey";
 import { SlateGroupHeader } from "@/components/SlateGroupHeader/SlateGroupHeader";
 import { SortControl } from "@/components/SortControl/SortControl";
 import { TeamSearch } from "@/components/TeamSearch/TeamSearch";
@@ -134,6 +135,7 @@ export function ThisWeekSlate({
           {liveMessage}
         </p>
       </div>
+      <HowToReadKey />
       {showNoMatches ? (
         <p className={styles.noMatches} data-testid="search-no-matches">
           No games match that team.{" "}

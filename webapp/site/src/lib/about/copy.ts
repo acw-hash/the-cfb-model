@@ -1,54 +1,56 @@
 /**
- * About / Methodology copy — public-reader level.
- * §6 disclaimer and responsible-gambling text are adapted for readability only
- * (line breaks / emphasis via markup), never weakened.
+ * About / Methodology copy — public-reader level (clarity rewrite).
+ * §6.1 disclaimer and §6.2 responsible-gambling text stay verbatim.
  */
 
-/** One-screen identity — what a stranger needs first. */
-export const RIDGE_IDENTITY =
-  "Ridge publishes college football forecasts with uncertainty. It is a team-rating engine that updates during the season, then a separate layer that turns those ratings into a predicted margin and combined score — always shown with a range where the outcome can still land.";
+import { formatNominalCoveragePhrase } from "@/lib/formatting/team-margin";
 
-export const MODEL_SECTIONS = [
-  {
-    id: "how-it-works",
-    title: "How the forecast is built",
-    paragraphs: [
-      "Two stages, kept separate on purpose.",
-      "First, a rating engine tracks how strong each team’s offense and defense look right now. After each completed game, those ratings update. Early in the season the ratings are uncertain; as more games land, the picture usually firms up. (Technical name, if you see it elsewhere: a state-space / Kalman-style rating system — continuous beliefs about team strength, revised with new results.)",
-      "Second, a mapping layer reads those ratings and related game context and produces a predicted margin (home minus away, in points) and a predicted total (combined score). That layer is trained more slowly than the ratings; week to week, most of the change in the forecast comes from the ratings moving, not from retraining the mapper.",
-      "When several mapping models are combined, the site labels that as a reduced ensemble: a smaller set of members than the full experimental stack, not a claim that every research idea is in production.",
-      "Uncertainty bands on the page come from the predictive distribution, with a conformal calibration layer when the export includes interval bounds. In plain terms: the band is constructed so that, historically, outcomes fall inside it at about the stated coverage rate — approximate, not a guarantee.",
-    ],
-  },
-  {
-    id: "what-numbers-mean",
-    title: "What the numbers mean",
-    paragraphs: [
-      "A predicted margin is a central estimate — the middle of the forecast, not a promise.",
-      "The interval beside it is the uncertainty band: where outcomes still look plausible under the model. Games regularly finish outside that band.",
-      "Some games show no uncertainty band. When the model’s interval is internally inconsistent with its point forecast, the band is withheld rather than shown. That absence is deliberate — not missing data.",
-      "A conviction tier (Strong lean, Clear lean, Lean, or Toss-up) describes how decisive that forecast looks. It is a label on the forecast. It is not a pick, not a wager, and not advice to bet.",
-      "When a value cannot be computed honestly — for example when predictive uncertainty is refused — the site shows that absence (“—” or “not computed”). Missing is shown as missing.",
-    ],
-  },
-  {
-    id: "data-and-cadence",
-    title: "Data sources and publish schedule",
-    paragraphs: [
-      "Schedule facts, scores, and team school names are ingested from CollegeFootballData (CFBD) on a private workstation. This website never calls CFBD, The Odds API, or any live sportsbook. It only reads versioned JSON artifacts that the workstation publishes.",
-      "Primary publish is Tuesday 06:00 UTC. Refreshes run Thursday–Saturday 06:00 UTC. Team ratings also update after the weekend (Sunday 06:00 UTC on the workstation schedule).",
-      "Market lines are used internally on the workstation for evaluation against the closing market. They are never published on this site. Ridge is a forecasts-with-uncertainty product, not a betting-tips product; showing lines would invite edge claims the public record does not support.",
-    ],
-  },
+/** Opening: what Ridge does, in plain sentences. */
+export const RIDGE_IDENTITY = [
+  "I built Ridge to publish college football forecasts with the uncertainty left in.",
+  "Every game gets a predicted margin, a predicted combined score, and a range showing how far off the result could reasonably land.",
+  "What you do with that is up to you.",
+].join(" ");
+
+export const HOW_IT_WORKS_TITLE = "How the model works";
+
+/**
+ * Static how-it-works body. The range sentence is completed at render time from
+ * the worked-example game's margin_interval_nominal when one is available.
+ */
+export const HOW_IT_WORKS_PARAGRAPHS_LEAD = [
+  "I keep a rating for every team's offense and defense. After each completed game, those ratings update. Early in the season they wobble. By midseason they usually settle.",
+  "A second step turns those ratings into a predicted margin (who's favored and by how many points) and a predicted total for both teams combined. Week to week, most of the change comes from the ratings moving.",
 ] as const;
 
-export const HONESTY_COMMITMENTS = [
-  "Uncertainty is always shown with the forecast when the export provides it.",
-  "Missing values are shown as missing — never filled with zeros or averages.",
-  "Stale forecasts are labeled when inputs are stale.",
-  "No picks, no suggested wagers, no implied edge claims.",
-  "The fit-to-bet verdict from the recorded track record is published on Results — currently NOT CURRENTLY FIT TO BET.",
+/** Fallback range sentence when no example game / nominal is available. */
+export const HOW_IT_WORKS_RANGE_FALLBACK =
+  "The range is where the final margin is likely to land. Some games finish outside it, and the Results page shows which ones did.";
+
+export const WHAT_RIDGE_WONT_SHOW_TITLE = "What Ridge won't show you";
+
+/**
+ * Explicit exception to the betting-language grep gate: this section states
+ * the product refusal (no picks, lines, or betting advice).
+ */
+export const WHAT_RIDGE_WONT_SHOW_PARAGRAPHS = [
+  "Ridge doesn't publish picks, sportsbook lines, or betting advice. I use lines behind the scenes to check the model after games are played, but they stay off the site. Ridge is about what's likely to happen on the field. Betting is a different question, and this site doesn't try to answer it.",
 ] as const;
+
+export const UPDATE_SCHEDULE_TITLE = "When forecasts update";
+
+export const HONESTY_TITLE = "Honesty commitments";
+
+export const HONESTY_COPY =
+  "Every forecast shows its uncertainty when there's enough data to measure it. If something's missing, it stays blank. I never fill gaps with zeros or averages. If the data behind a forecast is out of date, the game is marked. There are no suggested wagers anywhere on the site.";
+
+/** @deprecated Prefer HONESTY_COPY — kept as a one-element list for map-style callers. */
+export const HONESTY_PARAGRAPHS = [HONESTY_COPY] as const;
+
+export const WORKED_EXAMPLE_TITLE = "A game, read out loud";
+
+export const WORKED_EXAMPLE_FALLBACK =
+  "When a week of forecasts is available, this section walks through one game with live numbers. Right now there is no slate to read, so here is the shape: a favored team and margin, a win chance, a range for the final margin, and a conviction tier that only labels how decisive the forecast looks.";
 
 /**
  * §6.1 site-wide disclaimer — substantive text unchanged.
@@ -83,4 +85,34 @@ export const ATTRIBUTION_PLACEHOLDER = ATTRIBUTION_COPY;
 
 export function disclaimerForYear(year: number): string {
   return DISCLAIMER_TEMPLATE.replace("{year}", String(year));
+}
+
+/**
+ * Format publish_schedule fields for the About cadence paragraph.
+ *
+ * The artifact strings are day-of-week cadence labels ("Tue 06:00 UTC"), not
+ * absolute ISO timestamps. They cannot be converted to viewer-local time
+ * without inventing a calendar date, so they are shown as published (UTC).
+ */
+export function formatPublishScheduleCopy(schedule: {
+  primary: string;
+  refresh: string;
+  postgame_ratings: string;
+}): string {
+  return `Primary publish is ${schedule.primary}. Refreshes run ${schedule.refresh}. Team ratings also update after the weekend (${schedule.postgame_ratings}).`;
+}
+
+/**
+ * How-it-works range sentence from the worked-example nominal.
+ * Uses the same coverage formatter as game summaries (N times in 10 or p%).
+ */
+export function howItWorksRangeSentence(nominal: number | null | undefined): string {
+  const coverage = formatNominalCoveragePhrase(nominal);
+  if (coverage.kind === "absent") {
+    return HOW_IT_WORKS_RANGE_FALLBACK;
+  }
+  if (coverage.kind === "n_in_10") {
+    return `The range is set so the final margin should land inside it about ${coverage.label}. Some games finish outside it, and the Results page shows which ones did.`;
+  }
+  return `The range is set so the final margin should land inside it about ${coverage.pctLabel} of the time. Some games finish outside it, and the Results page shows which ones did.`;
 }

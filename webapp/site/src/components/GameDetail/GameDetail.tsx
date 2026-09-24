@@ -4,11 +4,12 @@ import {
   TOTAL_INTERVAL_ABSENT_REASON,
 } from "@/lib/game-detail/absence";
 import type { RatingPoint } from "@/lib/game-detail/ratings";
-import { nullReasonFootnote } from "@/lib/formatting/numbers";
+import { formatTotal, nullReasonFootnote } from "@/lib/formatting/numbers";
 
 import { ForecastBlock } from "./ForecastBlock";
 import { MatchupHeader } from "./MatchupHeader";
-import { ProbabilityList } from "./ProbabilityList";
+import { MoreDetail } from "./MoreDetail";
+import { PlainSummary } from "./PlainSummary";
 import { ProvenanceStrip } from "./ProvenanceStrip";
 import { RatingTrajectoryChart } from "./RatingTrajectoryChart";
 import { RevisionBlock } from "./RevisionBlock";
@@ -21,7 +22,13 @@ interface GameDetailProps {
   awaySeries: RatingPoint[];
 }
 
-/** Full uncertainty presentation for one game (§5.2). */
+/**
+ * Full uncertainty presentation for one game (§5.2, clarity).
+ *
+ * Cover/over probabilities were withdrawn in schema 1.2.0 (ADR 0015) and are
+ * not available to collapse. Win chance lives in the plain summary; provenance
+ * sits in More detail.
+ */
 export function GameDetail({ game, homeSeries, awaySeries }: GameDetailProps): React.ReactElement {
   const marginAbsentReason =
     game.margin_interval_lo == null || game.margin_interval_hi == null
@@ -31,6 +38,8 @@ export function GameDetail({ game, homeSeries, awaySeries }: GameDetailProps): R
     game.total_interval_lo == null || game.total_interval_hi == null
       ? TOTAL_INTERVAL_ABSENT_REASON
       : undefined;
+  const totalLead =
+    game.mu_total != null ? `Combined score: about ${formatTotal(game.mu_total)}` : null;
 
   return (
     <article className={styles.page} data-testid="game-detail">
@@ -40,6 +49,7 @@ export function GameDetail({ game, homeSeries, awaySeries }: GameDetailProps): R
         kickoffUtc={game.kickoff_utc}
         neutralSite={game.neutral_site}
       />
+      <PlainSummary game={game} />
       <ForecastBlock
         label="Margin"
         billing="primary"
@@ -51,6 +61,9 @@ export function GameDetail({ game, homeSeries, awaySeries }: GameDetailProps): R
         signed
         nullReason={game.null_reason}
         intervalAbsentReason={marginAbsentReason}
+        homeTeam={game.home_team}
+        awayTeam={game.away_team}
+        pWinHome={game.p_win_home}
       />
       <ForecastBlock
         label="Total"
@@ -63,8 +76,8 @@ export function GameDetail({ game, homeSeries, awaySeries }: GameDetailProps): R
         signed={false}
         nullReason={game.null_reason}
         intervalAbsentReason={totalAbsentReason}
+        plainLead={totalLead}
       />
-      <ProbabilityList game={game} />
       <RevisionBlock
         convictionTier={game.conviction_tier}
         convictionLabel={game.conviction_label}
@@ -80,7 +93,9 @@ export function GameDetail({ game, homeSeries, awaySeries }: GameDetailProps): R
           throughWeek={game.week}
         />
       ) : null}
-      <ProvenanceStrip game={game} />
+      <MoreDetail note="Numbers below are model metadata for this publish, not odds lines.">
+        <ProvenanceStrip game={game} />
+      </MoreDetail>
     </article>
   );
 }

@@ -66,9 +66,6 @@ await page.screenshot({
   fullPage: true,
 });
 
-const verdict = page.getByTestId("verdict-block");
-await verdict.screenshot({ path: path.join(OUT, "results-verdict.png") });
-
 const ciMetric = page.getByTestId("metric-fund_ats_snapshots");
 await ciMetric.scrollIntoViewIfNeeded();
 await ciMetric.screenshot({ path: path.join(OUT, "results-ci-treatment.png") });

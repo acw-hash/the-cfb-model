@@ -11,7 +11,6 @@ import { GradedGamesSection } from "@/components/Results/GradedGamesSection";
 import { MetricRow } from "@/components/Results/MetricRow";
 import { ResultsPage } from "@/components/Results/ResultsPage";
 import { TrackRecordSection } from "@/components/Results/TrackRecordSection";
-import { VerdictBlock } from "@/components/Results/VerdictBlock";
 import type { ResultsSeason, TrackRecord, TrackRecordMetric } from "@/lib/artifacts/types";
 import {
   ciIncludesFifty,
@@ -25,7 +24,6 @@ import {
   LOCKBOX_NO_AGGREGATE_COPY,
   NO_SINGLE_NUMBER_COPY,
   SCOPE_COPY,
-  VERDICT_LAY_SUMMARY,
   gameNotFinalCountCopy,
 } from "@/lib/results/copy";
 import {
@@ -163,15 +161,14 @@ describe("no aggregate — grep rendered output", () => {
 });
 
 describe("verdict and scope", () => {
-  it("renders NOT CURRENTLY FIT TO BET with §1.4 plain_language primary and lay summary in disclosure", () => {
+  it("does not render the verdict banner on Results (clarity)", () => {
     const track = loadTrack();
-    const html = renderToStaticMarkup(<VerdictBlock verdict={track.verdict} />);
-    expect(html).toContain("NOT CURRENTLY FIT TO BET");
-    expect(html).toContain('data-testid="verdict-plain-language"');
-    expect(html).toContain(track.verdict.plain_language);
-    expect(html).toContain('data-testid="verdict-lay-disclosure"');
-    expect(html).toContain(VERDICT_LAY_SUMMARY);
-    expect(html).not.toContain("Recorded finding");
+    const html = renderToStaticMarkup(<ResultsPage track={track} results={loadResults()} />);
+    expect(html).not.toContain("NOT CURRENTLY FIT TO BET");
+    expect(html).not.toContain('data-testid="verdict-block"');
+    expect(html).not.toContain('data-testid="verdict-plain-language"');
+    // Artifact still carries the field — frontend simply stops rendering it.
+    expect(track.verdict.label).toBe("NOT CURRENTLY FIT TO BET");
   });
 
   it("states scope: walk-forward, lockbox 2025, live 2026", () => {

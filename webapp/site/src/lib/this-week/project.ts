@@ -9,6 +9,7 @@ export const THIS_WEEK_GAME_KEYS = [
   "neutral_site",
   "mu_margin",
   "sigma_margin",
+  "sigma_margin_credible",
   "margin_interval_lo",
   "margin_interval_hi",
   "null_reason",
@@ -19,6 +20,8 @@ export const THIS_WEEK_GAME_KEYS = [
   "stale_stamp",
   "stale_sources",
   "p_favored",
+  "p_win_home",
+  "p_win_home_credible",
 ] as const satisfies ReadonlyArray<keyof ThisWeekGame>;
 
 function projectStaleSources(sources: StaleSource[]): StaleSource[] {
@@ -42,6 +45,7 @@ export function projectThisWeekGame(game: GamePrediction): ThisWeekGame {
     neutral_site: game.neutral_site,
     mu_margin: game.mu_margin,
     sigma_margin: game.sigma_margin,
+    sigma_margin_credible: game.sigma_margin_credible,
     margin_interval_lo: game.margin_interval_lo,
     margin_interval_hi: game.margin_interval_hi,
     null_reason: game.null_reason,
@@ -52,6 +56,8 @@ export function projectThisWeekGame(game: GamePrediction): ThisWeekGame {
     stale_stamp: game.stale_stamp,
     stale_sources: projectStaleSources(game.stale_sources),
     p_favored: game.conviction_basis?.p_favored ?? null,
+    p_win_home: game.p_win_home,
+    p_win_home_credible: game.p_win_home_credible,
   };
 }
 

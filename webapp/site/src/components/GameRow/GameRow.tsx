@@ -1,9 +1,12 @@
+import { Figure } from "@/components/Figure/Figure";
 import { IntervalBand } from "@/components/IntervalBand/IntervalBand";
 import { KickoffTime } from "@/components/KickoffTime/KickoffTime";
 import { RevisedMarker } from "@/components/RevisedMarker/RevisedMarker";
 import { StaleBadge } from "@/components/StaleBadge/StaleBadge";
 import { TierChip } from "@/components/TierChip/TierChip";
 import type { GamePrediction, ThisWeekGame } from "@/lib/artifacts/types";
+import { formatProbability } from "@/lib/formatting/numbers";
+import { favoredWinProbability } from "@/lib/formatting/team-margin";
 
 import styles from "./GameRow.module.css";
 
@@ -24,6 +27,9 @@ type GameRowModel = Pick<
   | "tier_primary"
   | "stale_stamp"
   | "stale_sources"
+  | "p_win_home"
+  | "p_win_home_credible"
+  | "sigma_margin_credible"
 >;
 
 interface GameRowProps {
@@ -32,9 +38,18 @@ interface GameRowProps {
   timeZone?: string;
 }
 
-/** Scores-app density game row (§4.3). */
+function rowWinChance(game: GameRowModel | GamePrediction): string | null {
+  if (!game.sigma_margin_credible || !game.p_win_home_credible || game.p_win_home == null) {
+    return null;
+  }
+  const pFav = favoredWinProbability(game.mu_margin, game.p_win_home);
+  return formatProbability(pFav);
+}
+
+/** Scores-app density game row (§4.3, clarity). */
 export function GameRow({ game, timeZone }: GameRowProps): React.ReactElement {
   const matchup = `${game.away_team} @ ${game.home_team}`;
+  const winChance = rowWinChance(game);
 
   return (
     <article className={styles.row}>
@@ -59,7 +74,12 @@ export function GameRow({ game, timeZone }: GameRowProps): React.ReactElement {
       </div>
 
       <div className={styles.right}>
-        <IntervalBand game={game} />
+        <IntervalBand game={game} showRange={false} />
+        {winChance ? (
+          <Figure variant="n2" className={styles.winChance} data-testid="row-win-chance">
+            {winChance}
+          </Figure>
+        ) : null}
         <div className={styles.meta}>
           <TierChip convictionTier={game.conviction_tier} convictionLabel={game.conviction_label} />
           <RevisedMarker

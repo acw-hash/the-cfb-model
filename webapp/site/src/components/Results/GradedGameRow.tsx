@@ -83,6 +83,9 @@ export function GradedGameRow({ game, timeZone }: GradedGameRowProps): React.Rea
                 margin_interval_lo: game.margin_interval_lo,
                 margin_interval_hi: game.margin_interval_hi,
                 null_reason: null,
+                home_team: game.home_team,
+                away_team: game.away_team,
+                p_win_home: game.p_win_home,
               }}
             />
             <TierChip

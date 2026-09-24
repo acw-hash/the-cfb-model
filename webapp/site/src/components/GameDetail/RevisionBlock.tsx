@@ -1,6 +1,7 @@
 import { RevisedMarker } from "@/components/RevisedMarker/RevisedMarker";
 import { TierChip } from "@/components/TierChip/TierChip";
 import type { ConvictionTier } from "@/lib/artifacts/types";
+import { tierExplainerSentence } from "@/lib/formatting/tier-copy";
 import { TIER_GROUP_LABEL } from "@/lib/this-week/sort";
 
 import styles from "./RevisionBlock.module.css";
@@ -36,6 +37,11 @@ export function RevisionBlock({
         />
         {convictionTier == null ? <span className={styles.suppressed}>Tier not shown</span> : null}
       </div>
+      {convictionTier != null ? (
+        <p className={styles.explainer} data-testid="tier-explainer">
+          {tierExplainerSentence(convictionTier)}
+        </p>
+      ) : null}
       {showPrimary ? (
         <p className={styles.primary} data-testid="tuesday-primary">
           Tuesday primary: {TIER_GROUP_LABEL[tierPrimary]}

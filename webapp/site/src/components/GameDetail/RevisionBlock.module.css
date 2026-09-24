@@ -27,6 +27,13 @@
   color: var(--text-tertiary);
 }
 
+.explainer {
+  margin: var(--space-2) 0 0;
+  font-size: var(--type-b2-size);
+  line-height: var(--type-b2-line);
+  color: var(--text-secondary);
+}
+
 .suppressed {
   font-size: var(--type-c1-size);
   line-height: var(--type-c1-line);

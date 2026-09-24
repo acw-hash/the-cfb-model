@@ -14,15 +14,12 @@ import {
 } from "@/lib/game-detail/absence";
 import { cloneNullMarginInterval } from "@/lib/game-detail/demo-states";
 import { projectGameDetailGame } from "@/lib/game-detail/project";
-import { ABSENT, formatMargin } from "@/lib/formatting/numbers";
+import { ABSENT } from "@/lib/formatting/numbers";
+import { formatTeamNamedMargin } from "@/lib/formatting/team-margin";
 import { projectThisWeekGame } from "@/lib/this-week/project";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const FIXTURE_DIR = path.resolve(__dirname, "../../fixtures");
-const INTERVAL_BAND_CSS = fs.readFileSync(
-  path.resolve(__dirname, "../src/components/IntervalBand/IntervalBand.module.css"),
-  "utf8",
-);
 const GAME_ROW_CSS = fs.readFileSync(
   path.resolve(__dirname, "../src/components/GameRow/GameRow.module.css"),
   "utf8",
@@ -35,21 +32,24 @@ function loadWeek(): WeekPredictions {
 }
 
 describe("W10-UI — §1.8 honest interval absence", () => {
-  it("This Week renders — in the Primary slot when bounds are null", () => {
+  it("This Week shows team-named margin and omits the range line (clarity)", () => {
     const week = loadWeek();
     const source = week.games[0];
     const clone = cloneNullMarginInterval(source);
     const html = renderToStaticMarkup(<GameRow game={projectThisWeekGame(clone)} />);
-    const muText = formatMargin(clone.mu_margin, clone.sigma_margin);
+    const muText = formatTeamNamedMargin(
+      clone.mu_margin,
+      clone.home_team,
+      clone.away_team,
+      clone.sigma_margin,
+      clone.p_win_home,
+    );
     expect(muText).not.toBeNull();
-    expect(html).toContain(muText!);
-    expect(html).toContain('data-testid="interval-absent"');
-    expect(html).toContain(ABSENT);
+    expect(html).toContain(muText!.replace(/&/g, "&amp;"));
+    // Range moved to Game Detail — phone-width team-named intervals do not fit.
+    expect(html).not.toContain('data-testid="interval-line"');
+    expect(html).not.toContain('data-testid="interval-absent"');
     expect(html).not.toMatch(/\[\+|\[\u2212/);
-  });
-
-  it("This Week reserves the same interval line height for present and null bounds", () => {
-    expect(INTERVAL_BAND_CSS).toContain("min-height: var(--type-n2-line)");
   });
 
   it("Game Detail renders — in the Primary interval slot for a null margin band", () => {
@@ -64,9 +64,15 @@ describe("W10-UI — §1.8 honest interval absence", () => {
     expect(html).toContain(MARGIN_INTERVAL_ABSENT_REASON);
     expect(html).toContain(TOTAL_INTERVAL_ABSENT_REASON);
     expect(html).toContain("Interval not computed");
-    const muText = formatMargin(clone.mu_margin, clone.sigma_margin);
+    const muText = formatTeamNamedMargin(
+      clone.mu_margin,
+      clone.home_team,
+      clone.away_team,
+      clone.sigma_margin,
+      clone.p_win_home,
+    );
     expect(muText).not.toBeNull();
-    expect(html).toContain(muText!);
+    expect(html).toContain(muText!.replace(/&/g, "&amp;"));
   });
 
   it("Game row team names use B2 scale, not T3", () => {

@@ -2,7 +2,7 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
-import { AboutPage } from "@/components/About/AboutPage";
+import { AboutPage, selectAboutExampleGame } from "@/components/About/AboutPage";
 import { SiteFooter } from "@/components/SiteFooter/SiteFooter";
 import * as aboutCopy from "@/lib/about/copy";
 import {
@@ -10,11 +10,13 @@ import {
   ATTRIBUTION_HEADING,
   CFBD_ATTRIBUTION,
   DISCLAIMER_TEMPLATE,
-  HONESTY_COMMITMENTS,
+  HONESTY_COPY,
   RESPONSIBLE_GAMBLING_COPY,
   RIDGE_IDENTITY,
+  WHAT_RIDGE_WONT_SHOW_PARAGRAPHS,
   disclaimerForYear,
 } from "@/lib/about/copy";
+import type { GamePrediction } from "@/lib/artifacts/types";
 
 const APPROVED_ATTRIBUTION_SENTENCE_1 = "Ridge is an independent research project.";
 const APPROVED_ATTRIBUTION_SENTENCE_2 = "It is not affiliated with any school or conference.";
@@ -70,6 +72,48 @@ function collectExportedStrings(value: unknown): string[] {
   return [];
 }
 
+const SAMPLE_HOME: GamePrediction = {
+  game_id: "test-home",
+  season: 2024,
+  week: 5,
+  home_team: "Texas A&M",
+  away_team: "Arkansas",
+  home_team_id: 1,
+  away_team_id: 2,
+  kickoff_utc: "2024-09-28T19:30:00Z",
+  neutral_site: true,
+  conference_game: true,
+  mu_margin: 8.9,
+  sigma_margin: 16.7,
+  sigma_margin_credible: true,
+  margin_interval_lo: -20.2,
+  margin_interval_hi: 34.9,
+  margin_interval_nominal: 0.8,
+  mu_total: 51.2,
+  sigma_total: 16.9,
+  sigma_total_credible: true,
+  total_interval_lo: null,
+  total_interval_hi: null,
+  total_interval_nominal: null,
+  p_win_home: 0.76,
+  p_win_home_credible: true,
+  conviction_tier: "clear_lean",
+  conviction_team: "Texas A&M",
+  conviction_label: "Clear lean Texas A&M",
+  conviction_basis: null,
+  tier_primary: null,
+  tier_revised_since_primary: false,
+  is_stale: false,
+  stale_stamp: null,
+  stale_sources: [],
+  null_reason: null,
+  vintage_label: "TEST",
+  ensemble_scope_label: "TEST",
+  feature_time_label: "TEST",
+  published_at: "2024-09-24T10:00:00Z",
+  refresh_kind: "tuesday_primary",
+};
+
 describe("About page — stranger test and §6 copy", () => {
   it("renders identity within the opening block", () => {
     const html = renderToStaticMarkup(<AboutPage year={2026} />);
@@ -77,12 +121,74 @@ describe("About page — stranger test and §6 copy", () => {
     expect(html).toContain('data-testid="ridge-identity"');
   });
 
-  it("lists honesty commitments including fit-to-bet verdict", () => {
+  it("does not reference the Results verdict in honesty copy", () => {
     const html = renderToStaticMarkup(<AboutPage year={2026} />);
-    for (const item of HONESTY_COMMITMENTS) {
-      expect(html).toContain(item);
-    }
-    expect(html).toContain("NOT CURRENTLY FIT TO BET");
+    expect(html).toContain("Every forecast shows its uncertainty when there&#x27;s enough data");
+    expect(html).toContain("no suggested wagers anywhere on the site");
+    expect(html).not.toContain("NOT CURRENTLY FIT TO BET");
+    expect(html).not.toContain("fit-to-bet");
+  });
+
+  it("renders a live worked example from artifact fields", () => {
+    const html = renderToStaticMarkup(<AboutPage year={2026} exampleGame={SAMPLE_HOME} />);
+    expect(html).toContain("Texas A&amp;M by 8.9");
+    expect(html).toContain("Ridge gives Texas A&amp;M a 76% chance to win.");
+    expect(html).toContain("Clear lean Texas A&amp;M");
+    expect(html).toContain("between Arkansas by 20.2 and Texas A&amp;M by 34.9");
+    expect(html).not.toContain("between Arkansas by 20.2 to Texas");
+    expect(html).toContain("Even at 76%, Arkansas wins about 24 times in 100");
+    expect(html).toContain("It&#x27;s not a recommendation.");
+    expect(html).toContain("Labels are sticky");
+    expect(html).not.toContain("14-point favorite");
+    expect(html).not.toContain("in the model&#x27;s view");
+    expect(html).toContain('data-testid="about-worked-example"');
+  });
+
+  it("uses the example nominal in how-it-works range copy", () => {
+    const html = renderToStaticMarkup(<AboutPage year={2026} exampleGame={SAMPLE_HOME} />);
+    expect(html).toContain(
+      "The range is set so the final margin should land inside it about 8 times in 10.",
+    );
+    expect(html).toContain("the Results page shows which ones did");
+  });
+
+  it("omits Next update when the timestamp is in the past", () => {
+    const html = renderToStaticMarkup(
+      <AboutPage year={2026} nextExpectedPublishUtc="2020-01-01T00:00:00Z" timeZone="UTC" />,
+    );
+    expect(html).not.toContain("Next update:");
+  });
+
+  it("renders Next update in local time when the timestamp is in the future", () => {
+    const html = renderToStaticMarkup(
+      <AboutPage
+        year={2026}
+        nextExpectedPublishUtc="2099-06-15T12:00:00Z"
+        timeZone="America/New_York"
+      />,
+    );
+    expect(html).toContain("Next update:");
+    expect(html).toContain('data-testid="next-update"');
+  });
+
+  it("falls back when no example game is available", () => {
+    const html = renderToStaticMarkup(<AboutPage year={2026} exampleGame={null} />);
+    expect(html).toContain("When a week of forecasts is available");
+  });
+
+  it("renders publish schedule from meta when provided", () => {
+    const html = renderToStaticMarkup(
+      <AboutPage
+        year={2026}
+        publishSchedule={{
+          primary: "Tue 06:00 UTC",
+          refresh: "Thu–Sat 06:00 UTC",
+          postgame_ratings: "Sun 06:00 UTC",
+        }}
+      />,
+    );
+    expect(html).toContain("Primary publish is Tue 06:00 UTC");
+    expect(html).toContain("Thu–Sat 06:00 UTC");
   });
 
   it("renders §6.1 disclaimer without weakening", () => {
@@ -140,32 +246,22 @@ describe("About page — stranger test and §6 copy", () => {
     }
   });
 
-  it("states withheld uncertainty bands are deliberate", () => {
+  it("states what Ridge will not show, including the product refusal", () => {
     const html = renderToStaticMarkup(<AboutPage year={2026} />);
-    expect(html).toContain("Some games show no uncertainty band");
-    expect(html).toContain("internally inconsistent");
-    expect(html).toContain("withheld rather than shown");
-    expect(html).toContain("That absence is deliberate");
-    expect(html).not.toMatch(/\b15 of 99\b/);
-  });
-
-  it("states market lines are not published and why", () => {
-    const html = renderToStaticMarkup(<AboutPage year={2026} />);
-    expect(html).toContain("never published on this site");
-    expect(html).toContain("invite edge claims the public record does not support");
-  });
-
-  it("glosses technical terms when used", () => {
-    const html = renderToStaticMarkup(<AboutPage year={2026} />);
-    expect(html).toMatch(/state-space[\s\S]*Kalman-style/);
-    expect(html).toMatch(/reduced ensemble:/);
-    expect(html).toMatch(/conformal calibration layer/);
+    expect(html).toContain("Ridge doesn&#x27;t publish picks");
+    expect(html).toContain("stay off the site");
+    expect(WHAT_RIDGE_WONT_SHOW_PARAGRAPHS[0]).toContain("doesn't publish picks");
   });
 
   it("does not invent age-gating, jurisdiction, or contact identity", () => {
     const html = renderToStaticMarkup(<AboutPage year={2026} />);
     expect(html).not.toMatch(/must be 21|18\+|terms of service|jurisdiction/i);
     expect(html).not.toMatch(/@gmail\.com|twitter\.com|github\.com\/[a-z]/i);
+  });
+
+  it("selectAboutExampleGame prefers a credible margin game", () => {
+    expect(selectAboutExampleGame([SAMPLE_HOME])?.game_id).toBe("test-home");
+    expect(selectAboutExampleGame([])).toBeNull();
   });
 });
 

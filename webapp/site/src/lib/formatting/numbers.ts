@@ -78,6 +78,15 @@ export function formatEpa(value: number | null | undefined): string | null {
   return formatSigned(value, 2);
 }
 
+/**
+ * Round half up to an integer percent.
+ * Avoids FP traps like 0.575 * 100 → 57.4999… (Math.round alone → 57%).
+ */
+function roundHalfUpPercent(value: number): number {
+  const scaled = Number((value * 100).toFixed(8));
+  return Math.floor(scaled + 0.5);
+}
+
 /** Probability percent — 0 decimals if ≥10%; 1 decimal if <10% (§4.2). */
 export function formatProbability(value: number | null | undefined): string | null {
   if (value == null) {
@@ -85,9 +94,9 @@ export function formatProbability(value: number | null | undefined): string | nu
   }
   const pct = value * 100;
   if (pct >= 10) {
-    return `${Math.round(pct)}%`;
+    return `${roundHalfUpPercent(value)}%`;
   }
-  return `${pct.toFixed(1)}%`;
+  return `${Number(pct.toFixed(8)).toFixed(1)}%`;
 }
 
 export interface IntervalParts {

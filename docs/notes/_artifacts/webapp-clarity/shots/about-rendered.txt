@@ -1,0 +1,49 @@
+About
+
+I built Ridge to publish college football forecasts with the uncertainty left in. Every game gets a predicted margin, a predicted combined score, and a range showing how far off the result could reasonably land. What you do with that is up to you.
+
+A game, read out loud
+
+Take Arkansas at Texas A&M. Ridge has it Texas A&M by 8.9.
+
+Ridge gives Texas A&M a 76% chance to win.
+
+8 times out of 10, the final margin should land between Arkansas by 20.2 and Texas A&M by 34.9.
+
+Even at 76%, Arkansas wins about 24 times in 100.
+
+The tier on this game is Clear lean Texas A&M. Tiers sort games by how one-sided the forecast is: Strong lean at about 85% or higher, Clear lean from about 70%, Lean from about 57%, and Toss-up below that. Labels are sticky, so a game sitting near a cutoff keeps its tier until the chance moves clearly past it. A tier describes the forecast. It's not a recommendation.
+
+How the model works
+
+I keep a rating for every team's offense and defense. After each completed game, those ratings update. Early in the season they wobble. By midseason they usually settle.
+
+A second step turns those ratings into a predicted margin (who's favored and by how many points) and a predicted total for both teams combined. Week to week, most of the change comes from the ratings moving.
+
+The range is set so the final margin should land inside it about 8 in 10 of the time. Some games finish outside it, and the Results page shows which ones did.
+
+What Ridge won't show you
+
+Ridge doesn't publish picks, sportsbook lines, or betting advice. I use lines behind the scenes to check the model after games are played, but they stay off the site. Ridge is about what's likely to happen on the field. Betting is a different question, and this site doesn't try to answer it.
+
+When forecasts update
+
+Primary publish is Tue 06:00 UTC. Refreshes run Thu–Sat 06:00 UTC. Team ratings also update after the weekend (Sun 06:00 UTC).
+
+Honesty commitments
+
+Every forecast shows its uncertainty when there's enough data to measure it. If something's missing, it stays blank. I never fill gaps with zeros or averages. If the data behind a forecast is out of date, the game is marked. There are no suggested wagers anywhere on the site.
+
+Disclaimer
+
+Ridge publishes automated college football forecasts with uncertainty from a private statistical model. These are not betting recommendations. Ridge does not publish sportsbook lines, implied edges, suggested wagers, or expected profits. Forecasts can be wrong. Past interval hit rates and track-record metrics do not guarantee future performance. For entertainment and informational purposes only. © 2026 Ridge.
+
+Responsible gambling
+
+If you or someone you know has a gambling problem, call 1-800-GAMBLER (1-800-426-2537). Help is available 24/7. Ridge does not accept wagers and is not affiliated with any sportsbook.
+
+Attribution
+
+Schedule, score, and team-name data displayed on Ridge are derived from CollegeFootballData (collegefootballdata.com). Ridge is not affiliated with CollegeFootballData.
+
+Ridge is an independent research project. It is not affiliated with any school or conference.

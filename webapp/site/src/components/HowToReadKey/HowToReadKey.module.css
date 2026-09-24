@@ -1,0 +1,25 @@
+.key {
+  margin: 0;
+  padding: var(--space-2) var(--space-4) var(--space-3);
+  font-size: var(--type-c2-size);
+  line-height: var(--type-c2-line);
+  color: var(--text-secondary);
+}
+
+.label {
+  font-weight: var(--type-c1-weight);
+  color: var(--text-secondary);
+}
+
+.dismiss {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--accent);
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+}
