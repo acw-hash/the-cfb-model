@@ -26,10 +26,19 @@
 
 | Field | Value |
 |-------|--------|
+| Commit | `6cfdb03` on `main` |
 | Rollback target (pre-scoreboard) | `https://the-cfb-model-22g890fa1-alecs-projects-2eeacfd8.vercel.app` |
+| Production deployment | `https://the-cfb-model-ghlprnkhm-alecs-projects-2eeacfd8.vercel.app` |
+| Production alias | https://the-cfb-model.vercel.app |
 | Promote | git push to `main` (GitHub → Vercel); not `--archive` |
-| Production URL | https://the-cfb-model.vercel.app |
-| Prod screenshots | `webapp/site/docs/screenshots/scoreboard/production/` |
+| Prod screenshots (dark) | `webapp/site/docs/screenshots/scoreboard/production/this-week-380-dark.png`, `…/this-week-1280-dark.png` |
+
+### Post-deploy verify (2026-09-24)
+- Header sub-labels present at 380 (MODEL / MKT / WINS BY) and 1280 (WINS BY · WIN % · TIER)
+- How-to line shows, dismisses, stays dismissed on reload
+- `?order=conviction` → `data-order="conviction"`
+- `/game` Model and market present; About these odds collapsed; attribution outside
+- Dark mode: market margins render; column rule present
 
 Rollback: `npx vercel rollback https://the-cfb-model-22g890fa1-alecs-projects-2eeacfd8.vercel.app`
 (also recorded in `docs/runbooks/odds_refresh.md`).
