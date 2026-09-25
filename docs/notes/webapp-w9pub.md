@@ -487,3 +487,133 @@ Live week-2 `daily_refresh` coherent with operator `as_of`. Fix B
 Tuesday backup beyond expected stamp fields. Verifier check 3 remains a
 false fail on non-week-1 slates. Ratchet drift known and recorded.
 
+---
+
+## FRI VERIFY — week-4 `daily_refresh` live publish (2026-09-25)
+
+Read-only against live R2 + workstation. No re-publish, push, deploy, or
+product fix. Notes append + `scripts/publish_week4_fri.py` + one commit only.
+
+**Verdict: no product ROLLBACK TRIGGER.** Content gates pass. Verifier exit 1
+is the known week-1-hardcoded early-kickoff check (open finding; same as W2
+THU VERIFY). Known test failures recorded at prep (ratchet 829≠621; credit
+277≠263; About verdict string; social default when env true) — none on the
+forecast/export path.
+
+Source: operator `uv run python -u scripts\publish_week4_fri.py`
+(`AS_OF=2026-09-25T10:00:00Z`, `week=4`, `RefreshKind.DAILY_REFRESH`).
+Script prints `webapp_export.ok` only; per-key push audit reconstructed from
+R2 last-modified + SHA-256 of GET bodies. Terminal log:
+`webapp_revalidate_ok status_code=200`, `n_prediction_rows=70`,
+`webapp_export=True`, `social_export=None`.
+
+### 1. Push audit (reconstructed)
+
+**Log (verbatim fragments):**
+
+```
+2026-09-25 08:46:43 [info     ] webapp_revalidate_ok           status_code=200
+n_prediction_rows = 70
+n_candidates = 0
+webapp_export = True
+social_export = None
+```
+
+**Reconstructed uploads (10 keys — 5 artifacts × versioned+latest):**
+
+| Key | Bytes | SHA-256 | Last-modified (UTC) |
+|-----|------:|---------|---------------------|
+| `v1/2026/w4/daily_refresh/results_2026.json` | 833830 | (pair of latest) | 2026-09-25T12:46:35Z |
+| `latest/results_2026.json` | 833830 | `5dae83d2c9d2ae4c8cc272fd92ce947358a8be822e19b3e5b8d9422f3408c635` | 2026-09-25T12:46:36Z |
+| `v1/2026/w4/daily_refresh/team_ratings_2026.json` | 107 | (pair) | 2026-09-25T12:46:37Z |
+| `latest/team_ratings_2026.json` | 107 | `85372f62dd3da9a6184cb8d5f32924cc0d395c4fc693393be36936ee102c29db` | 2026-09-25T12:46:37Z |
+| `v1/2026/w4/daily_refresh/track_record.json` | 6303 | (pair) | 2026-09-25T12:46:38Z |
+| `latest/track_record.json` | 6303 | `30cb488e5f919776c2cc7275232bbe9be25cceef6642ccbb2ca7fc7bdf44979f` | 2026-09-25T12:46:39Z |
+| `v1/2026/w4/daily_refresh/week_predictions.json` | 125627 | (pair) | 2026-09-25T12:46:40Z |
+| `latest/week_predictions.json` | 125627 | `5dcb9536e06fb04e2cff3faab71195ffaf16a924a09497b8914b3a40fc289283` | 2026-09-25T12:46:40Z |
+| `v1/2026/w4/daily_refresh/meta.json` | 902 | (pair) | 2026-09-25T12:46:41Z |
+| `latest/meta.json` | 902 | `173070629a071897d92779b32bc5cdd32b288a0696ae619ee12710729bbe258f` | 2026-09-25T12:46:42Z |
+
+| Field | Observed |
+|-------|----------|
+| Upload key count | **10** |
+| `meta_last` | **True** — `latest/meta.json` last among the five push names |
+| Revalidation | **ok**, HTTP **200** |
+| `leaked-secret-names` | absent from push return; credential-pattern scan on GET bodies: **empty** |
+
+Orphans retained: `latest/results_2024.json`, `latest/team_ratings_2024.json`,
+`latest/odds_snapshot.json` (odds go-live `2026-09-24T20:05Z`, not overwritten).
+
+### 2. `scripts/verify_published_artifacts.py latest/`
+
+Exit code **1**.
+
+```
+[FAIL] 3_early_kickoffs: {week-1 IDs → None}
+[PASS] 7_game_id_shape  (n=70)
+[PASS] 8_kickoff_gt_as_of  (as_of=2026-09-25T10:00:00+00:00)
+[PASS] 9_schema_and_fixture  (schema 1.3.0; fixture null)
+[PASS] 10_identity_stamps
+[PASS] meta_last_readable
+[PASS] schema_major
+```
+
+Not treated as product rollback — same open finding as W2 THU VERIFY.
+
+### 3. GET `latest/*`
+
+| Check | Observed | Gate |
+|-------|----------|------|
+| `refresh_kind` | `daily_refresh` (meta + week) | PASS |
+| `as_of` / `as_of_source` | `2026-09-25T10:00:00+00:00` / `operator` | PASS |
+| Published rows | **70**; `401869941` absent | PASS |
+| `kickoff_utc <= as_of` | **0** | PASS |
+| `schema_version` | **1.3.0** (unchanged from Tuesday) | PASS |
+| `fixture` key | **absent** | PASS |
+| Shared `published_at` | **`2026-09-25T12:46:34Z`** | PASS |
+| `game_id` shape | all match `^[0-9]{6,12}$` | PASS |
+| Social sidecar | `data/social/2026/w4/daily_refresh/candidates.json` **not created** | PASS |
+
+### 4. Publish history `2026_w4.jsonl`
+
+| Lines | `refresh_kind` |
+|------:|----------------|
+| 1 | `tuesday_primary` (`2026-09-23T21:33:01Z`, 71 games) |
+| 1 | `daily_refresh` (`as_of=2026-09-25T10:00:00+00:00`, `published_at=2026-09-25T12:46:34Z`, 70 games) |
+
+**PASS** (1 + 1).
+
+### 5. Suppression + tier_revised vs Tuesday
+
+| Metric | Tuesday | Friday |
+|--------|--------:|-------:|
+| Coherence-suppressed (`null_reason=incoherent_margin_interval`) | **5** | **6** |
+| `tier_revised_since_primary` | **0** | **1** |
+
+Tier change (conviction_tier old → new):
+
+| game_id | old → new |
+|---------|-----------|
+| `401856815` (TCU @ UCF) | `clear_lean` → `strong_lean` |
+
+### 6. Posted-card `mu_margin` vs `backup_latest_20260925/`
+
+Six `posted_calls_2026_w4.json` games. Max |Δ| = **0.41** (401869931).
+**No move > 1.0.** Card not touched.
+
+### 7. `posted_calls_2026_w4.json` SHA-256
+
+`6FEE332563759443FA8348BF12DF0758A451BFF48B38D53654D251B92156FF80` — **unchanged**.
+
+### 8. Production `/game` odds
+
+`GET https://the-cfb-model.vercel.app/game/401856704` (Texas @ Tennessee, in
+new slate): Model and market table renders (Margin / Win % / Total); Odds API
+attribution present; publish stamp Daily refresh / Sep 25, 2026, 12:46 PM UTC.
+
+### Acceptance
+
+Live week-4 `daily_refresh` coherent with operator `as_of`. Early kickoff
+excluded. Odds snapshot orphan retained. One hysteresis revision
+(`401856815`). Posted-card margins stable vs pre-publish backup.
+
