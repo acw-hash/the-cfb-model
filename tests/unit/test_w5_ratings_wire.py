@@ -4,7 +4,6 @@ from __future__ import annotations
 
 # Webapp TS is covered by vitest; this file documents the Python-side
 # build_team_ratings collapse for W-RATINGS-WIRE.
-
 from datetime import UTC, datetime
 
 import pandas as pd

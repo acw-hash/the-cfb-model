@@ -1279,9 +1279,7 @@ def build_team_ratings(
         work = hist.copy()
         if "kind" in work.columns:
             # Higher rank wins via tail(1): postgame preferred over weekly.
-            work["_kind_rank"] = work["kind"].map(
-                lambda k: 1 if str(k) == "postgame" else 0
-            )
+            work["_kind_rank"] = work["kind"].map(lambda k: 1 if str(k) == "postgame" else 0)
         else:
             work["_kind_rank"] = 0
         work["_event_rank"] = pd.to_datetime(work.get("event_time"), utc=True, errors="coerce")
