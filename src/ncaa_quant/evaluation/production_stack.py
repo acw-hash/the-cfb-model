@@ -169,6 +169,7 @@ class StateSpaceRatingEngine:
     _week1_freeze: dict[str, GaussianState] | None = field(default=None, init=False, repr=False)
     _week1_snapshot: dict[str, Any] | None = field(default=None, init=False, repr=False)
     _current_season: int | None = field(default=None, init=False, repr=False)
+    last_filter_history: pd.DataFrame | None = field(default=None, init=False, repr=False)
 
     def initialize_season(self, season: int, as_of: datetime) -> None:
         assert_tz_aware(as_of)
@@ -196,6 +197,7 @@ class StateSpaceRatingEngine:
             preseason_states=preseason,
             record_weekly=True,
         )
+        self.last_filter_history = result.history
         self._ingest_history(result.history)
 
     def update_after_games(self, games: pd.DataFrame) -> None:

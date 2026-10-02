@@ -2,8 +2,8 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 import { fetchR2Json, resolveR2Config } from "./r2";
-import type { ArtifactName } from "./types";
-import { ARTIFACT_FILES } from "./types";
+import type { ArtifactName, TeamRatings } from "./types";
+import { ARTIFACT_FILES, teamRatingsArtifactFile } from "./types";
 
 const DEFAULT_FIXTURE_DIR = path.resolve(process.cwd(), "../fixtures");
 
@@ -71,6 +71,46 @@ export async function loadArtifact<T>(artifact: ArtifactName): Promise<T> {
 /** Exposed for tests — where artifacts are loaded from. */
 export function getArtifactSource(): { mode: ArtifactMode; base: string } {
   return resolveArtifactBase();
+}
+
+/**
+ * Load ``team_ratings_<season>.json`` for the game's season only.
+ * Missing file / empty ``teams`` → null (honest empty state). Never falls
+ * back to another season.
+ */
+export async function loadTeamRatingsSeason(season: number): Promise<TeamRatings | null> {
+  const { mode, base } = resolveArtifactBase();
+  const fileName = teamRatingsArtifactFile(season);
+  if (mode === "r2") {
+    try {
+      const ratings = await fetchR2Json<TeamRatings>(`latest/${fileName}`);
+      if (!ratings?.teams || Object.keys(ratings.teams).length === 0) {
+        return null;
+      }
+      return ratings;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      if (message.includes("HTTP 404")) {
+        return null;
+      }
+      throw err;
+    }
+  }
+  const filePath = path.join(base, fileName);
+  try {
+    const raw = await fs.readFile(filePath, "utf8");
+    const ratings = JSON.parse(raw) as TeamRatings;
+    if (!ratings?.teams || Object.keys(ratings.teams).length === 0) {
+      return null;
+    }
+    return ratings;
+  } catch (err) {
+    const code = (err as NodeJS.ErrnoException).code;
+    if (code === "ENOENT") {
+      return null;
+    }
+    throw err;
+  }
 }
 
 /**

@@ -28,6 +28,10 @@ interface GameDetailProps {
   game: GamePrediction;
   homeSeries: RatingPoint[];
   awaySeries: RatingPoint[];
+  /** Season whose ratings artifact was requested (honest empty-state copy). */
+  ratingsSeason?: number;
+  /** True when the season ratings artifact is missing/empty or has neither team. */
+  ratingsUnavailable?: boolean;
   odds?: OddsGameView | null;
   oddsMeta?: OddsMetaFields | null;
 }
@@ -43,6 +47,8 @@ export function GameDetail({
   game,
   homeSeries,
   awaySeries,
+  ratingsSeason,
+  ratingsUnavailable = false,
   odds = null,
   oddsMeta = null,
 }: GameDetailProps): React.ReactElement {
@@ -116,7 +122,11 @@ export function GameDetail({
         tierPrimary={game.tier_primary}
         tierRevisedSincePrimary={game.tier_revised_since_primary}
       />
-      {homeSeries.length > 0 || awaySeries.length > 0 ? (
+      {ratingsUnavailable ? (
+        <p className={styles.ratingsEmpty} data-testid="ratings-unavailable">
+          Rating history for {ratingsSeason ?? game.season} isn&apos;t published yet.
+        </p>
+      ) : homeSeries.length > 0 || awaySeries.length > 0 ? (
         <RatingTrajectoryChart
           homeSchool={game.home_team}
           awaySchool={game.away_team}

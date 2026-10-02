@@ -83,7 +83,10 @@ function niceStep(raw: number): number {
   return nice * 10 ** exp;
 }
 
-/** Quiet Y ticks — labels only, no gridline clutter (§4.3). */
+/** Quiet Y ticks — labels only, no gridline clutter (§4.3).
+ * Clamped to ``[min, max]`` so expanded nice endpoints cannot paint outside
+ * the plot (the unclamped ``+1.00`` / ``−0.50`` overflow).
+ */
 export function niceTicks(min: number, max: number, target = 4): number[] {
   if (min === max) {
     return [min];
@@ -94,8 +97,13 @@ export function niceTicks(min: number, max: number, target = 4): number[] {
   const ticks: number[] = [];
   const n = Math.round((end - start) / step);
   for (let i = 0; i <= n; i += 1) {
-    const value = start + i * step;
-    ticks.push(Number(value.toPrecision(6)));
+    const value = Number((start + i * step).toPrecision(6));
+    if (value >= min - 1e-12 && value <= max + 1e-12) {
+      ticks.push(value);
+    }
+  }
+  if (ticks.length === 0) {
+    return [min, max];
   }
   return ticks;
 }

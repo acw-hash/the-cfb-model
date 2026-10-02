@@ -2,9 +2,9 @@ import { notFound } from "next/navigation";
 
 import { GameDetail } from "@/components/GameDetail/GameDetail";
 import { MaintenanceState } from "@/components/MaintenanceState/MaintenanceState";
-import { loadArtifact } from "@/lib/artifacts/loader";
+import { loadArtifact, loadTeamRatingsSeason } from "@/lib/artifacts/loader";
 import { isSchemaVersionSupported } from "@/lib/artifacts/schema-version";
-import type { TeamRatings, WeekPredictions } from "@/lib/artifacts/types";
+import type { WeekPredictions } from "@/lib/artifacts/types";
 import { lookupTeam, seriesForTeam } from "@/lib/game-detail/ratings";
 import { projectGameDetailGame } from "@/lib/game-detail/project";
 import { loadOddsPageContext } from "@/lib/odds/load";
@@ -65,24 +65,16 @@ export default async function GamePage({ params }: GamePageProps): Promise<React
     notFound();
   }
 
-  let homeSeries = seriesForTeam(undefined, game.published_at, game.week);
-  let awaySeries = homeSeries;
-  try {
-    const ratings = await loadArtifact<TeamRatings>("team_ratings_2024");
-    homeSeries = seriesForTeam(
-      lookupTeam(ratings, game.home_team_id),
-      game.published_at,
-      game.week,
-    );
-    awaySeries = seriesForTeam(
-      lookupTeam(ratings, game.away_team_id),
-      game.published_at,
-      game.week,
-    );
-  } catch {
-    homeSeries = [];
-    awaySeries = [];
-  }
+  const ratings = await loadTeamRatingsSeason(game.season);
+  const homeEntry = ratings ? lookupTeam(ratings, game.home_team_id) : undefined;
+  const awayEntry = ratings ? lookupTeam(ratings, game.away_team_id) : undefined;
+  const ratingsUnavailable = ratings == null || (homeEntry == null && awayEntry == null);
+  const homeSeries = ratingsUnavailable
+    ? []
+    : seriesForTeam(homeEntry, game.published_at, game.week);
+  const awaySeries = ratingsUnavailable
+    ? []
+    : seriesForTeam(awayEntry, game.published_at, game.week);
 
   const oddsCtx = await loadOddsPageContext();
   const oddsGame = oddsCtx?.byGameId[game.game_id] ?? null;
@@ -92,6 +84,8 @@ export default async function GamePage({ params }: GamePageProps): Promise<React
       game={projectGameDetailGame(game)}
       homeSeries={homeSeries}
       awaySeries={awaySeries}
+      ratingsSeason={game.season}
+      ratingsUnavailable={ratingsUnavailable}
       odds={oddsGame}
       oddsMeta={
         oddsCtx
