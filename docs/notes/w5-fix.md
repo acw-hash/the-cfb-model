@@ -80,6 +80,13 @@ Mid-fix a first full run also failed two W9L mocks that lacked
 `last_filter_history` — fixed with `getattr(engine, "last_filter_history", None)`.
 Those two + `test_w5_ratings_wire` re-confirmed green before the final `make test`.
 
+## Commits / preview
+
+- `a99de1ba1675f3207ec584116be02786f7dd87ab` — A+B fix
+- `25a60a2946ae6924e593b3f872794b71c129cd49` — ruff format follow-up
+- Preview: https://the-cfb-model-j13mmokz7-alecs-projects-2eeacfd8.vercel.app
+- Not merged. Export stayed False; no R2 writes / publish.
+
 ## Ambiguities
 
 - Gallery page keeps a hardcoded 2024 ratings fixture load (design states only).
