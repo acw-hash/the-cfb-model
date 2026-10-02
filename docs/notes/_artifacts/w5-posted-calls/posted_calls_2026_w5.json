@@ -1,0 +1,88 @@
+{
+  "season": 2026,
+  "week": 5,
+  "label": "posted_calls",
+  "n": 6,
+  "probe_book": "draftkings",
+  "pricing_note": "All lines/prices/edges from draftkings-only probe snapshot; never mix prior edges with new lines.",
+  "posted_calls": [
+    {
+      "game_id": "401858474",
+      "matchup": "Michigan @ Minnesota",
+      "side": "Minnesota",
+      "book": "draftkings",
+      "line": 5.5,
+      "price": -110.0,
+      "snapshot_event_time": "2026-10-02T13:40:43.131643+00:00",
+      "posted_at_utc": null,
+      "edge": 0.1378,
+      "units": 3.0,
+      "ladder_rung": "odds_api_snapshot"
+    },
+    {
+      "game_id": "401858473",
+      "matchup": "Ohio State @ Iowa",
+      "side": "Iowa",
+      "book": "draftkings",
+      "line": 14.0,
+      "price": -108.0,
+      "snapshot_event_time": "2026-10-02T13:40:43.131643+00:00",
+      "posted_at_utc": null,
+      "edge": 0.134,
+      "units": 3.0,
+      "ladder_rung": "odds_api_snapshot"
+    },
+    {
+      "game_id": "401866477",
+      "matchup": "Bowling Green @ Miami (OH)",
+      "side": "Miami (OH)",
+      "book": "draftkings",
+      "line": -13.5,
+      "price": -110.0,
+      "snapshot_event_time": "2026-10-02T13:40:43.131643+00:00",
+      "posted_at_utc": null,
+      "edge": 0.1326,
+      "units": 3.0,
+      "ladder_rung": "odds_api_snapshot"
+    },
+    {
+      "game_id": "401858479",
+      "matchup": "Michigan State @ Wisconsin",
+      "side": "Wisconsin",
+      "book": "draftkings",
+      "line": -10.0,
+      "price": -105.0,
+      "snapshot_event_time": "2026-10-02T13:40:43.131643+00:00",
+      "posted_at_utc": null,
+      "edge": 0.1223,
+      "units": 3.0,
+      "ladder_rung": "odds_api_snapshot"
+    },
+    {
+      "game_id": "401858253",
+      "matchup": "Virginia @ Florida State",
+      "side": "Florida State",
+      "book": "draftkings",
+      "line": 2.5,
+      "price": -105.0,
+      "snapshot_event_time": "2026-10-02T13:40:43.131643+00:00",
+      "posted_at_utc": null,
+      "edge": 0.1221,
+      "units": 3.0,
+      "ladder_rung": "odds_api_snapshot"
+    },
+    {
+      "game_id": "401856708",
+      "matchup": "Florida @ Missouri",
+      "side": "Missouri",
+      "book": "draftkings",
+      "line": 5.5,
+      "price": -110.0,
+      "snapshot_event_time": "2026-10-02T13:40:43.131643+00:00",
+      "posted_at_utc": null,
+      "edge": 0.1048,
+      "units": 3.0,
+      "ladder_rung": "odds_api_snapshot"
+    }
+  ]
+}

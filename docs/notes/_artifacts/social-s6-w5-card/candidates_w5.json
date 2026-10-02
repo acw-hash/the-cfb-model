@@ -1,0 +1,80 @@
+[
+  {
+    "game_id": "401858474",
+    "market": "side",
+    "side_team": "Minnesota",
+    "market_line": 5.5,
+    "model_line": -1.4672295139012654,
+    "edge": 0.1378,
+    "expected_value": 0.2176,
+    "american_odds": -110.0,
+    "p_win": 0.6378,
+    "stake_fraction": 0.015,
+    "model_market_residual_points": 6.97
+  },
+  {
+    "game_id": "401858473",
+    "market": "side",
+    "side_team": "Iowa",
+    "market_line": 14.0,
+    "model_line": 7.60590371814292,
+    "edge": 0.134,
+    "expected_value": 0.2127,
+    "american_odds": -108.0,
+    "p_win": 0.6296636085626911,
+    "stake_fraction": 0.015,
+    "model_market_residual_points": 6.39
+  },
+  {
+    "game_id": "401866477",
+    "market": "side",
+    "side_team": "Miami (OH)",
+    "market_line": -13.5,
+    "model_line": -20.28666188116494,
+    "edge": 0.1326,
+    "expected_value": 0.2077,
+    "american_odds": -110.0,
+    "p_win": 0.6326,
+    "stake_fraction": 0.015,
+    "model_market_residual_points": 6.79
+  },
+  {
+    "game_id": "401858479",
+    "market": "side",
+    "side_team": "Wisconsin",
+    "market_line": -10.0,
+    "model_line": -15.15823235173511,
+    "edge": 0.1223,
+    "expected_value": 0.1939,
+    "american_odds": -105.0,
+    "p_win": 0.6114854517611026,
+    "stake_fraction": 0.015,
+    "model_market_residual_points": 5.16
+  },
+  {
+    "game_id": "401858253",
+    "market": "side",
+    "side_team": "Florida State",
+    "market_line": 2.5,
+    "model_line": -3.1989039251608324,
+    "edge": 0.1221,
+    "expected_value": 0.1934,
+    "american_odds": -105.0,
+    "p_win": 0.61125,
+    "stake_fraction": 0.015,
+    "model_market_residual_points": 5.7
+  },
+  {
+    "game_id": "401856708",
+    "market": "side",
+    "side_team": "Missouri",
+    "market_line": 5.5,
+    "model_line": -0.35531999875977477,
+    "edge": 0.1048,
+    "expected_value": 0.1547,
+    "american_odds": -110.0,
+    "p_win": 0.60485,
+    "stake_fraction": 0.015,
+    "model_market_residual_points": 5.86
+  }
+]
