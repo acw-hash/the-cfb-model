@@ -301,4 +301,27 @@ describe("GameRow scoreboard markup", () => {
     // Market win absent — no stray em-dash win from market group required.
     expect(html).toMatch(/Market: Rutgers by 38\.5\./);
   });
+
+  it("matched and unmatched rows keep identical market column counts when showMarket", () => {
+    const matched = renderToStaticMarkup(
+      <GameRow
+        game={base}
+        showMarket
+        odds={odds({ market_home_margin: 3.5, p_win_home_market: 0.61 })}
+      />,
+    );
+    const unmatched = renderToStaticMarkup(<GameRow game={base} showMarket odds={null} />);
+    const count = (html: string, needle: string) => html.split(needle).length - 1;
+    expect(count(matched, 'data-testid="market-cell"')).toBe(1);
+    expect(count(unmatched, 'data-testid="market-cell"')).toBe(1);
+    expect(
+      count(matched, 'data-testid="market-margin"') + count(matched, "marketMarginCol"),
+    ).toBeGreaterThanOrEqual(0);
+    // Both render market margin + win column wrappers.
+    expect(matched).toContain('data-testid="market-cell"');
+    expect(unmatched).toContain('data-testid="market-cell"');
+    expect(unmatched).toContain("—");
+    // Same number of role="cell" slots.
+    expect(count(matched, 'role="cell"')).toBe(count(unmatched, 'role="cell"'));
+  });
 });

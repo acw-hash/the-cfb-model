@@ -158,7 +158,11 @@ export function ThisWeekSlate({
               <SlateGroupHeader label={group.label} />
               {group.games.map((game) => (
                 <Link key={game.game_id} href={`/game/${game.game_id}`} className={styles.rowLink}>
-                  <GameRow game={game} odds={odds?.byGameId[game.game_id] ?? null} />
+                  <GameRow
+                    game={game}
+                    odds={odds?.byGameId[game.game_id] ?? null}
+                    showMarket={Boolean(odds)}
+                  />
                 </Link>
               ))}
             </section>

@@ -38,6 +38,12 @@ interface GameRowProps {
   game: GameRowModel | GamePrediction;
   /** Optional market snapshot for this game (ODDS_SNAPSHOT_ENABLED). */
   odds?: OddsGameView | null;
+  /**
+   * Reserve Market columns whenever the page has an odds context.
+   * Defaults to ``Boolean(odds)``. Pass true with ``odds=null`` so unmatched
+   * rows keep the same column count and render "—".
+   */
+  showMarket?: boolean;
   /** Test injection — production resolves visitor TZ inside KickoffTime. */
   timeZone?: string;
 }
@@ -113,7 +119,7 @@ function ValueColumn({
   const homeVal =
     field === "margin"
       ? (placement.home.margin ?? (placement.nullDash ? "—" : null))
-      : placement.home.win;
+      : (placement.home.win ?? (placement.nullDash ? "—" : null));
 
   return (
     <div className={styles.colStack} role="cell">
@@ -149,8 +155,13 @@ function ValueColumn({
 }
 
 /** Scoreboard-density game row — unsigned figures beside the favored team. */
-export function GameRow({ game, odds, timeZone }: GameRowProps): React.ReactElement {
-  const showMarket = Boolean(odds);
+export function GameRow({
+  game,
+  odds,
+  showMarket: showMarketProp,
+  timeZone,
+}: GameRowProps): React.ReactElement {
+  const showMarket = showMarketProp ?? Boolean(odds);
   const placement = buildScoreboardPlacement({
     muMargin: game.mu_margin,
     sigmaMargin: game.sigma_margin,

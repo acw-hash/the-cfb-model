@@ -269,3 +269,8 @@ export const ARTIFACT_FILES: Record<ArtifactName, string> = {
   results_2024: "results_2024.json",
   team_ratings_2024: "team_ratings_2024.json",
 };
+
+/** Season-scoped ratings filename — never hardcode a year at the call site. */
+export function teamRatingsArtifactFile(season: number): string {
+  return `team_ratings_${season}.json`;
+}

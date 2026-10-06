@@ -4,3 +4,12 @@
   padding: 0 var(--space-4) var(--space-8);
   overflow-x: hidden;
 }
+
+.ratingsEmpty {
+  margin: var(--space-4) 0;
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: var(--type-c1-size);
+  line-height: var(--type-c1-line);
+  color: var(--text-secondary);
+}

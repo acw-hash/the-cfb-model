@@ -1274,8 +1274,21 @@ def build_team_ratings(
         else filter_history[filter_history["season"] == season].copy()
     )
     teams_out: dict[str, Any] = {}
-    if "team_id" in hist.columns:
-        for team_id, group in hist.groupby("team_id"):
+    if "team_id" in hist.columns and not hist.empty:
+        # One point per (team, week): prefer postgame, then latest event_time.
+        work = hist.copy()
+        if "kind" in work.columns:
+            # Higher rank wins via tail(1): postgame preferred over weekly.
+            work["_kind_rank"] = work["kind"].map(lambda k: 1 if str(k) == "postgame" else 0)
+        else:
+            work["_kind_rank"] = 0
+        work["_event_rank"] = pd.to_datetime(work.get("event_time"), utc=True, errors="coerce")
+        work = work.sort_values(
+            ["team_id", "week", "_kind_rank", "_event_rank"],
+            kind="mergesort",
+        )
+        work = work.groupby(["team_id", "week"], sort=False).tail(1)
+        for team_id, group in work.groupby("team_id"):
             tid = int(team_id)
             weeks = []
             for row in group.sort_values("week").itertuples(index=False):

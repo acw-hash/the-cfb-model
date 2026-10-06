@@ -206,6 +206,77 @@ def _fbs_team_ids(teams: pd.DataFrame) -> set[int]:
     return {int(x) for x in fbs["team_id"]}
 
 
+# Live Kalman history for webapp team_ratings export (W-RATINGS-WIRE). Cleared
+# on take so stub predict_fn paths leave export history unset.
+_LIVE_FILTER_HISTORY: pd.DataFrame | None = None
+
+
+def take_live_filter_history() -> pd.DataFrame | None:
+    """Return and clear the history captured by the last :func:`live_predict_rows`."""
+    global _LIVE_FILTER_HISTORY
+    hist = _LIVE_FILTER_HISTORY
+    _LIVE_FILTER_HISTORY = None
+    return hist
+
+
+def _append_current_week_rating_points(
+    history: pd.DataFrame,
+    *,
+    rating_state: Mapping[str, Any],
+    season: int,
+    week: int,
+    as_of: datetime,
+    fbs_team_ids: set[int] | None,
+) -> pd.DataFrame:
+    """Ensure each FBS team has a current-week snapshot for chart open circles."""
+    if not rating_state:
+        return history
+    as_of_utc = as_of if as_of.tzinfo is not None else as_of.replace(tzinfo=UTC)
+    rows: list[dict[str, Any]] = []
+    team_ids: set[int] = set()
+    for key in rating_state:
+        tid_s, _, dim = str(key).partition(":")
+        if dim != "off_epa":
+            continue
+        try:
+            tid = int(tid_s)
+        except ValueError:
+            continue
+        if fbs_team_ids is not None and tid not in fbs_team_ids:
+            continue
+        team_ids.add(tid)
+    for tid in sorted(team_ids):
+        off = rating_state.get(f"{tid}:off_epa")
+        deff = rating_state.get(f"{tid}:def_epa")
+        pace = rating_state.get(f"{tid}:pace")
+        if off is None or deff is None:
+            continue
+        rows.append(
+            {
+                "team_id": tid,
+                "season": int(season),
+                "week": int(week),
+                "game_id": None,
+                "event_time": as_of_utc,
+                "kind": "weekly",
+                "off_epa": float(off),
+                "def_epa": float(deff),
+                "pace": float(pace) if pace is not None else None,
+                "st_value": rating_state.get(f"{tid}:st_value"),
+                "sd_off_epa": rating_state.get(f"{tid}:sd_off_epa"),
+                "sd_def_epa": rating_state.get(f"{tid}:sd_def_epa"),
+                "sd_pace": rating_state.get(f"{tid}:sd_pace"),
+                "sd_st_value": rating_state.get(f"{tid}:sd_st_value"),
+            }
+        )
+    if not rows:
+        return history
+    extra = pd.DataFrame(rows)
+    if history is None or history.empty:
+        return extra
+    return pd.concat([history, extra], ignore_index=True)
+
+
 def live_predict_rows(
     season: int,
     week: int,
@@ -360,6 +431,21 @@ def live_predict_rows(
     engine.initialize_season(int(season), resolved_as_of)
     rating_state = engine.state_snapshot()
     digest = rating_snapshot_digest(rating_state)
+    # W-RATINGS-WIRE: capture Kalman history (+ current-week points) for export.
+    # getattr: unit-test fake engines may omit the attribute.
+    global _LIVE_FILTER_HISTORY
+    hist = getattr(engine, "last_filter_history", None)
+    if hist is not None:
+        _LIVE_FILTER_HISTORY = _append_current_week_rating_points(
+            hist,
+            rating_state=rating_state,
+            season=int(season),
+            week=int(week),
+            as_of=resolved_as_of,
+            fbs_team_ids=_fbs_team_ids(teams) or None,
+        )
+    else:
+        _LIVE_FILTER_HISTORY = None
     log.info(
         "live_rating_snapshot",
         n_keys=len(rating_state),
@@ -695,6 +781,7 @@ def execute_predict_publish(
 
     predict = predict_fn or _default_predict_for(season, week, as_of=as_of, config=cfg)
     raw_preds = predict(stale_ctx)
+    filter_history = take_live_filter_history()
     stamped = stamp_predictions(raw_preds, stale_ctx)
 
     provider_details: dict[str, dict[str, Any]] = {}
@@ -775,6 +862,8 @@ def execute_predict_publish(
         "last_good_at": (
             stale_ctx.sources[0].last_good_at.isoformat() if stale_ctx.sources else None
         ),
+        # W-RATINGS-WIRE: live Kalman history for team_ratings export (not serialized to R2).
+        "_filter_history": filter_history,
     }
 
     if cfg.social.enabled:
@@ -812,7 +901,13 @@ def execute_predict_publish(
         try:
             from ncaa_quant.webapp.export import export_publish_artifacts
 
-            export_out = export_publish_artifacts(result, config=cfg, push=True, notifier=n)
+            export_out = export_publish_artifacts(
+                result,
+                config=cfg,
+                push=True,
+                notifier=n,
+                filter_history=result.get("_filter_history"),
+            )
             result["webapp_export"] = {"ok": True, "push": export_out.get("push")}
         except Exception as exc:
             log.warning("webapp_export_failed", error=str(exc))
@@ -883,7 +978,13 @@ def _run_helper_publish(
         from ncaa_quant.webapp.export import SCHEMA_VERSION, export_publish_artifacts
         from ncaa_quant.webapp.push import push_artifacts_to_r2
 
-        export_out = export_publish_artifacts(result, config=cfg, push=False, notifier=n)
+        export_out = export_publish_artifacts(
+            result,
+            config=cfg,
+            push=False,
+            notifier=n,
+            filter_history=result.get("_filter_history"),
+        )
         push_result = push_artifacts_to_r2(
             export_out["artifacts"],
             season=season,
@@ -1174,6 +1275,7 @@ def run_isolated_week_export(
         published_at=clock,
         push=False,
         notifier=notifier,
+        filter_history=result.get("_filter_history"),
     )
     written: dict[str, str] = {}
     for name, body in (export_out.get("artifacts") or {}).items():
