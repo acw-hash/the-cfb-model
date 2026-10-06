@@ -1,0 +1,88 @@
+{
+  "season": 2026,
+  "week": 6,
+  "label": "posted_calls",
+  "n": 6,
+  "probe_book": "mixed",
+  "pricing_note": "Lines/prices/edges from draftkings+fanduel highest-edge probe; probe-only qb_backup reject applied before exposure.",
+  "posted_calls": [
+    {
+      "game_id": "401858480",
+      "matchup": "Illinois @ Michigan State",
+      "side": "Michigan State",
+      "book": "fanduel",
+      "line": 2.5,
+      "price": -106.0,
+      "snapshot_event_time": "2026-10-06T17:16:50.095976+00:00",
+      "posted_at_utc": null,
+      "edge": 0.1308,
+      "units": 3.0,
+      "ladder_rung": "odds_api_snapshot"
+    },
+    {
+      "game_id": "401858481",
+      "matchup": "Indiana @ Nebraska",
+      "side": "Nebraska",
+      "book": "fanduel",
+      "line": 7.5,
+      "price": -108.0,
+      "snapshot_event_time": "2026-10-06T17:16:50.095976+00:00",
+      "posted_at_utc": null,
+      "edge": 0.1307,
+      "units": 3.0,
+      "ladder_rung": "odds_api_snapshot"
+    },
+    {
+      "game_id": "401860902",
+      "matchup": "San Diego State @ Oregon State",
+      "side": "Oregon State",
+      "book": "draftkings",
+      "line": -14.5,
+      "price": -110.0,
+      "snapshot_event_time": "2026-10-06T17:16:50.095976+00:00",
+      "posted_at_utc": null,
+      "edge": 0.1137,
+      "units": 3.0,
+      "ladder_rung": "odds_api_snapshot"
+    },
+    {
+      "game_id": "401856712",
+      "matchup": "Georgia @ Alabama",
+      "side": "Alabama",
+      "book": "fanduel",
+      "line": -1.5,
+      "price": -110.0,
+      "snapshot_event_time": "2026-10-06T17:16:50.095976+00:00",
+      "posted_at_utc": null,
+      "edge": 0.1129,
+      "units": 3.0,
+      "ladder_rung": "odds_api_snapshot"
+    },
+    {
+      "game_id": "401869943",
+      "matchup": "Coastal Carolina @ Marshall",
+      "side": "Marshall",
+      "book": "fanduel",
+      "line": -2.5,
+      "price": -118.0,
+      "snapshot_event_time": "2026-10-06T17:16:50.095976+00:00",
+      "posted_at_utc": null,
+      "edge": 0.1091,
+      "units": 3.0,
+      "ladder_rung": "odds_api_snapshot"
+    },
+    {
+      "game_id": "401866438",
+      "matchup": "Central Michigan @ Ohio",
+      "side": "Ohio",
+      "book": "draftkings",
+      "line": -3.0,
+      "price": -110.0,
+      "snapshot_event_time": "2026-10-06T17:16:50.095976+00:00",
+      "posted_at_utc": null,
+      "edge": 0.109,
+      "units": 3.0,
+      "ladder_rung": "odds_api_snapshot"
+    }
+  ]
+}
