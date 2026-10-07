@@ -5,8 +5,18 @@ ran all 58 games, these are the 6 where it disagrees with the market the most. a
 
 <RECORD> on the season. line and book on each play 👇
 
---- POST 2/9 (175 chars) ---
+--- POST 2/9 (174 chars) ---
 Best Bet #1
+
+Florida State @ Louisville (Fri)
+▸ Market: Florida State +3.5 (FanDuel)
+▸ Ridge: Florida State -2.3
+▸ Edge: 13.1% | 1u
+
+Model has this 5.8 points off the market.
+
+--- POST 3/9 (175 chars) ---
+Best Bet #2
 
 Illinois @ Michigan State (Sat)
 ▸ Market: Michigan State +2.5 (FanDuel)
@@ -15,18 +25,28 @@ Illinois @ Michigan State (Sat)
 
 Model has this 6.2 points off the market.
 
---- POST 3/9 (156 chars) ---
-Best Bet #2
+--- POST 4/9 (148 chars) ---
+Best Bet #3
+
+UConn @ Temple (Sat)
+▸ Market: Temple -3.5 (FanDuel)
+▸ Ridge: Temple -9.9
+▸ Edge: 13.0% | 1u
+
+Model has this 6.4 points off the market.
+
+--- POST 5/9 (156 chars) ---
+Best Bet #4
 
 Indiana @ Nebraska (Sat)
 ▸ Market: Nebraska +7.5 (FanDuel)
 ▸ Ridge: Nebraska +1.0
-▸ Edge: 13.1% | 1u
+▸ Edge: 12.6% | 1u
 
 Model has this 6.5 points off the market.
 
---- POST 4/9 (181 chars) ---
-Best Bet #3
+--- POST 6/9 (181 chars) ---
+Best Bet #5
 
 San Diego State @ Oregon State (Sat)
 ▸ Market: Oregon State -14.5 (DraftKings)
@@ -35,8 +55,8 @@ San Diego State @ Oregon State (Sat)
 
 Model has this 5.0 points off the market.
 
---- POST 5/9 (153 chars) ---
-Best Bet #4
+--- POST 7/9 (153 chars) ---
+Best Bet #6
 
 Georgia @ Alabama (Sat)
 ▸ Market: Alabama -1.5 (FanDuel)
@@ -44,26 +64,6 @@ Georgia @ Alabama (Sat)
 ▸ Edge: 11.3% | 1u
 
 Model has this 6.8 points off the market.
-
---- POST 6/9 (165 chars) ---
-Best Bet #5
-
-Coastal Carolina @ Marshall (Sat)
-▸ Market: Marshall -2.5 (FanDuel)
-▸ Ridge: Marshall -9.0
-▸ Edge: 10.9% | 1u
-
-Model has this 6.5 points off the market.
-
---- POST 7/9 (154 chars) ---
-Best Bet #6
-
-Central Michigan @ Ohio (Sat)
-▸ Market: Ohio -3 (DraftKings)
-▸ Ridge: Ohio -8.1
-▸ Edge: 10.9% | 1u
-
-Model has this 5.1 points off the market.
 
 --- POST 8/9 (274 chars) ---
 what ridge actually is:

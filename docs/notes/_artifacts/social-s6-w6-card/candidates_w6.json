@@ -1,5 +1,18 @@
 [
   {
+    "game_id": "401858254",
+    "market": "side",
+    "side_team": "Florida State",
+    "market_line": 3.5,
+    "model_line": -2.323487662207288,
+    "edge": 0.1313,
+    "expected_value": 0.2114,
+    "american_odds": -105.0,
+    "p_win": 0.62045,
+    "stake_fraction": 0.015,
+    "model_market_residual_points": 5.82
+  },
+  {
     "game_id": "401858480",
     "market": "side",
     "side_team": "Michigan State",
@@ -13,14 +26,27 @@
     "model_market_residual_points": 6.15
   },
   {
+    "game_id": "401861964",
+    "market": "side",
+    "side_team": "Temple",
+    "market_line": -3.5,
+    "model_line": -9.948411440909071,
+    "edge": 0.1297,
+    "expected_value": 0.2022,
+    "american_odds": -110.0,
+    "p_win": 0.6297,
+    "stake_fraction": 0.015,
+    "model_market_residual_points": 6.45
+  },
+  {
     "game_id": "401858481",
     "market": "side",
     "side_team": "Nebraska",
     "market_line": 7.5,
     "model_line": 0.9646859745028703,
-    "edge": 0.1307,
-    "expected_value": 0.2063,
-    "american_odds": -108.0,
+    "edge": 0.1263,
+    "expected_value": 0.1958,
+    "american_odds": -110.0,
     "p_win": 0.62635,
     "stake_fraction": 0.015,
     "model_market_residual_points": 6.54
@@ -50,31 +76,5 @@
     "p_win": 0.6129,
     "stake_fraction": 0.015,
     "model_market_residual_points": 6.81
-  },
-  {
-    "game_id": "401869943",
-    "market": "side",
-    "side_team": "Marshall",
-    "market_line": -2.5,
-    "model_line": -8.954488698568271,
-    "edge": 0.1091,
-    "expected_value": 0.1529,
-    "american_odds": -118.0,
-    "p_win": 0.62405,
-    "stake_fraction": 0.015,
-    "model_market_residual_points": 6.45
-  },
-  {
-    "game_id": "401866438",
-    "market": "side",
-    "side_team": "Ohio",
-    "market_line": -3.0,
-    "model_line": -8.081055829775748,
-    "edge": 0.109,
-    "expected_value": 0.1626,
-    "american_odds": -110.0,
-    "p_win": 0.6090041345515799,
-    "stake_fraction": 0.015,
-    "model_market_residual_points": 5.08
   }
 ]
