@@ -5,8 +5,18 @@ ran all 58 games, these are the 6 where it disagrees with the market the most. a
 
 <RECORD> on the season. line and book on each play 👇
 
---- POST 2/9 (174 chars) ---
+--- POST 2/9 (147 chars) ---
 Best Bet #1
+
+UConn @ Temple (Sat)
+▸ Market: Temple -3.5 (BetMGM)
+▸ Ridge: Temple -9.9
+▸ Edge: 13.2% | 1u
+
+Model has this 6.4 points off the market.
+
+--- POST 3/9 (174 chars) ---
+Best Bet #2
 
 Florida State @ Louisville (Fri)
 ▸ Market: Florida State +3.5 (FanDuel)
@@ -15,8 +25,8 @@ Florida State @ Louisville (Fri)
 
 Model has this 5.8 points off the market.
 
---- POST 3/9 (175 chars) ---
-Best Bet #2
+--- POST 4/9 (175 chars) ---
+Best Bet #3
 
 Illinois @ Michigan State (Sat)
 ▸ Market: Michigan State +2.5 (FanDuel)
@@ -24,16 +34,6 @@ Illinois @ Michigan State (Sat)
 ▸ Edge: 13.1% | 1u
 
 Model has this 6.2 points off the market.
-
---- POST 4/9 (148 chars) ---
-Best Bet #3
-
-UConn @ Temple (Sat)
-▸ Market: Temple -3.5 (FanDuel)
-▸ Ridge: Temple -9.9
-▸ Edge: 13.0% | 1u
-
-Model has this 6.4 points off the market.
 
 --- POST 5/9 (156 chars) ---
 Best Bet #4
@@ -45,25 +45,25 @@ Indiana @ Nebraska (Sat)
 
 Model has this 6.5 points off the market.
 
---- POST 6/9 (181 chars) ---
+--- POST 6/9 (162 chars) ---
 Best Bet #5
 
-San Diego State @ Oregon State (Sat)
-▸ Market: Oregon State -14.5 (DraftKings)
-▸ Ridge: Oregon State -19.5
-▸ Edge: 11.4% | 1u
+Coastal Carolina @ Marshall (Sat)
+▸ Market: Marshall -3 (BetMGM)
+▸ Ridge: Marshall -9.0
+▸ Edge: 11.6% | 1u
 
-Model has this 5.0 points off the market.
+Model has this 6.0 points off the market.
 
---- POST 7/9 (153 chars) ---
+--- POST 7/9 (177 chars) ---
 Best Bet #6
 
-Georgia @ Alabama (Sat)
-▸ Market: Alabama -1.5 (FanDuel)
-▸ Ridge: Alabama -8.3
-▸ Edge: 11.3% | 1u
+San Diego State @ Oregon State (Sat)
+▸ Market: Oregon State -14.5 (BetMGM)
+▸ Ridge: Oregon State -19.5
+▸ Edge: 11.6% | 1u
 
-Model has this 6.8 points off the market.
+Model has this 5.0 points off the market.
 
 --- POST 8/9 (274 chars) ---
 what ridge actually is:

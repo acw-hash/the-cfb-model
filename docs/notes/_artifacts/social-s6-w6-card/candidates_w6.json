@@ -1,5 +1,18 @@
 [
   {
+    "game_id": "401861964",
+    "market": "side",
+    "side_team": "Temple",
+    "market_line": -3.5,
+    "model_line": -9.948411440909071,
+    "edge": 0.1319,
+    "expected_value": 0.2128,
+    "american_odds": -108.0,
+    "p_win": 0.6297,
+    "stake_fraction": 0.015,
+    "model_market_residual_points": 6.45
+  },
+  {
     "game_id": "401858254",
     "market": "side",
     "side_team": "Florida State",
@@ -26,19 +39,6 @@
     "model_market_residual_points": 6.15
   },
   {
-    "game_id": "401861964",
-    "market": "side",
-    "side_team": "Temple",
-    "market_line": -3.5,
-    "model_line": -9.948411440909071,
-    "edge": 0.1297,
-    "expected_value": 0.2022,
-    "american_odds": -110.0,
-    "p_win": 0.6297,
-    "stake_fraction": 0.015,
-    "model_market_residual_points": 6.45
-  },
-  {
     "game_id": "401858481",
     "market": "side",
     "side_team": "Nebraska",
@@ -52,29 +52,29 @@
     "model_market_residual_points": 6.54
   },
   {
+    "game_id": "401869943",
+    "market": "side",
+    "side_team": "Marshall",
+    "market_line": -3.0,
+    "model_line": -8.954488698568271,
+    "edge": 0.1164,
+    "expected_value": 0.1768,
+    "american_odds": -110.0,
+    "p_win": 0.6164166921742679,
+    "stake_fraction": 0.015,
+    "model_market_residual_points": 5.95
+  },
+  {
     "game_id": "401860902",
     "market": "side",
     "side_team": "Oregon State",
     "market_line": -14.5,
     "model_line": -19.499036347473357,
-    "edge": 0.1137,
-    "expected_value": 0.1715,
-    "american_odds": -110.0,
+    "edge": 0.1158,
+    "expected_value": 0.1818,
+    "american_odds": -108.0,
     "p_win": 0.61365,
     "stake_fraction": 0.015,
     "model_market_residual_points": 5.0
-  },
-  {
-    "game_id": "401856712",
-    "market": "side",
-    "side_team": "Alabama",
-    "market_line": -1.5,
-    "model_line": -8.307967354945683,
-    "edge": 0.1129,
-    "expected_value": 0.1701,
-    "american_odds": -110.0,
-    "p_win": 0.6129,
-    "stake_fraction": 0.015,
-    "model_market_residual_points": 6.81
   }
 ]
