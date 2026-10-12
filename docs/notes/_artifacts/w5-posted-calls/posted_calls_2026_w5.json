@@ -14,10 +14,11 @@
       "line": 5.5,
       "price": -110.0,
       "snapshot_event_time": "2026-10-02T14:00:38.924904+00:00",
-      "posted_at_utc": null,
+      "posted_at_utc": "2026-10-02T14:02:22Z",
       "edge": 0.1378,
       "units": 3.0,
-      "ladder_rung": "odds_api_snapshot"
+      "ladder_rung": "odds_api_snapshot",
+      "posted_at_source": "x_post"
     },
     {
       "game_id": "401858473",
@@ -27,10 +28,11 @@
       "line": 14.5,
       "price": -118.0,
       "snapshot_event_time": "2026-10-02T14:00:38.924904+00:00",
-      "posted_at_utc": null,
+      "posted_at_utc": "2026-10-02T14:02:22Z",
       "edge": 0.1217,
       "units": 3.0,
-      "ladder_rung": "odds_api_snapshot"
+      "ladder_rung": "odds_api_snapshot",
+      "posted_at_source": "x_post"
     },
     {
       "game_id": "401866477",
@@ -40,10 +42,11 @@
       "line": -13.5,
       "price": -105.0,
       "snapshot_event_time": "2026-10-02T14:00:38.924904+00:00",
-      "posted_at_utc": null,
+      "posted_at_utc": "2026-10-02T14:02:22Z",
       "edge": 0.1434,
       "units": 3.0,
-      "ladder_rung": "odds_api_snapshot"
+      "ladder_rung": "odds_api_snapshot",
+      "posted_at_source": "x_post"
     },
     {
       "game_id": "401858479",
@@ -53,10 +56,11 @@
       "line": -9.5,
       "price": -118.0,
       "snapshot_event_time": "2026-10-02T14:00:38.924904+00:00",
-      "posted_at_utc": null,
+      "posted_at_utc": "2026-10-02T14:02:22Z",
       "edge": 0.1045,
       "units": 3.0,
-      "ladder_rung": "odds_api_snapshot"
+      "ladder_rung": "odds_api_snapshot",
+      "posted_at_source": "x_post"
     },
     {
       "game_id": "401858253",
@@ -66,10 +70,11 @@
       "line": 2.5,
       "price": -105.0,
       "snapshot_event_time": "2026-10-02T14:00:38.924904+00:00",
-      "posted_at_utc": null,
+      "posted_at_utc": "2026-10-02T14:02:22Z",
       "edge": 0.1221,
       "units": 3.0,
-      "ladder_rung": "odds_api_snapshot"
+      "ladder_rung": "odds_api_snapshot",
+      "posted_at_source": "x_post"
     },
     {
       "game_id": "401856708",
@@ -79,10 +84,11 @@
       "line": 4.5,
       "price": -102.0,
       "snapshot_event_time": "2026-10-02T14:00:38.924904+00:00",
-      "posted_at_utc": null,
+      "posted_at_utc": "2026-10-02T14:02:22Z",
       "edge": 0.1054,
       "units": 3.0,
-      "ladder_rung": "odds_api_snapshot"
+      "ladder_rung": "odds_api_snapshot",
+      "posted_at_source": "x_post"
     }
   ]
 }
