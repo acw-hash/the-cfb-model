@@ -329,6 +329,13 @@ class WalkForwardConfig:
     member_fit_failure_mode: Literal["exclude", "raise"] = "exclude"
     lockbox_confirmatory_read: bool = False
     """Permit the lockbox season. Only for the logged annual confirmatory read."""
+    # MODEL-HFA-4 candidate switches (gated; default preserves reduced_v3 behavior).
+    explicit_home_site: bool = False
+    """When True, Stage-2 features include ``is_home_site`` (0 neutral, else 1)."""
+    elasticnet_fit_intercept: bool = True
+    """ElasticNet ``fit_intercept``. False for the explicit home-site candidate."""
+    freeze_mapping_from_season: int | None = None
+    """Skip mid-season mapping retrains for seasons ≥ this value (held-out reads)."""
 
     def all_replay_seasons(self) -> tuple[int, ...]:
         """Warm-up ∪ test ∪ continuity seasons, sorted unique."""
@@ -365,6 +372,9 @@ class WalkForwardConfig:
             "run_kind": self.run_kind,
             "nnls_equal_weight_fallback": self.nnls_equal_weight_fallback,
             "member_fit_failure_mode": self.member_fit_failure_mode,
+            "explicit_home_site": self.explicit_home_site,
+            "elasticnet_fit_intercept": self.elasticnet_fit_intercept,
+            "freeze_mapping_from_season": self.freeze_mapping_from_season,
         }
 
     def validate_ablations(self) -> None:
@@ -1525,7 +1535,9 @@ class WalkForwardHarness:
                 if not week_games.empty and not self.config.exclude_from_headline(season):
                     scheduled_blocks.append((int(season), int(week)))
 
-                if week in self.config.retrain_weeks:
+                freeze_from = self.config.freeze_mapping_from_season
+                mapping_frozen = freeze_from is not None and int(season) >= int(freeze_from)
+                if week in self.config.retrain_weeks and not mapping_frozen:
                     retrain_epoch += 1
                     self._retrain(
                         _features_for_labels(revealed_labels),

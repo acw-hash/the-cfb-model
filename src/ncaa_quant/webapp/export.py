@@ -288,6 +288,101 @@ class IncoherentMarginIntervalError(ValueError):
     """A published margin interval failed pre-CQR ``q10 < mu < q90``."""
 
 
+class MarginIntervalSourceError(ValueError):
+    """Published margin interval came from an unsafe or unknown source."""
+
+
+#: Bound keys consulted by :func:`resolve_margin_interval_bounds` (lo, then hi).
+_MARGIN_INTERVAL_LO_KEYS: tuple[str, ...] = (
+    "margin_interval_lo",
+    "cqr_lo",
+    "pred_margin_q05",
+)
+_MARGIN_INTERVAL_HI_KEYS: tuple[str, ...] = (
+    "margin_interval_hi",
+    "cqr_hi",
+    "pred_margin_q95",
+)
+
+#: Map a resolved bound key → coarse source label for the export guard.
+_MARGIN_INTERVAL_SOURCE_BY_KEY: Mapping[str, str] = {
+    "margin_interval_lo": "explicit",
+    "margin_interval_hi": "explicit",
+    "cqr_lo": "cqr",
+    "cqr_hi": "cqr",
+    "pred_margin_q05": "quantile_q05_q95",
+    "pred_margin_q95": "quantile_q05_q95",
+}
+
+#: Nominal required when the published band is the raw q05/q95 fallback.
+QUANTILE_FALLBACK_NOMINAL: float = 0.90
+
+
+def _first_present_key(row: Mapping[str, Any], *names: str) -> str | None:
+    """Return the first key present in ``row`` (value may still be null/NaN)."""
+    for name in names:
+        if name in row:
+            return name
+    return None
+
+
+def resolve_margin_interval_bounds(
+    row: Mapping[str, Any],
+) -> tuple[float | None, float | None, float | None, str]:
+    """Resolve lo/hi/nominal and the interval source used for export.
+
+    Source labels: ``none`` (no finite bounds), ``explicit``, ``cqr``,
+    ``quantile_q05_q95``, or ``unknown`` (mismatched / unrecognized keys).
+    Key priority matches the historical ``_field`` fallback chain.
+    """
+    lo_key = _first_present_key(row, *_MARGIN_INTERVAL_LO_KEYS)
+    hi_key = _first_present_key(row, *_MARGIN_INTERVAL_HI_KEYS)
+    lo = _optional_float(row[lo_key]) if lo_key is not None else None
+    hi = _optional_float(row[hi_key]) if hi_key is not None else None
+    nominal = _optional_float(_field(row, "margin_interval_nominal", "cqr_nominal"))
+    if lo is None and hi is None:
+        return None, None, nominal, "none"
+    if lo_key is None or hi_key is None:
+        return lo, hi, nominal, "unknown"
+    src_lo = _MARGIN_INTERVAL_SOURCE_BY_KEY.get(lo_key)
+    src_hi = _MARGIN_INTERVAL_SOURCE_BY_KEY.get(hi_key)
+    if src_lo is None or src_hi is None or src_lo != src_hi:
+        return lo, hi, nominal, "unknown"
+    return lo, hi, nominal, src_lo
+
+
+def assert_margin_interval_source_ok(
+    *,
+    lo: float | None,
+    hi: float | None,
+    nominal: float | None,
+    source: str,
+) -> None:
+    """Refuse publish when the band source is unknown or a mislabeled q05/q95 fallback.
+
+    Rules (MODEL-HFA-6):
+    - No finite bounds → ok (null interval).
+    - ``source == "unknown"`` → fail.
+    - ``source == "quantile_q05_q95"`` requires ``nominal == 0.90``; otherwise fail
+      (blocks stamping a CQR 0.80 nominal onto a 90% quantile fallback).
+    """
+    if lo is None and hi is None:
+        return
+    if source == "unknown":
+        msg = (
+            "unknown margin interval source: cannot publish lo/hi without a "
+            f"recognized matched source (lo={lo}, hi={hi}, nominal={nominal})"
+        )
+        raise MarginIntervalSourceError(msg)
+    if source == "quantile_q05_q95":
+        if nominal is None or abs(float(nominal) - QUANTILE_FALLBACK_NOMINAL) > 1e-12:
+            msg = (
+                "q05/q95 margin interval fallback requires "
+                f"margin_interval_nominal={QUANTILE_FALLBACK_NOMINAL}, got {nominal}"
+            )
+            raise MarginIntervalSourceError(msg)
+
+
 def sorted_margin_quantile_heads(
     row: Mapping[str, Any],
 ) -> tuple[float | None, float | None]:
@@ -732,9 +827,13 @@ def build_game_prediction(
 
     mu_margin = _optional_float(_field(row, "mu_margin", "pred_margin"))
     q10, q90 = sorted_margin_quantile_heads(row)
-    margin_lo = _optional_float(_field(row, "margin_interval_lo", "cqr_lo", "pred_margin_q05"))
-    margin_hi = _optional_float(_field(row, "margin_interval_hi", "cqr_hi", "pred_margin_q95"))
-    margin_nominal = _optional_float(_field(row, "margin_interval_nominal", "cqr_nominal"))
+    margin_lo, margin_hi, margin_nominal, interval_source = resolve_margin_interval_bounds(row)
+    assert_margin_interval_source_ok(
+        lo=margin_lo,
+        hi=margin_hi,
+        nominal=margin_nominal,
+        source=interval_source,
+    )
     margin_lo, margin_hi, margin_nominal, coherence_null_reason = (
         apply_margin_interval_coherence_gate(
             mu=mu_margin,

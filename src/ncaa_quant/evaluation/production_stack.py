@@ -454,6 +454,11 @@ class ProductionFeatureProvider:
                 row["expected_possessions"] = float("nan")
             else:
                 row["expected_possessions"] = float(artifact.predict_row(pace))
+            if self.config.explicit_home_site:
+                # Oriented to home-minus-away target: 1 at a true home site, 0
+                # on neutral (including bowls / conference championships).
+                neutral = bool(getattr(g, "neutral_site", False))
+                row["is_home_site"] = 0.0 if neutral else 1.0
             rows.append(row)
 
         frame = pd.DataFrame(rows)
@@ -986,6 +991,7 @@ class ProductionEnsemblePredictor:
     )
     _rho: float = field(default=0.0, init=False, repr=False)
     _calibration_report: dict[str, Any] = field(default_factory=dict, init=False, repr=False)
+    _home_edge_report: dict[str, Any] = field(default_factory=dict, init=False, repr=False)
 
     @property
     def is_fitted(self) -> bool:
@@ -1028,6 +1034,11 @@ class ProductionEnsemblePredictor:
     def calibration_report(self) -> dict[str, Any]:
         """Cox slope/intercept before and after from the last fit()."""
         return dict(self._calibration_report)
+
+    @property
+    def home_edge_report(self) -> dict[str, Any]:
+        """Implied home-site edge from the last fit() (MODEL-HFA-4)."""
+        return dict(self._home_edge_report)
 
     def fit(
         self,
@@ -1152,7 +1163,68 @@ class ProductionEnsemblePredictor:
             self._fit_rho_and_kernel(oof)
             self._fit_cqr_layer(features, labels, oof)
             self._fit_calibration_from_oof(features, oof)
+        self._home_edge_report = self._compute_implied_home_edge(features)
         self._fitted = True
+
+    def _compute_implied_home_edge(self, features: pd.DataFrame) -> dict[str, Any]:
+        """Predict Δμ for is_home_site 1 vs 0 (all else equal), per member + stack."""
+        if "is_home_site" not in features.columns or features.empty:
+            return {"status": "skipped", "reason": "is_home_site absent"}
+        feat_cols = [c for c in features.columns if c != "game_id"]
+        base = features[["game_id", *feat_cols]].copy()
+        # Use a single representative row (median numerics) so the report is a
+        # pure feature flip, not a slate average of heterogeneous matchups.
+        row = {"game_id": int(base["game_id"].iloc[0])}
+        for col in feat_cols:
+            if col == "is_home_site":
+                continue
+            series = pd.to_numeric(base[col], errors="coerce")
+            med = float(series.median(skipna=True))
+            row[col] = med if np.isfinite(med) else 0.0
+        home = pd.DataFrame([{**row, "is_home_site": 1.0}])
+        neut = pd.DataFrame([{**row, "is_home_site": 0.0}])
+        out: dict[str, Any] = {"status": "ok"}
+        try:
+            mu_h = float(self.margin_head.predict(home)["pred_margin"].iloc[0])
+            mu_n = float(self.margin_head.predict(neut)["pred_margin"].iloc[0])
+            out["lgbm_mu_margin"] = mu_h - mu_n
+        except Exception as exc:  # noqa: BLE001 — report-only
+            out["lgbm_mu_margin"] = None
+            out["lgbm_error"] = type(exc).__name__
+        try:
+            if self.enet_margin.is_fitted:
+                mu_h = float(self.enet_margin.predict(home)["pred_margin"].iloc[0])
+                mu_n = float(self.enet_margin.predict(neut)["pred_margin"].iloc[0])
+                out["enet_mu_margin"] = mu_h - mu_n
+                out["enet_unpenalized_coef"] = dict(self.enet_margin.unpenalized_coef_)
+                out["enet_unpenalized_intercept"] = float(
+                    self.enet_margin.unpenalized_intercept_
+                )
+                out["enet_fit_intercept"] = bool(self.enet_margin.fit_intercept)
+                intercept = getattr(getattr(self.enet_margin, "_model", None), "intercept_", None)
+                out["enet_sklearn_intercept"] = (
+                    float(intercept) if intercept is not None else 0.0
+                )
+            else:
+                out["enet_mu_margin"] = None
+        except Exception as exc:  # noqa: BLE001 — report-only
+            out["enet_mu_margin"] = None
+            out["enet_error"] = type(exc).__name__
+        weights: dict[str, float] = {}
+        if self._ensemble is not None and self._ensemble.margin is not None:
+            weights = dict(self._ensemble.margin.as_dict())
+        elif self.config.mapping_layer == "single_lgbm":
+            weights = {"lgbm_mu_margin": 1.0}
+        w_l = float(weights.get("lgbm_mu_margin", 0.0))
+        w_e = float(weights.get("enet_mu_margin", 0.0))
+        out["nnls_weights"] = {"lgbm_mu_margin": w_l, "enet_mu_margin": w_e}
+        parts = []
+        if out.get("lgbm_mu_margin") is not None:
+            parts.append(w_l * float(out["lgbm_mu_margin"]))
+        if out.get("enet_mu_margin") is not None:
+            parts.append(w_e * float(out["enet_mu_margin"]))
+        out["stacked_home_edge"] = float(sum(parts)) if parts else None
+        return out
 
     def _fit_member_or_exclude(
         self,
@@ -1200,9 +1272,11 @@ class ProductionEnsemblePredictor:
         if name.startswith("enet"):
             selected = list(getattr(head, "_selected_features", []) or [])
             model = getattr(head, "_model", None)
-            # Consistent: both present or both absent.
-            selection_consistent = (bool(selected) and model is not None and fitted) or (
-                not selected and model is None and not fitted
+            unpen = list(getattr(head, "_unpenalized_fitted", []) or [])
+            has_estimator = model is not None or bool(unpen)
+            # Consistent: selection + estimator both present or both absent.
+            selection_consistent = (bool(selected) and has_estimator and fitted) or (
+                not selected and not has_estimator and not fitted
             )
             if fitted and not selection_consistent:
                 clear = getattr(head, "_clear_estimator_state", None)
@@ -1783,6 +1857,12 @@ class ProductionEnsemblePredictor:
                         target="margin",
                         model_version=f"{self.model_version}-oof-enet",
                         seed=self.seed + b + 31,
+                        fit_intercept=bool(self.enet_margin.fit_intercept),
+                        force_include_features=tuple(self.enet_margin.force_include_features),
+                        unpenalized_features=tuple(self.enet_margin.unpenalized_features),
+                        top_k=int(self.enet_margin.top_k),
+                        alpha=float(self.enet_margin.alpha),
+                        l1_ratio=float(self.enet_margin.l1_ratio),
                     )
                     try:
                         head_e.fit(tr_feat, tr_lab)
@@ -2385,6 +2465,17 @@ def build_production_stack(
         provider.set_play_counts(with_gt_filter=play_counts[0], without_gt_filter=play_counts[1])
 
     train = HeadTrainConfig(n_estimators=50, learning_rate=0.1, num_leaves=15, max_depth=4)
+    enet_kwargs: dict[str, Any] = {
+        "target": "margin",
+        "model_version": f"{cfg.model_version}-enet",
+        "seed": int(cfg.seed),
+        "fit_intercept": bool(cfg.elasticnet_fit_intercept),
+    }
+    if cfg.explicit_home_site:
+        # Force-keep and leave unpenalized so ElasticNet cannot shrink the
+        # explicit home-site term to zero (MODEL-HFA-4).
+        enet_kwargs["force_include_features"] = ("is_home_site",)
+        enet_kwargs["unpenalized_features"] = ("is_home_site",)
     predictor = ProductionEnsemblePredictor(
         config=cfg,
         model_version=cfg.model_version,
@@ -2394,6 +2485,7 @@ def build_production_stack(
             train=train,
             model_version=f"{cfg.model_version}-total",
         ),
+        enet_margin=ElasticNetMuHead(**enet_kwargs),
         sigma_margin_head=LightGBMSigmaHead(
             target="sigma_margin", train=train, model_version=f"{cfg.model_version}-sm"
         ),

@@ -344,6 +344,13 @@ def walkforward_config_from_mapping(payload: Mapping[str, Any]) -> WalkForwardCo
             wf.get("enforce_prediction_quality_gate", run_kind_raw != "smoke")
         ),
         lockbox_confirmatory_read=bool(wf.get("lockbox_confirmatory_read", False)),
+        explicit_home_site=bool(wf.get("explicit_home_site", False)),
+        elasticnet_fit_intercept=bool(wf.get("elasticnet_fit_intercept", True)),
+        freeze_mapping_from_season=(
+            int(wf["freeze_mapping_from_season"])
+            if wf.get("freeze_mapping_from_season") is not None
+            else None
+        ),
     )
 
 
@@ -391,8 +398,12 @@ def _retrain_points_for(
     weeks_by_season: Mapping[int, list[int]],
 ) -> list[dict[str, int]]:
     retrain_points: list[dict[str, int]] = []
+    freeze_from = cfg.freeze_mapping_from_season
     for season in cfg.all_replay_seasons():
         retrain_points.append({"season": season, "week": 0})
+        mapping_frozen = freeze_from is not None and int(season) >= int(freeze_from)
+        if mapping_frozen:
+            continue
         for week in cfg.retrain_weeks:
             if week in weeks_by_season.get(season, []):
                 retrain_points.append({"season": season, "week": int(week)})
@@ -649,6 +660,24 @@ def run_backtest(
                 spread = pd.to_numeric(predictions["spread_close"], errors="coerce")
                 predictions["p_mkt_ml_home"] = 1.0 / (1.0 + np.exp(spread / 10.0))
 
+        # Persist draft predictions before hard gates so a late distribution /
+        # ATS refusal does not discard a multi-hour walk-forward (MODEL-HFA-4).
+        for (season, week), chunk in predictions.groupby(["season", "week"], sort=True):
+            key = _unit_key(cfg.run_id, int(season), int(week))
+            shard = week_dir / f"season={int(season)}_week={int(week)}.parquet"
+            if key in completed and not force:
+                resumed += 1
+                continue
+            _atomic_write_parquet(chunk.reset_index(drop=True), shard)
+            completed.add(key)
+            _save_checkpoint(output_dir, completed)
+        preds_path = output_dir / "predictions.parquet"
+        _atomic_write_parquet(predictions, preds_path)
+        home_edge = getattr(stack.predictor, "home_edge_report", {}) or {}
+        (output_dir / "home_edge.json").write_text(
+            json.dumps(home_edge, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
+
         validate_prediction_distribution(predictions)
         if cfg.enforce_prediction_quality_gate and result.quality_gate is None:
             assert_prediction_quality_gate(
@@ -660,18 +689,15 @@ def run_backtest(
         # ATS-GRADE-FIX: refuse to finalize a run whose ATS vs close is
         # impossible under the fair-coin band (two-sided).
         assert_prediction_ats_plausible(predictions)
-        for (season, week), chunk in predictions.groupby(["season", "week"], sort=True):
-            key = _unit_key(cfg.run_id, int(season), int(week))
-            shard = week_dir / f"season={int(season)}_week={int(week)}.parquet"
-            if key in completed and not force:
-                resumed += 1
-                continue
-            _atomic_write_parquet(chunk.reset_index(drop=True), shard)
-            completed.add(key)
-            _save_checkpoint(output_dir, completed)
 
     preds_path = output_dir / "predictions.parquet"
-    _atomic_write_parquet(predictions, preds_path)
+    if not preds_path.is_file() and not predictions.empty:
+        _atomic_write_parquet(predictions, preds_path)
+    home_edge = getattr(stack.predictor, "home_edge_report", {}) or {}
+    if not (output_dir / "home_edge.json").is_file():
+        (output_dir / "home_edge.json").write_text(
+            json.dumps(home_edge, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
 
     seasons_executed = (
         sorted({int(s) for s in predictions["season"].unique()})
@@ -700,6 +726,9 @@ def run_backtest(
         "quality_gate": json.dumps(gate_payload, sort_keys=True),
         "nnls_fold_reports": json.dumps(nnls_reports, sort_keys=True),
         "member_status_latest": json.dumps(member_status_reports, sort_keys=True),
+        "home_edge_report": json.dumps(
+            getattr(stack.predictor, "home_edge_report", {}) or {}, sort_keys=True
+        ),
     }
     manifest = build_manifest(
         config={
