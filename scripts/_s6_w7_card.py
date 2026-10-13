@@ -5,13 +5,25 @@ Gate order mirrors production ``apply_bet_filters`` (QB in the same
 only on full accept). Probe-only book restriction does not touch global
 ``odds_books`` config.
 
-W7-2 DECISIONS (fixed): HFA=ROBUST (eligible only if raw AND home-μ−4.56
-both clear every gate), stake=0.015 / max 6 / 10% weekly, POST_BY=
-Wed Oct 14 12:00 PM ET (kickoff must be >= POST_BY+2h).
+W7-5 DECISIONS (2026-10-13T14:32:17-04:00):
+- HFA: NONE. Reason: W7-BT2 §4. 4.56 is the model's full home-field
+  term (Enet intercept × stack weight), not an excess; measured excess
+  over market is +0.89 pts (95% CI 0.63–1.15). The ROBUST rule
+  (W7-2) is withdrawn.
+- Card rule = W6 logic: edge ≥ 0.045, raw |resid| ≤ 7.0, snapshot ≤ 6h,
+  QB starter on both sides. Max 6 plays by edge, stake 0.015.
+- Best line: all regulated books, as in W7-3.
+- Radar: up to 2 plays that fail only on QB, same ranking.
+- Thread wording: no edge %, no "calibrated" (see W7-BT2).
+
+W7-2 DECISIONS (WITHDRAWN by W7-5): HFA=ROBUST (eligible only if raw AND
+home-μ−4.56 both clear every gate), stake=0.015 / max 6 / 10% weekly,
+POST_BY=Wed Oct 14 12:00 PM ET (kickoff must be >= POST_BY+2h).
 
 Probe-only (not production): reject backup/unknown/missing QB on either
 side; price across betmgm/draftkings/fanduel/williamhill_us via production
-``build_candidates_from_odds`` only (seed 42+game_id).
+``build_candidates_from_odds`` only (seed 42+game_id). Flip ``HFA_MODE``
+to ``NONE`` only after this decision is committed (W7-5 rerun).
 """
 
 from __future__ import annotations
@@ -43,6 +55,9 @@ UNIT_FRACTION = 0.005
 FIXED_STAKE = 0.015
 MAX_BETS = 6
 HFA_ROBUST_PTS = 4.56
+# W7-5 decision records HFA:NONE; keep ROBUST until the decision commit lands,
+# then flip this flag alone on the W7-5 rerun (no other logic changes).
+HFA_MODE: str = "ROBUST"
 LIVE_ODDS_CREDITS = 3  # markets (3) × regions (1) per Odds API live endpoint metering
 # Probe-only pricing books (do not edit configs/data.yaml odds_books).
 PROBE_BOOKS: tuple[str, ...] = ("betmgm", "draftkings", "fanduel", "williamhill_us")
@@ -284,8 +299,8 @@ def _production_accept_loop(
         if not _kickoff_ok(str(row.get("kickoff_utc", ""))):
             if "excluded_timing" not in reasons:
                 reasons.append("excluded_timing")
-        # W7-2 HFA ROBUST: must also clear every pricing gate under μ−4.56.
-        if not row.get("passes_hfa_gates", False):
+        # W7-2 HFA ROBUST (skipped when HFA_MODE=NONE / W7-5).
+        if HFA_MODE == "ROBUST" and not row.get("passes_hfa_gates", False):
             if "hfa_robust_fail" not in reasons:
                 reasons.append("hfa_robust_fail")
         # Public edge floor (probe).
@@ -337,7 +352,7 @@ def _production_accept_loop(
             continue
         if row.get("book") and str(row["book"]) not in PROBE_BOOKS:
             continue
-        if not row.get("passes_hfa_gates", False):
+        if HFA_MODE == "ROBUST" and not row.get("passes_hfa_gates", False):
             continue
         if not _kickoff_ok(str(row.get("kickoff_utc", ""))):
             continue
@@ -869,9 +884,13 @@ def _merge_hfa_metrics(
                 annotated["passes_hfa_gates"] = bool(
                     side_match and hfa.get("passes_pricing_gates")
                 )
-            annotated["passes_dual_gates"] = bool(
-                annotated.get("passes_pricing_gates") and annotated.get("passes_hfa_gates")
-            )
+            if HFA_MODE == "ROBUST":
+                annotated["passes_dual_gates"] = bool(
+                    annotated.get("passes_pricing_gates") and annotated.get("passes_hfa_gates")
+                )
+            else:
+                # W7-5 HFA=NONE: W6 single gate (raw pricing only).
+                annotated["passes_dual_gates"] = bool(annotated.get("passes_pricing_gates"))
             out.append(annotated)
         merged[book] = out
     return merged
@@ -898,7 +917,6 @@ def run_analysis(*, as_of: datetime | None = None) -> dict[str, Any]:
 
     raw_by_book: dict[str, list[dict[str, Any]]] = {}
     hfa_by_book: dict[str, list[dict[str, Any]]] = {}
-    hfa_games = _hfa_adjust_games(games)
     for book in PROBE_BOOKS:
         raw_by_book[book] = _build_rows_for_book(
             book=book,
@@ -908,14 +926,17 @@ def run_analysis(*, as_of: datetime | None = None) -> dict[str, Any]:
             betting=betting,
             qb_frame=qb_frame,
         )
-        hfa_by_book[book] = _build_rows_for_book(
-            book=book,
-            games=hfa_games,
-            analysis_as_of=analysis_as_of,
-            cfg=cfg,
-            betting=betting,
-            qb_frame=qb_frame,
-        )
+    if HFA_MODE == "ROBUST":
+        hfa_games = _hfa_adjust_games(games)
+        for book in PROBE_BOOKS:
+            hfa_by_book[book] = _build_rows_for_book(
+                book=book,
+                games=hfa_games,
+                analysis_as_of=analysis_as_of,
+                cfg=cfg,
+                betting=betting,
+                qb_frame=qb_frame,
+            )
 
     by_book = _merge_hfa_metrics(raw_by_book, hfa_by_book)
     rows, _other = _choose_book_rows(by_book)
@@ -1083,19 +1104,26 @@ def run_analysis(*, as_of: datetime | None = None) -> dict[str, Any]:
         "slate_count": len(games),
         "probe_books": list(PROBE_BOOKS),
         "decisions": {
-            "hfa": "ROBUST",
-            "hfa_pts": HFA_ROBUST_PTS,
+            "hfa": HFA_MODE,
+            "hfa_pts": HFA_ROBUST_PTS if HFA_MODE == "ROBUST" else 0.0,
             "stake": FIXED_STAKE,
             "max_bets": MAX_BETS,
             "weekly_cap": 0.10,
             "post_by_et": POST_BY.isoformat(),
             "post_by_plus_2h_et": POST_BY_PLUS_2H.isoformat(),
             "public_min_edge": public_min_edge,
+            "decided_at": "2026-10-13T14:32:17-04:00",
+            "decision_id": "W7-5",
         },
         "book_selection_rule": (
             "per game: among betmgm+draftkings+fanduel+williamhill_us rows, keep "
-            "highest edge that passes dual HFA gates (QB/exposure deferred); "
-            "tie → book order in PROBE_BOOKS"
+            "highest edge that passes pricing gates"
+            + (
+                " under dual HFA (raw AND μ−4.56)"
+                if HFA_MODE == "ROBUST"
+                else " (HFA=NONE / W6 single gate)"
+            )
+            + " (QB/exposure deferred); tie → book order in PROBE_BOOKS"
         ),
         "kickoff_range": {
             "min": min(kickoffs).isoformat() if kickoffs else None,
@@ -1163,7 +1191,9 @@ def main() -> None:
     lines = [
         (
             f"# PRE-QB survivors (books={'+'.join(PROBE_BOOKS)}, "
-            f"HFA=ROBUST −{HFA_ROBUST_PTS}, stake={FIXED_STAKE}, max={MAX_BETS}, "
+            f"HFA={HFA_MODE}"
+            + (f" −{HFA_ROBUST_PTS}" if HFA_MODE == "ROBUST" else "")
+            + f", stake={FIXED_STAKE}, max={MAX_BETS}, "
             f"public_min_edge={float(payload['gate']['public_min_edge']):.3f})"
         ),
         "",
