@@ -4,7 +4,7 @@
   "label": "posted_calls",
   "n": 2,
   "probe_book": "mixed",
-  "pricing_note": "Lines/prices/edges from betmgm+draftkings+fanduel+williamhill_us highest-edge dual-HFA PASS row per game; stake fixed 0.015.",
+  "pricing_note": "W7-3 best-line sweep: among US-regulated books with dual-HFA PASS (edge>=0.045, edge_hfa>=0.045, resid<=7), pick highest edge; tie-break better number then better price. Stake fixed 0.015.",
   "posted_calls": [
     {
       "game_id": "401862806",
@@ -14,29 +14,82 @@
       "book": "draftkings",
       "line": 20.5,
       "price": -102.0,
-      "snapshot_event_time": "2026-10-13T12:02:04.719889+00:00",
+      "snapshot_event_time": "2026-10-13T16:13:22.396632+00:00",
       "posted_at_utc": null,
       "edge": 0.0579,
       "edge_hfa_adj": 0.1603,
       "stake": 0.015,
       "units": 3.0,
-      "ladder_rung": "odds_api_snapshot"
+      "ladder_rung": "odds_api_live_sweep",
+      "superseded": {
+        "book": "draftkings",
+        "line": 20.5,
+        "price": -102.0,
+        "edge": 0.0579,
+        "edge_hfa_adj": 0.1603,
+        "snapshot_event_time": "2026-10-13T12:02:04.719889+00:00",
+        "ladder_rung": "odds_api_snapshot"
+      }
     },
     {
       "game_id": "401856721",
       "matchup": "Missouri @ Ole Miss",
       "side": "Missouri",
       "side_is": "away",
-      "book": "draftkings",
+      "book": "ballybet",
       "line": 6.0,
-      "price": -110.0,
-      "snapshot_event_time": "2026-10-13T12:02:04.719889+00:00",
+      "price": -108.0,
+      "snapshot_event_time": "2026-10-13T16:13:22.396632+00:00",
       "posted_at_utc": null,
-      "edge": 0.0508,
-      "edge_hfa_adj": 0.1512,
+      "edge": 0.0562,
+      "edge_hfa_adj": 0.1566,
       "stake": 0.015,
       "units": 3.0,
-      "ladder_rung": "odds_api_snapshot"
+      "ladder_rung": "odds_api_live_sweep",
+      "superseded": {
+        "book": "draftkings",
+        "line": 6.0,
+        "price": -110.0,
+        "edge": 0.0508,
+        "edge_hfa_adj": 0.1512,
+        "snapshot_event_time": "2026-10-13T12:02:04.719889+00:00",
+        "ladder_rung": "odds_api_snapshot"
+      }
     }
-  ]
+  ],
+  "conditional": [
+    {
+      "game_id": "401866442",
+      "matchup": "Massachusetts @ Buffalo",
+      "side": "Buffalo",
+      "status": "not_graded_qb_unconfirmed",
+      "qb_note": "UMass starter unconfirmed",
+      "book": "espnbet",
+      "line": -6.5,
+      "price": -105.0,
+      "edge": 0.1503,
+      "edge_hfa_adj": 0.0578,
+      "snapshot_event_time": "2026-10-13T16:13:22.396632+00:00"
+    },
+    {
+      "game_id": "401858494",
+      "matchup": "Wisconsin @ UCLA",
+      "side": "Wisconsin",
+      "status": "not_graded_qb_unconfirmed",
+      "qb_note": "UCLA expected to start a backup",
+      "book": "ballybet",
+      "line": 2.5,
+      "price": -108.0,
+      "edge": 0.0644,
+      "edge_hfa_adj": 0.1781,
+      "snapshot_event_time": "2026-10-13T16:13:22.396632+00:00"
+    }
+  ],
+  "sweep_meta": {
+    "raw_odds_path": "docs/notes/_artifacts/social-s6-w7-card/odds_allbooks_20261013T161322Z.json",
+    "credits_last": "2",
+    "credits_remaining": "477",
+    "as_of": "2026-10-13T16:13:22.396632+00:00",
+    "conditional_excluded_no_gate": []
+  }
 }

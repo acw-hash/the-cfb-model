@@ -18,9 +18,9 @@
     "side_team": "Missouri",
     "market_line": 6.0,
     "model_line": 3.8859508471196564,
-    "edge": 0.0508,
-    "expected_value": 0.0515,
-    "american_odds": -110.0,
+    "edge": 0.0562,
+    "expected_value": 0.0608,
+    "american_odds": -108.0,
     "p_win": 0.550786035116374,
     "stake_fraction": 0.015,
     "model_market_residual_points": 2.11
