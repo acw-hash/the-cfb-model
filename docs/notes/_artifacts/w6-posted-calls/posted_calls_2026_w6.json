@@ -18,7 +18,9 @@
       "edge": 0.1319,
       "units": 3.0,
       "ladder_rung": "odds_api_snapshot",
-      "posted_at_source": "x_post"
+      "posted_at_source": "file_mtime_estimate",
+      "posted_at_note": "artifact mtime, not verified against X post",
+      "price_at_post_check_status": "provisional"
     },
     {
       "game_id": "401858254",
@@ -32,7 +34,9 @@
       "edge": 0.1313,
       "units": 3.0,
       "ladder_rung": "odds_api_snapshot",
-      "posted_at_source": "x_post"
+      "posted_at_source": "file_mtime_estimate",
+      "posted_at_note": "artifact mtime, not verified against X post",
+      "price_at_post_check_status": "provisional"
     },
     {
       "game_id": "401858480",
@@ -46,7 +50,9 @@
       "edge": 0.1308,
       "units": 3.0,
       "ladder_rung": "odds_api_snapshot",
-      "posted_at_source": "x_post"
+      "posted_at_source": "file_mtime_estimate",
+      "posted_at_note": "artifact mtime, not verified against X post",
+      "price_at_post_check_status": "provisional"
     },
     {
       "game_id": "401858481",
@@ -60,7 +66,9 @@
       "edge": 0.1263,
       "units": 3.0,
       "ladder_rung": "odds_api_snapshot",
-      "posted_at_source": "x_post"
+      "posted_at_source": "file_mtime_estimate",
+      "posted_at_note": "artifact mtime, not verified against X post",
+      "price_at_post_check_status": "provisional"
     },
     {
       "game_id": "401869943",
@@ -74,7 +82,9 @@
       "edge": 0.1164,
       "units": 3.0,
       "ladder_rung": "odds_api_snapshot",
-      "posted_at_source": "x_post"
+      "posted_at_source": "file_mtime_estimate",
+      "posted_at_note": "artifact mtime, not verified against X post",
+      "price_at_post_check_status": "provisional"
     },
     {
       "game_id": "401860902",
@@ -88,7 +98,9 @@
       "edge": 0.1158,
       "units": 3.0,
       "ladder_rung": "odds_api_snapshot",
-      "posted_at_source": "x_post"
+      "posted_at_source": "file_mtime_estimate",
+      "posted_at_note": "artifact mtime, not verified against X post",
+      "price_at_post_check_status": "provisional"
     },
     {
       "game_id": "401856712",
@@ -104,7 +116,9 @@
       "ladder_rung": "odds_api_snapshot",
       "cap_override": true,
       "note": "posted as #7 above the 10% weekly cap (7 x 1.5% = 10.5%)",
-      "posted_at_source": "x_post"
+      "posted_at_source": "file_mtime_estimate",
+      "posted_at_note": "artifact mtime, not verified against X post",
+      "price_at_post_check_status": "provisional"
     }
   ]
 }

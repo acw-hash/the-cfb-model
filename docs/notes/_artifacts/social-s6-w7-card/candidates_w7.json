@@ -1,0 +1,28 @@
+[
+  {
+    "game_id": "401862806",
+    "market": "side",
+    "side_team": "Kent State",
+    "market_line": 20.5,
+    "model_line": 18.874328399780108,
+    "edge": 0.0579,
+    "expected_value": 0.0704,
+    "american_odds": -102.0,
+    "p_win": 0.5405,
+    "stake_fraction": 0.015,
+    "model_market_residual_points": 1.63
+  },
+  {
+    "game_id": "401856721",
+    "market": "side",
+    "side_team": "Missouri",
+    "market_line": 6.0,
+    "model_line": 3.8859508471196564,
+    "edge": 0.0508,
+    "expected_value": 0.0515,
+    "american_odds": -110.0,
+    "p_win": 0.550786035116374,
+    "stake_fraction": 0.015,
+    "model_market_residual_points": 2.11
+  }
+]
