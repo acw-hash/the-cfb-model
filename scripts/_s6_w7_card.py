@@ -55,9 +55,8 @@ UNIT_FRACTION = 0.005
 FIXED_STAKE = 0.015
 MAX_BETS = 6
 HFA_ROBUST_PTS = 4.56
-# W7-5 decision records HFA:NONE; keep ROBUST until the decision commit lands,
-# then flip this flag alone on the W7-5 rerun (no other logic changes).
-HFA_MODE: str = "ROBUST"
+# W7-5: ROBUST withdrawn — W6 single gate (raw pricing only).
+HFA_MODE: str = "NONE"
 LIVE_ODDS_CREDITS = 3  # markets (3) × regions (1) per Odds API live endpoint metering
 # Probe-only pricing books (do not edit configs/data.yaml odds_books).
 PROBE_BOOKS: tuple[str, ...] = ("betmgm", "draftkings", "fanduel", "williamhill_us")

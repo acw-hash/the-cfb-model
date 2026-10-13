@@ -2,10 +2,236 @@
   "season": 2026,
   "week": 7,
   "label": "posted_calls",
-  "n": 2,
+  "n": 6,
   "probe_book": "mixed",
-  "pricing_note": "W7-3 best-line sweep: among US-regulated books with dual-HFA PASS (edge>=0.045, edge_hfa>=0.045, resid<=7), pick highest edge; tie-break better number then better price. Stake fixed 0.015.",
+  "pricing_note": "W7-7 fresh-odds ATS recheck: HFA=NONE; among regulated books with edge>=0.045, |resid|<=7, snap<=6h, pick highest edge; tie-break better number then better price. Stake fixed 0.015. QB starter both sides for card; radar=QB-only fails max 2 (Air Force own-backup excluded).",
   "posted_calls": [
+    {
+      "game_id": "401856722",
+      "matchup": "Kentucky @ Oklahoma",
+      "side": "Kentucky",
+      "side_is": "away",
+      "book": "fanduel",
+      "line": 6.5,
+      "price": 100.0,
+      "snapshot_event_time": "2026-10-13T19:24:59+00:00",
+      "posted_at_utc": null,
+      "edge": 0.1657,
+      "stake": 0.015,
+      "units": 3.0,
+      "ladder_rung": "odds_api_live_sweep",
+      "model_line": -0.354623127494913,
+      "model_market_residual_points": 6.85,
+      "superseded": {
+        "book": "fanduel",
+        "line": 6.5,
+        "price": 100.0,
+        "edge": 0.1657,
+        "snapshot_event_time": "2026-10-13T19:24:59+00:00",
+        "ladder_rung": "odds_api_live_sweep",
+        "prior_superseded": null,
+        "prior_w7_5_superseded": null,
+        "by": "W7-7",
+        "at": "2026-10-13T19:26:09.332883+00:00"
+      }
+    },
+    {
+      "game_id": "401866444",
+      "matchup": "Toledo @ Eastern Michigan",
+      "side": "Eastern Michigan",
+      "side_is": "home",
+      "book": "espnbet",
+      "line": 6.5,
+      "price": -105.0,
+      "snapshot_event_time": "2026-10-13T19:24:46+00:00",
+      "posted_at_utc": null,
+      "edge": 0.1364,
+      "stake": 0.015,
+      "units": 3.0,
+      "ladder_rung": "odds_api_live_sweep",
+      "model_line": 1.143674496093617,
+      "model_market_residual_points": 5.36,
+      "superseded": {
+        "book": "espnbet",
+        "line": 6.5,
+        "price": -105.0,
+        "edge": 0.1364,
+        "snapshot_event_time": "2026-10-13T19:24:46+00:00",
+        "ladder_rung": "odds_api_live_sweep",
+        "prior_superseded": null,
+        "prior_w7_5_superseded": null,
+        "by": "W7-7",
+        "at": "2026-10-13T19:26:09.332883+00:00"
+      }
+    },
+    {
+      "game_id": "401856829",
+      "matchup": "Cincinnati @ West Virginia",
+      "side": "West Virginia",
+      "side_is": "home",
+      "book": "fanduel",
+      "line": -1.5,
+      "price": -108.0,
+      "snapshot_event_time": "2026-10-13T19:24:59+00:00",
+      "posted_at_utc": null,
+      "edge": 0.1325,
+      "stake": 0.015,
+      "units": 3.0,
+      "ladder_rung": "odds_api_live_sweep",
+      "model_line": -8.019141456428995,
+      "model_market_residual_points": 6.52,
+      "superseded": {
+        "book": "fanduel",
+        "line": -1.5,
+        "price": -108.0,
+        "edge": 0.1325,
+        "snapshot_event_time": "2026-10-13T19:24:59+00:00",
+        "ladder_rung": "odds_api_live_sweep",
+        "prior_superseded": null,
+        "prior_w7_5_superseded": null,
+        "by": "W7-7",
+        "at": "2026-10-13T19:26:09.332883+00:00"
+      }
+    },
+    {
+      "game_id": "401864521",
+      "matchup": "New Mexico @ Hawai'i",
+      "side": "New Mexico",
+      "side_is": "away",
+      "book": "betmgm",
+      "line": -14.5,
+      "price": -110.0,
+      "snapshot_event_time": "2026-10-13T19:22:56+00:00",
+      "posted_at_utc": null,
+      "edge": 0.1324,
+      "stake": 0.015,
+      "units": 3.0,
+      "ladder_rung": "odds_api_live_sweep",
+      "model_line": -21.24407829886376,
+      "model_market_residual_points": 6.74,
+      "superseded": {
+        "book": "fanduel",
+        "line": -14.5,
+        "price": -110.0,
+        "edge": 0.1324,
+        "snapshot_event_time": "2026-10-13T19:24:59+00:00",
+        "ladder_rung": "odds_api_live_sweep",
+        "prior_superseded": null,
+        "prior_w7_5_superseded": null,
+        "by": "W7-7",
+        "at": "2026-10-13T19:26:09.332883+00:00"
+      }
+    },
+    {
+      "game_id": "401856828",
+      "matchup": "Arizona State @ Texas Tech",
+      "side": "Texas Tech",
+      "side_is": "home",
+      "book": "espnbet",
+      "line": -14.5,
+      "price": -105.0,
+      "snapshot_event_time": "2026-10-13T19:24:46+00:00",
+      "posted_at_utc": null,
+      "edge": 0.1223,
+      "stake": 0.015,
+      "units": 3.0,
+      "ladder_rung": "odds_api_live_sweep",
+      "model_line": -20.447570745649195,
+      "model_market_residual_points": 5.95,
+      "superseded": {
+        "book": "espnbet",
+        "line": -14.5,
+        "price": -105.0,
+        "edge": 0.1223,
+        "snapshot_event_time": "2026-10-13T19:24:46+00:00",
+        "ladder_rung": "odds_api_live_sweep",
+        "prior_superseded": null,
+        "prior_w7_5_superseded": null,
+        "by": "W7-7",
+        "at": "2026-10-13T19:26:09.332883+00:00"
+      }
+    },
+    {
+      "game_id": "401864522",
+      "matchup": "Northern Illinois @ Wyoming",
+      "side": "Wyoming",
+      "side_is": "home",
+      "book": "ballybet",
+      "line": -8.0,
+      "price": -107.0,
+      "snapshot_event_time": "2026-10-13T19:24:43+00:00",
+      "posted_at_utc": null,
+      "edge": 0.122,
+      "stake": 0.015,
+      "units": 3.0,
+      "ladder_rung": "odds_api_live_sweep",
+      "model_line": -13.99557064633846,
+      "model_market_residual_points": 6.0,
+      "superseded": {
+        "book": "ballybet",
+        "line": -8.0,
+        "price": -107.0,
+        "edge": 0.122,
+        "snapshot_event_time": "2026-10-13T19:24:43+00:00",
+        "ladder_rung": "odds_api_live_sweep",
+        "prior_superseded": null,
+        "prior_w7_5_superseded": null,
+        "by": "W7-7",
+        "at": "2026-10-13T19:26:09.332883+00:00"
+      }
+    }
+  ],
+  "conditional": [
+    {
+      "game_id": "401866442",
+      "matchup": "Massachusetts @ Buffalo",
+      "side": "Buffalo",
+      "status": "not_graded_qb_unconfirmed",
+      "qb_note": "qb_Massachusetts=unknown",
+      "book": "espnbet",
+      "line": -6.5,
+      "price": -105.0,
+      "edge": 0.1503,
+      "snapshot_event_time": "2026-10-13T19:24:46+00:00",
+      "superseded": {
+        "book": "fanduel",
+        "line": -6.5,
+        "price": -105.0,
+        "edge": 0.1503,
+        "by": "W7-7",
+        "at": "2026-10-13T19:26:09.332883+00:00"
+      }
+    },
+    {
+      "game_id": "401856723",
+      "matchup": "Alabama @ Tennessee",
+      "side": "Alabama",
+      "status": "not_graded_qb_unconfirmed",
+      "qb_note": "qb_Tennessee=unknown",
+      "book": "betmgm",
+      "line": -8.5,
+      "price": -112.0,
+      "edge": 0.1269,
+      "snapshot_event_time": "2026-10-13T19:22:56+00:00",
+      "superseded": {
+        "book": "betmgm",
+        "line": -8.5,
+        "price": -112.0,
+        "edge": 0.1269,
+        "by": "W7-7",
+        "at": "2026-10-13T19:26:09.332883+00:00"
+      }
+    }
+  ],
+  "sweep_meta": {
+    "raw_odds_path": "docs/notes/_artifacts/social-s6-w7-card/odds_allbooks_20261013T192504Z.json",
+    "credits_last": "2",
+    "credits_remaining": "467",
+    "as_of": "2026-10-13T19:25:04.244487+00:00",
+    "hfa_mode": "NONE"
+  },
+  "w7_5_supersede_at": "2026-10-13T18:38:20.821725+00:00",
+  "superseded_calls": [
     {
       "game_id": "401862806",
       "matchup": "Kent State @ South Florida",
@@ -29,7 +255,17 @@
         "edge_hfa_adj": 0.1603,
         "snapshot_event_time": "2026-10-13T12:02:04.719889+00:00",
         "ladder_rung": "odds_api_snapshot"
-      }
+      },
+      "w7_5_superseded": {
+        "by": "W7-5",
+        "at": "2026-10-13T18:37:30.721904+00:00",
+        "reason": "W7-5 rebuild under HFA=NONE / W6 gates; never posted (posted_at_utc=null). Prior W7-3 best-line row retained.",
+        "prior_book": "draftkings",
+        "prior_line": 20.5,
+        "prior_price": -102.0,
+        "prior_edge": 0.0579
+      },
+      "status": "superseded_w7_5_never_posted"
     },
     {
       "game_id": "401856721",
@@ -54,42 +290,34 @@
         "edge_hfa_adj": 0.1512,
         "snapshot_event_time": "2026-10-13T12:02:04.719889+00:00",
         "ladder_rung": "odds_api_snapshot"
-      }
+      },
+      "w7_5_superseded": {
+        "by": "W7-5",
+        "at": "2026-10-13T18:37:30.721904+00:00",
+        "reason": "W7-5 rebuild under HFA=NONE / W6 gates; never posted (posted_at_utc=null). Prior W7-3 best-line row retained.",
+        "prior_book": "ballybet",
+        "prior_line": 6.0,
+        "prior_price": -108.0,
+        "prior_edge": 0.0562
+      },
+      "status": "superseded_w7_5_never_posted"
     }
   ],
-  "conditional": [
-    {
-      "game_id": "401866442",
-      "matchup": "Massachusetts @ Buffalo",
-      "side": "Buffalo",
-      "status": "not_graded_qb_unconfirmed",
-      "qb_note": "UMass starter unconfirmed",
-      "book": "espnbet",
-      "line": -6.5,
-      "price": -105.0,
-      "edge": 0.1503,
-      "edge_hfa_adj": 0.0578,
-      "snapshot_event_time": "2026-10-13T16:13:22.396632+00:00"
-    },
+  "superseded_conditionals": [
     {
       "game_id": "401858494",
       "matchup": "Wisconsin @ UCLA",
       "side": "Wisconsin",
-      "status": "not_graded_qb_unconfirmed",
+      "status": "superseded_w7_7",
       "qb_note": "UCLA expected to start a backup",
       "book": "ballybet",
       "line": 2.5,
       "price": -108.0,
       "edge": 0.0644,
       "edge_hfa_adj": 0.1781,
-      "snapshot_event_time": "2026-10-13T16:13:22.396632+00:00"
+      "snapshot_event_time": "2026-10-13T16:13:22.396632+00:00",
+      "superseded_at": "2026-10-13T19:25:04.730488+00:00"
     }
   ],
-  "sweep_meta": {
-    "raw_odds_path": "docs/notes/_artifacts/social-s6-w7-card/odds_allbooks_20261013T161322Z.json",
-    "credits_last": "2",
-    "credits_remaining": "477",
-    "as_of": "2026-10-13T16:13:22.396632+00:00",
-    "conditional_excluded_no_gate": []
-  }
+  "w7_7_at": "2026-10-13T19:26:09.332883+00:00"
 }

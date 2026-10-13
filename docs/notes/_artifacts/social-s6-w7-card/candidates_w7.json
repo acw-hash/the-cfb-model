@@ -1,5 +1,155 @@
 [
   {
+    "game_id": "401856722",
+    "market": "side",
+    "side_team": "Kentucky",
+    "market_line": 6.5,
+    "model_line": -0.354623127494913,
+    "edge": 0.1657,
+    "expected_value": 0.2841,
+    "american_odds": 100.0,
+    "p_win": 0.64205,
+    "stake_fraction": 0.015,
+    "model_market_residual_points": 6.85,
+    "book": "fanduel",
+    "snapshot_event_time": "2026-10-13T19:24:59+00:00",
+    "superseded": {
+      "book": "fanduel",
+      "market_line": 6.5,
+      "american_odds": 100.0,
+      "edge": 0.1657,
+      "model_line": -0.354623127494913,
+      "snapshot_event_time": "2026-10-13T19:24:59+00:00",
+      "superseded_by": "W7-7",
+      "superseded_at": "2026-10-13T19:26:09.332883+00:00"
+    }
+  },
+  {
+    "game_id": "401866444",
+    "market": "side",
+    "side_team": "Eastern Michigan",
+    "market_line": 6.5,
+    "model_line": 1.143674496093617,
+    "edge": 0.1364,
+    "expected_value": 0.2213,
+    "american_odds": -105.0,
+    "p_win": 0.62555,
+    "stake_fraction": 0.015,
+    "model_market_residual_points": 5.36,
+    "book": "espnbet",
+    "snapshot_event_time": "2026-10-13T19:24:46+00:00",
+    "superseded": {
+      "book": "espnbet",
+      "market_line": 6.5,
+      "american_odds": -105.0,
+      "edge": 0.1364,
+      "model_line": 1.143674496093617,
+      "snapshot_event_time": "2026-10-13T19:24:46+00:00",
+      "superseded_by": "W7-7",
+      "superseded_at": "2026-10-13T19:26:09.332883+00:00"
+    }
+  },
+  {
+    "game_id": "401856829",
+    "market": "side",
+    "side_team": "West Virginia",
+    "market_line": -1.5,
+    "model_line": -8.019141456428995,
+    "edge": 0.1325,
+    "expected_value": 0.2098,
+    "american_odds": -108.0,
+    "p_win": 0.62815,
+    "stake_fraction": 0.015,
+    "model_market_residual_points": 6.52,
+    "book": "fanduel",
+    "snapshot_event_time": "2026-10-13T19:24:59+00:00",
+    "superseded": {
+      "book": "fanduel",
+      "market_line": -1.5,
+      "american_odds": -108.0,
+      "edge": 0.1325,
+      "model_line": -8.019141456428995,
+      "snapshot_event_time": "2026-10-13T19:24:59+00:00",
+      "superseded_by": "W7-7",
+      "superseded_at": "2026-10-13T19:26:09.332883+00:00"
+    }
+  },
+  {
+    "game_id": "401864521",
+    "market": "side",
+    "side_team": "New Mexico",
+    "market_line": -14.5,
+    "model_line": -21.24407829886376,
+    "edge": 0.1324,
+    "expected_value": 0.2074,
+    "american_odds": -110.0,
+    "p_win": 0.63245,
+    "stake_fraction": 0.015,
+    "model_market_residual_points": 6.74,
+    "book": "betmgm",
+    "snapshot_event_time": "2026-10-13T19:22:56+00:00",
+    "superseded": {
+      "book": "fanduel",
+      "market_line": -14.5,
+      "american_odds": -110.0,
+      "edge": 0.1324,
+      "model_line": -21.24407829886376,
+      "snapshot_event_time": "2026-10-13T19:24:59+00:00",
+      "superseded_by": "W7-7",
+      "superseded_at": "2026-10-13T19:26:09.332883+00:00"
+    }
+  },
+  {
+    "game_id": "401856828",
+    "market": "side",
+    "side_team": "Texas Tech",
+    "market_line": -14.5,
+    "model_line": -20.447570745649195,
+    "edge": 0.1223,
+    "expected_value": 0.1939,
+    "american_odds": -105.0,
+    "p_win": 0.6115,
+    "stake_fraction": 0.015,
+    "model_market_residual_points": 5.95,
+    "book": "espnbet",
+    "snapshot_event_time": "2026-10-13T19:24:46+00:00",
+    "superseded": {
+      "book": "espnbet",
+      "market_line": -14.5,
+      "american_odds": -105.0,
+      "edge": 0.1223,
+      "model_line": -20.447570745649195,
+      "snapshot_event_time": "2026-10-13T19:24:46+00:00",
+      "superseded_by": "W7-7",
+      "superseded_at": "2026-10-13T19:26:09.332883+00:00"
+    }
+  },
+  {
+    "game_id": "401864522",
+    "market": "side",
+    "side_team": "Wyoming",
+    "market_line": -8.0,
+    "model_line": -13.99557064633846,
+    "edge": 0.122,
+    "expected_value": 0.1907,
+    "american_odds": -107.0,
+    "p_win": 0.615506329113924,
+    "stake_fraction": 0.015,
+    "model_market_residual_points": 6.0,
+    "book": "ballybet",
+    "snapshot_event_time": "2026-10-13T19:24:43+00:00",
+    "superseded": {
+      "book": "ballybet",
+      "market_line": -8.0,
+      "american_odds": -107.0,
+      "edge": 0.122,
+      "model_line": -13.99557064633846,
+      "snapshot_event_time": "2026-10-13T19:24:43+00:00",
+      "superseded_by": "W7-7",
+      "superseded_at": "2026-10-13T19:26:09.332883+00:00"
+    }
+  },
+  {
     "game_id": "401862806",
     "market": "side",
     "side_team": "Kent State",
@@ -10,7 +160,10 @@
     "american_odds": -102.0,
     "p_win": 0.5405,
     "stake_fraction": 0.015,
-    "model_market_residual_points": 1.63
+    "model_market_residual_points": 1.63,
+    "superseded_by": "W7-5",
+    "superseded_at": "2026-10-13T18:37:30.721904+00:00",
+    "superseded_reason": "W7-5 rebuild under HFA=NONE / W6 gates; W7-3 dual-HFA card rows never posted (posted_at_utc=null)."
   },
   {
     "game_id": "401856721",
@@ -23,6 +176,9 @@
     "american_odds": -108.0,
     "p_win": 0.550786035116374,
     "stake_fraction": 0.015,
-    "model_market_residual_points": 2.11
+    "model_market_residual_points": 2.11,
+    "superseded_by": "W7-5",
+    "superseded_at": "2026-10-13T18:37:30.721904+00:00",
+    "superseded_reason": "W7-5 rebuild under HFA=NONE / W6 gates; W7-3 dual-HFA card rows never posted (posted_at_utc=null)."
   }
 ]

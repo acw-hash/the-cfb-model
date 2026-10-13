@@ -17,3 +17,20 @@
 
 Runtime flip: set `HFA_MODE = "NONE"` in `scripts/_s6_w7_card.py` only after
 this decision commit. No card / thread / ledger until QB statuses are entered.
+
+## Decision commit
+
+`1e8b3e87b08fb0aa9e4c97261d5b1540e28ce153` (pushed to `main`).
+
+## Rerun (STOP before card)
+
+- `HFA_MODE = "NONE"` (only logic flip in `_s6_w7_card.py`).
+- Fresh Odds API: `spreads` × `us,us2`, 59 W7 eventIds.
+  Credits this call: **2**; remaining **475**.
+  Raw: `docs/notes/_artifacts/social-s6-w7-card/odds_allbooks_20261013T183657Z.json`.
+- Probe: `_w7_5_rebuild.py` → `w7_5_rebuild_report.json`.
+- W7-3 Kent State / Missouri rows marked `superseded` / `w7_5_superseded`
+  in `candidates_w7.json` and both `posted_calls_2026_w7.json` copies
+  (never posted; nothing deleted).
+- QB: reuse existing rows; research prompts printed for marked-10 teams
+  with no row. **Stopped** — no card / thread / ledger finalize.

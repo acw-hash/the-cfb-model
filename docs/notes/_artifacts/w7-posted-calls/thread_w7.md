@@ -1,47 +1,87 @@
---- POST 1/6 (160 chars) ---
+--- POST 1/10 (162 chars) ---
 ridge's week 7 card 🏈
 
-ran all 62 games, these are the 2 where it disagrees with the market the most. all 1u
+ran all 62 games, these are the 6 where it disagrees with the market the most. all 1u
 
 15-9-1 on the season. line and book on each play 👇
 
---- POST 2/6 (172 chars) ---
+--- POST 2/10 (184 chars) ---
 Best Bet #1
 
-Kent State @ South Florida (Sat)
-▸ Market: Kent State +20.5 (DraftKings)
-▸ Ridge: Kent State +18.9
-▸ Edge: 5.8% | 1u
+Kentucky @ Oklahoma (Sat)
+▸ Market: Kentucky +6.5 +100 (FanDuel)
+▸ Ridge: Kentucky -0.4
+▸ 1u
 
-Model has this 1.6 points off the market.
+Ridge has Kentucky as a slight favorite. That's 6.9 points off the market.
 
---- POST 3/6 (156 chars) ---
+--- POST 3/10 (174 chars) ---
 Best Bet #2
 
-Missouri @ Ole Miss (Sat)
-▸ Market: Missouri +6 (Bally Bet)
-▸ Ridge: Missouri +3.9
-▸ Edge: 5.6% | 1u
+Toledo @ Eastern Michigan (Sat)
+▸ Market: Eastern Michigan +6.5 -105 (ESPN BET)
+▸ Ridge: Eastern Michigan +1.1
+▸ 1u
 
-Model has this 2.1 points off the market.
+Model has this 5.4 points off the market.
 
---- POST 4/6 (248 chars) ---
+--- POST 4/10 (166 chars) ---
+Best Bet #3
+
+Cincinnati @ West Virginia (Sat)
+▸ Market: West Virginia -1.5 -108 (FanDuel)
+▸ Ridge: West Virginia -8
+▸ 1u
+
+Model has this 6.5 points off the market.
+
+--- POST 5/10 (157 chars) ---
+Best Bet #4
+
+New Mexico @ Hawai'i (Sat)
+▸ Market: New Mexico -14.5 -110 (BetMGM)
+▸ Ridge: New Mexico -21.2
+▸ 1u
+
+Model has this 6.7 points off the market.
+
+--- POST 6/10 (165 chars) ---
+Best Bet #5
+
+Arizona State @ Texas Tech (Sat)
+▸ Market: Texas Tech -14.5 -105 (ESPN BET)
+▸ Ridge: Texas Tech -20.4
+▸ 1u
+
+Model has this 5.9 points off the market.
+
+--- POST 7/10 (154 chars) ---
+Best Bet #6
+
+Northern Illinois @ Wyoming (Sat)
+▸ Market: Wyoming -8 -107 (Bally Bet)
+▸ Ridge: Wyoming -14
+▸ 1u
+
+Model has this 6 points off the market.
+
+--- POST 8/10 (228 chars) ---
 On the radar (not on the card)
 
-▸ Buffalo -6.5 (ESPN BET), 15.0% - would qualify; UMass starter unconfirmed
-▸ Wisconsin +2.5 (Bally Bet), 6.4% - would qualify; UCLA expected to start a backup
+▸ Buffalo -6.5 -105 (ESPN BET) - would qualify; UMass starter unconfirmed
+▸ Alabama -8.5 -112 (BetMGM) - would qualify; Tennessee=unknown
 
 model doesn't know about the QB news; the market might.
 
---- POST 5/6 (274 chars) ---
+--- POST 9/10 (267 chars) ---
 what ridge actually is:
 
 ▸ rates every offense + defense off play-by-play EPA, not final scores
 ▸ kalman filter updates them weekly, uncertainty included
-▸ projects a margin + calibrated range, compares to the vig-free market
+▸ projects a margin + range, compares to the vig-free market
 ▸ only plays 4.5%+ edges with both QBs confirmed
 
---- POST 6/6 (180 chars) ---
+--- POST 10/10 (180 chars) ---
 that's the card
 
 want the model's number on a game that's not here? reply with the matchup and i'll send it
