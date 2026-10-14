@@ -884,3 +884,42 @@ Evidence:
 - §3b full pixel rebuild from `data/social/artifacts_cache/latest` was **waived**: round-5 inputs were overwritten by a later publish (week-6 FBS rows 138 → 116; rebuild lint failed with text–logo overlap on a different packing).
 
 Cause of loss: on 2026-10-12 the untracked chart `.py` files were committed into `390dba3` on `model-hfa-v4-wip`, then removed from the main working tree by `checkout` back to `main`.
+
+## Weekly runs
+
+### 2026-10-13 — week 7 (SOC-2 on `soc-2-recovered`)
+
+**Model check:** week-7 `week_predictions.model_identity.model_version` = `production-v0_reduced_v3`, `vintage_label` = `W9A_REVAL` (meta champion same). Matches week-6 record. Not HFA-v4.
+
+**Freshness (production `latest/`, no `--allow-stale`):** week 7 `tuesday_primary` published `2026-10-12 16:57:05 EDT`; ratings entering week 7 (138 teams); results include week-6 completed games (58); odds snapshot `2026-10-13T13:02:35Z` (week 7, ~12 h old).
+
+**Resolved weeks:** read map = 7 · movers = 6 · slate = 7 · game cards = ND@BYU, WIS@UCLA, MIZ@Ole Miss.
+
+**Code changes this run:**
+1. Shrink loop treats logo×quadrant-keep-out overlap as a shrink trigger; floor 22 px (`test_readmap_shrink_treats_text_obstacle_as_trigger`).
+2. Quadrant / average labels moved **outside** the plot frame (top row: Known struggles · average · Proven good; bottom row below x-ticks: Hard to read · x-title · Good, still proving it). Lint skips intentional `outside-label-row` coplanar pairs.
+3. Keep-out miss (notes only): old keep-out plot-local CSS `[0,0]–[130,24]` vs rendered `"Known struggles"` bbox `[8.0,9.6]–[104.6,24.6]` — text fit inside the keep-out; lint still failed because a logo grazed the real text bbox while clearing the keep-out box.
+
+**Sanity:** slate 16/16 with market (excluded: none). Movers 10/10 rows each joined to one week-6 result (`result_join_excluded=[]`). Margin-vs-win% mismatches (toss-ups): Kentucky @ Oklahoma (μ=−0.35, p=0.550); North Carolina @ Duke (μ=−0.96, p=0.518). Display-name CSV is override-only; no new rows proposed (CFBD names in outputs look like common usage). Banned-words + lint **ok** on all 12 PNGs. Determinism: pixel-identical on `readmap_w7_4x5.png`.
+
+**Read map packing:** slot **28** · max displacement **36** · worst overlap **0.080**.
+
+**Footer stamps:** published Mon Oct 12 ET · market as of Tue 9:02 AM ET (slate/gamecards).
+
+**Render:** `render_total_ms` **15686** (~15.7 s).
+
+**Tests:** social unit suite **53 passed**, 1 skipped. Full `make test` blocked by pre-existing dirty `test_webapp_w9d.py` (unrelated ImportError); with that + `test_model_hfa4` ignored: **1120 passed**, 2 failed on unrelated dirt (betting-language ratchet, slot-close credit pin).
+
+**Paths:**
+- `out/social/2026/w07/contact_sheet_w7.png`
+- `out/social/2026/w07/readmap_w7_{4x5,16x9}.png`
+- `out/social/2026/w07/movers_w6_{4x5,16x9}.png`
+- `out/social/2026/w07/slate_ranges_w7_{4x5,16x9}.png`
+- `out/social/2026/w07/gamecard_401856809_{4x5,16x9}.png` (ND@BYU)
+- `out/social/2026/w07/gamecard_401858494_{4x5,16x9}.png` (WIS@UCLA)
+- `out/social/2026/w07/gamecard_401856721_{4x5,16x9}.png` (MIZ@Ole Miss)
+
+Command:
+```
+uv run python scripts/make_social_charts.py --season 2026 --chart soc2 --source local --artifact-dir data/social/artifacts_cache/latest
+```

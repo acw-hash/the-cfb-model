@@ -129,7 +129,7 @@ def test_readmap_tick_labels_round4_contract_superseded(tmp_path: Path) -> None:
     assert axes["y_ticks"] == []
     assert axes["y_top_lines"][0] == "Most sure"
     assert axes["y_bottom_lines"][0] == "Least sure"
-    assert all(q.get("placement") == "inside" for q in specs[0]["quadrants"])
+    assert all(q.get("placement") == "outside" for q in specs[0]["quadrants"])
 
 
 def test_power_rank_ticks_match_data() -> None:

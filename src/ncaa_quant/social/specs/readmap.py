@@ -36,15 +36,18 @@ _READMAP_MAX_DISP_PREFERRED_CSS_PX = 14.0
 _READMAP_LEADER_CSS_PX = 8.0
 _READMAP_OVERLAP_LIMIT = 0.08
 _READMAP_SLOT_START = 28
-#: 4:5 usually settles at 22–26; 16:9 may need smaller marks to clear 8%.
-_READMAP_SLOT_MIN = 12
+#: Floor for the shrink loop (weekly run 2026-10-13: text–logo trigger).
+_READMAP_SLOT_MIN = 22
 _READMAP_SLOT_STEP = 2
 #: Corner keep-out for inside quadrant labels (CSS px; ≈ label bbox + pad).
 _QUAD_ZONE_W = 130.0
 _QUAD_ZONE_H = 24.0
 #: Left gutter for rotated y-title + two-line end labels (CSS px).
 _Y_GUTTER = 148.0
-_X_GUTTER = 56.0
+#: Bottom gutter: x-tick row + separate outside-label / x-title row (CSS px).
+_X_GUTTER = 72.0
+#: Top pad above the plot frame for the outside quadrant / average row.
+_TOP_LABEL_PAD = 22.0
 #: Read-map dek may exceed the global 60-char dek cap.
 READMAP_DEK_MAX = 90
 
@@ -130,8 +133,8 @@ def centered_square_plot(
         chrome_top = 24 + 22 + 64
         chrome_bot = 18 + 22
     content_w = canvas_w - 2 * side_pad
-    # Top pad inside the body for the "average" midline label above the plot.
-    top_label_pad = 16.0
+    # Top pad above the plot frame for outside "Known struggles / average / Proven good".
+    top_label_pad = _TOP_LABEL_PAD
     avail_h = canvas_h - chrome_top - chrome_bot - _X_GUTTER - top_label_pad
     avail_w = content_w - _Y_GUTTER
     side = max(120.0, min(float(avail_h), float(avail_w)))
@@ -227,6 +230,31 @@ def _overlap_fraction(state: dict[int, dict[str, Any]]) -> float:
     return worst
 
 
+def _logo_text_obstacle_hit(
+    state: dict[int, dict[str, Any]],
+    obstacles: list[Box],
+) -> bool:
+    """True when any logo box intersects a quadrant / label keep-out."""
+    if not obstacles:
+        return False
+    for tid, s in state.items():
+        box = Box(s["logo_x"], s["logo_y"], s["width"], s["height"], tid)
+        for ob in obstacles:
+            if box.overlap_area(ob) > 0.0:
+                return True
+    return False
+
+
+def _placement_clear(
+    state: dict[int, dict[str, Any]],
+    obstacles: list[Box],
+) -> bool:
+    """Logo–logo ≤8% and no logo–text (obstacle) overlap."""
+    if _overlap_fraction(state) > _READMAP_OVERLAP_LIMIT:
+        return False
+    return not _logo_text_obstacle_hit(state, obstacles)
+
+
 def _place_all_logos(
     *,
     rows: list[dict[str, Any]],
@@ -242,7 +270,7 @@ def _place_all_logos(
     theme: str,
     obstacles: list[Box] | None = None,
 ) -> tuple[list[dict[str, Any]], int, float, float, dict[int, float], list[dict[str, Any]]]:
-    """Try slot sizes from 28→22 until overlap ≤ 8%. Every team keeps a logo."""
+    """Try slot sizes from 28→22 until logo–logo ≤8% and logos clear text keep-outs."""
     x_span = max(x_hi - x_lo, 1e-6)
     y_span = max(y_hi - y_lo, 1e-6)
     px_per_x = plot_w / x_span
@@ -295,6 +323,7 @@ def _place_all_logos(
         chosen: list[dict[str, Any]] | None = None
         chosen_max = 0.0
         chosen_ov = 1.0
+        chosen_state: dict[int, dict[str, Any]] | None = None
         for max_css in (
             _READMAP_MAX_DISP_PREFERRED_CSS_PX,
             28.0,
@@ -370,10 +399,11 @@ def _place_all_logos(
             chosen = [{**r, **state[r["team_id"]]} for r in rows]
             chosen_max = max_disp
             chosen_ov = ov
-            if ov <= _READMAP_OVERLAP_LIMIT:
+            chosen_state = state
+            if _placement_clear(state, obs):
                 break
 
-        assert chosen is not None
+        assert chosen is not None and chosen_state is not None
         points_out = chosen
         max_disp = chosen_max
         ov = chosen_ov
@@ -381,7 +411,7 @@ def _place_all_logos(
         best_max_disp = max_disp
         best_overlap = ov
         final_slot = slot
-        if ov <= _READMAP_OVERLAP_LIMIT:
+        if _placement_clear(chosen_state, obs):
             break
         slot -= _READMAP_SLOT_STEP
 
@@ -705,28 +735,28 @@ def build_readmap_specs(
                         "label": "Proven good",
                         "x_sign": 1,
                         "y_side": "upper",
-                        "placement": "inside",
+                        "placement": "outside",
                     },
                     {
                         "id": "good_proving",
                         "label": "Good, still proving it",
                         "x_sign": 1,
                         "y_side": "lower",
-                        "placement": "inside",
+                        "placement": "outside",
                     },
                     {
                         "id": "known_struggles",
                         "label": "Known struggles",
                         "x_sign": -1,
                         "y_side": "upper",
-                        "placement": "inside",
+                        "placement": "outside",
                     },
                     {
                         "id": "hard_to_read",
                         "label": "Hard to read",
                         "x_sign": -1,
                         "y_side": "lower",
-                        "placement": "inside",
+                        "placement": "outside",
                     },
                 ],
                 "points": points_out,

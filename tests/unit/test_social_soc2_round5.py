@@ -126,7 +126,7 @@ def test_readmap_net_pts_axes_and_centering(tmp_path: Path) -> None:
     assert spec["frame"]["subtitle"] == (
         "Right = stronger team · higher = Ridge more confident in that rating"
     )
-    assert all(q.get("placement") == "inside" for q in spec["quadrants"])
+    assert all(q.get("placement") == "outside" for q in spec["quadrants"])
     plot = spec["plot"]
     assert abs(plot["w"] - plot["h"]) < 0.5
     assert abs(float(plot["outer_left"]) - float(plot["outer_right"])) <= 2.0
@@ -134,10 +134,48 @@ def test_readmap_net_pts_axes_and_centering(tmp_path: Path) -> None:
     assert len(spec["highlights"]["top_net"]) == 5
     assert "Top by rating:" in spec["alt"]
     assert spec["meta"]["worst_logo_overlap_frac"] <= 0.08 + 1e-9
-    assert 12 <= int(spec["meta"]["logo_slot_px"]) <= 28
+    assert 22 <= int(spec["meta"]["logo_slot_px"]) <= 28
     # X is net_pts (not a 0–100 percentile).
     xs = [float(p["true_x"]) for p in spec["points"]]
     assert min(xs) < 0 < max(xs) or max(abs(v) for v in xs) > 1.0
+
+
+def test_readmap_shrink_treats_text_obstacle_as_trigger() -> None:
+    """Logo shrink accepts a slot only when logos clear text keep-outs too."""
+    from ncaa_quant.social.placement import Box
+    from ncaa_quant.social.specs.readmap import (
+        _READMAP_OVERLAP_LIMIT,
+        _READMAP_SLOT_MIN,
+        _logo_text_obstacle_hit,
+        _overlap_fraction,
+        _placement_clear,
+    )
+
+    assert _READMAP_SLOT_MIN == 22
+    # Two non-overlapping logos; one sits inside a quadrant keep-out.
+    state = {
+        1: {
+            "logo_x": 0.0,
+            "logo_y": 0.0,
+            "width": 0.1,
+            "height": 0.1,
+        },
+        2: {
+            "logo_x": 1.0,
+            "logo_y": 1.0,
+            "width": 0.1,
+            "height": 0.1,
+        },
+    }
+    obs = [Box(0.0, 0.0, 0.2, 0.2, -3)]  # covers team 1
+    assert _overlap_fraction(state) <= _READMAP_OVERLAP_LIMIT
+    assert _logo_text_obstacle_hit(state, obs) is True
+    assert _placement_clear(state, obs) is False
+    # Move team 1 clear of the keep-out → placement accepted.
+    state[1]["logo_x"] = 0.5
+    state[1]["logo_y"] = 0.5
+    assert _logo_text_obstacle_hit(state, obs) is False
+    assert _placement_clear(state, obs) is True
 
 
 def test_competition_ranks_still() -> None:

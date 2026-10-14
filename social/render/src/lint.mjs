@@ -217,7 +217,7 @@ export async function runLayoutLint(page, spec) {
           errors.push(`Text below ${minFont}px: "${direct.slice(0, 40)}" (${fontSize}px)`);
         }
         const groupEl = el.closest(
-          "[data-role='logo-label-group'], [data-role='callout-group'], [data-role='axis-end-group'], [data-role='axis-block'], .slate-row, .learned-row, .movers-row",
+          "[data-role='logo-label-group'], [data-role='callout-group'], [data-role='axis-end-group'], [data-role='outside-label-row'], [data-role='axis-block'], .slate-row, .learned-row, .movers-row",
         );
         let group = "svg-text";
         if (groupEl) {
@@ -234,6 +234,9 @@ export async function runLayoutLint(page, spec) {
         // Prefer the tighter axis-end-group over the whole axis-block.
         const endGroup = el.closest("[data-role='axis-end-group']");
         if (endGroup) group = "axis-end-group";
+        // Outside plot-frame label rows are intentional coplanar groups.
+        const outsideRow = el.closest("[data-role='outside-label-row']");
+        if (outsideRow) group = "outside-label-row";
         pushText(el, direct, group, lh);
       }
 
@@ -281,6 +284,7 @@ export async function runLayoutLint(page, spec) {
         "matchup-header",
         "row-group",
         "axis-end-group",
+        "outside-label-row",
       ]);
 
       const tickBoxes = textBoxes.filter(

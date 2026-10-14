@@ -202,21 +202,15 @@ export function renderReadmap(spec) {
     yTickSvg += `</g>`;
   }
 
-  const padX = 8;
-  const padY = 12;
-  const quadLabels = (spec.quadrants || [])
-    .map((q) => {
-      const qx = q.x_sign > 0 ? plot.x + plot.w - padX : plot.x + padX;
-      const qy = q.y_side === "upper" ? plot.y + padY : plot.y + plot.h - padY;
-      const anchor = q.x_sign > 0 ? "end" : "start";
-      const baseline = q.y_side === "upper" ? "hanging" : "auto";
-      // Slightly smaller so the reserved corner zone clears logos.
-      return `<text data-role="quadrant-label" data-quad="${esc(q.id || "")}" x="${qx}" y="${qy}" text-anchor="${anchor}" dominant-baseline="${baseline}" font-size="13" fill="${t.text_tertiary}" style="${NOWRAP}">${esc(q.label)}</text>`;
-    })
-    .join("");
-
+  // Outside-plot labels (no text inside the plot frame).
+  // Top row: Known struggles | average | Proven good (aligned to frame edges / x=0).
+  // Bottom row (below x-tick labels, never sharing that row): Hard to read | x-title | Good, still proving it.
+  const byId = Object.fromEntries((spec.quadrants || []).map((q) => [q.id, q]));
+  const midLabel = axes.zero_midline_label || "average";
+  const topRowY = Math.max(12, plot.y - 8);
   const tickBelow = 5;
-  const labelBelow = 22;
+  const labelBelow = 20;
+  const outsideBottomY = plot.y + plot.h + Math.min(44, xGutter - 8);
   const xTickBlock = xTicksOutside(
     axes,
     plot,
@@ -226,12 +220,23 @@ export function renderReadmap(spec) {
     labelBelow,
   );
   const yTitle = axes.y_label || "How sure Ridge is about each rating";
-  const xTitleY = plot.y + plot.h + Math.min(48, xGutter - 6);
-  const midLabel = axes.zero_midline_label || "average";
   const yTitleX = Math.max(16, plot.x - yGutter + 22);
   const yTitleY = plot.y + plot.h / 2;
-  // "average" sits just inside the top of the plot on the zero line.
-  const avgY = plot.y + 14;
+  const qKnown = byId.known_struggles?.label || "Known struggles";
+  const qProven = byId.proven_good?.label || "Proven good";
+  const qHard = byId.hard_to_read?.label || "Hard to read";
+  const qGood = byId.good_proving?.label || "Good, still proving it";
+  const outsideLabels = `
+  <g data-role="outside-label-row" data-side="top">
+    <text data-role="quadrant-label" data-quad="known_struggles" data-placement="outside" x="${plot.x}" y="${topRowY}" text-anchor="start" dominant-baseline="auto" font-size="13" fill="${t.text_tertiary}" style="${NOWRAP}">${esc(qKnown)}</text>
+    <text data-role="zero-midline-label" data-placement="outside" x="${zx}" y="${topRowY}" text-anchor="middle" dominant-baseline="auto" font-size="13" fill="${t.text_tertiary}" style="${NOWRAP}">${esc(midLabel)}</text>
+    <text data-role="quadrant-label" data-quad="proven_good" data-placement="outside" x="${plot.x + plot.w}" y="${topRowY}" text-anchor="end" dominant-baseline="auto" font-size="13" fill="${t.text_tertiary}" style="${NOWRAP}">${esc(qProven)}</text>
+  </g>
+  <g data-role="outside-label-row" data-side="bottom">
+    <text data-role="quadrant-label" data-quad="hard_to_read" data-placement="outside" x="${plot.x}" y="${outsideBottomY}" text-anchor="start" dominant-baseline="hanging" font-size="13" fill="${t.text_tertiary}" style="${NOWRAP}">${esc(qHard)}</text>
+    <text data-role="axis-title-x" x="${plot.x + plot.w / 2}" y="${outsideBottomY}" text-anchor="middle" dominant-baseline="hanging" font-size="14" fill="${t.text_secondary}" style="${NOWRAP}">${esc(axes.x_label)}</text>
+    <text data-role="quadrant-label" data-quad="good_proving" data-placement="outside" x="${plot.x + plot.w}" y="${outsideBottomY}" text-anchor="end" dominant-baseline="hanging" font-size="13" fill="${t.text_tertiary}" style="${NOWRAP}">${esc(qGood)}</text>
+  </g>`;
 
   // Vertically center the square so leftover slack splits into two <12% bands.
   const inner = `
@@ -239,13 +244,11 @@ export function renderReadmap(spec) {
 <svg class="plot" data-chart="readmap" width="${cw}" height="${svgH}" viewBox="0 0 ${cw} ${svgH}"
   style="flex:0 0 auto;display:block;width:${cw}px;height:${svgH}px;max-width:${cw}px;max-height:${svgH}px;">
   <line x1="${zx}" y1="${plot.y}" x2="${zx}" y2="${plot.y + plot.h}" stroke="${t.border}" />
-  <text data-role="zero-midline-label" x="${zx}" y="${avgY}" text-anchor="middle" font-size="13" fill="${t.text_tertiary}" style="${NOWRAP}">${esc(midLabel)}</text>
   <line x1="${plot.x}" y1="${my}" x2="${plot.x + plot.w}" y2="${my}" stroke="${t.border}" />
   <rect x="${plot.x}" y="${plot.y}" width="${plot.w}" height="${plot.h}" fill="none" stroke="${t.border}" />
-  ${quadLabels}
+  ${outsideLabels}
   <g data-role="axis-block">${yTickSvg}${xTickBlock}
   <text data-role="axis-title-y" data-rotated="1" transform="translate(${yTitleX}, ${yTitleY}) rotate(-90)" text-anchor="middle" font-size="14" fill="${t.text_secondary}" style="${NOWRAP}">${esc(yTitle)}</text>
-  <text data-role="axis-title-x" x="${plot.x + plot.w / 2}" y="${xTitleY}" text-anchor="middle" font-size="14" fill="${t.text_secondary}" style="${NOWRAP}">${esc(axes.x_label)}</text>
   </g>
   ${marks}
 </svg>
