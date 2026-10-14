@@ -48,6 +48,13 @@ data/**
 !data/**/
 !data/**/.gitkeep
 
+# Social chart outputs (PNGs / captions / run reports)
+out/social/
+
+# SOC-2 Node renderer
+social/render/node_modules/
+social/render/.tmp/
+
 # MLflow / DVC
 mlruns/
 mlartifacts/

@@ -1,0 +1,16 @@
+{
+  "name": "ridge-social-render",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "render": "node src/cli.mjs",
+    "preview": "node src/preview.mjs",
+    "test": "node src/check-versions.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.51.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}
