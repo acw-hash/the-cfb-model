@@ -78,7 +78,7 @@ def test_repo_configs_load() -> None:
     assert cfg.betting.min_edge_sides == 0.025
     assert cfg.betting.min_edge_totals == 0.03
     assert cfg.betting.kelly_fraction == 0.25
-    assert cfg.betting.max_stake_pct == 0.015
+    assert cfg.betting.max_stake_pct == 0.014
     assert cfg.data.garbage_wp_low == 0.02
     assert cfg.data.garbage_wp_high == 0.98
 

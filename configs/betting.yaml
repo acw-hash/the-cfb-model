@@ -3,12 +3,12 @@ betting:
   min_edge_sides: 0.025
   min_edge_totals: 0.03
   kelly_fraction: 0.25
-  max_stake_pct: 0.015
+  max_stake_pct: 0.014
   # Bowl stricter threshold as an edge multiplier (TASK + §12).
   # PLACEHOLDER — spec says "stricter" but does not name the factor.
   bowl_edge_multiplier: 1.5
   # PLACEHOLDER — spec names the filter, not the integer.
-  max_bets_per_week: 10
+  max_bets_per_week: 7
   # PLACEHOLDER — "max exposure/team" (§12); fraction of bankroll.
   max_exposure_per_team: 0.05
   # PLACEHOLDER — "min model-market agreement checks" (§12); abs residual in points.

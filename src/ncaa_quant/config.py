@@ -96,9 +96,9 @@ class BettingConfig(BaseModel):
     min_edge_sides: float = 0.025
     min_edge_totals: float = 0.03
     kelly_fraction: float = 0.25
-    max_stake_pct: float = 0.015
+    max_stake_pct: float = 0.014
     bowl_edge_multiplier: float = 1.5
-    max_bets_per_week: int = 10
+    max_bets_per_week: int = 7
     max_exposure_per_team: float = 0.05
     min_model_market_agreement: float = 7.0
     no_bet_on_stale: bool = True
