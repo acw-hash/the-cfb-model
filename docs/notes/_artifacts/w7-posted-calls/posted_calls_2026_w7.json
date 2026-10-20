@@ -64,7 +64,9 @@
         "by": "W7-7",
         "at": "2026-10-13T19:26:09.332883+00:00"
       },
-      "posted_at_source": "x_post"
+      "posted_at_source": "x_post",
+      "price_source": "docs/notes/_artifacts/social-s6-w7-card/odds_allbooks_20261013T192504Z.json",
+      "price_at_post_check_status": "PASS"
     },
     {
       "game_id": "401856829",
@@ -124,7 +126,9 @@
         "by": "W7-7",
         "at": "2026-10-13T19:26:09.332883+00:00"
       },
-      "posted_at_source": "x_post"
+      "posted_at_source": "x_post",
+      "price_source": "docs/notes/_artifacts/social-s6-w7-card/odds_allbooks_20261013T192504Z.json",
+      "price_at_post_check_status": "PASS"
     },
     {
       "game_id": "401856828",
@@ -154,7 +158,9 @@
         "by": "W7-7",
         "at": "2026-10-13T19:26:09.332883+00:00"
       },
-      "posted_at_source": "x_post"
+      "posted_at_source": "x_post",
+      "price_source": "docs/notes/_artifacts/social-s6-w7-card/odds_allbooks_20261013T192504Z.json",
+      "price_at_post_check_status": "PASS"
     },
     {
       "game_id": "401864522",
@@ -184,7 +190,9 @@
         "by": "W7-7",
         "at": "2026-10-13T19:26:09.332883+00:00"
       },
-      "posted_at_source": "x_post"
+      "posted_at_source": "x_post",
+      "price_source": "docs/notes/_artifacts/social-s6-w7-card/odds_allbooks_20261013T192504Z.json",
+      "price_at_post_check_status": "PASS"
     },
     {
       "game_id": "401866442",
