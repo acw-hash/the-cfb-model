@@ -30,11 +30,16 @@ from ncaa_quant.social.theme import ChartSize
 MIN_READ_GAP_PTS = 1.0
 
 #: Preferred max logo displacement (CSS px). Raised to 28 when 14 cannot
-#: clear the ≤8% overlap budget for a full FBS field (see round-5 notes).
+#: clear the packer overlap target for a full FBS field (see round-5 notes).
 _READMAP_MAX_DISP_CSS_PX = 36.0
 _READMAP_MAX_DISP_PREFERRED_CSS_PX = 14.0
 _READMAP_LEADER_CSS_PX = 8.0
-_READMAP_OVERLAP_LIMIT = 0.08
+#: Packer shrink/accept target (stricter than Playwright lint).
+_READMAP_PACKER_OVERLAP_TARGET = 0.06
+#: Playwright lint ceiling in ``social/render/src/lint.mjs`` (``MAX_LOGO_OVERLAP_FRAC``).
+_READMAP_LINT_OVERLAP_LIMIT = 0.08
+#: Backward-compatible alias used by older tests; equals the packer target.
+_READMAP_OVERLAP_LIMIT = _READMAP_PACKER_OVERLAP_TARGET
 _READMAP_SLOT_START = 28
 #: Floor for the shrink loop (weekly run 2026-10-13: text–logo trigger).
 _READMAP_SLOT_MIN = 22
@@ -249,8 +254,8 @@ def _placement_clear(
     state: dict[int, dict[str, Any]],
     obstacles: list[Box],
 ) -> bool:
-    """Logo–logo ≤8% and no logo–text (obstacle) overlap."""
-    if _overlap_fraction(state) > _READMAP_OVERLAP_LIMIT:
+    """Logo–logo ≤ packer target and no logo–text (obstacle) overlap."""
+    if _overlap_fraction(state) > _READMAP_PACKER_OVERLAP_TARGET:
         return False
     return not _logo_text_obstacle_hit(state, obstacles)
 
@@ -270,7 +275,7 @@ def _place_all_logos(
     theme: str,
     obstacles: list[Box] | None = None,
 ) -> tuple[list[dict[str, Any]], int, float, float, dict[int, float], list[dict[str, Any]]]:
-    """Try slot sizes from 28→22 until logo–logo ≤8% and logos clear text keep-outs."""
+    """Try slot sizes from 28→22 until logo–logo ≤ packer target and logos clear keep-outs."""
     x_span = max(x_hi - x_lo, 1e-6)
     y_span = max(y_hi - y_lo, 1e-6)
     px_per_x = plot_w / x_span
@@ -343,7 +348,7 @@ def _place_all_logos(
                 obstacles=obs,
                 iterations=100,
                 max_disp_widths=max_disp_widths,
-                overlap_allow_fraction=_READMAP_OVERLAP_LIMIT,
+                overlap_allow_fraction=_READMAP_PACKER_OVERLAP_TARGET,
             )
             by_tid = {p.team_id: p for p in placed}
             state: dict[int, dict[str, Any]] = {}
@@ -388,7 +393,7 @@ def _place_all_logos(
                 x_hi=x_hi,
                 y_lo=y_lo,
                 y_hi=y_hi,
-                limit=_READMAP_OVERLAP_LIMIT,
+                limit=_READMAP_PACKER_OVERLAP_TARGET,
                 max_css=max_css,
                 obstacles=obs,
             )

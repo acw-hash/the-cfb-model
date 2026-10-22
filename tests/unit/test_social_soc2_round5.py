@@ -140,11 +140,25 @@ def test_readmap_net_pts_axes_and_centering(tmp_path: Path) -> None:
     assert min(xs) < 0 < max(xs) or max(abs(v) for v in xs) > 1.0
 
 
+def test_readmap_packer_target_below_lint_limit() -> None:
+    """Packer shrink target stays strictly below Playwright lint ceiling."""
+    from ncaa_quant.social.specs.readmap import (
+        _READMAP_LINT_OVERLAP_LIMIT,
+        _READMAP_PACKER_OVERLAP_TARGET,
+        _READMAP_SLOT_MIN,
+    )
+
+    assert _READMAP_SLOT_MIN == 22
+    assert _READMAP_PACKER_OVERLAP_TARGET == 0.06
+    assert _READMAP_LINT_OVERLAP_LIMIT == 0.08
+    assert _READMAP_PACKER_OVERLAP_TARGET < _READMAP_LINT_OVERLAP_LIMIT
+
+
 def test_readmap_shrink_treats_text_obstacle_as_trigger() -> None:
     """Logo shrink accepts a slot only when logos clear text keep-outs too."""
     from ncaa_quant.social.placement import Box
     from ncaa_quant.social.specs.readmap import (
-        _READMAP_OVERLAP_LIMIT,
+        _READMAP_PACKER_OVERLAP_TARGET,
         _READMAP_SLOT_MIN,
         _logo_text_obstacle_hit,
         _overlap_fraction,
@@ -168,7 +182,7 @@ def test_readmap_shrink_treats_text_obstacle_as_trigger() -> None:
         },
     }
     obs = [Box(0.0, 0.0, 0.2, 0.2, -3)]  # covers team 1
-    assert _overlap_fraction(state) <= _READMAP_OVERLAP_LIMIT
+    assert _overlap_fraction(state) <= _READMAP_PACKER_OVERLAP_TARGET
     assert _logo_text_obstacle_hit(state, obs) is True
     assert _placement_clear(state, obs) is False
     # Move team 1 clear of the keep-out → placement accepted.

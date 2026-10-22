@@ -970,3 +970,34 @@ Commands:
 uv run python scripts/make_social_charts.py --season 2026 --chart readmap --source local --artifact-dir data/social/artifacts_cache/latest --allow-stale
 uv run python scripts/make_social_charts.py --season 2026 --chart learned --source local --artifact-dir data/social/artifacts_cache/latest --allow-stale
 ```
+
+### 2026-10-22b — week 8 follow-up (packer 6%, movers copy, slate STOP)
+
+**Ledger `5d44dce`:** owner template still `[PUSH IT | DROP IT]` — **not acted on; not pushed.** Charts-branch tip (with `5d44dce`) W7 ledger `n=6` (UK@OU, TOL@EMU, CIN@WVU, UNM@HAW, ASU@TTU, NIU@WYO; Kent/Missouri superseded). **main** W7 ledger `n=7` (same six + late `Massachusetts @ Buffalo`). Notes commit `eee4be4` kept either way.
+
+**SOC-1 test:** committed `tests/unit/test_social_charts.py` (covers committed `charts/ridge_map|slate_map|surprise_strip|top25`). Isolated `pytest` of that file alone trips coverage `fail-under=80`; leave addopts alone.
+
+**Read-map packing:** packer target `_READMAP_PACKER_OVERLAP_TARGET=0.06` (lint stays `MAX_LOGO_OVERLAP_FRAC=0.08` / `_READMAP_LINT_OVERLAP_LIMIT`). Floor still 22. Test `test_readmap_packer_target_below_lint_limit`. Re-render with `--allow-stale`: slot **22** · max disp **36** · packer worst overlap **0.0599** · lint **ok** · determinism pixel-identical.
+
+**Slate + game cards — STOP (midweek predictions not identical):** only week **4** has both `tuesday_primary` and `daily_refresh` `week_predictions` in R2 (w5–w7 lack daily). Compare 70 common games Tue `2026-09-23T21:33:01Z` vs Thu `2026-09-25T12:46:34Z`:
+
+| field | max \|Δ\| |
+|---|---|
+| `mu_margin` | **4.836** (worst `401867909`) |
+| `sigma_margin` | **1.436** |
+| `p_win_home` | **0.0296** |
+| `conviction_tier` | **1** mismatch (`401856815` clear_lean → strong_lean) |
+| intervals | null on one side for `401866428` (treated as non-identical) |
+
+Historical Thu scripts advance operator `as_of` (e.g. `publish_week4_fri.py`), so predictions move. **No slate / gamecard render.**
+
+**Movers copy:** caption `Biggest movers after week {N}: {T1} {Δ1}, …` (display short names, signed 1-decimal; no SD / “changed its mind”). Alt lists before→after, Δ, result, Ridge expected. Read-map / slate copy still describe on-chart elements (certainty Y + UNCERTAINTY_FOOTNOTE remain valid on the map; slate alt unchanged). Re-rendered movers: lint ok, banned-words clean, determinism ok.
+
+**Delivered paths (partial set):**
+- `out/social/2026/w08/contact_sheet_w8.png`
+- `out/social/2026/w08/readmap_w8_{4x5,16x9}.png`
+- `out/social/2026/w08/movers_w7_{4x5,16x9}.png`
+
+**Read map copy:** title `How Ridge sees FBS entering week 8` · dek `Right = stronger team · higher = Ridge more confident in that rating` · caption `Widest: CLEM, STAN, FAU. 30 FBS teams in Proven good.` · footer `… published Tue Oct 20 ET`
+
+**Movers copy:** title `Biggest movers after week 7` · caption `Biggest movers after week 7: ALA −16.7, WASH +16.6, AUB +15.2.` · footer `… published Tue Oct 20 ET`

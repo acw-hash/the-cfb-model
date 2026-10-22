@@ -1,4 +1,4 @@
-"""What Ridge learned — biggest posterior moves vs last week's uncertainty."""
+"""Movers chart — biggest posterior net-rating moves after a completed week."""
 
 from __future__ import annotations
 
@@ -20,13 +20,11 @@ from ncaa_quant.social.specs.common import (
 )
 from ncaa_quant.social.specs.format_text import (
     format_delta,
-    format_delta_pts,
     format_win_lose_by,
     ridge_had_team_perspective,
     short_name,
 )
 from ncaa_quant.social.specs.net import (
-    UNCERTAINTY_FOOTNOTE,
     net_pts,
     net_sd_pts,
     resolve_margin_scale,
@@ -562,22 +560,36 @@ def build_learned_specs(
         vals.extend([r["net_prev"], r["net_cur"]])
     x_min, x_max, x_ticks = _fit_axis_limits(vals)
 
-    top = top10[0]
-    clear0 = clarity[0]
     headline = f"Biggest movers after week {learned_week}"
     dek = (
         f"Teams whose Ridge rating changed most after week {learned_week} games"
     )
+    caption_bits: list[str] = []
+    for r in top10[:3]:
+        name = str(r.get("school_short") or r["abbreviation"])
+        caption_bits.append(f"{name} {format_delta(r['delta_net'])}")
     caption = trim_caption(
-        f"Ridge changed its mind most on {top['abbreviation']} "
-        f"({format_delta_pts(top['delta_net'])} move, {top['move_sd']:.1f} SD). "
-        f"Biggest new clarity: {clear0['abbreviation']}."
+        f"Biggest movers after week {learned_week}: "
+        + ", ".join(caption_bits)
+        + "."
     )
+    alt_bits: list[str] = []
+    for r in top10:
+        name = str(r.get("school_short") or r["abbreviation"])
+        result = str(r.get("result_label") or "").strip()
+        pregame = str(r.get("pregame_label") or "").strip()
+        alt_bits.append(
+            f"{name}: {r['net_prev']:+.1f} → {r['net_cur']:+.1f} "
+            f"({format_delta(r['delta_net'])})"
+            + (f"; {result}" if result else "")
+            + (f"; Ridge expected {pregame}" if pregame else "")
+            + "."
+        )
     alt = (
-        f"Biggest Ridge rating moves in week {learned_week} {season}, "
-        f"sized against last week's uncertainty. {UNCERTAINTY_FOOTNOTE}"
+        f"Biggest Ridge rating moves after week {learned_week} {season}. "
+        + " ".join(alt_bits)
     )
-    # Footnote lives in alt — 10 dense rows need the canvas for the chart body.
+    # 10 dense rows need the canvas for the chart body — no on-image footnotes.
     footnotes: list[str] = []
 
     moved_up = sorted(
