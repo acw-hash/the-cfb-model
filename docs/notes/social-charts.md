@@ -1046,3 +1046,31 @@ Does **not** write `odds_snapshot.json` (odds worker).
 - Tuesday-only (excluded from dry slate): MTSU@FIU, MOST@DEL, NMSU@SHSU, USA@MRSH.
 
 **STOP.** Owner approves any live Thursday publish separately.
+
+### 2026-10-22d — Thursday publish APPROVED then STOPPED at pre-publish gates
+
+Owner approved live week-8 `daily_refresh` with pre-checks. Diffed dry-run artifacts (`docs/notes/_artifacts/soc2-weekly-w8-thu-dry/artifacts/`, `as_of=2026-10-22T18:49:51Z`) against live `latest/` (still `tuesday_primary` `2026-10-20T14:56:31Z`). **No publish run.**
+
+**Pre-publish STOP reasons:**
+
+1. **`week_predictions.json` — 4 games removed** (owner required 0 added/removed). Dropped because kickoff ≤ dry `as_of=now`:
+   - `401871055` Middle Tennessee @ FIU (`2026-10-20T23:00Z`)
+   - `401871069` Missouri State @ Delaware (`2026-10-20T23:00Z`)
+   - `401871092` South Alabama @ Marshall (`2026-10-20T23:30Z`)
+   - `401871070` New Mexico State @ Sam Houston (`2026-10-22T00:00Z`)
+   Common 52 games: prediction values move as previously reported (max \|Δμ\| 0.52; 2 tier changes); `published_at` / `refresh_kind` would change.
+
+2. **`results_2026.json` — graded-record regression.** Same 888 game_ids, but **507** rows flip `grade_status` `graded` → `no_pre_kickoff_publish` (and prediction/interval provenance fields rewrite). Owner: any change to graded results → STOP. Root cause: dry `grade_export` re-keys against the *new* publish clock / slate, so historical games lose a qualifying pre-kickoff publish pointer.
+
+3. **`team_ratings_2026.json` — EPA/SD identical; open-circle metadata only.** 1024 common team-weeks: max \|Δ\| off/def epa/sd = **0**. Sole non-timestamp content delta: week-**8** open-circle `as_of_utc` stamp (`2026-10-20T14:52:13Z` → `2026-10-22T18:49:51Z`) on all 138 teams. Restates: `as_of=now` does **not** change the ratings cutoff for completed-week means (Δ=0 on epa/sd).
+
+4. **`track_record.json`:** identical apart from `published_at` (PASS).
+
+5. **`meta.json` changed fields:** `published_at`, `refresh_kind` (`tuesday_primary`→`daily_refresh`), `next_expected_publish_utc`.
+
+**Not done:** live `execute_predict_publish`, site verify, slate/gamecard render. Charts remain Tuesday-stale for market surfaces; read map/movers still final on ratings proof.
+
+**Follow-ups (carry):**
+- `margin_interval_lo/hi` unchanged while μ moved ≤0.52 — does `daily_refresh` recompute intervals?
+- No scheduled Thursday Prefect deployment (cron set; keepalive serves odds only).
+- Publish path needs a results/grade strategy that does not wipe `graded` rows, and a slate policy for already-kicked games (keep vs drop).
