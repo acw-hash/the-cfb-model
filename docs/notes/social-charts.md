@@ -923,3 +923,50 @@ Command:
 ```
 uv run python scripts/make_social_charts.py --season 2026 --chart soc2 --source local --artifact-dir data/social/artifacts_cache/latest
 ```
+
+### 2026-10-22 — week 8 partial (read map + movers only; `--allow-stale`)
+
+**Branch:** `soc-2-recovered` @ `5d44dce` (1 ahead of origin; card-ledger revert **not** pushed — awaiting owner).
+
+**Override:** `--allow-stale` on season-to-date charts only. Production `latest/` still `tuesday_primary` week 8 (`published_at=2026-10-20T14:56:31Z`); age >36h and past `next_expected_publish_utc=2026-10-22T14:56:31Z`, so the site gate refuses without the flag. **Slate / game cards not rendered** under `--allow-stale`.
+
+**Why ratings charts are safe under stale Tuesday artifacts:** decision `as_of` is calendar Tuesday and does **not** vary across `daily_refresh` days (`predict.py` `idempotency_partition_for_publish` / `run_predict_publish`: “Decision as_of is intentionally excluded — it does not vary across daily_refresh days”). Live Kalman uses `event_time < as_of` (`live_predict_rows`); current-week open circles are stamped at that same `as_of` (`_append_current_week_rating_points`). So a Thu–Sat refresh may rewrite `team_ratings_2026.json`’s `published_at` stamp, but rating **values** for the entering-week map / postgame movers do not move until new games enter the filter (postgame / weekly path). Cron `predict_publish_cron_refresh: "0 6 * * 4-6"` still points at `RefreshKind.DAILY_REFRESH` via `serve_all`, but that deployment is **not** what runs on this workstation (see below).
+
+**Model check:** `production-v0_reduced_v3` / `W9A_REVAL` (matches week-7 notes). Not HFA/WIP.
+
+**Resolved weeks:** read map = entering **8** · movers = **7**.
+
+**Read map — FAIL (lint):** packing reached floor slot **22** · max displacement **36** · Python worst overlap **0.07997** (≤0.08 budget), but Playwright lint refused: `Logo overlap 9% (max 8%)`. No read-map PNGs shipped (`paths=[]`). Specs/caption/alt were written for inspection only. No chart-code changes attempted (owner: production run only).
+
+**Movers — PASS:**
+- Result joins: 10/10 top movers each joined to exactly one week-7 result (`result_join_excluded=[]`; `n_played=121`, `excluded_bye=17`).
+- Lint ok on both sizes; banned-words scan clean; determinism pixel-identical on `movers_w7_4x5.png`.
+- Render ~2.0 s (`render_total_ms=2029`).
+
+**Movers copy (verbatim):**
+- Headline: `Biggest movers after week 7`
+- Dek: `Teams whose Ridge rating changed most after week 7 games`
+- Caption seed: `Ridge changed its mind most on ALA (−16.7 pts move, 1.7 SD). Biggest new clarity: ECU.`
+- Alt: `Biggest Ridge rating moves in week 7 2026, sized against last week's uncertainty. Uncertainty is approximate (offense and defense treated as independent).`
+- Footer: `Ridge · Forecasts, not betting advice · the-cfb-model.vercel.app · published Tue Oct 20 ET`
+
+**Movers paths:**
+- `out/social/2026/w08/movers_w7_4x5.png`
+- `out/social/2026/w08/movers_w7_16x9.png`
+- `out/social/2026/w08/contact_sheet_w8.png` (movers-only sheet from this run)
+
+**Thursday refresh diagnosis (read-only; nothing triggered):**
+- Config cron exists: `predict_publish_cron_refresh: "0 6 * * 4-6"` → `predict_publish_flow` / `daily_refresh` in `serve_all()`.
+- Workstation Prefect has **no** `predict_publish` deployment or flow. Active deployments: `ingest_odds`, `capture_slot_close`, `odds_cadence_watchdog` only.
+- `scripts/prefect_keepalive.ps1` explicitly: “Does NOT start serve_all / predict_publish / postgame / weekly / settle.” Keepalive log lines: `starting ingest_odds worker (serve_ingest_odds only; no predict_publish)`.
+- No `predict_publish` / `daily_refresh` flow-run today; no error from a failed refresh — the job was **never scheduled**. Historical Thu/Fri publishes used one-off scripts (`publish_week2_thu.py`, `publish_week4_fri.py`); **no** `publish_week8*.py` exists yet. Tuesday week-8 publish was manual (`AS_OF=now` pattern in `publish_week7.py`).
+
+**Housekeeping (awaiting owner):**
+- `5d44dce` reverts `619bbd7`: restores W7-7 six-play ledger (`n=6`: UK@OU, TOL@EMU, CIN@WVU, UNM@HAW, ASU@TTU, NIU@WYO) and moves Kent State / Missouri back to `superseded_calls`; deletes `out/social/2026_w7/late_adds_w7.md`. Not pushed.
+- Untracked `tests/unit/test_social_charts.py`: **stale SOC-1** suite (23 tests on `charts/ridge_map|slate_map|surprise_strip|top25`). All 23 assertions green; isolated run exits non-zero only on coverage `fail-under=80`. Not a duplicate of `test_social_soc2*`; do not commit/delete without owner.
+
+Commands:
+```
+uv run python scripts/make_social_charts.py --season 2026 --chart readmap --source local --artifact-dir data/social/artifacts_cache/latest --allow-stale
+uv run python scripts/make_social_charts.py --season 2026 --chart learned --source local --artifact-dir data/social/artifacts_cache/latest --allow-stale
+```
