@@ -75,14 +75,61 @@ def _team_blob(n: int = 20) -> dict[str, object]:
     return teams
 
 
-def test_symmetric_net_domain_signed_whole_ticks() -> None:
-    lo, hi, ticks, labels = symmetric_net_domain([-31.2, 18.4, 5.0])
-    assert lo == -hi
-    assert len(ticks) == 5
-    assert ticks[2] == 0.0
+def test_fitted_net_domain_pads_and_includes_zero() -> None:
+    from ncaa_quant.social.specs.readmap import fitted_net_domain
+
+    lo, hi, ticks, labels = fitted_net_domain([-31.2, 18.4, 5.0])
+    # 6% of range ≈ 2.976 → domain ≈ [-34.18, 21.38]; ticks nest inside.
+    span = 18.4 - (-31.2)
+    assert lo == pytest.approx(-31.2 - 0.06 * span)
+    assert hi == pytest.approx(18.4 + 0.06 * span)
+    assert lo <= 0.0 <= hi
+    assert 0.0 in ticks
+    assert 4 <= len(ticks) <= 6
+    assert all(lo - 1e-9 <= t <= hi + 1e-9 for t in ticks)
     assert labels == [format_axis_tick(v) for v in ticks]
     assert all(lab == "0" or lab.startswith(("+", "\u2212")) for lab in labels)
-    assert "+" in "".join(labels) or "\u2212" in "".join(labels)
+    # Empty / all-positive / all-negative still include 0 and stay padded.
+    e_lo, e_hi, e_ticks, _ = fitted_net_domain([])
+    assert e_lo < 0 < e_hi and 0.0 in e_ticks
+    p_lo, p_hi, p_ticks, _ = fitted_net_domain([5.0, 12.0, 20.0])
+    assert p_lo == 0.0 and p_hi >= 20.0 and 0.0 in p_ticks
+    n_lo, n_hi, n_ticks, _ = fitted_net_domain([-20.0, -8.0, -3.0])
+    assert n_lo <= -20.0 and n_hi == 0.0 and 0.0 in n_ticks
+
+
+def test_symmetric_net_domain_signed_whole_ticks() -> None:
+    """Alias still returns the fitted (non-symmetric) domain."""
+    lo, hi, ticks, labels = symmetric_net_domain([-31.2, 18.4, 5.0])
+    assert lo <= 0.0 <= hi
+    assert 0.0 in ticks
+    assert labels == [format_axis_tick(v) for v in ticks]
+
+
+def test_certainty_sd_tick_labels_match_quantiles() -> None:
+    from ncaa_quant.social.specs.readmap import (
+        certainty_sd_tick_labels,
+        format_pm_sd,
+        round_sd_half,
+    )
+
+    sds = [9.1, 9.6, 10.0, 10.4, 10.9, 11.2, 12.0]
+    ticks, raw, labels = certainty_sd_tick_labels(sds)
+    assert ticks == [0.0, 25.0, 50.0, 75.0, 100.0]
+    import numpy as np
+
+    expected = [float(np.percentile(sds, 100.0 - c)) for c in ticks]
+    assert raw == pytest.approx(expected)
+    # Default half-step formatting (no adjacent collision on this set).
+    for v, lab in zip(raw, labels, strict=True):
+        assert lab == format_pm_sd(v, one_decimal=False)
+        assert lab.startswith("±")
+    # Collision → force 1 decimal on the colliding adjacent pair.
+    collide = [10.1, 10.2, 10.2, 10.2, 10.15]
+    _t, raw2, labs2 = certainty_sd_tick_labels(collide)
+    assert round_sd_half(raw2[0]) == round_sd_half(raw2[1])
+    assert labs2[0] == f"±{raw2[0]:.1f}"
+    assert labs2[1] == f"±{raw2[1]:.1f}"
 
 
 def test_readmap_net_pts_axes_and_centering(tmp_path: Path) -> None:
@@ -111,30 +158,41 @@ def test_readmap_net_pts_axes_and_centering(tmp_path: Path) -> None:
     spec = specs[0]
     axes = spec["axes"]
     assert axes["x_label"] == "Ridge rating (pts vs. average FBS team)"
-    assert axes["y_label"] == "How sure Ridge is about each rating"
+    assert axes["y_label"] == "How sure Ridge is about each rating (± pts)"
     assert axes["x_zero"] == 0.0
     assert axes["zero_midline_label"] == "average"
-    assert len(axes["x_ticks"]) == 5
+    assert 4 <= len(axes["x_ticks"]) <= 6
+    assert 0.0 in axes["x_ticks"]
     for lab in axes["x_tick_labels"]:
         assert lab == "0" or lab.startswith(("+", "\u2212"))
+    assert axes["y_ticks"] == [0.0, 25.0, 50.0, 75.0, 100.0]
+    assert len(axes["y_tick_labels"]) == 5
+    assert all(lab.startswith("±") for lab in axes["y_tick_labels"])
     sds = [float(p["net_sd_pts"]) for p in spec["points"]]
-    sd_min = int(round(min(sds)))
-    sd_max = int(round(max(sds)))
-    assert axes["y_top_lines"] == ["Most sure", f"could be off ±{sd_min} pts"]
-    assert axes["y_bottom_lines"] == ["Least sure", f"could be off ±{sd_max} pts"]
+    from ncaa_quant.social.specs.readmap import certainty_sd_tick_labels
+
+    _t, _raw, expected_labs = certainty_sd_tick_labels(sds)
+    assert axes["y_tick_labels"] == expected_labs
+    assert axes["y_top_lines"] == ["Most sure"]
+    assert axes["y_bottom_lines"] == ["Least sure"]
+    assert "could be off" not in json.dumps(axes)
     assert "↑ more sure" not in json.dumps(axes)
     assert spec["frame"]["subtitle"] == (
         "Right = stronger team · higher = Ridge more confident in that rating"
     )
     assert all(q.get("placement") == "outside" for q in spec["quadrants"])
     plot = spec["plot"]
-    assert abs(plot["w"] - plot["h"]) < 0.5
-    assert abs(float(plot["outer_left"]) - float(plot["outer_right"])) <= 2.0
+    # Non-square fill: height ≥ 70% of 4:5 canvas.
+    assert float(plot["h"]) / float(spec["frame"]["height"]) >= 0.70
+    assert float(plot["w"]) > float(plot["h"]) * 0.7  # not forced square
+    assert float(plot["outer_left"]) == 0.0
     assert "top_net" in spec["highlights"]
     assert len(spec["highlights"]["top_net"]) == 5
     assert "Top by rating:" in spec["alt"]
     assert spec["meta"]["worst_logo_overlap_frac"] <= 0.08 + 1e-9
     assert 22 <= int(spec["meta"]["logo_slot_px"]) <= 28
+    assert "logo_span_width_frac" in spec["meta"]
+    assert "logo_span_height_frac" in spec["meta"]
     # X is net_pts (not a 0–100 percentile).
     xs = [float(p["true_x"]) for p in spec["points"]]
     assert min(xs) < 0 < max(xs) or max(abs(v) for v in xs) > 1.0

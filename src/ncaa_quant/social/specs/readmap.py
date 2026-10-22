@@ -47,45 +47,144 @@ _READMAP_SLOT_STEP = 2
 #: Corner keep-out for inside quadrant labels (CSS px; ≈ label bbox + pad).
 _QUAD_ZONE_W = 130.0
 _QUAD_ZONE_H = 24.0
-#: Left gutter for rotated y-title + two-line end labels (CSS px).
-_Y_GUTTER = 148.0
+#: Left gutter for rotated y-title + ±pts tick labels + Most/Least sure (CSS px).
+_Y_GUTTER = 96.0
 #: Bottom gutter: x-tick row + separate outside-label / x-title row (CSS px).
 _X_GUTTER = 72.0
 #: Top pad above the plot frame for the outside quadrant / average row.
 _TOP_LABEL_PAD = 22.0
+#: Pad each side of the net_pts data range when fitting the x domain.
+_X_DOMAIN_PAD_FRAC = 0.06
+#: Certainty-percentile positions for y tick marks (100 = sharpest read).
+_Y_CERT_TICKS = (0.0, 25.0, 50.0, 75.0, 100.0)
 #: Read-map dek may exceed the global 60-char dek cap.
 READMAP_DEK_MAX = 90
 
 
-def symmetric_net_domain(values: list[float]) -> tuple[float, float, list[float], list[str]]:
-    """Symmetric-about-0 domain fitted to data + padding; 5 signed whole ticks."""
+def _nice_tick_step(span: float, *, target: int = 5) -> float:
+    """d3-style 1/2/5 step for roughly ``target`` ticks across ``span``."""
+    raw = span / max(target - 1, 1)
+    if raw <= 0:
+        return 1.0
+    exp = math.floor(math.log10(raw))
+    base = raw / (10**exp)
+    if base <= 1:
+        nice = 1.0
+    elif base <= 2:
+        nice = 2.0
+    elif base <= 5:
+        nice = 5.0
+    else:
+        nice = 10.0
+    return nice * (10**exp)
+
+
+def fitted_net_domain(values: list[float]) -> tuple[float, float, list[float], list[str]]:
+    """Fit x domain to data + 6% range pad; always include 0; ~5 nice ticks.
+
+    Domain stays at the padded data range (plus 0). Nice ticks are nested
+    *inside* that domain so a wide FBS field does not snap out to ±80.
+    """
     from ncaa_quant.social.specs.format_text import format_axis_tick
 
     if not values:
-        return -40.0, 40.0, [-40.0, -20.0, 0.0, 20.0, 40.0], [
-            format_axis_tick(v) for v in (-40.0, -20.0, 0.0, 20.0, 40.0)
-        ]
-    peak = max(abs(min(values)), abs(max(values)), 5.0)
-    pad = max(2.0, peak * 0.08)
-    half = peak + pad
-    # Round outward to a nice step that yields 5 ticks (−2s…+2s).
-    for step in (5.0, 10.0, 20.0, 25.0, 40.0, 50.0):
-        n_half = math.ceil(half / step)
-        if n_half < 2:
-            n_half = 2
-        if n_half > 4:
-            continue
-        # Prefer exactly 2 steps each side → 5 ticks.
-        if n_half == 2:
-            x_hi = n_half * step
-            ticks = [-x_hi, -step, 0.0, step, x_hi]
-            labels = [format_axis_tick(v) for v in ticks]
-            return -x_hi, x_hi, ticks, labels
-    x_hi = math.ceil(half / 10.0) * 10.0
-    step = x_hi / 2.0
-    ticks = [-x_hi, -step, 0.0, step, x_hi]
-    labels = [format_axis_tick(v) for v in ticks]
-    return -x_hi, x_hi, ticks, labels
+        ticks = [-40.0, -20.0, 0.0, 20.0, 40.0]
+        return -40.0, 40.0, ticks, [format_axis_tick(v) for v in ticks]
+    lo = float(min(values))
+    hi = float(max(values))
+    span = max(hi - lo, 1.0)
+    pad = span * _X_DOMAIN_PAD_FRAC
+    x_min = lo - pad
+    x_max = hi + pad
+    if x_min > 0.0:
+        x_min = 0.0
+    if x_max < 0.0:
+        x_max = 0.0
+
+    def _inner_ticks(step: float) -> list[float]:
+        t0 = math.ceil(x_min / step - 1e-12) * step
+        t1 = math.floor(x_max / step + 1e-12) * step
+        ticks: list[float] = []
+        if t1 + step * 1e-9 < t0:
+            return [0.0] if x_min <= 0.0 <= x_max else [round(0.5 * (x_min + x_max), 6)]
+        v = t0
+        while v <= t1 + step * 1e-9:
+            ticks.append(round(v, 6))
+            v += step
+        if 0.0 not in ticks and x_min <= 0.0 <= x_max:
+            ticks = sorted({*ticks, 0.0})
+        return ticks
+
+    best: list[float] | None = None
+    for target in (5, 4, 6, 3):
+        step = _nice_tick_step(x_max - x_min, target=target)
+        for _ in range(6):
+            ticks = _inner_ticks(step)
+            n = len(ticks)
+            if n == 5:
+                labels = [format_axis_tick(v) for v in ticks]
+                return float(x_min), float(x_max), ticks, labels
+            if 4 <= n <= 6 and (
+                best is None or abs(len(best) - 5) > abs(n - 5)
+            ):
+                best = ticks
+            if n > 5:
+                step *= 2.0
+                continue
+            if n < 4:
+                step /= 2.0
+                if step < 1e-6:
+                    break
+                continue
+            break
+    if best is None:
+        best = _inner_ticks(_nice_tick_step(x_max - x_min, target=5))
+    labels = [format_axis_tick(v) for v in best]
+    return float(x_min), float(x_max), best, labels
+
+
+def symmetric_net_domain(values: list[float]) -> tuple[float, float, list[float], list[str]]:
+    """Backward-compatible alias — week-8 polish uses the fitted (non-symmetric) domain."""
+    return fitted_net_domain(values)
+
+
+def round_sd_half(value: float) -> float:
+    """Round ``net_sd_pts`` to the nearest 0.5."""
+    return round(float(value) * 2.0) / 2.0
+
+
+def format_pm_sd(value: float, *, one_decimal: bool = False) -> str:
+    """Format a certainty tick as ``±pts`` (half-step or forced 1 decimal)."""
+    if one_decimal:
+        return f"±{float(value):.1f}"
+    rounded = round_sd_half(value)
+    if abs(rounded - round(rounded)) < 1e-9:
+        return f"±{int(round(rounded))}"
+    return f"±{rounded:.1f}"
+
+
+def certainty_sd_tick_labels(sds: list[float]) -> tuple[list[float], list[float], list[str]]:
+    """Y ticks at certainty percentiles 0/25/50/75/100 with ±pts SD labels.
+
+    Position stays certainty percentile (100 = sharpest). Each label is the
+    ``net_sd_pts`` quantile at that certainty (``percentile(sds, 100 − c)``),
+    rounded to 0.5. Adjacent labels that collide after rounding force 1 decimal
+    on those two.
+    """
+    if not sds:
+        ticks = list(_Y_CERT_TICKS)
+        return ticks, [0.0] * len(ticks), ["±0"] * len(ticks)
+    arr = np.asarray(sds, dtype=float)
+    certs = list(_Y_CERT_TICKS)
+    raw = [float(np.percentile(arr, 100.0 - c)) for c in certs]
+    rounded = [round_sd_half(v) for v in raw]
+    one_dec = [False] * len(raw)
+    for i in range(len(raw) - 1):
+        if abs(rounded[i] - rounded[i + 1]) < 1e-9:
+            one_dec[i] = True
+            one_dec[i + 1] = True
+    labels = [format_pm_sd(v, one_decimal=flag) for v, flag in zip(raw, one_dec, strict=True)]
+    return certs, raw, labels
 
 
 def competition_ranks(net_vals: list[float], team_ids: list[int]) -> list[int]:
@@ -123,40 +222,71 @@ def quadrant_obstacle_boxes(
     ]
 
 
+def filled_plot_box(
+    *,
+    canvas_w: int,
+    canvas_h: int,
+    size_name: str,
+) -> dict[str, float]:
+    """Non-square plot filling dek→x-axis and content width minus y-label column.
+
+    4:5 lands near 640×720 CSS px; 16:9 uses full remaining height with width
+    following the content. No horizontal centering — empty side bands go away.
+    """
+    # Frame chrome estimates (padding + header + titles + footer).
+    # Tuned so 4:5 plot height ≈ 720 and leftover dek/footer bands stay ≤6%.
+    chrome_top = 24 + 28 + 76
+    chrome_bot = 20 + 28
+    side_pad = 40.0
+    if size_name == "16x9":
+        chrome_top = 24 + 24 + 60
+        chrome_bot = 18 + 24
+    content_w = canvas_w - 2 * side_pad
+    top_label_pad = _TOP_LABEL_PAD
+    avail_h = canvas_h - chrome_top - chrome_bot - _X_GUTTER - top_label_pad
+    avail_w = content_w - _Y_GUTTER
+    plot_w = max(120.0, float(avail_w))
+    plot_h = max(120.0, float(avail_h))
+    return {
+        "x": _Y_GUTTER,
+        "y": top_label_pad,
+        "w": plot_w,
+        "h": plot_h,
+        "bottom_axis_gutter": _X_GUTTER,
+        "y_gutter": _Y_GUTTER,
+        "outer_left": 0.0,
+        "outer_right": 0.0,
+    }
+
+
 def centered_square_plot(
     *,
     canvas_w: int,
     canvas_h: int,
     size_name: str,
 ) -> dict[str, float]:
-    """Square plot centered horizontally in the content box; fills dek→footer."""
-    # Frame chrome estimates (padding + header + titles + footer).
-    chrome_top = 24 + 24 + 72
-    chrome_bot = 20 + 26
-    side_pad = 40.0
-    if size_name == "16x9":
-        chrome_top = 24 + 22 + 64
-        chrome_bot = 18 + 22
-    content_w = canvas_w - 2 * side_pad
-    # Top pad above the plot frame for outside "Known struggles / average / Proven good".
-    top_label_pad = _TOP_LABEL_PAD
-    avail_h = canvas_h - chrome_top - chrome_bot - _X_GUTTER - top_label_pad
-    avail_w = content_w - _Y_GUTTER
-    side = max(120.0, min(float(avail_h), float(avail_w)))
-    # Center (rotated-title gutter + square) inside the content width.
-    group_w = _Y_GUTTER + side
-    group_left = max(0.0, (content_w - group_w) / 2.0)
-    plot_x = group_left + _Y_GUTTER
-    return {
-        "x": plot_x,
-        "y": top_label_pad,
-        "w": side,
-        "h": side,
-        "bottom_axis_gutter": _X_GUTTER,
-        "y_gutter": _Y_GUTTER,
-        "outer_left": group_left,
-        "outer_right": content_w - (group_left + group_w),
-    }
+    """Backward-compatible alias for :func:`filled_plot_box` (square rule dropped)."""
+    return filled_plot_box(canvas_w=canvas_w, canvas_h=canvas_h, size_name=size_name)
+
+
+def logo_span_fractions(
+    points: list[dict[str, Any]],
+    *,
+    x_lo: float,
+    x_hi: float,
+    y_lo: float,
+    y_hi: float,
+) -> tuple[float, float]:
+    """Fraction of plot width/height spanned by logo boxes (data units)."""
+    x_span = max(x_hi - x_lo, 1e-6)
+    y_span = max(y_hi - y_lo, 1e-6)
+    if not points:
+        return 0.0, 0.0
+    x0 = min(float(p["logo_x"]) - 0.5 * float(p["width"]) for p in points)
+    x1 = max(float(p["logo_x"]) + 0.5 * float(p["width"]) for p in points)
+    y0 = min(float(p["logo_y"]) - 0.5 * float(p["height"]) for p in points)
+    y1 = max(float(p["logo_y"]) + 0.5 * float(p["height"]) for p in points)
+    return (x1 - x0) / x_span, (y1 - y0) / y_span
 
 
 def readmap_caption(
@@ -590,12 +720,13 @@ def build_readmap_specs(
     by_net = sorted(rows, key=lambda r: (-r["net_pts"], r["team_id"]))
     top_net = by_net[:5]
 
-    x_lo, x_hi, x_ticks, x_tick_labels = symmetric_net_domain(
+    x_lo, x_hi, x_ticks, x_tick_labels = fitted_net_domain(
         [r["net_pts"] for r in rows]
     )
     y_lo, y_hi = 0.0, 100.0
     y_mid = 50.0  # median certainty percentile
     n_teams = len(rows)
+    y_ticks, y_sd_raw, y_tick_labels = certainty_sd_tick_labels(sds)
 
     proven_good = [
         r for r in rows if r["net_pts"] >= 0.0 and r["y_pct"] >= y_mid
@@ -622,8 +753,10 @@ def build_readmap_specs(
     dek = "Right = stronger team · higher = Ridge more confident in that rating"
     assert len(dek) <= READMAP_DEK_MAX
 
-    y_top_lines = ["Most sure", f"could be off ±{sd_min_whole} pts"]
-    y_bottom_lines = ["Least sure", f"could be off ±{sd_max_whole} pts"]
+    # End captions only — numeric ±pts live on the y tick labels.
+    y_top_lines = ["Most sure"]
+    y_bottom_lines = ["Least sure"]
+    y_axis_title = "How sure Ridge is about each rating (± pts)"
 
     caption = trim_caption(
         readmap_caption(
@@ -662,7 +795,7 @@ def build_readmap_specs(
     out: list[dict[str, Any]] = []
     for size in sizes:
         name, width, height = size_pixels(size)
-        plot = centered_square_plot(
+        plot = filled_plot_box(
             canvas_w=width, canvas_h=height, size_name=name
         )
         obstacles = quadrant_obstacle_boxes(
@@ -686,6 +819,21 @@ def build_readmap_specs(
             logo_dir=logo_dir,
             theme=theme,
             obstacles=obstacles,
+        )
+        span_w, span_h = logo_span_fractions(
+            [
+                {
+                    "logo_x": p["logo_x"],
+                    "logo_y": p["logo_y"],
+                    "width": p["width"],
+                    "height": p["height"],
+                }
+                for p in points_out
+            ],
+            x_lo=x_lo,
+            x_hi=x_hi,
+            y_lo=y_lo,
+            y_hi=y_hi,
         )
         for p in points_out:
             p["logo_w_data"] = p.pop("width")
@@ -715,7 +863,7 @@ def build_readmap_specs(
                 "plot": plot,
                 "axes": {
                     "x_label": "Ridge rating (pts vs. average FBS team)",
-                    "y_label": "How sure Ridge is about each rating",
+                    "y_label": y_axis_title,
                     "x_min": x_lo,
                     "x_max": x_hi,
                     "y_min": y_lo,
@@ -725,11 +873,13 @@ def build_readmap_specs(
                     "y_mid": y_mid,
                     "zero_midline_label": "average",
                     "median_sd": None,
-                    "y_tick_prefix": "",
+                    "y_tick_prefix": "±",
                     "y_tick_suffix": "",
                     "x_ticks": x_ticks,
                     "x_tick_labels": x_tick_labels,
-                    "y_ticks": [],
+                    "y_ticks": y_ticks,
+                    "y_tick_labels": y_tick_labels,
+                    "y_tick_sd_raw": y_sd_raw,
                     "y_top_lines": y_top_lines,
                     "y_bottom_lines": y_bottom_lines,
                     "zero_label": "0",
@@ -785,6 +935,10 @@ def build_readmap_specs(
                     "logo_slot_px": slot_px,
                     "max_displacement_css_px": max_disp,
                     "worst_logo_overlap_frac": worst_ov,
+                    "logo_span_width_frac": span_w,
+                    "logo_span_height_frac": span_h,
+                    "logo_span_width_below_target": span_w < 0.80,
+                    "logo_span_height_below_target": span_h < 0.90,
                     "sd_min_whole": sd_min_whole,
                     "sd_max_whole": sd_max_whole,
                     "sd_spread": {

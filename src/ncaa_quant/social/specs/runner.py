@@ -268,6 +268,22 @@ def run_soc2_charts(
                 "worst_logo_overlap_frac": (
                     specs[0]["meta"].get("worst_logo_overlap_frac") if specs else None
                 ),
+                "logo_span_width_frac": (
+                    specs[0]["meta"].get("logo_span_width_frac") if specs else None
+                ),
+                "logo_span_height_frac": (
+                    specs[0]["meta"].get("logo_span_height_frac") if specs else None
+                ),
+                "logo_span_width_below_target": (
+                    specs[0]["meta"].get("logo_span_width_below_target")
+                    if specs
+                    else None
+                ),
+                "logo_span_height_below_target": (
+                    specs[0]["meta"].get("logo_span_height_below_target")
+                    if specs
+                    else None
+                ),
             },
         )
     elif want_read and render_only:

@@ -1129,6 +1129,35 @@ uv run python scripts/make_social_charts.py --season 2026 --chart slate-ranges -
 uv run python scripts/make_social_charts.py --season 2026 --chart gamecard --source local --artifact-dir data/social/artifacts_cache/latest_postable --allow-stale --out out/social/2026/w08 --game-id 401856728 --game-id 401856837 --game-id 401856731
 ```
 
+### 2026-10-22f — read map y-axis rework + fitted x domain
+
+**Branch:** `soc-2-recovered`. Chart-code change (pairs with week-8 polish x-domain; both applied here).
+
+**Plot shape:** dropped square rule (`filled_plot_box`). 4:5 plot **624×730** CSS px (h/canvas **0.73** ≥ 70%); 16:9 **784×296**. No horizontal centering; chart-group `justify-content:flex-start`.
+
+**Y position:** unchanged (certainty percentile, 100 = sharpest).
+
+**Y ticks:** at 0/25/50/75/100; labels = `net_sd_pts` quantiles rounded to 0.5 as ±pts; adjacent half-step collisions force 1 decimal. Week-8 labels: `±12.5`, `±10`, `±9.7`, `±9.5`, `±9`. Faint gridlines at each tick (50th = median rule). End captions `Most sure` / `Least sure` only (removed `could be off ±N pts`). Y title: `How sure Ridge is about each rating (± pts)`.
+
+**X domain:** `[min − 6% range, max + 6% range]`, 0 included, ~5 nice ticks nested inside (no ±80 snap). Week-8: `[-52.46, 41.88]` ticks `−40…+40`.
+
+**Packing (restart 28→22, packer 6%, lint 8%):**
+| size | slot | max disp | worst overlap | span W | span H |
+|---|---:|---:|---:|---:|---:|
+| 4:5 | 24 | 28.0 | 0.0597 | 0.935 | 0.970 |
+| 16:9 | 22 | 36.0 | 0.0597 | 0.881 | 0.971 |
+
+Both span targets met (≥80% W, ≥90% H). Lint ok both sizes; determinism pixel+byte identical on `readmap_w8_4x5.png`.
+
+**Paths:** `out/social/2026/w08/readmap_w8_{4x5,16x9}.png`, contact sheet rebuilt with movers/slate/cards.
+
+**Tests:** `certainty_sd_tick_labels` quantiles + collision; plot height ≥70% canvas; fitted domain pad/0; updated round4/5/soc2 contracts. Focused SOC-2 readmap suites green. Full `make test` still red on **pre-existing** unrelated failures (`test_betting_language_guard` ratchet 1109≠621, `test_webapp_w9r` copy string, `test_slot_close_capture` credits 309≠263, untracked `test_model_hfa4.py`) plus coverage 79.46% < 80 — not introduced by this chart change.
+
+Command:
+```
+uv run python scripts/make_social_charts.py --season 2026 --chart readmap --source local --artifact-dir data/social/artifacts_cache/latest --allow-stale --out out/social/2026/w08
+```
+
 ## Follow-up: scheduled Thursday refresh
 
 Requirements only — **do not implement** until owner assigns. Carry from week-8 dry-run STOP (2026-10-22d) and owner direction (no Thursday publish this week).

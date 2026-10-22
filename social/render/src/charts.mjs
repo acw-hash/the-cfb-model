@@ -155,7 +155,6 @@ export function renderReadmap(spec) {
   const midX = axes.x_zero != null ? axes.x_zero : 0;
   const midY = axes.y_mid != null ? axes.y_mid : 50;
   const [zx] = dataToPx(plot, axes, midX, axes.y_min);
-  const [, my] = dataToPx(plot, axes, axes.x_min, midY);
   const xGutter = Number(plotRaw.bottom_axis_gutter || 56);
   const yGutter = Number(plotRaw.y_gutter || 118);
   const svgH = plot.y + plot.h + xGutter;
@@ -183,23 +182,28 @@ export function renderReadmap(spec) {
   const topLines = axes.y_top_lines || [];
   const botLines = axes.y_bottom_lines || [];
   const endX = plot.x - 10;
+  const yTicks = Array.isArray(axes.y_ticks) ? axes.y_ticks : [];
+  const yTickLabels = Array.isArray(axes.y_tick_labels) ? axes.y_tick_labels : [];
   let yTickSvg = "";
-  // Grouped two-line ends (same group → lint skips pair overlap).
-  if (topLines.length) {
-    yTickSvg += `<g data-role="axis-end-group">`;
-    yTickSvg += `<text data-role="axis-end-label" data-axis="y" data-end="top" x="${endX}" y="${yTop + 2}" text-anchor="end" dominant-baseline="hanging" font-size="14" font-weight="600" fill="${t.text_secondary}" style="${NOWRAP}">${esc(topLines[0])}</text>`;
-    if (topLines[1]) {
-      yTickSvg += `<text data-role="axis-end-label" data-axis="y" data-end="top-sub" x="${endX}" y="${yTop + 18}" text-anchor="end" dominant-baseline="hanging" font-size="13" fill="${t.text_tertiary}" style="${NOWRAP}">${esc(topLines[1])}</text>`;
+  let yGridSvg = "";
+  // Certainty-percentile ticks with ±pts SD labels + faint gridlines.
+  yTicks.forEach((yv, idx) => {
+    const [, py] = dataToPx(plot, axes, axes.x_min, yv);
+    const isMid = Math.abs(Number(yv) - Number(midY)) < 1e-6;
+    const opacity = isMid ? 1 : 0.28;
+    yGridSvg += `<line data-role="gridline" data-axis="y" data-mid="${isMid ? "1" : "0"}" x1="${plot.x}" y1="${py}" x2="${plot.x + plot.w}" y2="${py}" stroke="${t.border}" stroke-opacity="${opacity}" />`;
+    yTickSvg += `<line data-role="axis-tick" data-axis="y" x1="${plot.x - 5}" y1="${py}" x2="${plot.x}" y2="${py}" stroke="${t.border}" />`;
+    const lab = yTickLabels[idx] != null ? String(yTickLabels[idx]) : "";
+    if (lab) {
+      yTickSvg += `<text data-role="axis-tick" data-axis="y" x="${endX}" y="${py}" text-anchor="end" dominant-baseline="middle" font-size="13" fill="${t.text_tertiary}" style="${NOWRAP}">${esc(lab)}</text>`;
     }
-    yTickSvg += `</g>`;
+  });
+  // "Most sure" / "Least sure" sit just outside the end tick labels (muted).
+  if (topLines[0]) {
+    yTickSvg += `<text data-role="axis-end-label" data-axis="y" data-end="top" x="${endX}" y="${yTop - 12}" text-anchor="end" dominant-baseline="auto" font-size="12" fill="${t.text_tertiary}" style="${NOWRAP}">${esc(topLines[0])}</text>`;
   }
-  if (botLines.length) {
-    yTickSvg += `<g data-role="axis-end-group">`;
-    yTickSvg += `<text data-role="axis-end-label" data-axis="y" data-end="bottom" x="${endX}" y="${yBot - 20}" text-anchor="end" dominant-baseline="auto" font-size="14" font-weight="600" fill="${t.text_secondary}" style="${NOWRAP}">${esc(botLines[0])}</text>`;
-    if (botLines[1]) {
-      yTickSvg += `<text data-role="axis-end-label" data-axis="y" data-end="bottom-sub" x="${endX}" y="${yBot - 4}" text-anchor="end" dominant-baseline="auto" font-size="13" fill="${t.text_tertiary}" style="${NOWRAP}">${esc(botLines[1])}</text>`;
-    }
-    yTickSvg += `</g>`;
+  if (botLines[0]) {
+    yTickSvg += `<text data-role="axis-end-label" data-axis="y" data-end="bottom" x="${endX}" y="${yBot + 14}" text-anchor="end" dominant-baseline="hanging" font-size="12" fill="${t.text_tertiary}" style="${NOWRAP}">${esc(botLines[0])}</text>`;
   }
 
   // Outside-plot labels (no text inside the plot frame).
@@ -238,13 +242,13 @@ export function renderReadmap(spec) {
     <text data-role="quadrant-label" data-quad="good_proving" data-placement="outside" x="${plot.x + plot.w}" y="${outsideBottomY}" text-anchor="end" dominant-baseline="hanging" font-size="13" fill="${t.text_tertiary}" style="${NOWRAP}">${esc(qGood)}</text>
   </g>`;
 
-  // Vertically center the square so leftover slack splits into two <12% bands.
+  // Fill dek→footer: no vertical centering (empty bands must stay ≤6% of canvas).
   const inner = `
-<div data-role="chart-group" style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column;justify-content:center;align-items:center;">
+<div data-role="chart-group" style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch;">
 <svg class="plot" data-chart="readmap" width="${cw}" height="${svgH}" viewBox="0 0 ${cw} ${svgH}"
   style="flex:0 0 auto;display:block;width:${cw}px;height:${svgH}px;max-width:${cw}px;max-height:${svgH}px;">
   <line x1="${zx}" y1="${plot.y}" x2="${zx}" y2="${plot.y + plot.h}" stroke="${t.border}" />
-  <line x1="${plot.x}" y1="${my}" x2="${plot.x + plot.w}" y2="${my}" stroke="${t.border}" />
+  ${yGridSvg}
   <rect x="${plot.x}" y="${plot.y}" width="${plot.w}" height="${plot.h}" fill="none" stroke="${t.border}" />
   ${outsideLabels}
   <g data-role="axis-block">${yTickSvg}${xTickBlock}

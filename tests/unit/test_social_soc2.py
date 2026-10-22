@@ -159,9 +159,12 @@ def test_readmap_median_highlights_inverted_axis(tmp_path: Path) -> None:
     )
     spec = specs[0]
     assert spec["axes"]["y_inverted"] is False
-    # Round 5: x is symmetric net_pts about 0 (not a 0–100 percentile).
+    # Week-8 polish: x is fitted net_pts (+6% pad, 0 included) — not a percentile.
     assert spec["axes"]["x_zero"] == 0.0
-    assert spec["axes"]["x_min"] == -spec["axes"]["x_max"]
+    assert spec["axes"]["x_min"] <= 0.0 <= spec["axes"]["x_max"]
+    xs = [float(p["net_pts"]) for p in spec["points"]]
+    assert spec["axes"]["x_min"] <= min(xs)
+    assert spec["axes"]["x_max"] >= max(xs)
     assert len(spec["highlights"]["sharpest"]) == 5
     assert len(spec["highlights"]["widest"]) == 5
     sds = [p["net_sd_pts"] for p in spec["points"]]

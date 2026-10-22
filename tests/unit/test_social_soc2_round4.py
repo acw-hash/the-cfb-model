@@ -125,8 +125,9 @@ def test_readmap_tick_labels_round4_contract_superseded(tmp_path: Path) -> None:
     labels = axes["x_tick_labels"]
     assert labels[0] != "50"
     assert axes["x_label"] == "Ridge rating (pts vs. average FBS team)"
-    assert axes["y_label"] == "How sure Ridge is about each rating"
-    assert axes["y_ticks"] == []
+    assert axes["y_label"] == "How sure Ridge is about each rating (± pts)"
+    assert axes["y_ticks"] == [0.0, 25.0, 50.0, 75.0, 100.0]
+    assert len(axes["y_tick_labels"]) == 5
     assert axes["y_top_lines"][0] == "Most sure"
     assert axes["y_bottom_lines"][0] == "Least sure"
     assert all(q.get("placement") == "outside" for q in specs[0]["quadrants"])
