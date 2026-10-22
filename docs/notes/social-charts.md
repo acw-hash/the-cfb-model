@@ -1001,3 +1001,48 @@ Historical Thu scripts advance operator `as_of` (e.g. `publish_week4_fri.py`), s
 **Read map copy:** title `How Ridge sees FBS entering week 8` · dek `Right = stronger team · higher = Ridge more confident in that rating` · caption `Widest: CLEM, STAN, FAU. 30 FBS teams in Proven good.` · footer `… published Tue Oct 20 ET`
 
 **Movers copy:** title `Biggest movers after week 7` · caption `Biggest movers after week 7: ALA −16.7, WASH +16.6, AUB +15.2.` · footer `… published Tue Oct 20 ET`
+
+### 2026-10-22c — ledger sync, ratings proof, week-8 Thu dry-run (no publish)
+
+**1. Ledger sync:** `git checkout origin/main --` for card/ledger paths (`data/social/posted_calls_2026_w{4–8}.json`, `docs/notes/_artifacts/w{4–8}-posted-calls/`, tracked `out/social/2026_w{6–8}` threads). Commit `f346296` *Sync card ledger to main; ledger changes live on main only*. Confirmed `git diff origin/main -- <ledger paths>` empty. Pushed `soc-2-recovered` through `f346296`.
+
+**2. Ratings stability:**
+- Week-4 R2 `tuesday_primary` and `daily_refresh` `team_ratings_2026.json` are both **empty stubs** (`teams: {}`, ~96 B) — no per-team `off_epa`/`def_epa`/`off_sd`/`def_sd` rows to compare (pre–W-RATINGS-WIRE).
+- Live proof: dry-run Thu `team_ratings_2026` vs current Tuesday `latest/team_ratings_2026` — **1024** common team-week rows; max \|Δ\| **off_epa=0, def_epa=0, off_sd=0, def_sd=0**.
+- **Verdict:** w08 read map + movers PNGs are **final for posting** (ratings midweek-stable on completed week rows).
+
+**3. Thursday week-8 dry run (STOP — not published):**
+- Past one-offs: `scripts/publish_week2_thu.py`, `scripts/publish_week3_fri.py`, `scripts/publish_week4_fri.py` (`execute_predict_publish` + `RefreshKind.DAILY_REFRESH` + operator `as_of`).
+- Dry helper: `scripts/_dry_publish_week8_thu.py` → `run_isolated_week_export` (local only, `push=False`, `export_enabled=False`). Artifacts under `docs/notes/_artifacts/soc2-weekly-w8-thu-dry/artifacts/`.
+- `as_of` / `published_at`: `2026-10-22T18:49:51Z` (operator). Model: `production-v0_reduced_v3` / `W9A_REVAL` / `run_id=task23_fundamental_reduced_v3` — **matches** Tuesday.
+
+**Publish command (owner-approved only; not run):**
+```python
+# Mirror past Thu scripts with live export+push (requires webapp.export_enabled):
+from datetime import UTC, datetime
+from ncaa_quant.pipelines.predict import RefreshKind, execute_predict_publish
+AS_OF = datetime.now(tz=UTC)
+execute_predict_publish(
+    season=2026, week=8,
+    refresh_kind=RefreshKind.DAILY_REFRESH,
+    as_of=AS_OF,
+)
+```
+Would write to R2 `latest/` (and versioned `v1/2026/w8/daily_refresh/`):
+`week_predictions.json`, `track_record.json`, `team_ratings_2026.json`, `results_2026.json`, `meta.json`.  
+Does **not** write `odds_snapshot.json` (odds worker).
+
+**Dry vs Tuesday week_predictions (52 common games; 4 Tuesday-only already past kickoff filter):**
+
+| field | max \|Δ\| |
+|---|---|
+| `mu_margin` | **0.520** |
+| `sigma_margin` | **0.531** |
+| `p_win_home` | **0.0155** |
+| intervals | **0** |
+| `conviction_tier` | **2** changes: Oregon@Illinois `lean`→`clear_lean`; NDSU@New Mexico `clear_lean`→`lean` |
+
+- Games with \|Δμ\| ≥ 2: **none**.
+- Tuesday-only (excluded from dry slate): MTSU@FIU, MOST@DEL, NMSU@SHSU, USA@MRSH.
+
+**STOP.** Owner approves any live Thursday publish separately.
