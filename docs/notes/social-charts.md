@@ -1074,3 +1074,67 @@ Owner approved live week-8 `daily_refresh` with pre-checks. Diffed dry-run artif
 - `margin_interval_lo/hi` unchanged while μ moved ≤0.52 — does `daily_refresh` recompute intervals?
 - No scheduled Thursday Prefect deployment (cron set; keepalive serves odds only).
 - Publish path needs a results/grade strategy that does not wipe `graded` rows, and a slate policy for already-kicked games (keep vs drop).
+
+### 2026-10-22e — week 8 slate + game cards from Tuesday `latest/` (`--allow-stale`)
+
+**Owner direction:** no Thursday publish this week. Post from Tuesday's forecast. Charts match the live site (still `tuesday_primary` `published_at=2026-10-20T14:56:31Z`).
+
+**Justification (`--allow-stale`):** week-8 Thursday dry run (`docs/notes/_artifacts/soc2-weekly-w8-thu-dry/`) vs Tuesday `latest/` showed max \|Δμ\| **0.52**, \|Δp\| **0.016**, interval Δ **0**. Ratings EPA/SD Δ=0. Publish path remains unsafe (see 2026-10-22d STOP); social surfaces stay on Tuesday primary.
+
+**Artifact source:** `data/social/artifacts_cache/latest` mirrored to `latest_postable/` with kickoff≤now games removed from `week_predictions.games` for featured/default selection only (not a live publish). Odds stamp: `odds_snapshot` `2026-10-22T13:00:27Z` (Thu 9:00 AM ET). Model: `production-v0_reduced_v3` / `W9A_REVAL`.
+
+**Kickoff filter (as_of ≈ 2026-10-22T20:38Z):** 4 games already kicked; **none** were in the unfiltered featured-16 or default top-3 cards → **0 featured exclusions / 0 replacements**; **0 card exclusions / 0 replacements**. Kicked (excluded from candidate pool only):
+- `401871055` Middle Tennessee @ FIU
+- `401871069` Missouri State @ Delaware
+- `401871092` South Alabama @ Marshall
+- `401871070` New Mexico State @ Sam Houston
+
+Report: `docs/notes/_artifacts/soc2-weekly-w8-postable/kickoff_filter_report.json`.
+
+**Watch games (Tuesday tiers kept; not in featured-16 or default cards):**
+- Oregon @ Illinois (`401858495`) — tier **lean** (site/Tuesday)
+- North Dakota State @ New Mexico (`401864527`) — tier **clear_lean** (site/Tuesday)
+
+**Featured slate (16):** LSU@AUB, HOU@UTAH, TENN@SC, BYU@UCF, Ole Miss@TEX, PITT@MIA, USC@WIS, TA&M@ALA, MSU@UCLA, IU@MICH, COLO@OKST, ISU@ARIZ, BSU@WSU, BAY@KU, TTU@CIN, VAN@UK.
+
+**Default game cards:** `401856728` LSU@AUB (lean), `401856837` HOU@UTAH (lean), `401856731` TENN@SC (toss_up).
+
+**QA:** lint ok all rendered sizes; banned-words clean (`texts_checked`); determinism pixel+byte identical on first 4×5 of each run (`slate_ranges_w8_4x5`, `gamecard_401856728_4x5`).
+
+**Footer stamp (all slate/cards):** `published Tue Oct 20 ET · market as of Thu 9:00 AM ET`
+
+**Slate copy:**
+- Headline: `Ridge vs. the market · week 8`
+- Caption: `Biggest gaps with the market: TEX–Ole Miss (Ridge Ole Miss by 12.3, market 3.5), UK–VAN (Ridge UK by 20.2, market 10.5), USC–WIS (Ridge WIS by 6.2, market 3.0).`
+- Alt: `Week 8 Ridge vs market projected margins, 2026. Market from odds_snapshot market_home_margin as of 2026-10-22T13:00:27Z.`
+
+**Game card copy:**
+| game_id | Headline | Caption | Alt |
+|---|---|---|---|
+| 401856728 | Ridge has LSU by 3.9 | Ridge's view of LSU @ AUB: LSU by 3.9, market LSU by 7.5. Tier: Lean. | Game card for LSU @ Auburn, week 8 2026. |
+| 401856837 | Ridge has Utah by 2.1 | Ridge's view of HOU @ UTAH: UTAH by 2.1, market UTAH by 6.5. Tier: Lean. | Game card for Houston @ Utah, week 8 2026. |
+| 401856731 | Ridge has Tennessee by 2.6 | Ridge's view of TENN @ SC: TENN by 2.6, market SC by 2.5. Tier: Toss-up. | Game card for Tennessee @ South Carolina, week 8 2026. |
+
+**Paths:**
+- `out/social/2026/w08/contact_sheet_w8.png` (readmap + movers + slate + 3 cards)
+- `out/social/2026/w08/slate_ranges_w8_{4x5,16x9}.png`
+- `out/social/2026/w08/gamecard_401856728_{4x5,16x9}.png`
+- `out/social/2026/w08/gamecard_401856837_{4x5,16x9}.png`
+- `out/social/2026/w08/gamecard_401856731_{4x5,16x9}.png`
+- (prior) `readmap_w8_*`, `movers_w7_*`
+
+Commands:
+```
+uv run python scripts/make_social_charts.py --season 2026 --chart slate-ranges --source local --artifact-dir data/social/artifacts_cache/latest_postable --allow-stale --out out/social/2026/w08
+uv run python scripts/make_social_charts.py --season 2026 --chart gamecard --source local --artifact-dir data/social/artifacts_cache/latest_postable --allow-stale --out out/social/2026/w08 --game-id 401856728 --game-id 401856837 --game-id 401856731
+```
+
+## Follow-up: scheduled Thursday refresh
+
+Requirements only — **do not implement** until owner assigns. Carry from week-8 dry-run STOP (2026-10-22d) and owner direction (no Thursday publish this week).
+
+- **R1:** Games with kickoff ≤ `as_of` stay in `week_predictions`, frozen at their last pre-kickoff forecast. Never dropped from the published slate artifact.
+- **R2:** Results grading keys each game to its latest publish strictly before kickoff. A later publish must not change any existing grade. Add a regression test: a Thursday publish leaves `results_2026` and `track_record` identical apart from timestamps.
+- **R3:** Register the scheduled Thursday Prefect deployment only after R1 and R2 pass.
+- **R4:** Investigate whether `daily_refresh` recomputes `margin_interval_lo`/`hi` (week-8 dry: intervals Δ=0 while μ moved ≤0.52).
+- **R5:** Until the Thursday job exists, decide whether `meta.next_expected_publish_utc` should point to next Tuesday so the site's staleness logic does not expect a Thursday that never comes (current week-8 meta still pointed at `2026-10-22T14:56:31Z`).
