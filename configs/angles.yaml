@@ -463,3 +463,66 @@ hypotheses:
           venue_away: true
           spread_close_min: 0.5
           conference_game: true
+
+  # H22r — direction chosen AFTER seeing H22 discovery (negative bounce-back).
+  # Discovery numbers that motivated this registration are not evidence for H22r.
+  # Confirmatory on holdout only; do not interpret a discovery re-run as a test.
+  - id: H22r
+    name: Fade the road-loss home team — back this week's opponent
+    side: opponent_of_road_loss_home
+    market: spread
+    include_in_bh: true
+    primary:
+      statistic: mean_ats_residual
+      direction: positive          # backing the opponent of the road-loss home team
+      conditions:
+        venue_away: true
+        opp_last_was_away: true
+        opp_last_lost: true
+        opp_last_game_completed_before_as_of: true
+    baseline:
+      description: Away teams facing a home team coming off a non-neutral road win
+      conditions:
+        venue_away: true
+        opp_last_was_away: true
+        opp_last_won: true
+        opp_last_game_completed_before_as_of: true
+    variants: []
+
+  # H25 — motivated by the H7 / H14 / H22 discovery pattern (fade last-game
+  # surprise / fade the home team after a road loss). Discovery run is
+  # DESCRIPTIVE only (`include_in_bh: false`); not evidence.
+  - id: H25
+    name: ATS momentum — previous-game ATS residual difference (home minus away)
+    side: home_minus_away_last_ats
+    market: spread
+    include_in_bh: false
+    primary:
+      statistic: slope_ats_residual_on_ats_momentum
+      direction: positive          # home ATS residual rises with (home_last_ats − away_last_ats)
+      conditions:
+        venue_home: true
+        team_last_game_completed_before_as_of: true
+        opp_last_game_completed_before_as_of: true
+      regression:
+        description: Home ATS residual on (home last-game ATS residual − away last-game ATS residual), CFBD close, one row per game
+        regressor: ats_momentum
+        scale_per_points: 10.0
+        on: qualifies
+    baseline:
+      description: Same universe as the primary (continuous model uses every qualifying home row; not a contrast group)
+      conditions:
+        venue_home: true
+        team_last_game_completed_before_as_of: true
+        opp_last_game_completed_before_as_of: true
+    variants:
+      - id: H25v_top_decile
+        description: Binary — |predictor| in the trailing top decile; back the team with the higher previous ATS residual
+        statistic: mean_ats_residual
+        direction: positive
+        conditions:
+          ats_momentum_abs_q_min: 0.9
+          momentum_window_min_n: 500
+          team_last_ats_gt_opp: true
+          team_last_game_completed_before_as_of: true
+          opp_last_game_completed_before_as_of: true
