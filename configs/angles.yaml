@@ -508,7 +508,7 @@ hypotheses:
         description: Home ATS residual on (home last-game ATS residual − away last-game ATS residual), CFBD close, one row per game
         regressor: ats_momentum
         scale_per_points: 10.0
-        on: qualifies
+        "on": qualifies
     baseline:
       description: Same universe as the primary (continuous model uses every qualifying home row; not a contrast group)
       conditions:
