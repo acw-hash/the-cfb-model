@@ -533,3 +533,327 @@ hypotheses:
           team_last_ats_gt_opp: true
           team_last_game_completed_before_as_of: true
           opp_last_game_completed_before_as_of: true
+
+  # --------------------------------------------------------------------------
+  # Batch 5 — remaining plan hypotheses (registered before any batch-5 outcome)
+  # --------------------------------------------------------------------------
+
+  # H2 — requires materialized adj_off_epa_l3d / adj_def_epa_l3d; not staged.
+  - id: H2
+    name: H1 + slipping opponent (opp net adj EPA L3D bottom 25%)
+    side: rested_team
+    market: spread
+    status: not_run_data_missing
+    retired_reason: >
+      adj_off_epa_l3d / adj_def_epa_l3d are not materialized under data/features;
+      H2 not run (data missing). Do not ingest.
+    primary:
+      statistic: mean_ats_residual
+      direction: positive
+      conditions:
+        team_rest_days_min: 13.0
+        team_exclude_opener: true
+        opp_rest_days_min: 6.0
+        opp_rest_days_max: 8.0
+        opp_prior_long_rest_count_max: 0
+        opp_net_epa_l3d_q_max: 0.25
+    baseline:
+      description: H1 primary without the slipping-opponent filter
+      conditions:
+        team_rest_days_min: 13.0
+        team_exclude_opener: true
+        opp_rest_days_min: 6.0
+        opp_rest_days_max: 8.0
+        opp_prior_long_rest_count_max: 0
+    variants:
+      - id: H2v_offense_only
+        description: Opponent adj_off_epa_l3d in bottom 25% of FBS that week
+        conditions:
+          team_rest_days_min: 13.0
+          team_exclude_opener: true
+          opp_rest_days_min: 6.0
+          opp_rest_days_max: 8.0
+          opp_prior_long_rest_count_max: 0
+          opp_off_epa_l3d_q_max: 0.25
+      - id: H2v_defense_only
+        description: Opponent adj_def_epa_l3d in worst 25% (highest allowed EPA, top quartile)
+        conditions:
+          team_rest_days_min: 13.0
+          team_exclude_opener: true
+          opp_rest_days_min: 6.0
+          opp_rest_days_max: 8.0
+          opp_prior_long_rest_count_max: 0
+          opp_def_epa_l3d_q_min: 0.75
+
+  - id: H4
+    name: Short week — angle rest 6–8 days, opponent rest under 6
+    side: rested_team
+    market: spread
+    primary:
+      statistic: mean_ats_residual
+      direction: positive
+      conditions:
+        team_rest_days_min: 6.0
+        team_rest_days_max: 8.0
+        team_exclude_opener: true
+        opp_rest_days_max: 5.99
+        opp_exclude_opener: true
+    baseline:
+      description: Both teams' rest in the same 6–8 day bucket
+      conditions:
+        rest_same_bucket_6_8: true
+        team_exclude_opener: true
+        opp_exclude_opener: true
+    variants: []
+
+  - id: H5
+    name: Body clock — opponent crossed 2+ zones east with home-TZ kickoff before 13:00
+    side: opponent_of_eastward_traveler
+    market: spread
+    primary:
+      statistic: mean_ats_residual
+      direction: positive
+      conditions:
+        opp_body_clock_east_early: true
+    baseline:
+      description: Non-neutral games where the opponent did not meet the body-clock cut
+      conditions:
+        opp_body_clock_east_early: false
+        venue_home: true
+    variants:
+      - id: H5v_eastern_pacific_late
+        description: Eastern opponent playing in Pacific with kickoff 22:30 ET or later
+        conditions:
+          opp_eastern_pacific_late: true
+
+  - id: H6
+    name: Post-triple-option — fade a team coming off Army/Navy/Air Force
+    side: opponent_of_post_service_academy
+    market: spread
+    primary:
+      statistic: mean_ats_residual
+      direction: positive
+      conditions:
+        opp_last_opp_service_academy: true
+        opp_last_game_completed_before_as_of: true
+    baseline:
+      description: Fade teams whose last opponent was not a service academy
+      conditions:
+        opp_last_opp_service_academy: false
+        opp_last_game_completed_before_as_of: true
+    variants:
+      - id: H6v_bye_vs_service_academy
+        description: Angle team off a bye facing a service academy
+        conditions:
+          team_rest_days_min: 13.0
+          team_exclude_opener: true
+          opp_is_service_academy: true
+
+  - id: H8
+    name: Lookahead — fade a 10+ favorite looking ahead to top-25 / rivalry
+    side: opponent_of_lookahead_favorite
+    market: spread
+    primary:
+      statistic: mean_ats_residual
+      direction: positive
+      conditions:
+        spread_close_min: 10.0
+        opp_lookahead: true
+    baseline:
+      description: Dogs of 10+ facing a favorite that is not looking ahead
+      conditions:
+        spread_close_min: 10.0
+        opp_lookahead: false
+    variants:
+      - id: H8v_sandwich
+        description: Same as primary and the favorite also looked ahead last week
+        conditions:
+          spread_close_min: 10.0
+          opp_lookahead: true
+          opp_last_lookahead: true
+
+  - id: H10
+    name: Revenge — lost to this opponent last season by 14+
+    side: revenge_team
+    market: spread
+    primary:
+      statistic: mean_ats_residual
+      direction: positive
+      conditions:
+        team_revenge_loss_14: true
+    baseline:
+      description: Prior-season rematches that were wins or losses by fewer than 14
+      conditions:
+        team_rematch_prior_season: true
+        team_revenge_loss_14: false
+    variants: []
+
+  - id: H11
+    name: Rivalry underdogs
+    side: rivalry_underdog
+    market: spread
+    primary:
+      statistic: mean_ats_residual
+      direction: positive
+      conditions:
+        rivalry_flag: true
+        spread_close_min: 0.5
+    baseline:
+      description: Non-rivalry dogs (same close-side underdog cut)
+      conditions:
+        rivalry_flag: false
+        spread_close_min: 0.5
+    variants: []
+
+  - id: H12
+    name: Bowl desperation — 5-win team in last 3 regular-season games
+    side: five_win_team
+    market: spread
+    primary:
+      statistic: mean_ats_residual
+      direction: positive
+      conditions:
+        weeks_from_season_end_max: 2
+        team_season_wins_eq: 5
+        opp_bowl_or_spoiler: true
+    baseline:
+      description: Last-3-week games where the angle team does not have exactly 5 wins
+      conditions:
+        weeks_from_season_end_max: 2
+        team_season_wins_min: 0
+        team_season_wins_max: 4
+    variants: []
+
+  # H13 — coaches table is season-level (no midseason change dates).
+  - id: H13
+    name: Interim coach — first game after a midseason HC change
+    side: interim_coach_team
+    market: spread
+    status: not_run_data_missing
+    retired_reason: >
+      Staged coaches table is one row per coach-season with no midseason
+      change event_time; cannot identify first game after a midseason HC
+      change. H13 not run (data missing). Do not ingest.
+    primary:
+      statistic: mean_ats_residual
+      direction: positive
+      conditions:
+        team_interim_coach_first_game: true
+    baseline:
+      description: Games that are not the first after a midseason HC change
+      conditions:
+        team_interim_coach_first_game: false
+    variants: []
+
+  - id: H16
+    name: Early-season returning production (weeks 1–4 continuous)
+    side: returning_production_team
+    market: spread
+    primary:
+      statistic: slope_ats_residual_on_returning_pctile
+      direction: positive
+      conditions:
+        week_min: 1
+        week_max: 4
+      regression:
+        description: ATS residual on team returning-production FBS percentile (weeks 1–4)
+        regressor: team_returning_pctile
+        scale_per_points: 0.1
+        "on": qualifies
+    baseline:
+      description: Same weeks 1–4 universe (continuous model; not a contrast group)
+      conditions:
+        week_min: 1
+        week_max: 4
+    variants: []
+
+  - id: H17
+    name: Conference home dogs +3 to +10
+    side: conference_home_dog
+    market: spread
+    primary:
+      statistic: mean_ats_residual
+      direction: positive
+      conditions:
+        venue_home: true
+        conference_game: true
+        spread_close_min: 3.0
+        spread_close_max: 10.0
+    baseline:
+      description: All dogs +3 to +10 (any venue / conference flag)
+      conditions:
+        spread_close_min: 3.0
+        spread_close_max: 10.0
+    variants: []
+
+  - id: H18
+    name: Big road favorites 14+ — back the home dog
+    side: home_dog_vs_big_road_fav
+    market: spread
+    primary:
+      statistic: mean_ats_residual
+      direction: positive
+      conditions:
+        venue_home: true
+        spread_close_min: 14.0
+    baseline:
+      description: Home favorites of 14+ (backing the road dog)
+      conditions:
+        venue_away: true
+        spread_close_min: 14.0
+    variants: []
+
+  - id: H19
+    name: Ranked favorite vs unranked — back the unranked
+    side: unranked_vs_ap_favorite
+    market: spread
+    primary:
+      statistic: mean_ats_residual
+      direction: positive
+      conditions:
+        spread_close_min: 0.5
+        team_ap_unranked: true
+        opp_ap_ranked: true
+    baseline:
+      description: Unranked favorites vs unranked opponents (angle = unranked dog vs unranked fav)
+      conditions:
+        spread_close_min: 0.5
+        team_ap_unranked: true
+        opp_ap_unranked: true
+    variants: []
+
+  - id: H20
+    name: Wind unders — outdoor, kickoff wind >= 6.7 m/s (15 mph)
+    side: under
+    market: total
+    skip_both_qualify: true
+    one_row_per_game: true
+    primary:
+      statistic: mean_total_residual
+      direction: positive          # close − actual; positive = under cashes
+      conditions:
+        outdoor: true
+        wind_speed_ms_min: 6.7
+    baseline:
+      description: Outdoor games with wind under 6.7 m/s
+      conditions:
+        outdoor: true
+        wind_speed_ms_max: 6.699
+    variants: []
+
+  - id: H21
+    name: Totals after a shootout — either side's last game over by 21+
+    side: under
+    market: total
+    skip_both_qualify: true
+    one_row_per_game: true
+    primary:
+      statistic: mean_total_residual
+      direction: positive
+      conditions:
+        either_last_total_over_21: true
+    baseline:
+      description: Games where neither team's last game went over by 21+
+      conditions:
+        either_last_total_over_21: false
+    variants: []
