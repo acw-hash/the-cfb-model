@@ -1,0 +1,74 @@
+{
+  "H1": {
+    "config_hash": "e6d4fab2337003b3",
+    "estimate": 0.836,
+    "n": 321,
+    "name": "Rested angle team vs opponent on a normal week that has not yet had a bye",
+    "p": 0.2514,
+    "source": "batch1"
+  },
+  "H14": {
+    "config_hash": "0b0ff2ea2c161a2e",
+    "estimate": -0.937,
+    "n": 808,
+    "name": "Fade the opponent after a top-decile \"lucky\" game",
+    "p": 0.1258,
+    "source": "batch1"
+  },
+  "H15": {
+    "config_hash": "3c2e7e5e9a2e17d1",
+    "estimate": -0.1353174603174603,
+    "n": 630,
+    "name": "Turnover luck \u2014 fade a team coming off +3 or better turnover margin",
+    "p": 0.8208933555130598,
+    "source": "this_run"
+  },
+  "H22": {
+    "config_hash": "1e9c2340ac83a2b6",
+    "estimate": -1.071686436307375,
+    "n": 1939,
+    "name": "Road-loss bounce-back \u2014 home after a non-neutral road loss",
+    "p": 0.0023436052080305276,
+    "source": "this_run"
+  },
+  "H23": {
+    "config_hash": "20d31bcbbd85c1c4",
+    "estimate": 0.615727002967359,
+    "n": 337,
+    "name": "After a home win over a ranked team \u2014 fade this week's opponent",
+    "p": 0.4960874770615155,
+    "source": "this_run"
+  },
+  "H24": {
+    "config_hash": "f8778fc191aa9e67",
+    "estimate": 0.3524636855596696,
+    "n": 3511,
+    "name": "Road underdogs \u2014 back the away underdog at the close (non-neutral)",
+    "p": 0.1540533050245469,
+    "source": "this_run"
+  },
+  "H3": {
+    "config_hash": "a3a5c38955cfe780",
+    "estimate": 0.297,
+    "n": 889,
+    "name": "Rested angle team; ATS residual by opponent's consecutive weeks played (linear trend)",
+    "p": 0.2854,
+    "source": "batch1"
+  },
+  "H7": {
+    "config_hash": "08284eeda1d99da0",
+    "estimate": -0.9821428571428571,
+    "n": 98,
+    "name": "Letdown \u2014 fade a favorite coming off a 7+ dog upset win vs a lower-rated opponent",
+    "p": 0.46833156467107934,
+    "source": "this_run"
+  },
+  "H9": {
+    "config_hash": "3c58750d68f30a04",
+    "estimate": 0.19471153846153846,
+    "n": 312,
+    "name": "Wounded animal \u2014 back a Ridge top-40 team after a bad loss",
+    "p": 0.812556892477014,
+    "source": "this_run"
+  }
+}

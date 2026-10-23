@@ -472,6 +472,10 @@ hypotheses:
     side: opponent_of_road_loss_home
     market: spread
     include_in_bh: true
+    status: retired_unopened
+    retired_reason: >
+      H22r's signal is mostly the general home effect (−0.86 vs all-home
+      control, p=0.088), so a holdout pass couldn't separate the two.
     primary:
       statistic: mean_ats_residual
       direction: positive          # backing the opponent of the road-loss home team
@@ -497,6 +501,9 @@ hypotheses:
     side: home_minus_away_last_ats
     market: spread
     include_in_bh: false
+    status: retired_unopened
+    retired_reason: >
+      H25 failed descriptively on discovery (slope p=0.27, top decile ≈ 0).
     primary:
       statistic: slope_ats_residual_on_ats_momentum
       direction: positive          # home ATS residual rises with (home_last_ats − away_last_ats)
