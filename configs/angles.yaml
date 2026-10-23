@@ -1,0 +1,277 @@
+# Situational-angle research harness — PRE-REGISTERED hypotheses.
+#
+# This file is committed BEFORE any outcome is computed. Every threshold is an
+# explicit number. The harness hashes each hypothesis block (id, side, market,
+# primary, baseline) together with the `splits` / `multiple_testing` /
+# `inference` blocks; that hash is written to every report and to the holdout
+# ledger. Changing a primary definition changes the hash, which the ledger
+# treats as a new hypothesis (refuses a holdout open without --force).
+#
+# Research tooling only (DESIGN §13 item 1, §16 item 1). Nothing here is a
+# production feature, model, or publish input.
+#
+# Sign conventions (from the ANGLE team's side, always):
+#   spread_*       : negative when the angle team is favored (home-perspective
+#                    market lines are flipped for away angle teams).
+#   ats_residual   : actual margin − closing expected margin
+#                  = (team_points − opp_points) − (−spread_close)
+#                    > 0 means the angle team covered.
+#   ridge_residual : actual margin − Ridge walk-forward predicted margin.
+#   cover          : ats_residual > 0; pushes (ats_residual == 0) are null.
+#
+# Decision point: every condition uses only information knowable before the
+# Tuesday 06:00 America/New_York decision point of the game's CFBD week
+# (DESIGN §7.2 item 1 / §9.8). For a game kicking off before that Tuesday the
+# as-of is the kickoff itself (nothing after kickoff is ever used).
+
+version: 1
+
+universe:
+  seasons_first: 2014
+  seasons_last: 2026
+  season_type: regular          # postseason excluded (distinct regime, §7.2 item 4)
+  both_teams_fbs: true          # FBS-vs-FBS only; FCS games still count as "played" for rest/streaks
+  decision_point: tuesday_0600_et
+  # The Odds API Tuesday snapshot and Odds close exist only for 2021+ (§3.4);
+  # CFBD close exists 2014+. Results by close source are NEVER pooled (§7.2 item 8).
+  snapshot_backed_from_season: 2021
+
+splits:
+  discovery:
+    seasons: [2014, 2015, 2016, 2017, 2018, 2019, 2021, 2022]
+    # 2020 is excluded from the discovery statistics (§7.2 item 5) and reported
+    # as a separate sensitivity row.
+    sensitivity_seasons: [2020]
+  holdout:
+    seasons: [2023, 2024, 2025]
+    # 2025 is the lockbox (§7.2 item 9). Opening the holdout on 2025 is a
+    # confirmatory read: it requires --confirm-lockbox-read and a row in
+    # docs/lockbox_access.md. Without that flag the holdout runs on 2023–2024
+    # only and says so.
+    lockbox_seasons: [2025]
+
+multiple_testing:
+  method: benjamini_hochberg
+  q: 0.10
+  # One p-value per hypothesis enters the correction: the PRIMARY statistic
+  # evaluated against the CFBD close (the only close available across the whole
+  # discovery window). Odds-API-close results are a second instrument and are
+  # reported separately. Variants never enter the correction (exploratory).
+  instrument: cfbd_close
+  scope: primary_definitions_on_discovery
+
+inference:
+  cluster: season_week
+  bootstrap:
+    reps: 2000
+    seed: 20261023
+    ci: 0.95
+  # Spread buckets from the angle team's side (points).
+  spread_buckets:
+    fav_7plus: {max: -7.0}            # spread <= -7
+    fav_lt7:   {min: -7.0, max: 0.0}  # -7 < spread < 0
+    dog_lt7:   {min: 0.0, max: 7.0}   # 0 <= spread < 7 (pick'em counted here)
+    dog_7plus: {min: 7.0}             # spread >= 7
+  week_buckets:
+    - [1, 4]
+    - [5, 8]
+    - [9, 12]
+    - [13, 20]
+  # Minimum qualifying rows before any p-value is reported for a cell.
+  min_n_for_test: 30
+
+sources:
+  # Ridge walk-forward predictions (home-perspective pred_margin). Seasons not
+  # present in this artifact get ridge_residual = null (2014–2018 are warmup
+  # seasons for the walk-forward; 2025 is the lockbox and is absent).
+  ridge_predictions: data/backtests/task23_fundamental_reduced_v4/full/predictions.parquet
+  # Stage-1 forward-filter history (pre-game posteriors for H14's expected EPA margin).
+  filter_history: data/artifacts/state_space/filter_history.parquet
+  # Stage-1 hfa_global prior mean (EPA/play) — filter_history does not persist
+  # the HFA state, so the pre-game expected EPA margin uses this constant.
+  hfa_epa_per_play: 0.025
+  staged_root: data/staged
+  rivalries: configs/rivalries.yaml
+
+features:
+  # Reused existing builders (never recomputed here):
+  #   rest_days_home/away, bye_flag, rivalry_flag, conference_game, neutral_site
+  #     -> features.builders.situational.build_situational_frame
+  #   adj_off_epa_l3d / adj_def_epa_l3d (as-of Tuesday, same-season history)
+  #     -> features.builders.efficiency.EfficiencyFeatureBuilder
+  efficiency_l3d: true
+
+# --------------------------------------------------------------------------
+# Hypotheses
+# --------------------------------------------------------------------------
+# Condition vocabulary (all evaluated from the angle team's side):
+#   team_rest_days / opp_rest_days        : kickoff-to-kickoff days since the
+#                                           team's previous game (any opponent
+#                                           incl. FCS). Opener -> null.
+#   team_prior_long_rest_count /
+#   opp_prior_long_rest_count             : number of EARLIER same-season rest
+#                                           intervals >= 13.0 days (the opener
+#                                           has no interval and is excluded).
+#   opp_consecutive_weeks                 : games played in consecutive weeks
+#                                           entering and including this one
+#                                           (streak of rest intervals < 13.0
+#                                           days; resets to 1 after a bye or at
+#                                           the opener).
+#   opp_luck_last                         : opponent's last-game luck (points):
+#                                           (margin − closing expected margin)
+#                                           − (GT-filtered EPA margin − Ridge
+#                                           pre-game expected EPA margin).
+#   opp_luck_last_q                       : opponent's luck as a quantile of
+#                                           the trailing expanding distribution
+#                                           of all team-game luck values with
+#                                           event_time < as_of (min_n below).
+
+hypotheses:
+  - id: H1
+    name: Rested angle team vs opponent on a normal week that has not yet had a bye
+    side: rested_team
+    market: spread
+    primary:
+      statistic: mean_ats_residual
+      direction: positive          # the rested team covers more than the close implies
+      conditions:
+        team_rest_days_min: 13.0
+        team_exclude_opener: true
+        opp_rest_days_min: 6.0
+        opp_rest_days_max: 8.0
+        opp_prior_long_rest_count_max: 0
+    baseline:
+      description: Rested angle team vs opponent on a normal week that HAS already had a bye this season
+      conditions:
+        team_rest_days_min: 13.0
+        team_exclude_opener: true
+        opp_rest_days_min: 6.0
+        opp_rest_days_max: 8.0
+        opp_prior_long_rest_count_min: 1
+    variants:
+      - id: H1v_both_rested
+        description: Rested angle team vs opponent also coming off >= 13 days rest
+        conditions:
+          team_rest_days_min: 13.0
+          team_exclude_opener: true
+          opp_rest_days_min: 13.0
+      - id: H1v_rest10
+        description: Looser rest threshold (>= 10 days) for the angle team
+        conditions:
+          team_rest_days_min: 10.0
+          team_exclude_opener: true
+          opp_rest_days_min: 6.0
+          opp_rest_days_max: 8.0
+          opp_prior_long_rest_count_max: 0
+      - id: H1v_no_rivalry
+        description: Primary definition excluding configured rivalry games
+        conditions:
+          team_rest_days_min: 13.0
+          team_exclude_opener: true
+          opp_rest_days_min: 6.0
+          opp_rest_days_max: 8.0
+          opp_prior_long_rest_count_max: 0
+          rivalry_flag: false
+      - id: H1v_conference_only
+        description: Primary definition restricted to conference games
+        conditions:
+          team_rest_days_min: 13.0
+          team_exclude_opener: true
+          opp_rest_days_min: 6.0
+          opp_rest_days_max: 8.0
+          opp_prior_long_rest_count_max: 0
+          conference_game: true
+
+  - id: H3
+    name: Rested angle team; ATS residual by opponent's consecutive weeks played (linear trend)
+    side: rested_team
+    market: spread
+    primary:
+      statistic: trend_slope_ats_residual_on_opp_consecutive_weeks
+      direction: positive          # more opponent fatigue -> larger angle-team residual
+      conditions:
+        team_rest_days_min: 13.0
+        team_exclude_opener: true
+        opp_rest_days_max: 12.99   # opponent played last week (streak >= 2 possible)
+      trend:
+        regressor: opp_consecutive_weeks
+        cap: 7                      # 7+ bucket is pooled at 7
+        buckets:
+          le3: {max: 3}
+          w4: {min: 4, max: 4}
+          w5: {min: 5, max: 5}
+          w6: {min: 6, max: 6}
+          ge7: {min: 7}
+    baseline:
+      description: Reference level — opponent on <= 3 consecutive weeks
+      conditions:
+        team_rest_days_min: 13.0
+        team_exclude_opener: true
+        opp_rest_days_max: 12.99
+        opp_consecutive_weeks_max: 3
+    variants:
+      - id: H3v_ge6_vs_le3
+        description: Binary contrast — opponent on >= 6 consecutive weeks (mean ATS residual)
+        statistic: mean_ats_residual
+        conditions:
+          team_rest_days_min: 13.0
+          team_exclude_opener: true
+          opp_rest_days_max: 12.99
+          opp_consecutive_weeks_min: 6
+      - id: H3v_any_team_rest
+        description: Trend without the angle-team rest condition (any angle team vs tired opponent)
+        conditions:
+          opp_rest_days_max: 12.99
+        trend:
+          regressor: opp_consecutive_weeks
+          cap: 7
+
+  - id: H14
+    name: Fade the opponent after a top-decile "lucky" game
+    side: opponent_of_lucky_team
+    market: spread
+    primary:
+      statistic: mean_ats_residual
+      direction: positive          # the angle team (facing the lucky team) covers
+      conditions:
+        opp_luck_last_q_min: 0.90  # opponent's last-game luck in the trailing top decile
+        luck_quantile_min_n: 500   # trailing window must hold >= 500 luck values
+        opp_last_game_completed_before_as_of: true
+      regression:
+        description: Continuous version — next-game ats_residual on opp_luck_last (points), all rows with luck
+        regressor: opp_luck_last
+        scale_per_points: 10.0
+    baseline:
+      description: Opponent's last-game luck in the middle quintile (0.40–0.60 trailing quantile)
+      conditions:
+        opp_luck_last_q_min: 0.40
+        opp_luck_last_q_max: 0.60
+        luck_quantile_min_n: 500
+        opp_last_game_completed_before_as_of: true
+    variants:
+      - id: H14v_top_quintile
+        description: Looser cut — opponent luck in the trailing top quintile
+        conditions:
+          opp_luck_last_q_min: 0.80
+          luck_quantile_min_n: 500
+          opp_last_game_completed_before_as_of: true
+      - id: H14v_back_unlucky
+        description: Mirror — back the opponent of a bottom-decile (unlucky) team expects NEGATIVE residual
+        conditions:
+          opp_luck_last_q_max: 0.10
+          luck_quantile_min_n: 500
+          opp_last_game_completed_before_as_of: true
+      - id: H14v_ats_component_only
+        description: Luck replaced by the last game's ATS residual alone (top decile)
+        luck_definition: ats_component
+        conditions:
+          opp_luck_last_q_min: 0.90
+          luck_quantile_min_n: 500
+          opp_last_game_completed_before_as_of: true
+      - id: H14v_epa_component_only
+        description: Luck replaced by the negative EPA surprise alone (top decile)
+        luck_definition: neg_epa_component
+        conditions:
+          opp_luck_last_q_min: 0.90
+          luck_quantile_min_n: 500
+          opp_last_game_completed_before_as_of: true
