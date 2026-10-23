@@ -125,6 +125,19 @@ features:
 #                                           the trailing expanding distribution
 #                                           of all team-game luck values with
 #                                           event_time < as_of (min_n below).
+#   spread_close_min / max                : CFBD close from the angle side
+#                                           (negative = favored). Attached as a
+#                                           condition before this-game residuals.
+#   venue_home / venue_away               : this game, non-neutral.
+#   team_ridge_lt_opp                     : angle team's Ridge (filter_history
+#                                           net EPA) < opponent's, as of this
+#                                           week's Tuesday as-of.
+#   team_last_* / opp_last_*              : previous same-season game (any
+#                                           opponent). Won/lost, spread, margin,
+#                                           home/away/neutral, wounded, TO
+#                                           margins, Ridge rank at that game's
+#                                           as-of, AP rank of that game's
+#                                           opponent (poll event_time < kickoff).
 
 hypotheses:
   - id: H1
@@ -149,12 +162,6 @@ hypotheses:
         opp_rest_days_max: 8.0
         opp_prior_long_rest_count_min: 1
     variants:
-      - id: H1v_both_rested
-        description: Rested angle team vs opponent also coming off >= 13 days rest
-        conditions:
-          team_rest_days_min: 13.0
-          team_exclude_opener: true
-          opp_rest_days_min: 13.0
       - id: H1v_rest10
         description: Looser rest threshold (>= 10 days) for the angle team
         conditions:
@@ -275,3 +282,184 @@ hypotheses:
           opp_luck_last_q_min: 0.90
           luck_quantile_min_n: 500
           opp_last_game_completed_before_as_of: true
+
+  - id: H7
+    name: Letdown — fade a favorite coming off a 7+ dog upset win vs a lower-rated opponent
+    side: opponent_of_letdown_favorite
+    market: spread
+    primary:
+      statistic: mean_ats_residual
+      direction: positive          # backing this week's opponent of the letdown favorite
+      conditions:
+        opp_last_upset_win: true   # opponent won last as a 7+ dog at the close
+        spread_close_min: 0.5      # angle team is the underdog; letdown team is favored
+        team_ridge_lt_opp: true    # opponent has the higher Ridge rating this week
+        opp_last_game_completed_before_as_of: true
+    baseline:
+      description: Fade favorites (same dog-side rows) whose last game was not an upset win
+      conditions:
+        spread_close_min: 0.5
+        opp_last_upset_win: false
+        opp_last_game_completed_before_as_of: true
+    variants:
+      - id: H7v_top15_victim
+        description: Last week's upset win came against a team Ridge rated top 15 at that time
+        conditions:
+          opp_last_upset_win: true
+          spread_close_min: 0.5
+          team_ridge_lt_opp: true
+          opp_last_opp_ridge_rank_max: 15
+          opp_last_game_completed_before_as_of: true
+
+  - id: H9
+    name: Wounded animal — back a Ridge top-40 team after a bad loss
+    side: wounded_team
+    market: spread
+    primary:
+      statistic: mean_ats_residual
+      direction: positive          # the wounded team covers
+      conditions:
+        team_last_ridge_rank_max: 40
+        team_last_wounded: true
+        team_last_game_completed_before_as_of: true
+    baseline:
+      description: Ridge top-40 teams whose last game was a loss that was not wounded (a) or (b)
+      conditions:
+        team_last_ridge_rank_max: 40
+        team_last_lost: true
+        team_last_wounded: false
+        team_last_game_completed_before_as_of: true
+    variants:
+      - id: H9v_home
+        description: Primary, wounded team is at home this week (non-neutral)
+        conditions:
+          team_last_ridge_rank_max: 40
+          team_last_wounded: true
+          venue_home: true
+          team_last_game_completed_before_as_of: true
+      - id: H9v_road
+        description: Primary, wounded team is on the road this week (non-neutral)
+        conditions:
+          team_last_ridge_rank_max: 40
+          team_last_wounded: true
+          venue_away: true
+          team_last_game_completed_before_as_of: true
+
+  - id: H15
+    name: Turnover luck — fade a team coming off +3 or better turnover margin
+    side: opponent_of_to_lucky_team
+    market: spread
+    primary:
+      statistic: mean_ats_residual
+      direction: positive          # backing this week's opponent of the +TO team
+      conditions:
+        opp_last_to_margin_min: 3
+        opp_last_game_completed_before_as_of: true
+    baseline:
+      description: Fade teams whose last-game turnover margin was exactly 0
+      conditions:
+        opp_last_to_margin_min: 0
+        opp_last_to_margin_max: 0
+        opp_last_game_completed_before_as_of: true
+    variants:
+      - id: H15v_fumble
+        description: Last-game fumble margin (recoveries − losses) >= +2
+        conditions:
+          opp_last_fumble_margin_min: 2
+          opp_last_game_completed_before_as_of: true
+      - id: H15v_int
+        description: Last-game interception margin (INTs forced − thrown) >= +2
+        conditions:
+          opp_last_int_margin_min: 2
+          opp_last_game_completed_before_as_of: true
+
+  - id: H22
+    name: Road-loss bounce-back — home after a non-neutral road loss
+    side: bounce_back_home_team
+    market: spread
+    primary:
+      statistic: mean_ats_residual
+      direction: positive          # the home team coming off a road loss covers
+      conditions:
+        venue_home: true
+        team_last_was_away: true
+        team_last_lost: true
+        team_last_game_completed_before_as_of: true
+    baseline:
+      description: Home teams (non-neutral) whose last game was a non-neutral road win
+      conditions:
+        venue_home: true
+        team_last_was_away: true
+        team_last_won: true
+        team_last_game_completed_before_as_of: true
+    variants:
+      - id: H22v_blowout
+        description: Last road loss was by 14 or more points
+        conditions:
+          venue_home: true
+          team_last_was_away: true
+          team_last_lost: true
+          team_last_margin_max: -14
+          team_last_game_completed_before_as_of: true
+
+  - id: H23
+    name: After a home win over a ranked team — fade this week's opponent
+    side: opponent_of_ranked_home_winner
+    market: spread
+    primary:
+      statistic: mean_ats_residual
+      direction: positive          # backing this week's opponent of the ranked-beater
+      conditions:
+        opp_last_won: true
+        opp_last_was_home: true
+        opp_last_opp_ap_rank_max: 25
+        opp_last_game_completed_before_as_of: true
+    baseline:
+      description: Fade teams coming off a home win over an unranked FBS opponent
+      conditions:
+        opp_last_won: true
+        opp_last_was_home: true
+        opp_last_opp_ap_unranked: true
+        opp_last_opp_fbs: true
+        opp_last_game_completed_before_as_of: true
+    variants: []
+
+  - id: H24
+    name: Road underdogs — back the away underdog at the close (non-neutral)
+    side: road_underdog
+    market: spread
+    primary:
+      statistic: mean_ats_residual
+      direction: positive          # the road dog covers
+      conditions:
+        venue_away: true
+        spread_close_min: 0.5
+    baseline:
+      description: Home underdogs (non-neutral) in the same spread-bucket analysis
+      conditions:
+        venue_home: true
+        spread_close_min: 0.5
+    variants:
+      - id: H24v_dog_0_7
+        description: Road dogs +0.5 to +7
+        conditions:
+          venue_away: true
+          spread_close_min: 0.5
+          spread_close_max: 7.0
+      - id: H24v_dog_7_14
+        description: Road dogs +7.5 to +14
+        conditions:
+          venue_away: true
+          spread_close_min: 7.5
+          spread_close_max: 14.0
+      - id: H24v_dog_14plus
+        description: Road dogs +14.5 and up
+        conditions:
+          venue_away: true
+          spread_close_min: 14.5
+      - id: H24v_conference
+        description: Primary restricted to conference games
+        conditions:
+          venue_away: true
+          spread_close_min: 0.5
+          conference_game: true
