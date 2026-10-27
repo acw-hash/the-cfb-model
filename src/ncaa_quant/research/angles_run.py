@@ -25,8 +25,10 @@ from ncaa_quant.evaluation.walkforward import SNAPSHOT_BACKED_FROM_SEASON, WalkF
 from ncaa_quant.features.market_lines import filter_home_side_spreads
 from ncaa_quant.research.angles import (
     DEFAULT_ANGLES_CONFIG,
+    STATUS_NOT_RUN_DATA_MISSING,
     STATUS_RETIRED_UNOPENED,
     AnglesConfig,
+    NotRunDataMissingError,
     RetiredUnopenedError,
     TeamGameFrame,
     attach_efficiency_l3d,
@@ -38,10 +40,19 @@ from ncaa_quant.research.angles import (
     compute_game_luck,
     flag_definition,
     hypothesis_needs_ap,
+    hypothesis_needs_body_clock,
+    hypothesis_needs_epa_quantiles,
     hypothesis_needs_last_game,
     hypothesis_needs_lines,
+    hypothesis_needs_lookahead,
     hypothesis_needs_luck,
+    hypothesis_needs_returning,
+    hypothesis_needs_revenge,
     hypothesis_needs_ridge,
+    hypothesis_needs_season_records,
+    hypothesis_needs_service_academy,
+    hypothesis_needs_this_game_ap,
+    hypothesis_needs_totals,
     hypothesis_needs_turnovers,
     load_angles_config,
     qualifying_counts_by_season,
@@ -79,6 +90,8 @@ class AnglesData:
     efficiency_l3d: dict[str, pd.DataFrame] = field(default_factory=dict)
     plays: pd.DataFrame = field(default_factory=pd.DataFrame)
     rankings: pd.DataFrame = field(default_factory=pd.DataFrame)
+    weather: pd.DataFrame = field(default_factory=pd.DataFrame)
+    returning_production: pd.DataFrame = field(default_factory=pd.DataFrame)
 
 
 @dataclass
@@ -110,11 +123,17 @@ def _echo(stream: TextIO | None, fn: EchoFn | None, line: str) -> None:
 
 
 def parse_ids(raw: str, cfg: AnglesConfig) -> tuple[str, ...]:
-    """Parse ``H1,H3,H14`` (or ``all``) into hypothesis ids present in config."""
+    """Parse ``H1,H3,H14`` (or ``all``) into hypothesis ids present in config.
+
+    ``all`` skips retired-unopened and not-run-data-missing entries. Explicit
+    ids that are not-run raise :class:`NotRunDataMissingError`.
+    """
     text = raw.strip()
     if not text or text.casefold() == "all":
         return tuple(
-            hid for hid, hyp in cfg.hypotheses.items() if hyp.status != STATUS_RETIRED_UNOPENED
+            hid
+            for hid, hyp in cfg.hypotheses.items()
+            if hyp.status not in {STATUS_RETIRED_UNOPENED, STATUS_NOT_RUN_DATA_MISSING}
         )
     ids = tuple(part.strip() for part in text.split(",") if part.strip())
     unknown = [i for i in ids if i not in cfg.hypotheses]
@@ -122,6 +141,12 @@ def parse_ids(raw: str, cfg: AnglesConfig) -> tuple[str, ...]:
         known = ", ".join(cfg.hypotheses)
         msg = f"unknown hypothesis id(s) {unknown}; known: {known}"
         raise ValueError(msg)
+    for hid in ids:
+        hyp = cfg.hypotheses[hid]
+        if hyp.status == STATUS_NOT_RUN_DATA_MISSING:
+            reason = hyp.retired_reason.strip() or "required staged data missing"
+            msg = f"{hid} not run: data missing. {reason}"
+            raise NotRunDataMissingError(msg)
     return ids
 
 
@@ -523,15 +548,26 @@ def run_angles(
     if cfg.features.get("efficiency_l3d") and data.efficiency_l3d:
         rows = attach_efficiency_l3d(rows, data.efficiency_l3d)
 
-    need_luck = any(hypothesis_needs_luck(cfg.hypotheses[i]) for i in hid_tuple)
+    hyps = [cfg.hypotheses[i] for i in hid_tuple]
+    need_luck = any(hypothesis_needs_luck(h) for h in hyps)
+    need_lookahead = any(hypothesis_needs_lookahead(h) for h in hyps)
     need_context = any(
-        hypothesis_needs_last_game(cfg.hypotheses[i])
-        or hypothesis_needs_ridge(cfg.hypotheses[i])
-        or hypothesis_needs_turnovers(cfg.hypotheses[i])
-        or hypothesis_needs_ap(cfg.hypotheses[i])
-        for i in hid_tuple
+        hypothesis_needs_last_game(h)
+        or hypothesis_needs_ridge(h)
+        or hypothesis_needs_turnovers(h)
+        or hypothesis_needs_ap(h)
+        or need_lookahead
+        or hypothesis_needs_service_academy(h)
+        for h in hyps
     )
-    need_lines = any(hypothesis_needs_lines(cfg.hypotheses[i]) for i in hid_tuple) or need_context
+    need_lines = any(hypothesis_needs_lines(h) for h in hyps) or need_context
+    need_body = any(hypothesis_needs_body_clock(h) for h in hyps)
+    need_revenge = any(hypothesis_needs_revenge(h) for h in hyps)
+    need_records = any(hypothesis_needs_season_records(h) for h in hyps)
+    need_epa_q = any(hypothesis_needs_epa_quantiles(h) for h in hyps)
+    need_totals = any(hypothesis_needs_totals(h) for h in hyps)
+    need_returning = any(hypothesis_needs_returning(h) for h in hyps)
+    need_this_ap = any(hypothesis_needs_this_game_ap(h) for h in hyps)
     cfbd_close = cfbd_close_frame(data.cfbd_lines)
     odds_close = odds_close_frame(data.snapshots, games, data.teams)
     tue = odds_tuesday_frame(data.snapshots, games, data.teams)
@@ -562,6 +598,62 @@ def run_angles(
             plays=data.plays,
             rankings=data.rankings,
         )
+    need_sa = any(hypothesis_needs_service_academy(h) for h in hyps)
+    need_batch5 = (
+        need_body
+        or need_totals
+        or need_revenge
+        or need_records
+        or need_lookahead
+        or need_returning
+        or need_this_ap
+        or need_epa_q
+        or need_sa
+    )
+    if need_batch5:
+        from ncaa_quant.research.angles_extra import (
+            attach_body_clock,
+            attach_efficiency_quantiles,
+            attach_last_opp_ids_from_context,
+            attach_last_total_over,
+            attach_lookahead,
+            attach_returning_production,
+            attach_revenge,
+            attach_season_records,
+            attach_service_academy_flags,
+            attach_this_game_ap,
+            attach_totals_close,
+            attach_weather_wind,
+        )
+
+        if need_body:
+            rows = attach_body_clock(rows, games, data.venues, data.teams)
+            rows = attach_weather_wind(rows, data.weather)
+        if need_sa:
+            stats = pd.DataFrame(
+                {
+                    "game_id": rows["game_id"],
+                    "team_id": rows["team_id"],
+                    "opp_id": rows["opp_id"],
+                }
+            ).drop_duplicates(["game_id", "team_id"])
+            rows = attach_last_opp_ids_from_context(rows, stats)
+            rows = attach_service_academy_flags(rows, data.teams)
+        if need_lookahead:
+            rows = attach_lookahead(rows, games, data.teams, data.filter_history)
+        if need_revenge:
+            rows = attach_revenge(rows, games)
+        if need_records:
+            rows = attach_season_records(rows, games)
+        if need_returning:
+            rows = attach_returning_production(rows, data.returning_production, data.teams)
+        if need_this_ap:
+            rows = attach_this_game_ap(rows, games, data.rankings)
+        if need_totals:
+            rows = attach_totals_close(rows, data.cfbd_lines)
+            rows = attach_last_total_over(rows, games, data.cfbd_lines)
+        if need_epa_q:
+            rows = attach_efficiency_quantiles(rows)
     frame = TeamGameFrame(
         rows=rows,
         n_games_universe=frame.n_games_universe,
@@ -575,7 +667,13 @@ def run_angles(
     _echo(stream, echo, "Step 1 - qualifying counts (this-game residuals not yet attached)")
     for hid in hid_tuple:
         hyp = cfg.hypotheses[hid]
-        flagged = flag_definition(frame.rows, hyp.primary, hyp.baseline)
+        flagged = flag_definition(
+            frame.rows,
+            hyp.primary,
+            hyp.baseline,
+            skip_both_qualify=hyp.skip_both_qualify,
+            one_row_per_game=hyp.one_row_per_game,
+        )
         table = qualifying_counts_by_season(flagged, seasons + sensitivity)
         count_tables[hid] = table
         n_both[hid] = flagged.n_both_qualify_games
@@ -612,7 +710,13 @@ def run_angles(
     pvalues: dict[str, float] = {}
     for hid in hid_tuple:
         hyp = cfg.hypotheses[hid]
-        flagged = flag_definition(framed.rows, hyp.primary, hyp.baseline)
+        flagged = flag_definition(
+            framed.rows,
+            hyp.primary,
+            hyp.baseline,
+            skip_both_qualify=hyp.skip_both_qualify,
+            one_row_per_game=hyp.one_row_per_game,
+        )
         primary = analyze_definition(
             flagged,
             hyp,
@@ -626,11 +730,37 @@ def run_angles(
             from ncaa_quant.research.angles_context import TURNOVER_PLAY_TYPE_NOTE
 
             primary.notes.append(TURNOVER_PLAY_TYPE_NOTE)
+        if hid == "H12":
+            primary.notes.append(
+                "Discovery seasons are entirely pre-2024; 2024+ stratification "
+                "requires opening holdout (closed this run)."
+            )
+        if hid == "H20":
+            n_fc = 0
+            if "wind_is_forecast" in flagged.rows.columns:
+                wind_fc = flagged.rows.loc[flagged.rows["qualifies"], "wind_is_forecast"]
+                n_fc = int(wind_fc.fillna(False).sum())
+            if n_fc == 0:
+                primary.notes.append(
+                    "upper bound, not bettable — wind rows are actuals only "
+                    "(no forecast as-of the decision point)."
+                )
+            else:
+                primary.notes.append(
+                    f"wind: {n_fc} qualifying rows used forecast obs_kind; "
+                    "remainder may be actuals (upper bound if so)."
+                )
         primaries[hid] = primary
         pvalues[hid] = primary.primary_p
         var_results: list[DefinitionResult] = []
         for variant in hyp.variants:
-            vf = flag_definition(framed.rows, variant, hyp.baseline)
+            vf = flag_definition(
+                framed.rows,
+                variant,
+                hyp.baseline,
+                skip_both_qualify=hyp.skip_both_qualify,
+                one_row_per_game=hyp.one_row_per_game,
+            )
             var_results.append(
                 analyze_definition(
                     vf,
@@ -664,10 +794,11 @@ def run_angles(
                     f"(source={prior.get('source')})"
                 )
                 continue
+            est = float(primaries[hid].primary_estimate)
             family[hid] = {
                 "p": p_run if math.isfinite(p_run) else None,
                 "n": int((primaries[hid].by_instrument.get("cfbd") or {}).get("n_qualifying") or 0),
-                "estimate": primaries[hid].primary_estimate,
+                "estimate": est if math.isfinite(est) else None,
                 "config_hash": hashes[hid],
                 "name": cfg.hypotheses[hid].name,
                 "source": "this_run",
@@ -903,6 +1034,9 @@ def load_angles_data(
             tuesdays = tuesday_as_of_by_week(games) if not games.empty else {}
             rankings = ingest_cfbd_rankings(season_list, teams, tuesdays=tuesdays)
 
+    weather = _read_table_seasons(staged, "weather", season_list)
+    returning_production = _read_table_seasons(staged, "returning_production", season_list)
+
     features_dir = Path("data/features")
     efficiency = (
         _read_efficiency_l3d(features_dir, season_list)
@@ -921,6 +1055,8 @@ def load_angles_data(
         efficiency_l3d=efficiency,
         plays=plays,
         rankings=rankings,
+        weather=weather,
+        returning_production=returning_production,
     )
 
 

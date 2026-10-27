@@ -749,6 +749,11 @@ hypotheses:
     name: Early-season returning production (weeks 1–4 continuous)
     side: returning_production_team
     market: spread
+    # Weeks 1–4 alone qualify both sides of every game; keep one row per game
+    # (home) so the continuous model is not emptied by both-qualify drop.
+    # one_row_per_game is outside the locked definition hash.
+    one_row_per_game: true
+    skip_both_qualify: true
     primary:
       statistic: slope_ats_residual_on_returning_pctile
       direction: positive

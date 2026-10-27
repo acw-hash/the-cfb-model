@@ -7,6 +7,30 @@
     "p": 0.2514,
     "source": "batch1"
   },
+  "H10": {
+    "config_hash": "df5212fe8457fca3",
+    "estimate": 0.24369627507163324,
+    "n": 1745,
+    "name": "Revenge \u2014 lost to this opponent last season by 14+",
+    "p": 0.5068916812057016,
+    "source": "this_run"
+  },
+  "H11": {
+    "config_hash": "45343c8b208a44b2",
+    "estimate": 0.4840733590733591,
+    "n": 518,
+    "name": "Rivalry underdogs",
+    "p": 0.5533427113666425,
+    "source": "this_run"
+  },
+  "H12": {
+    "config_hash": "bcefa1409b3ffa93",
+    "estimate": 1.518796992481203,
+    "n": 133,
+    "name": "Bowl desperation \u2014 5-win team in last 3 regular-season games",
+    "p": 0.2174925456010421,
+    "source": "this_run"
+  },
   "H14": {
     "config_hash": "0b0ff2ea2c161a2e",
     "estimate": -0.937,
@@ -21,6 +45,54 @@
     "n": 630,
     "name": "Turnover luck \u2014 fade a team coming off +3 or better turnover margin",
     "p": 0.8208933555130598,
+    "source": "this_run"
+  },
+  "H16": {
+    "config_hash": "83ba69cd3e698f82",
+    "estimate": 0.22519036041699925,
+    "n": 1566,
+    "name": "Early-season returning production (weeks 1\u20134 continuous)",
+    "p": 0.09178199228831721,
+    "source": "this_run"
+  },
+  "H17": {
+    "config_hash": "b8f2d6348c3edbee",
+    "estimate": -0.6207897793263647,
+    "n": 861,
+    "name": "Conference home dogs +3 to +10",
+    "p": 0.25471111661216783,
+    "source": "this_run"
+  },
+  "H18": {
+    "config_hash": "35d6c4233cb7bbc6",
+    "estimate": -0.9363026819923371,
+    "n": 522,
+    "name": "Big road favorites 14+ \u2014 back the home dog",
+    "p": 0.17671028695998414,
+    "source": "this_run"
+  },
+  "H19": {
+    "config_hash": "e9f0bd593a9be5fe",
+    "estimate": -0.050132802124833994,
+    "n": 1506,
+    "name": "Ranked favorite vs unranked \u2014 back the unranked",
+    "p": 0.9052780471568872,
+    "source": "this_run"
+  },
+  "H20": {
+    "config_hash": "c08a6a3cc9a90094",
+    "estimate": 2.5833333333333335,
+    "n": 30,
+    "name": "Wind unders \u2014 outdoor, kickoff wind >= 6.7 m/s (15 mph)",
+    "p": 0.3926769603275913,
+    "source": "this_run"
+  },
+  "H21": {
+    "config_hash": "41e6085f166d8a2a",
+    "estimate": 0.930379746835443,
+    "n": 1106,
+    "name": "Totals after a shootout \u2014 either side's last game over by 21+",
+    "p": 0.07660807319045043,
     "source": "this_run"
   },
   "H22": {
@@ -55,12 +127,44 @@
     "p": 0.2854,
     "source": "batch1"
   },
+  "H4": {
+    "config_hash": "2ac528df8741a954",
+    "estimate": -0.2616822429906542,
+    "n": 107,
+    "name": "Short week \u2014 angle rest 6\u20138 days, opponent rest under 6",
+    "p": 0.8767188016557916,
+    "source": "this_run"
+  },
+  "H5": {
+    "config_hash": "2e2bef22f90e3255",
+    "estimate": 0.4297752808988764,
+    "n": 89,
+    "name": "Body clock \u2014 opponent crossed 2+ zones east with home-TZ kickoff before 13:00",
+    "p": 0.8024121363281937,
+    "source": "this_run"
+  },
+  "H6": {
+    "config_hash": "bd2062fb121cd2cc",
+    "estimate": -1.7920673076923077,
+    "n": 208,
+    "name": "Post-triple-option \u2014 fade a team coming off Army/Navy/Air Force",
+    "p": 0.060609601588268086,
+    "source": "this_run"
+  },
   "H7": {
     "config_hash": "08284eeda1d99da0",
     "estimate": -0.9821428571428571,
     "n": 98,
     "name": "Letdown \u2014 fade a favorite coming off a 7+ dog upset win vs a lower-rated opponent",
     "p": 0.46833156467107934,
+    "source": "this_run"
+  },
+  "H8": {
+    "config_hash": "a1978b6bdb349ee0",
+    "estimate": -0.2027348394768133,
+    "n": 841,
+    "name": "Lookahead \u2014 fade a 10+ favorite looking ahead to top-25 / rivalry",
+    "p": 0.6758417502603598,
     "source": "this_run"
   },
   "H9": {

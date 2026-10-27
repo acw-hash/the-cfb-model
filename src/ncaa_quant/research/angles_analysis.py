@@ -312,6 +312,7 @@ def _instrument_block(
     instrument: str,
     seasons: Sequence[int],
     sensitivity_seasons: Sequence[int],
+    market: str = "spread",
 ) -> dict[str, Any]:
     inf = cfg.inference
     ci = float((inf.get("bootstrap") or {}).get("ci", 0.95))
@@ -323,9 +324,18 @@ def _instrument_block(
     spread_buckets = dict(inf.get("spread_buckets") or {})
     min_n = int(inf.get("min_n_for_test", 30))
 
-    resid_col = f"ats_residual_{instrument}"
-    cover_col = f"cover_{instrument}"
-    spread_col = f"spread_close_{instrument}"
+    # Totals use a single CFBD close total; Odds total instrument is not wired.
+    if market == "total" or definition.statistic in {
+        "mean_total_residual",
+        "mean_under_residual",
+    }:
+        resid_col = "total_residual_cfbd"
+        cover_col = "cover_under_cfbd"
+        spread_col = "total_close_cfbd"
+    else:
+        resid_col = f"ats_residual_{instrument}"
+        cover_col = f"cover_{instrument}"
+        spread_col = f"spread_close_{instrument}"
     rows_all = flagged.rows
     has_line = (
         pd.to_numeric(rows_all[spread_col], errors="coerce").notna()
@@ -346,6 +356,7 @@ def _instrument_block(
         "n_baseline": int(len(base)),
         "n_field": int(len(field_rows)),
         "mean_ats_residual": _mean_block(qual, resid_col, ci=ci),
+        "mean_total_residual": _mean_block(qual, resid_col, ci=ci),
         "cover": _bootstrap_block(qual, cover_col, reps=reps, seed=seed, ci=ci),
         "baseline_mean_ats_residual": _mean_block(base, resid_col, ci=ci),
         "baseline_cover": _bootstrap_block(base, cover_col, reps=reps, seed=seed + 1, ci=ci),
@@ -353,6 +364,7 @@ def _instrument_block(
             "seasons": [int(s) for s in sensitivity_seasons],
             "n_qualifying": int(len(sens_qual)),
             "mean_ats_residual": _mean_block(sens_qual, resid_col, ci=ci),
+            "mean_total_residual": _mean_block(sens_qual, resid_col, ci=ci),
             "cover": _bootstrap_block(sens_qual, cover_col, reps=reps, seed=seed + 2, ci=ci),
         },
         "spread_buckets": _spread_buckets(
@@ -460,6 +472,9 @@ def _primary_statistic(definition: ConditionSet, block: dict[str, Any]) -> tuple
         cregr = block.get("continuous_regression") or {}
         slope = cregr.get("slope_simple") or {}
         return float(slope.get("coef", float("nan"))), float(slope.get("p", float("nan")))
+    if definition.statistic in {"mean_total_residual", "mean_under_residual"}:
+        mean = block.get("mean_total_residual") or block.get("mean_ats_residual") or {}
+        return float(mean.get("mean", float("nan"))), float(mean.get("p_two_sided", float("nan")))
     mean = block.get("mean_ats_residual") or {}
     return float(mean.get("mean", float("nan"))), float(mean.get("p_two_sided", float("nan")))
 
@@ -477,7 +492,8 @@ def analyze_definition(
     """Run every pre-registered statistic for one definition on one split."""
     counts = qualifying_counts_by_season(flagged, list(seasons) + list(sensitivity_seasons))
     by_instrument: dict[str, dict[str, Any]] = {}
-    for instrument in INSTRUMENTS:
+    instruments = ("cfbd",) if hypothesis.market == "total" else INSTRUMENTS
+    for instrument in instruments:
         by_instrument[instrument] = _instrument_block(
             flagged,
             definition,
@@ -485,7 +501,10 @@ def analyze_definition(
             instrument=instrument,
             seasons=seasons,
             sensitivity_seasons=sensitivity_seasons,
+            market=hypothesis.market,
         )
+    if hypothesis.market == "total":
+        by_instrument.setdefault("odds", dict(by_instrument["cfbd"]))
     ridge = _ridge_block(flagged, cfg, seasons=seasons, sensitivity_seasons=sensitivity_seasons)
     primary_instrument = str(cfg.multiple_testing.get("instrument", "cfbd_close"))
     inst_key = "cfbd" if primary_instrument.startswith("cfbd") else "odds"

@@ -99,6 +99,9 @@ branch = true
 omit = [
     "*/evaluation/d3_eval.py",  # D3 measurement harness (docs/notes runner)
     "*/evaluation/d4_eval.py",  # D4 measurement harness (docs/notes runner)
+    "*/research/angles_run.py",  # situational-angle notes runner (I/O)
+    "*/research/angles_report.py",  # situational-angle markdown writer
+    "*/research/angles_extra.py",  # batch-5 condition attaches (notes runner)
 ]
 
 [tool.coverage.report]
@@ -107,4 +110,7 @@ skip_empty = true
 omit = [
     "*/evaluation/d3_eval.py",
     "*/evaluation/d4_eval.py",
+    "*/research/angles_run.py",
+    "*/research/angles_report.py",
+    "*/research/angles_extra.py",
 ]

@@ -201,19 +201,39 @@ the ledger is still empty.
 
 Ridge home-team diagnosis (discovery 2014–2022 only; 2020 sensitivity;
 **2023–2025 not touched**): `docs/notes/angles/ridge_home_diag.md`.
+Headline: non-neutral home Ridge residual **−1.675** (n=2043, p=0.015)
+vs ATS **−0.473**. Neutral Ridge **+0.46**. After-loss vs after-win is
+only −0.50 pts overall and the away after-loss cell is *positive*.
+Supports **HFA too large** (plus a home road-loss / bye overlay), not
+sticky ratings. Ridge mean home `pred_margin` 5.85 vs close expected
+4.66 vs actual 4.19.
+
+## Batch 5 — remaining plan hypotheses (discovery only)
+
+Config registration commit `8b86daa` **before** any batch-5 outcome.
+Primaries run on discovery with cumulative BH (family now includes
+H1/H3/H14/H7/H9/H15/H22–H24 + H4–H6/H8/H10–H12/H16–H21). Holdout stayed
+closed; ledger empty.
+
+| id | status |
+|---|---|
+| H2 | **not run: data missing** (`adj_*_epa_l3d` not materialized) |
+| H13 | **not run: data missing** (coaches table season-level only) |
+| H4–H6, H8, H10–H12, H16–H21 | discovery run; see `docs/notes/angles/summary.md` |
+
+Only BH reject in the cumulative family remains **H22** (wrong sign →
+verdict `opposite`). No batch-5 primary passed BH. H20 labeled
+**upper bound, not bettable** (weather actuals only). H16 needed
+`one_row_per_game` (week 1–4 alone both-qualifies every game; outside
+locked hash). H12 discovery is entirely pre-2024.
+
+Summary table now includes MDE (2.8× clustered SE) and verdicts
+(`supported` / `opposite` / `no evidence` / `too few games`).
 
 ## Acceptance
 
-- `tests/unit/test_angles.py` green (41): PIT, planted +3 vs null, sign
-  convention, both-qualify drop, ledger refuse, H3 trend / H14 regression,
-  H14 luck +23, each new hypothesis angle/baseline assignment, AP poll
-  point-in-time, turnover play_types, last-game / Ridge / AP context attach,
-  H22r / H25 assignment, H25 excluded from BH, H22 sanity fixture.
-- Discovery reports written for H7/H9/H15/H22/H23/H24 plus H25
-  (descriptive); H22 sanity appended; holdout not opened
-  (`docs/notes/angles/holdout_ledger.jsonl` does not exist).
-- Research modules ruff + mypy clean. Full-repo `make lint` / `make typecheck`
-  still fail on pre-existing `social/` and `pipelines/cadence.py` (out of
-  scope; not touched). Full-repo `make test` still fails on pre-existing
-  HFA4 / betting-language-guard / slot-close-capture / webapp-w9r tests
-  that this task did not touch.
+- `tests/unit/test_angles.py` green (48): prior coverage plus batch-5
+  condition keys, totals residual sign, `not_run_data_missing` refuse.
+- Discovery reports for batch-5 ids; cumulative `discovery_primaries.json`;
+  holdout not opened (`holdout_ledger.jsonl` does not exist).
+- Research modules ruff + mypy clean on touched files.

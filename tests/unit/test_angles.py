@@ -15,9 +15,11 @@ from ncaa_quant.evaluation.walkforward import WalkForwardConfig, week_decision_a
 from ncaa_quant.research.angles import (
     CONDITION_KEYS,
     OUTCOME_COLUMNS,
+    STATUS_NOT_RUN_DATA_MISSING,
     STATUS_RETIRED_UNOPENED,
     AnglesConfigError,
     ConditionSet,
+    NotRunDataMissingError,
     RetiredUnopenedError,
     as_of_minus,
     attach_efficiency_l3d,
@@ -528,8 +530,16 @@ def test_cli_help_and_parse_ids() -> None:
     all_ids = parse_ids("all", cfg)
     assert "H22r" not in all_ids
     assert "H25" not in all_ids
+    assert "H2" not in all_ids
+    assert "H13" not in all_ids
     assert "H22" in all_ids
+    assert "H4" in all_ids
+    assert "H20" in all_ids
     assert parse_ids("H22r", cfg) == ("H22r",)
+    assert cfg.hypotheses["H2"].status == STATUS_NOT_RUN_DATA_MISSING
+    assert cfg.hypotheses["H13"].status == STATUS_NOT_RUN_DATA_MISSING
+    with pytest.raises(NotRunDataMissingError, match="H2"):
+        parse_ids("H2", cfg)
 
 
 def test_production_modules_do_not_import_research() -> None:
@@ -2063,4 +2073,273 @@ def test_ridge_home_diag_cells_on_fixture() -> None:
 
 
 def test_holdout_ledger_still_absent() -> None:
+    from ncaa_quant.research.angles_ridge_diag import assert_ledger_empty
+
     assert not Path("docs/notes/angles/holdout_ledger.jsonl").exists()
+    assert_ledger_empty()
+
+
+def test_ridge_home_diag_sensitivity_and_guards(tmp_path: Path) -> None:
+    from ncaa_quant.research.angles_ridge_diag import (
+        HoldoutSeasonError,
+        assert_discovery_only,
+        assert_ledger_empty,
+        compute_ridge_home_diag,
+        format_ridge_home_diag_md,
+        prior_situation,
+    )
+
+    assert_discovery_only(pd.DataFrame())
+    ledger = tmp_path / "holdout_ledger.jsonl"
+    ledger.write_text("{}\n", encoding="utf-8")
+    with pytest.raises(RuntimeError, match="holdout ledger exists"):
+        assert_ledger_empty(ledger)
+
+    rows = pd.DataFrame(
+        [
+            _diag_row(season=2019, week=5, season_week="2019-05", ridge_residual=-2.0),
+            _diag_row(
+                game_id=2,
+                season=2020,
+                week=6,
+                season_week="2020-06",
+                team_id=30,
+                ridge_residual=-3.0,
+                ats_residual_cfbd=-1.0,
+            ),
+        ]
+    )
+    with pytest.raises(HoldoutSeasonError):
+        compute_ridge_home_diag(rows, seasons=(2023,), sensitivity_seasons=())
+    stats = compute_ridge_home_diag(rows, seasons=(2019,), sensitivity_seasons=(2020,))
+    assert stats["sensitivity"] is not None
+    assert stats["sensitivity"]["a"]["home"]["ridge"]["n"] == 1
+    md = format_ridge_home_diag_md(stats)
+    assert "2020 sensitivity" in md
+    assert "| 2023 |" not in md
+
+    no_opener = pd.DataFrame([_diag_row()]).drop(columns=["team_opener"])
+    labels = prior_situation(no_opener)
+    assert pd.isna(labels.iloc[0]) or labels.iloc[0] == "home_win"
+
+
+def test_batch5_condition_keys_and_totals_residual() -> None:
+    for key in (
+        "opp_lookahead",
+        "opp_last_opp_service_academy",
+        "team_revenge_loss_14",
+        "weeks_from_season_end_max",
+        "wind_speed_ms_max",
+        "either_last_total_over_21",
+        "rest_same_bucket_6_8",
+        "team_ap_unranked",
+        "opp_ap_ranked",
+    ):
+        assert key in CONDITION_KEYS
+    cfg = load_angles_config()
+    assert cfg.hypotheses["H20"].market == "total"
+    assert cfg.hypotheses["H20"].one_row_per_game is True
+    assert cfg.hypotheses["H16"].primary.statistic.startswith("slope_")
+    rows = pd.DataFrame(
+        {
+            "team_rest_days": [7.0, 7.0, 14.0],
+            "opp_rest_days": [7.0, 5.0, 7.0],
+            "wind_speed_ms": [8.0, 3.0, 10.0],
+            "outdoor": [True, True, True],
+            "either_last_total_over_21": [True, False, True],
+        }
+    )
+    m = evaluate_conditions(rows, {"rest_same_bucket_6_8": True})
+    assert m.tolist() == [True, False, False]
+    m2 = evaluate_conditions(rows, {"outdoor": True, "wind_speed_ms_min": 6.7})
+    assert m2.tolist() == [True, False, True]
+    m3 = evaluate_conditions(rows, {"outdoor": True, "wind_speed_ms_max": 6.699})
+    assert m3.tolist() == [False, True, False]
+    out = pd.DataFrame(
+        {
+            "team_points": [31, 24],
+            "opp_points": [24, 31],
+            "total_close_cfbd": [48.0, 48.0],
+        }
+    )
+    out["total_residual_cfbd"] = out["total_close_cfbd"] - (out["team_points"] + out["opp_points"])
+    assert float(out["total_residual_cfbd"].iloc[0]) == pytest.approx(-7.0)
+
+
+def test_batch5_extra_attaches() -> None:
+    from ncaa_quant.research.angles_extra import (
+        attach_efficiency_quantiles,
+        attach_last_opp_ids_from_context,
+        attach_last_total_over,
+        attach_lookahead,
+        attach_returning_production,
+        attach_revenge,
+        attach_season_records,
+        attach_service_academy_flags,
+        attach_totals_close,
+        attach_weather_wind,
+        service_academy_ids,
+    )
+
+    teams = pd.DataFrame(
+        [
+            {"team_id": 349, "school": "Army", "season": 2019, "classification": "fbs"},
+            {"team_id": 10, "school": "A", "season": 2019, "classification": "fbs"},
+            {"team_id": 20, "school": "B", "season": 2019, "classification": "fbs"},
+        ]
+    )
+    assert 349 in service_academy_ids(teams)
+
+    lines = pd.DataFrame(
+        [
+            {"game_id": 1, "line_type": "close", "total": 50.0},
+            {"game_id": 1, "line_type": "close", "total": 52.0},
+            {"game_id": 2, "line_type": "close", "total": 60.0},
+        ]
+    )
+    rows = pd.DataFrame(
+        {
+            "game_id": [1, 1, 2, 2],
+            "team_id": [10, 20, 10, 20],
+            "opp_id": [20, 10, 20, 10],
+            "season": [2019, 2019, 2019, 2019],
+            "week": [2, 2, 3, 3],
+            "is_home": [True, False, True, False],
+            "rivalry_flag": [False, False, True, True],
+            "kickoff": [
+                datetime(2019, 9, 7, 19, tzinfo=UTC),
+                datetime(2019, 9, 7, 19, tzinfo=UTC),
+                datetime(2019, 9, 14, 19, tzinfo=UTC),
+                datetime(2019, 9, 14, 19, tzinfo=UTC),
+            ],
+            "as_of": [
+                datetime(2019, 9, 3, 10, tzinfo=UTC),
+                datetime(2019, 9, 3, 10, tzinfo=UTC),
+                datetime(2019, 9, 10, 10, tzinfo=UTC),
+                datetime(2019, 9, 10, 10, tzinfo=UTC),
+            ],
+            "team_prev_game_id": [pd.NA, pd.NA, 1, 1],
+            "opp_prev_game_id": [pd.NA, pd.NA, 1, 1],
+        }
+    )
+    tot = attach_totals_close(rows, lines)
+    assert float(tot.loc[tot["game_id"] == 1, "total_close_cfbd"].iloc[0]) == pytest.approx(51.0)
+
+    games = pd.DataFrame(
+        [
+            {
+                "game_id": 1,
+                "season": 2018,
+                "week": 5,
+                "home_team_id": 10,
+                "away_team_id": 20,
+                "home_points": 7,
+                "away_points": 35,
+                "completed": True,
+                "start_date": datetime(2018, 10, 1, 19, tzinfo=UTC),
+                "event_time": datetime(2018, 10, 1, 19, tzinfo=UTC),
+                "neutral_site": False,
+            },
+            {
+                "game_id": 2,
+                "season": 2019,
+                "week": 2,
+                "home_team_id": 10,
+                "away_team_id": 20,
+                "home_points": 24,
+                "away_points": 21,
+                "completed": True,
+                "start_date": datetime(2019, 9, 7, 19, tzinfo=UTC),
+                "event_time": datetime(2019, 9, 7, 19, tzinfo=UTC),
+                "neutral_site": False,
+            },
+            {
+                "game_id": 3,
+                "season": 2019,
+                "week": 3,
+                "home_team_id": 10,
+                "away_team_id": 20,
+                "home_points": 28,
+                "away_points": 14,
+                "completed": True,
+                "start_date": datetime(2019, 9, 14, 19, tzinfo=UTC),
+                "event_time": datetime(2019, 9, 14, 19, tzinfo=UTC),
+                "neutral_site": False,
+            },
+        ]
+    )
+    rematch = rows.loc[rows["game_id"] == 2].copy()
+    rematch["season"] = 2019
+    rev = attach_revenge(rematch, games)
+    assert bool(rev["team_revenge_loss_14"].iloc[0]) is True  # 10 lost by 28 in 2018
+
+    rec_rows = pd.DataFrame(
+        {
+            "game_id": [3, 3],
+            "team_id": [10, 20],
+            "opp_id": [20, 10],
+            "season": [2019, 2019],
+            "week": [3, 3],
+            "as_of": [datetime(2019, 9, 10, 10, tzinfo=UTC)] * 2,
+        }
+    )
+    rec = attach_season_records(rec_rows, games)
+    assert float(rec["team_season_wins"].iloc[0]) >= 1.0  # game 2 win for team 10
+
+    rp = attach_returning_production(
+        rows,
+        pd.DataFrame(
+            [
+                {"team_id": 10, "season": 2019, "overall_pct": 0.8},
+                {"team_id": 20, "season": 2019, "overall_pct": 0.2},
+            ]
+        ),
+        teams,
+    )
+    assert rp["team_returning_pctile"].notna().any()
+
+    weather = pd.DataFrame(
+        [
+            {
+                "game_id": 1,
+                "obs_kind": "actual",
+                "wind_speed_ms": 8.0,
+                "captured_at": datetime(2019, 9, 7, tzinfo=UTC),
+            }
+        ]
+    )
+    w = attach_weather_wind(rows.assign(game_dome=False), weather)
+    assert float(w.loc[w["game_id"] == 1, "wind_speed_ms"].iloc[0]) == pytest.approx(8.0)
+    assert bool(w.loc[w["game_id"] == 1, "outdoor"].iloc[0]) is True
+
+    stats = rows[["game_id", "team_id", "opp_id"]].drop_duplicates()
+    with_prev = rows.copy()
+    with_prev["team_prev_game_id"] = with_prev["game_id"].where(with_prev["week"] > 2, pd.NA)
+    with_prev["opp_prev_game_id"] = with_prev["team_prev_game_id"]
+    with_ids = attach_last_opp_ids_from_context(with_prev, stats)
+    sa = attach_service_academy_flags(with_ids, teams)
+    assert "opp_is_service_academy" in sa.columns
+
+    la = attach_lookahead(rows, games, teams, filter_history=None)
+    assert "team_lookahead" in la.columns
+    assert "opp_lookahead" in la.columns
+
+    over_lines = pd.DataFrame(
+        [{"game_id": 1, "line_type": "close", "total": 40.0}]
+    )
+    games_pts = games.copy()
+    last = attach_last_total_over(
+        rows.assign(team_prev_game_id=1, opp_prev_game_id=1),
+        games_pts,
+        over_lines,
+    )
+    assert "either_last_total_over_21" in last.columns
+
+    eq = attach_efficiency_quantiles(
+        rows.assign(
+            opp_adj_off_epa_l3d=0.1,
+            opp_adj_def_epa_l3d=0.0,
+            is_home=True,
+        )
+    )
+    assert "opp_net_epa_l3d" in eq.columns

@@ -124,6 +124,46 @@ CONDITION_KEYS: Final[frozenset[str]] = frozenset(
         "ats_momentum_abs_q_max",
         "momentum_window_min_n",
         "team_last_ats_gt_opp",
+        # Batch 5
+        "week_min",
+        "week_max",
+        "weeks_from_season_end_max",
+        "opp_net_epa_l3d_q_max",
+        "opp_off_epa_l3d_q_max",
+        "opp_def_epa_l3d_q_min",
+        "opp_body_clock_east_early",
+        "opp_eastern_pacific_late",
+        "team_last_opp_service_academy",
+        "opp_last_opp_service_academy",
+        "opp_is_service_academy",
+        "team_lookahead",
+        "opp_lookahead",
+        "team_last_lookahead",
+        "opp_last_lookahead",
+        "team_next_ridge_rank_max",
+        "opp_next_ridge_rank_max",
+        "team_revenge_loss_14",
+        "team_rematch_prior_season",
+        "team_prior_season_vs_opp_margin_min",
+        "team_prior_season_vs_opp_margin_max",
+        "team_season_wins_min",
+        "team_season_wins_max",
+        "team_season_wins_eq",
+        "opp_season_wins_min",
+        "opp_season_losses_min",
+        "opp_bowl_or_spoiler",
+        "team_interim_coach_first_game",
+        "team_ap_ranked",
+        "team_ap_unranked",
+        "opp_ap_ranked",
+        "opp_ap_unranked",
+        "team_ap_rank_max",
+        "opp_ap_rank_max",
+        "wind_speed_ms_min",
+        "wind_speed_ms_max",
+        "outdoor",
+        "either_last_total_over_21",
+        "rest_same_bucket_6_8",
     }
 )
 
@@ -147,6 +187,10 @@ OUTCOME_COLUMNS: Final[tuple[str, ...]] = (
     "cover_odds",
     "ridge_residual",
     "line_move_toward_angle",
+    "total_close_cfbd",
+    "actual_total",
+    "total_residual_cfbd",
+    "cover_under_cfbd",
 )
 
 
@@ -155,6 +199,7 @@ class AnglesConfigError(ValueError):
 
 
 STATUS_RETIRED_UNOPENED: Final[str] = "retired_unopened"
+STATUS_NOT_RUN_DATA_MISSING: Final[str] = "not_run_data_missing"
 
 
 class RetiredUnopenedError(RuntimeError):
@@ -162,6 +207,10 @@ class RetiredUnopenedError(RuntimeError):
 
     Holdout stays closed; the definition is kept for history only.
     """
+
+
+class NotRunDataMissingError(RuntimeError):
+    """Hypothesis cannot run because required staged data is absent."""
 
 
 # ---------------------------------------------------------------------------
@@ -209,6 +258,8 @@ class Hypothesis:
     include_in_bh: bool = True
     status: str = "active"
     retired_reason: str = ""
+    skip_both_qualify: bool = False
+    one_row_per_game: bool = False
 
     def all_definitions(self) -> tuple[ConditionSet, ...]:
         return (self.primary, self.baseline, *self.variants)
@@ -395,6 +446,10 @@ def load_angles_config(path: Path | str | None = None) -> AnglesConfig:
             include_in_bh=bool(entry.get("include_in_bh", True)),
             status=str(entry.get("status") or "active"),
             retired_reason=str(entry.get("retired_reason") or ""),
+            skip_both_qualify=bool(entry.get("skip_both_qualify", False)),
+            one_row_per_game=bool(
+                entry.get("one_row_per_game", market == "total")
+            ),
         )
     return AnglesConfig(
         raw=dict(raw),
@@ -1070,6 +1125,16 @@ def attach_outcomes(
     rows["ridge_residual"] = rows["margin"] - rows["ridge_pred_margin"]
     # Positive = the close moved toward the angle team (its spread got more negative).
     rows["line_move_toward_angle"] = rows["spread_tue_odds"] - rows["spread_close_odds"]
+    # Totals: residual = closing total − actual total (positive ⇒ under cashes).
+    if "total_close_cfbd" not in rows.columns:
+        rows["total_close_cfbd"] = np.nan
+    actual_total = rows["team_points"] + rows["opp_points"]
+    rows["actual_total"] = actual_total
+    rows["total_residual_cfbd"] = rows["total_close_cfbd"] - actual_total
+    tres = rows["total_residual_cfbd"].to_numpy(dtype=float)
+    cover_u = np.where(tres > 0, 1.0, np.where(tres < 0, 0.0, np.nan))
+    cover_u = np.where(np.isfinite(tres), cover_u, np.nan)
+    rows["cover_under_cfbd"] = cover_u
     return TeamGameFrame(
         rows=rows,
         n_games_universe=frame.n_games_universe,
@@ -1117,6 +1182,13 @@ _NUMERIC_MIN_COLUMNS: Final[Mapping[str, str]] = {
     "opp_last_fumble_margin_min": "opp_last_fumble_margin",
     "opp_last_int_margin_min": "opp_last_int_margin",
     "ats_momentum_abs_q_min": "ats_momentum_abs_q",
+    "week_min": "week",
+    "team_season_wins_min": "team_season_wins",
+    "opp_season_wins_min": "opp_season_wins",
+    "opp_season_losses_min": "opp_season_losses",
+    "team_prior_season_vs_opp_margin_min": "team_prior_season_vs_opp_margin",
+    "wind_speed_ms_min": "wind_speed_ms",
+    "opp_def_epa_l3d_q_min": "opp_def_epa_l3d_q",
 }
 _NUMERIC_MAX_COLUMNS: Final[Mapping[str, str]] = {
     "spread_close_max": "spread_close_cfbd",
@@ -1130,6 +1202,20 @@ _NUMERIC_MAX_COLUMNS: Final[Mapping[str, str]] = {
     "opp_last_opp_ridge_rank_max": "opp_last_opp_ridge_rank",
     "opp_last_opp_ap_rank_max": "opp_last_opp_ap_rank",
     "ats_momentum_abs_q_max": "ats_momentum_abs_q",
+    "week_max": "week",
+    "weeks_from_season_end_max": "weeks_from_season_end",
+    "opp_net_epa_l3d_q_max": "opp_net_epa_l3d_q",
+    "opp_off_epa_l3d_q_max": "opp_off_epa_l3d_q",
+    "team_next_ridge_rank_max": "team_next_ridge_rank",
+    "opp_next_ridge_rank_max": "opp_next_ridge_rank",
+    "team_season_wins_max": "team_season_wins",
+    "team_prior_season_vs_opp_margin_max": "team_prior_season_vs_opp_margin",
+    "team_ap_rank_max": "team_ap_rank",
+    "opp_ap_rank_max": "opp_ap_rank",
+    "wind_speed_ms_max": "wind_speed_ms",
+}
+_NUMERIC_EQ_COLUMNS: Final[Mapping[str, str]] = {
+    "team_season_wins_eq": "team_season_wins",
 }
 _BOOL_COLUMNS: Final[Mapping[str, str]] = {
     "team_ridge_lt_opp": "team_ridge_lt_opp",
@@ -1149,6 +1235,26 @@ _BOOL_COLUMNS: Final[Mapping[str, str]] = {
     "opp_last_opp_fbs": "opp_last_opp_fbs",
     "team_last_game_completed_before_as_of": "team_last_game_completed_before_as_of",
     "team_last_ats_gt_opp": "team_last_ats_gt_opp",
+    "opp_body_clock_east_early": "opp_body_clock_east_early",
+    "opp_eastern_pacific_late": "opp_eastern_pacific_late",
+    "team_last_opp_service_academy": "team_last_opp_service_academy",
+    "opp_last_opp_service_academy": "opp_last_opp_service_academy",
+    "opp_is_service_academy": "opp_is_service_academy",
+    "team_lookahead": "team_lookahead",
+    "opp_lookahead": "opp_lookahead",
+    "team_last_lookahead": "team_last_lookahead",
+    "opp_last_lookahead": "opp_last_lookahead",
+    "team_revenge_loss_14": "team_revenge_loss_14",
+    "team_rematch_prior_season": "team_rematch_prior_season",
+    "opp_bowl_or_spoiler": "opp_bowl_or_spoiler",
+    "team_interim_coach_first_game": "team_interim_coach_first_game",
+    "team_ap_ranked": "team_ap_ranked",
+    "team_ap_unranked": "team_ap_unranked",
+    "opp_ap_ranked": "opp_ap_ranked",
+    "opp_ap_unranked": "opp_ap_unranked",
+    "outdoor": "outdoor",
+    "either_last_total_over_21": "either_last_total_over_21",
+    "rest_same_bucket_6_8": "rest_same_bucket_6_8",
 }
 _VENUE_COLUMNS: Final[Mapping[str, str]] = {
     "venue_home": "home",
@@ -1222,6 +1328,16 @@ def evaluate_conditions(
             mask &= _ge(_series_or_missing(rows, _NUMERIC_MIN_COLUMNS[key]), value)
         elif key in _NUMERIC_MAX_COLUMNS:
             mask &= _le(_series_or_missing(rows, _NUMERIC_MAX_COLUMNS[key]), value)
+        elif key in _NUMERIC_EQ_COLUMNS:
+            s = pd.to_numeric(
+                _series_or_missing(rows, _NUMERIC_EQ_COLUMNS[key]), errors="coerce"
+            )
+            mask &= s.notna() & (s == float(value))
+        elif key == "rest_same_bucket_6_8":
+            if bool(value):
+                tr = pd.to_numeric(rows["team_rest_days"], errors="coerce")
+                orest = pd.to_numeric(rows["opp_rest_days"], errors="coerce")
+                mask &= tr.ge(6.0) & tr.le(8.0) & orest.ge(6.0) & orest.le(8.0)
         elif key in _VENUE_COLUMNS:
             mask &= rows["venue"].astype(str) == _VENUE_COLUMNS[key]
         elif key in _BOOL_COLUMNS:
@@ -1246,30 +1362,49 @@ def flag_definition(
     rows: pd.DataFrame,
     definition: ConditionSet,
     baseline: ConditionSet | None = None,
+    *,
+    skip_both_qualify: bool = False,
+    one_row_per_game: bool = False,
 ) -> FlaggedFrame:
     """Evaluate ``qualifies`` (and ``baseline``) and drop both-sides-qualify games.
 
     A game where both sides qualify is dropped (both rows) and counted — the
     angle cannot back both teams. Rows that satisfy both the definition and the
     baseline are kept as ``qualifies`` only (baseline is the comparison group).
+
+    ``skip_both_qualify`` (totals) keeps both-qualify games and does not drop
+    them. ``one_row_per_game`` keeps the designated-home row only (totals /
+    game-level angles).
     """
     out = rows.copy()
+    if one_row_per_game and "is_home" in out.columns:
+        out = out.loc[out["is_home"].astype(bool)].copy()
     q = evaluate_conditions(out, definition.conditions, luck_definition=definition.luck_definition)
-    per_game = q.groupby(out["game_id"]).transform("sum")
-    both_q = per_game >= 2
-    both_ids = tuple(sorted({int(g) for g in out.loc[both_q, "game_id"].unique()}))
-    out["qualifies"] = (q & ~both_q).to_numpy(dtype=bool)
+    if skip_both_qualify or one_row_per_game:
+        both_q = pd.Series(False, index=out.index)
+        both_ids: tuple[int, ...] = ()
+        out["qualifies"] = q.to_numpy(dtype=bool)
+    else:
+        per_game = q.groupby(out["game_id"]).transform("sum")
+        both_q = per_game >= 2
+        both_ids = tuple(sorted({int(g) for g in out.loc[both_q, "game_id"].unique()}))
+        out["qualifies"] = (q & ~both_q).to_numpy(dtype=bool)
     n_both_b = 0
     if baseline is not None:
         b = evaluate_conditions(out, baseline.conditions, luck_definition=baseline.luck_definition)
-        per_game_b = b.groupby(out["game_id"]).transform("sum")
-        both_b = per_game_b >= 2
-        n_both_b = int(out.loc[both_b, "game_id"].nunique())
-        out["baseline"] = (b & ~both_b & ~out["qualifies"]).to_numpy(dtype=bool)
+        if skip_both_qualify or one_row_per_game:
+            out["baseline"] = (b & ~out["qualifies"]).to_numpy(dtype=bool)
+        else:
+            per_game_b = b.groupby(out["game_id"]).transform("sum")
+            both_b = per_game_b >= 2
+            n_both_b = int(out.loc[both_b, "game_id"].nunique())
+            out["baseline"] = (b & ~both_b & ~out["qualifies"]).to_numpy(dtype=bool)
     else:
         out["baseline"] = False
-    # Drop both-qualify games entirely from the hypothesis frame.
-    out = out.loc[~both_q].reset_index(drop=True)
+    if not (skip_both_qualify or one_row_per_game):
+        out = out.loc[~both_q].reset_index(drop=True)
+    else:
+        out = out.reset_index(drop=True)
     return FlaggedFrame(
         rows=out,
         n_both_qualify_games=len(both_ids),
@@ -1404,6 +1539,124 @@ def hypothesis_needs_turnovers(hypothesis: Hypothesis) -> bool:
 
 def hypothesis_needs_ap(hypothesis: Hypothesis) -> bool:
     return any(definition_needs_ap(d) for d in hypothesis.all_definitions())
+
+
+_BATCH5_BODY_KEYS: Final[frozenset[str]] = frozenset(
+    {
+        "opp_body_clock_east_early",
+        "opp_eastern_pacific_late",
+        "outdoor",
+        "wind_speed_ms_min",
+    }
+)
+_BATCH5_SA_KEYS: Final[frozenset[str]] = frozenset(
+    {
+        "team_last_opp_service_academy",
+        "opp_last_opp_service_academy",
+        "opp_is_service_academy",
+    }
+)
+_BATCH5_LOOKAHEAD_KEYS: Final[frozenset[str]] = frozenset(
+    {
+        "team_lookahead",
+        "opp_lookahead",
+        "team_last_lookahead",
+        "opp_last_lookahead",
+        "team_next_ridge_rank_max",
+        "opp_next_ridge_rank_max",
+    }
+)
+_BATCH5_REVENGE_KEYS: Final[frozenset[str]] = frozenset(
+    {
+        "team_revenge_loss_14",
+        "team_rematch_prior_season",
+        "team_prior_season_vs_opp_margin_min",
+        "team_prior_season_vs_opp_margin_max",
+    }
+)
+_BATCH5_RECORD_KEYS: Final[frozenset[str]] = frozenset(
+    {
+        "team_season_wins_min",
+        "team_season_wins_max",
+        "team_season_wins_eq",
+        "opp_season_wins_min",
+        "opp_season_losses_min",
+        "opp_bowl_or_spoiler",
+        "weeks_from_season_end_max",
+    }
+)
+_BATCH5_EPA_Q_KEYS: Final[frozenset[str]] = frozenset(
+    {"opp_net_epa_l3d_q_max", "opp_off_epa_l3d_q_max", "opp_def_epa_l3d_q_min"}
+)
+_BATCH5_TOTALS_KEYS: Final[frozenset[str]] = frozenset({"either_last_total_over_21"})
+_BATCH5_RETURNING_KEYS: Final[frozenset[str]] = frozenset({"week_min", "week_max"})
+
+
+def _hyp_keys(hypothesis: Hypothesis) -> set[str]:
+    keys: set[str] = set()
+    for d in hypothesis.all_definitions():
+        keys |= set(d.conditions)
+        if d.regression and d.regression.get("regressor"):
+            keys.add(str(d.regression["regressor"]))
+    return keys
+
+
+def hypothesis_needs_body_clock(hypothesis: Hypothesis) -> bool:
+    return bool(_hyp_keys(hypothesis) & _BATCH5_BODY_KEYS)
+
+
+def hypothesis_needs_service_academy(hypothesis: Hypothesis) -> bool:
+    return bool(_hyp_keys(hypothesis) & _BATCH5_SA_KEYS)
+
+
+def hypothesis_needs_lookahead(hypothesis: Hypothesis) -> bool:
+    return bool(_hyp_keys(hypothesis) & _BATCH5_LOOKAHEAD_KEYS)
+
+
+def hypothesis_needs_revenge(hypothesis: Hypothesis) -> bool:
+    return bool(_hyp_keys(hypothesis) & _BATCH5_REVENGE_KEYS)
+
+
+def hypothesis_needs_season_records(hypothesis: Hypothesis) -> bool:
+    return bool(_hyp_keys(hypothesis) & _BATCH5_RECORD_KEYS)
+
+
+def hypothesis_needs_epa_quantiles(hypothesis: Hypothesis) -> bool:
+    return bool(_hyp_keys(hypothesis) & _BATCH5_EPA_Q_KEYS)
+
+
+def hypothesis_needs_totals(hypothesis: Hypothesis) -> bool:
+    if hypothesis.market == "total":
+        return True
+    return bool(_hyp_keys(hypothesis) & _BATCH5_TOTALS_KEYS) or any(
+        d.statistic in {"mean_total_residual", "mean_under_residual"}
+        for d in hypothesis.all_definitions()
+    )
+
+
+def hypothesis_needs_returning(hypothesis: Hypothesis) -> bool:
+    keys = _hyp_keys(hypothesis)
+    if "team_returning_pctile" in keys or "team_returning_pct" in keys:
+        return True
+    return any(
+        (d.regression or {}).get("regressor") in {"team_returning_pctile", "team_returning_pct"}
+        for d in hypothesis.all_definitions()
+    )
+
+
+def hypothesis_needs_this_game_ap(hypothesis: Hypothesis) -> bool:
+    keys = _hyp_keys(hypothesis)
+    return bool(
+        keys
+        & {
+            "team_ap_ranked",
+            "team_ap_unranked",
+            "opp_ap_ranked",
+            "opp_ap_unranked",
+            "team_ap_rank_max",
+            "opp_ap_rank_max",
+        }
+    )
 
 
 def attach_efficiency_l3d(

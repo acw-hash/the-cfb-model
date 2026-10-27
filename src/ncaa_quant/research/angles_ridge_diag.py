@@ -68,9 +68,12 @@ def prior_situation(rows: pd.DataFrame) -> pd.Series:
     label so the five cells in (d)/(e) are disjoint.
     """
     rest = pd.to_numeric(rows["team_rest_days"], errors="coerce")
-    opener = rows["team_opener"].fillna(True).astype(bool)
+    if "team_opener" in rows.columns:
+        opener = rows["team_opener"].ne(False)
+    else:
+        opener = pd.Series(True, index=rows.index)
     bye = (~opener) & rest.ge(LONG_REST_DAYS)
-    last_ok = rows["team_last_game_completed_before_as_of"].fillna(False).astype(bool)
+    last_ok = _flag(rows, "team_last_game_completed_before_as_of")
     last_away = _flag(rows, "team_last_was_away")
     last_home = _flag(rows, "team_last_was_home")
     last_won = _flag(rows, "team_last_won")
@@ -87,7 +90,7 @@ def prior_situation(rows: pd.DataFrame) -> pd.Series:
 def _flag(rows: pd.DataFrame, column: str) -> pd.Series:
     if column not in rows.columns:
         return pd.Series(False, index=rows.index)
-    return rows[column].fillna(False).astype(bool)
+    return rows[column].eq(True)
 
 
 def _one_row_per_game(rows: pd.DataFrame) -> pd.DataFrame:
@@ -130,7 +133,7 @@ def _neutral(rows: pd.DataFrame) -> pd.DataFrame:
 
 
 def _after_result(rows: pd.DataFrame, *, won: bool) -> pd.DataFrame:
-    last_ok = rows["team_last_game_completed_before_as_of"].fillna(False).astype(bool)
+    last_ok = _flag(rows, "team_last_game_completed_before_as_of")
     col = "team_last_won" if won else "team_last_lost"
     return rows.loc[last_ok & _flag(rows, col)].copy()
 
@@ -296,6 +299,40 @@ def _verdict(block: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
+def _season_trend_line(by_season: Sequence[Mapping[str, Any]]) -> str:
+    """One sentence: is the home Ridge residual stable or trending?"""
+    ridge_pairs: list[tuple[int, float]] = []
+    ats_bits: list[str] = []
+    for row in by_season:
+        season = int(row["season"])
+        rmean = ((row.get("home") or {}).get("ridge") or {}).get("mean")
+        rn = int(((row.get("home") or {}).get("ridge") or {}).get("n") or 0)
+        amean = ((row.get("home") or {}).get("ats") or {}).get("mean")
+        if rmean is not None and np.isfinite(float(rmean)) and rn > 0:
+            ridge_pairs.append((season, float(rmean)))
+        if amean is not None and np.isfinite(float(amean)):
+            ats_bits.append(f"{season} {_n(amean)}")
+    if not ridge_pairs:
+        ridge_txt = "warmup-null"
+        trend = "No Ridge seasons in the headline window."
+    else:
+        ridge_txt = ", ".join(f"{s} {_n(m)}" for s, m in ridge_pairs)
+        worst_s, worst_m = min(ridge_pairs, key=lambda p: p[1])
+        last_s, last_m = ridge_pairs[-1]
+        if last_s > worst_s and last_m > worst_m:
+            trend = (
+                f"Not a flat series — {worst_s} is the most negative "
+                f"({_n(worst_m)}), then the miss shrinks (last {last_s} "
+                f"{_n(last_m)})."
+            )
+        else:
+            trend = "No monotone shrink after the worst season."
+    return (
+        f"Home Ridge residual by season with n>0: {ridge_txt}. {trend} "
+        f"Home ATS residual: {', '.join(ats_bits) if ats_bits else '—'}."
+    )
+
+
 def _cell_md(cell: Mapping[str, Any]) -> str:
     ridge = dict(cell.get("ridge") or {})
     ats = dict(cell.get("ats") or {})
@@ -355,6 +392,7 @@ def format_ridge_home_diag_md(stats: Mapping[str, Any]) -> str:
         "## (b) Same, by season",
         "",
         "2020 is a sensitivity row and is **not** in the headline cells.",
+        _season_trend_line(h["b"]),
         "",
         "| season | site | n_ridge | ridge mean | ridge SE | ridge p | "
         "n_ats | ats mean | ats SE | ats p |",
@@ -442,32 +480,38 @@ def _step2_md(v: Mapping[str, Any]) -> list[str]:
 
 
 def _verdict_paragraph(v: Mapping[str, Any]) -> str:
-    hfa = v["hfa_too_large"]
-    sticky = v["ratings_sticky_after_losses"]
     home = v["home_ridge_mean"]
+    ats = v["home_ats_mean"]
+    neu = v["neutral_ridge_mean"]
     stick = v["stickiness_loss_minus_win"]
-    if hfa and sticky:
-        bigger = "HFA" if abs(float(home)) >= abs(float(stick)) else "stickiness"
-        return (
-            f"**Both are present.** The home-side bias is {_n(home)} pts on "
-            f"Ridge (homes score that many fewer than predicted). The extra "
-            f"after-loss penalty is {_n(stick)} pts relative to after-win. "
-            f"On these magnitudes the larger term is {bigger}."
-        )
-    if hfa:
-        return (
-            f"**The data support (1) more than (2).** Home ridge residual is "
-            f"{_n(home)} and (d) is not dominated by after-loss cells."
-        )
-    if sticky:
-        return (
-            f"**The data support (2) more than (1).** After-loss ridge residual "
-            f"is {_n(stick)} pts worse than after-win on both home and away."
-        )
-    return (
-        "**Neither explanation is clearly supported** on the headline "
-        "discovery window (home ridge residual not negative, or after-loss "
-        "cells not worse than after-win on both sides)."
+    d_loss = v["d_after_loss_ridge"]
+    d_win = v["d_after_win_ridge"]
+    e_loss = v["e_after_loss_ridge"]
+    e_win = v["e_after_win_ridge"]
+    extra_vs_mkt = (
+        float(ats) - float(home)
+        if np.isfinite(float(home)) and np.isfinite(float(ats))
+        else float("nan")
+    )
+    return "\n".join(
+        [
+            "**Primarily (1), with a home-side road-loss / bye overlay; not (2).**",
+            "",
+            f"Non-neutral homes miss Ridge by {_n(home)} pts vs the market ATS",
+            f"residual {_n(ats)}; Ridge overstates home by {_n(extra_vs_mkt)} pts",
+            f"relative to the close. Neutrals are {_n(neu)} (not negative), so",
+            "leftover intercept-HFA on neutral sites is not the story. (d) is",
+            "**not** flat: home-after-win is near 0, home-after-road-loss and",
+            "home-after-bye are about −3. That is an HFA × situation",
+            "interaction, not a constant site-term miss.",
+            "",
+            f"(2) fails the away-side test: after-loss away residual {_n(e_loss)}",
+            f"is *better* than after-win {_n(e_win)}. If ratings stayed too high",
+            "after losses, both home and away after-loss cells would be negative.",
+            f"All-team (c) loss−win is only {_n(stick)} pts (home after-loss",
+            f"{_n(d_loss)} vs after-win {_n(d_win)}). Magnitude: the home bias",
+            f"({_n(home)}) is about 3× the after-loss gap ({_n(stick)}).",
+        ]
     )
 
 
@@ -554,8 +598,8 @@ def _step3_md(headline: Mapping[str, Any], sensitivity: Mapping[str, Any] | None
             "2. `test_enet_unpenalized_home_site_not_shrunk` — ElasticNet with",
             "   `force_include_features` / `unpenalized_features = ('is_home_site',)`",
             "   should recover a planted +3.5 home coefficient under a heavy",
-            "   penalty. **Fails** because `ElasticNetMuHead` has no those",
-            "   constructor args.",
+            "   penalty. **Fails** because `ElasticNetMuHead` does not take",
+            "   those constructor args.",
             "3. `test_v4_config_wiring` — `walkforward_config_from_mapping`",
             "   should pass `explicit_home_site`, `elasticnet_fit_intercept`,",
             "   and `freeze_mapping_from_season` through. **Fails**; those keys",

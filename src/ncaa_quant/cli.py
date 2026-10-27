@@ -24,6 +24,7 @@ train_app = typer.Typer(help="Train prediction models. NOT WIRED — see `backte
 predict_app = typer.Typer(help="Generate predictions. NOT WIRED — see `backtest run`.")
 backtest_app = typer.Typer(help="Run walk-forward backtests.")
 diag_app = typer.Typer(help="Read-only diagnostics (no model/config changes).")
+research_app = typer.Typer(help="Research harnesses (not production / not publish).")
 
 app.add_typer(ingest_app, name="ingest")
 app.add_typer(quality_app, name="quality")
@@ -34,6 +35,7 @@ app.add_typer(train_app, name="train")
 app.add_typer(predict_app, name="predict")
 app.add_typer(backtest_app, name="backtest")
 app.add_typer(diag_app, name="diag")
+app.add_typer(research_app, name="research")
 
 
 def _not_wired(verb: str) -> None:
@@ -1047,6 +1049,104 @@ def diag(ctx: typer.Context) -> None:
     """Read-only diagnostics."""
     if ctx.invoked_subcommand is None:
         typer.echo("Usage: ncaa-quant diag mu [--predictions PATH]")
+        raise typer.Exit(code=2)
+
+
+@research_app.command("angles")
+def research_angles(
+    ids: str = typer.Option("H1,H3,H14", "--ids", help="Comma-separated hypothesis ids, or 'all'."),
+    split: str = typer.Option("discovery", "--split", help="discovery | holdout"),
+    config_path: str = typer.Option("configs/angles.yaml", "--config"),
+    notes_dir: str = typer.Option("docs/notes/angles", "--notes-dir"),
+    ledger_path: str = typer.Option(
+        "docs/notes/angles/holdout_ledger.jsonl",
+        "--ledger",
+        help="Holdout-open ledger (append-only JSONL).",
+    ),
+    staged_root: str = typer.Option("", "--staged-root", help="Override staged parquet root."),
+    force: bool = typer.Option(
+        False, "--force", help="Holdout: record a second open / definition change."
+    ),
+    confirm_lockbox_read: bool = typer.Option(
+        False,
+        "--confirm-lockbox-read",
+        help="Include lockbox season 2025 on holdout (must also log docs/lockbox_access.md).",
+    ),
+) -> None:
+    """Situational-angle research harness. Does not touch production or publish."""
+    configure_logging()
+    from ncaa_quant.research.angles import (
+        NotRunDataMissingError,
+        hypothesis_needs_ap,
+        hypothesis_needs_lookahead,
+        hypothesis_needs_luck,
+        hypothesis_needs_ridge,
+        hypothesis_needs_this_game_ap,
+        hypothesis_needs_turnovers,
+        load_angles_config,
+    )
+    from ncaa_quant.research.angles_ledger import HoldoutLockedError
+    from ncaa_quant.research.angles_run import load_angles_data, parse_ids, run_angles
+
+    if split not in {"discovery", "holdout"}:
+        typer.echo("--split must be discovery or holdout")
+        raise typer.Exit(code=2)
+    cfg = load_angles_config(config_path)
+    try:
+        hid = parse_ids(ids, cfg)
+    except (ValueError, NotRunDataMissingError) as exc:
+        typer.echo(str(exc))
+        raise typer.Exit(code=2) from exc
+    seasons = list(cfg.split_seasons(split)) + list(cfg.split_sensitivity_seasons(split))
+    if split == "holdout" and not confirm_lockbox_read:
+        seasons = [s for s in seasons if s not in set(cfg.split_lockbox_seasons(split))]
+    hyps = [cfg.hypotheses[i] for i in hid]
+    data = load_angles_data(
+        cfg,
+        seasons=seasons,
+        need_luck=any(hypothesis_needs_luck(h) for h in hyps),
+        need_turnovers=any(hypothesis_needs_turnovers(h) for h in hyps),
+        need_ridge=any(
+            hypothesis_needs_ridge(h) or hypothesis_needs_lookahead(h) for h in hyps
+        ),
+        need_rankings=any(
+            hypothesis_needs_ap(h) or hypothesis_needs_this_game_ap(h) for h in hyps
+        ),
+        staged_root=Path(staged_root) if staged_root else None,
+        confirm_lockbox_read=confirm_lockbox_read,
+    )
+    if data.games.empty:
+        typer.echo("no staged games for the requested seasons; refuse")
+        raise typer.Exit(code=2)
+    try:
+        result = run_angles(
+            data=data,
+            ids=hid,
+            split=split,
+            config=cfg,
+            notes_dir=notes_dir,
+            ledger_path=ledger_path,
+            force=force,
+            confirm_lockbox_read=confirm_lockbox_read,
+            echo=typer.echo,
+        )
+    except HoldoutLockedError as exc:
+        typer.echo(str(exc))
+        raise typer.Exit(code=2) from exc
+    for hid_i, path in result.report_paths.items():
+        typer.echo(f"wrote {hid_i} {path}")
+    if result.bh:
+        for hid_i, dec in result.bh.items():
+            p_s = f"{dec.p:.4g}" if dec.p == dec.p else "nan"
+            pa_s = f"{dec.p_adjusted:.4g}" if dec.p_adjusted == dec.p_adjusted else "nan"
+            typer.echo(f"BH {hid_i} p={p_s} p_adj={pa_s} rejected={dec.rejected}")
+
+
+@research_app.callback(invoke_without_command=True)
+def research(ctx: typer.Context) -> None:
+    """Research harnesses (not production)."""
+    if ctx.invoked_subcommand is None:
+        typer.echo("Usage: ncaa-quant research angles --ids H1,H3,H14 --split discovery")
         raise typer.Exit(code=2)
 
 
