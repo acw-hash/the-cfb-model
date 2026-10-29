@@ -209,12 +209,18 @@ export function renderReadmap(spec) {
   // Outside-plot labels (no text inside the plot frame).
   // Top row: Known struggles | average | Proven good (aligned to frame edges / x=0).
   // Bottom row (below x-tick labels, never sharing that row): Hard to read | x-title | Good, still proving it.
-  // ≥10 CSS px gap between quadrant-label rows and the plot frame.
+  // ≥10 CSS px gap between quadrant-label *ink* and the plot frame.
   const byId = Object.fromEntries((spec.quadrants || []).map((q) => [q.id, q]));
   const midLabel = axes.zero_midline_label || "average";
   const quadGap = 10;
-  // dominant-baseline=auto → y is the baseline; keep ≥10px from baseline to plot.y.
-  const topRowY = Math.max(14, plot.y - quadGap);
+  const quadFontPx = 13;
+  // dominant-baseline=auto → y is the alphabetic baseline; descenders (e.g. "struggles")
+  // hang ~0.3em below. Pad so *ink* clears the frame by ≥quadGap, not just the baseline.
+  const baselineToInkBottom = Math.ceil(quadFontPx * 0.3);
+  const topRowY = Math.max(
+    quadFontPx + 2,
+    plot.y - quadGap - baselineToInkBottom,
+  );
   const tickBelow = 5;
   const labelBelow = 20;
   // Bottom quadrant row: clear the x-tick labels, then +10px from the frame.

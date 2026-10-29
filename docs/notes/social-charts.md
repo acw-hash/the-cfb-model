@@ -895,7 +895,7 @@ Before every weekly production run, verify polish by **rendering a fixture** (or
 
 1. Movers: plot header is the single line `Before ○ → after ●`; Up/Down rows sorted by \|Δnet\| desc; `avg` sits above the 0 position.
 2. Game cards: each dumbbell row is one horizontal unit (label left, track center y within ±4 px of label center); fixed ~64 CSS px row height; headline ≤48 chars with full+full or short+short names (never mixed).
-3. Read map: no `Most sure` / `Least sure`; y title ends `· surer ↑`; ≥10 px gap between quadrant-label rows and the plot frame.
+3. Read map: no `Most sure` / `Least sure`; y title ends `· surer ↑`; ≥10 px **ink** gap between quadrant-label rows and the plot frame (lint enforces).
 4. Slate: x ticks at multiples of 10 or 20 including intermediates; Ridge/Market cells use a short enough display name that values cannot touch the next column (≥8 px ink gap — lint enforces).
 5. Lint fixtures under `docs/notes/_artifacts/soc2-weekly-w9/lint_fail_fixtures/` must still fail (`test_social_soc2_w9_polish.py`).
 
@@ -1186,6 +1186,10 @@ uv run python scripts/make_social_charts.py --season 2026 --chart readmap --sour
 5. Lint fixtures (broken week-9 HTML) must fail: movers header, slate Ole Miss row, read-map corners (`test_social_soc2_w9_polish.py`).
 
 **Re-render:** `--allow-stale` from `latest_postable` → `out/social/2026/w09/` (contact sheet + all sizes). Lint ok · determinism ok · social polish tests green.
+
+### 2026-10-29c — read-map quadrant ink gap (follow-up)
+
+Owner bar is ≥10 CSS px between the quadrant-label **ink bbox** and the plot frame. `b52da3a` placed the alphabetic baseline 10 px above the frame, so descenders on “Known struggles” left only **7 px** of ink clearance. Fix: pad the baseline by ~0.3em and lint the ink gap on live reads. Re-measured top-row gap **10 px**; all W9 lint green; contact sheet rebuilt.
 
 **§1 production `latest/` (pulled read-only from R2):**
 - `week_predictions`: week **9**, `tuesday_primary`, `published_at=2026-10-28T14:08:37Z` (Wed Oct 28 10:08 AM EDT), `production-v0_reduced_v3` / `W9A_REVAL` / `run_id=task23_fundamental_reduced_v3` — matches week-7/8 notes. Not HFA/WIP.

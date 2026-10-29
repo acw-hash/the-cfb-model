@@ -513,12 +513,37 @@ export async function runLayoutLint(page, spec) {
         }
       }
 
-      // Read-map corner end labels (Most/Least sure) must be gone.
+      // Read-map: no Most/Least sure end labels; ≥10 px ink gap to plot frame.
       if (chart === "readmap") {
         for (const el of root.querySelectorAll("[data-role='axis-end-label']")) {
           const text = (el.textContent || "").trim();
           if (/Most sure|Least sure/i.test(text)) {
             errors.push(`Read-map corner end label present: "${text}"`);
+          }
+        }
+        let plotBox = null;
+        for (const el of root.querySelectorAll("svg rect")) {
+          const r = el.getBoundingClientRect();
+          if (r.width > 200 && r.height > 200) {
+            plotBox = r;
+            break;
+          }
+        }
+        if (plotBox) {
+          const minQuadGap = 10;
+          for (const el of root.querySelectorAll(
+            "[data-role='quadrant-label'][data-placement='outside']",
+          )) {
+            const r = el.getBoundingClientRect();
+            const text = (el.textContent || "").trim();
+            let gap = null;
+            if (r.bottom <= plotBox.top + 1) gap = plotBox.top - r.bottom;
+            else if (r.top >= plotBox.bottom - 1) gap = r.top - plotBox.bottom;
+            if (gap != null && gap < minQuadGap - 0.5) {
+              errors.push(
+                `Read-map corner gap ${gap.toFixed(1)}px < ${minQuadGap}: "${text.slice(0, 32)}"`,
+              );
+            }
           }
         }
       }
