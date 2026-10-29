@@ -1158,6 +1158,74 @@ Command:
 uv run python scripts/make_social_charts.py --season 2026 --chart readmap --source local --artifact-dir data/social/artifacts_cache/latest --allow-stale --out out/social/2026/w08
 ```
 
+### 2026-10-29 — week 9 (SOC-2 on `soc-2-recovered`; path B)
+
+**Branch:** `soc-2-recovered` @ `39371f1` (local == origin before this notes commit). Week-8 polish present (movers header `before ○ → after ●`, slate nice ticks, read-map fitted x + certainty-percentile y ticks + corner cleanup, team-named caption numbers, game-card rank rows). Chart sources clean (no untracked/modified under `src/ncaa_quant/social/`, `scripts/make_social_charts.py`, `social/` excl. node_modules, `tests/unit/test_social*`, `docs/notes/social-charts.md`, `social/display_names.csv`).
+
+**§1 production `latest/` (pulled read-only from R2):**
+- `week_predictions`: week **9**, `tuesday_primary`, `published_at=2026-10-28T14:08:37Z` (Wed Oct 28 10:08 AM EDT), `production-v0_reduced_v3` / `W9A_REVAL` / `run_id=task23_fundamental_reduced_v3` — matches week-7/8 notes. Not HFA/WIP.
+- `team_ratings_2026`: latest week **9**, **138** FBS teams; same model stamp `published_at=2026-10-28T14:08:37Z`.
+- `results_2026`: week **8** complete — **56**/56 scored.
+- `odds_snapshot`: week **9**, `snapshot_at=2026-10-29T13:01:04Z` (~3 h old at run).
+- Thursday `daily_refresh` for week 9 in `latest/`: **no** (still `tuesday_primary`; `next_expected_publish_utc=2026-10-30T14:08:37Z`).
+
+**§2 data path: B** (no Thursday publish).
+- **B1 ratings proof:** dry-run `team_ratings_2026` vs `latest/` — **1136** common team-weeks; max \|Δ\| off/def epa/sd = **0**. Read map + movers safe under `--allow-stale`.
+- **B2 prediction proof:** `scripts/_dry_publish_week9_thu.py` → `run_isolated_week_export` (`daily_refresh`, `as_of=2026-10-29T16:09:05Z`, `push=False`). Artifacts: `docs/notes/_artifacts/soc2-weekly-w9-thu-dry/`. Watch set = filtered featured-16 + 3 default cards vs Tuesday: max \|Δμ\| **0.368**, max \|Δp\| **0.019**, **0** tier changes → **PASS**. Overall common 52 games had 2 non-watch tier flips (ORST@FRES, LT@USA) — ignored for slate/cards gate. **No production publish.**
+
+**Kickoff filter (as_of ≈ render time):** 2 Tuesday games already kicked; **none** were in featured-16 or default-3 → **0 exclusions / 0 replacements**.
+- `401871057` Jacksonville State @ New Mexico State (`2026-10-29T00:00Z`)
+- `401871058` Kennesaw State @ Middle Tennessee (`2026-10-28T23:00Z`)
+
+Mirrored to `data/social/artifacts_cache/latest_postable/` (kickoff≤now dropped from `week_predictions.games` only).
+
+**Resolved weeks:** read map = entering **9** · movers = **8** · slate = **9** · cards = SC@OU, NU@ORE, UTAH@CIN.
+
+**Featured slate (16, all with market):** ARIZ@TTU, OSU@USC, AUB@Ole Miss, FLA@UGA, ND@NAVY, SC@OU, MIA@UNC, NU@ORE, UTAH@CIN, WIS@IOWA, MINN@IU, BAY@UCF, WASH@NEB, UVA@WAKE, MIZ@ARK, ASU@BYU.
+
+**Default cards:** `401856736` SC@OU (toss_up), `401858505` NU@ORE (toss_up), `401856848` UTAH@CIN (lean).
+
+**Gap watchlist** (\|Ridge − market\| > 7 pts on featured — owner QB/injury check before posting):
+| game | μ_home | mkt_home | \|gap\| |
+|---|---:|---:|---:|
+| Arizona @ Texas Tech | −9.15 | +3.5 | **12.65** |
+| Virginia @ Wake Forest | +24.96 | +12.5 | **12.46** |
+| Wisconsin @ Iowa | −7.20 | +3.5 | **10.70** |
+
+**Sanity:**
+- Slate 16/16 with market. Movers 10/10 each joined to one week-8 result (`result_join_excluded=[]`; `n_played=112` team-games, `excluded_bye=26`).
+- Margin-vs-win% mismatch (slate+cards): South Carolina @ Oklahoma (μ=−1.42, p=0.514) — card alt notes the disagreement.
+- Implied-σ worst 10 (week-9 games, \|log(implied/published)\|): UConn@AF, Army@MEM, ILL@MD, WSU@SDSU, BC@DUKE, USM@ULM, SC@OU, MICH@RUTG, KU@TCU, UAB@USF.
+- Display names: no new CSV rows proposed (chart schools already overridden or CFBD matches common usage).
+- Lint ok all 12 PNGs (incl. header-overlap / truncation). Banned-words clean (`texts_checked=60`). Determinism pixel+byte identical on `readmap_w9_4x5.png`.
+
+**Read map packing:** slot **26** · max displacement **36** · worst overlap **0.0598**.
+
+**Footer stamps:** ratings charts `published Wed Oct 28 ET`; slate/cards `published Wed Oct 28 ET · market as of Thu 9:01 AM ET`.
+
+**Copy (verbatim):**
+- Read map: title `How Ridge sees FBS entering week 9` · dek `Right = stronger team · higher = Ridge more confident in that rating` · caption `Ridge's reads are tightly bunched this week: ±9.0 to ±10.7 pts. 34 FBS teams in Proven good.`
+- Movers: title `Biggest movers after week 8` · dek `Teams whose Ridge rating changed most after week 8 games` · caption `Biggest movers after week 8: WVU +13.3, UNT +13.5, UL −11.9.`
+- Slate: title `Ridge vs. the market · week 9` · dek `Dot = Ridge · ◇ = market · sorted by gap (pts)` · caption `Biggest gaps with the market: TTU–ARIZ (Ridge ARIZ by 9.1, market 3.5), WAKE–UVA (Ridge WAKE by 25.0, market 12.5), IOWA–WIS (Ridge WIS by 7.2, market 3.5).`
+- Cards: `Ridge can't split South Carolina and OU` / `Ridge can't split Northwestern and Oregon` / `Ridge has Utah by 7.0` with captions `SC by 1.4, market OU by 5.0` · `NU by 1.9, market ORE by 3.5` · `UTAH by 7.0, market UTAH by 6.5`.
+
+**Paths:**
+- `out/social/2026/w09/contact_sheet_w9.png`
+- `out/social/2026/w09/readmap_w9_{4x5,16x9}.png`
+- `out/social/2026/w09/movers_w8_{4x5,16x9}.png`
+- `out/social/2026/w09/slate_ranges_w9_{4x5,16x9}.png`
+- `out/social/2026/w09/gamecard_{401856736,401858505,401856848}_{4x5,16x9}.png`
+
+**Render:** `render_total_ms` **12365** (~12.4 s). Social unit **78 passed**, 2 skipped (subset coverage fail-under only — same as prior weekly runs).
+
+**STOPs:** none this run (path B gates passed). Still no live Thursday publish (carry Follow-up R1–R5).
+
+Commands:
+```
+uv run python scripts/_dry_publish_week9_thu.py
+uv run python scripts/make_social_charts.py --season 2026 --chart soc2 --source local --artifact-dir data/social/artifacts_cache/latest_postable --allow-stale --out out/social/2026/w09
+```
+
 ## Follow-up: scheduled Thursday refresh
 
 Requirements only — **do not implement** until owner assigns. Carry from week-8 dry-run STOP (2026-10-22d) and owner direction (no Thursday publish this week).
