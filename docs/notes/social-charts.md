@@ -887,6 +887,18 @@ Cause of loss: on 2026-10-12 the untracked chart `.py` files were committed into
 
 ## Weekly runs
 
+### Runbook §0 — polish verification (do not skip)
+
+**Never mark week-N polish as present by grepping notes or source strings.** Many polish items existed as committed text (header copy, `_nice_ticks`, fitted domains) while the rendered PNGs still failed the visual bar (wrapped headers, wrong sort key, overflowing cells, leftover Most/Least sure labels).
+
+Before every weekly production run, verify polish by **rendering a fixture** (or the prior week's 4:5 set) and checking the PNG/HTML:
+
+1. Movers: plot header is the single line `Before ○ → after ●`; Up/Down rows sorted by \|Δnet\| desc; `avg` sits above the 0 position.
+2. Game cards: each dumbbell row is one horizontal unit (label left, track center y within ±4 px of label center); fixed ~64 CSS px row height; headline ≤48 chars with full+full or short+short names (never mixed).
+3. Read map: no `Most sure` / `Least sure`; y title ends `· surer ↑`; ≥10 px gap between quadrant-label rows and the plot frame.
+4. Slate: x ticks at multiples of 10 or 20 including intermediates; Ridge/Market cells use a short enough display name that values cannot touch the next column (≥8 px ink gap — lint enforces).
+5. Lint fixtures under `docs/notes/_artifacts/soc2-weekly-w9/lint_fail_fixtures/` must still fail (`test_social_soc2_w9_polish.py`).
+
 ### 2026-10-13 — week 7 (SOC-2 on `soc-2-recovered`)
 
 **Model check:** week-7 `week_predictions.model_identity.model_version` = `production-v0_reduced_v3`, `vintage_label` = `W9A_REVAL` (meta champion same). Matches week-6 record. Not HFA-v4.
@@ -1160,7 +1172,20 @@ uv run python scripts/make_social_charts.py --season 2026 --chart readmap --sour
 
 ### 2026-10-29 — week 9 (SOC-2 on `soc-2-recovered`; path B)
 
-**Branch:** `soc-2-recovered` @ `39371f1` (local == origin before this notes commit). Week-8 polish present (movers header `before ○ → after ●`, slate nice ticks, read-map fitted x + certainty-percentile y ticks + corner cleanup, team-named caption numbers, game-card rank rows). Chart sources clean (no untracked/modified under `src/ncaa_quant/social/`, `scripts/make_social_charts.py`, `social/` excl. node_modules, `tests/unit/test_social*`, `docs/notes/social-charts.md`, `social/display_names.csv`).
+**Branch:** `soc-2-recovered` @ `39371f1` (local == origin before the notes commit). **§0 polish check was wrong:** it grepped committed strings/notes (`Ridge rating: before ○ → after ●`, `_nice_ticks`, fitted x) and marked polish present. The rendered week-9 PNGs still had the failures (wrapped movers header, Up/Down sorted by `move_sd` not \|Δ\|, Most/Least sure end labels, Ole Miss column overflow, dumbbell rows stretching). Fix landed in the follow-up entry below — runbook §0 now requires a fixture render.
+
+### 2026-10-29b — week 9 polish fix (actually land the visual bar)
+
+**Why §0 passed anyway:** the week-8 polish items were **partially implemented in committed code on `soc-2-recovered`**, not uncommitted and not on another branch — but several behaviors never matched the owner bar (header allowed 2-line clamp; sort key stayed `move_sd`; Most/Least sure still emitted; slate step snapped too coarse; Ole Miss `display_short` overflowed Ridge/Market cells; gamecard dumbbell rows used `flex:1`). §0 verified by reading notes/source strings, not by rendering.
+
+**Changes:**
+1. Movers: header `Before ○ → after ●` (nowrap); Up/Down sort by \|`delta_net`\| desc; `avg` above the 0 position; delta/expected headers shortened to fit.
+2. Game cards: fixed 64 CSS px dumbbell rows; label+track one unit; leftover space between sections; lint ±4 px center test; `HEADLINE_MAX=48`; `fit_headline` same-level cascade only.
+3. Read map: removed Most/Least sure; y title `… (± pts) · surer ↑`; ≥10 px quadrant-row gap.
+4. Slate: ticks at multiples of 10/20 with intermediates; Ridge/Market fall back to abbr when short overflows; `Ole Miss` display_short → `OM`; column padding + lint ink gap ≥8 px.
+5. Lint fixtures (broken week-9 HTML) must fail: movers header, slate Ole Miss row, read-map corners (`test_social_soc2_w9_polish.py`).
+
+**Re-render:** `--allow-stale` from `latest_postable` → `out/social/2026/w09/` (contact sheet + all sizes). Lint ok · determinism ok · social polish tests green.
 
 **§1 production `latest/` (pulled read-only from R2):**
 - `week_predictions`: week **9**, `tuesday_primary`, `published_at=2026-10-28T14:08:37Z` (Wed Oct 28 10:08 AM EDT), `production-v0_reduced_v3` / `W9A_REVAL` / `run_id=task23_fundamental_reduced_v3` — matches week-7/8 notes. Not HFA/WIP.

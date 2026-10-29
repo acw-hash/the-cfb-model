@@ -52,7 +52,8 @@ _Y_GUTTER = 96.0
 #: Bottom gutter: x-tick row + separate outside-label / x-title row (CSS px).
 _X_GUTTER = 72.0
 #: Top pad above the plot frame for the outside quadrant / average row.
-_TOP_LABEL_PAD = 22.0
+#: Must leave ≥10 CSS px between the label row and the plot frame edge.
+_TOP_LABEL_PAD = 28.0
 #: Pad each side of the net_pts data range when fitting the x domain.
 _X_DOMAIN_PAD_FRAC = 0.06
 #: Certainty-percentile positions for y tick marks (100 = sharpest read).
@@ -753,10 +754,10 @@ def build_readmap_specs(
     dek = "Right = stronger team · higher = Ridge more confident in that rating"
     assert len(dek) <= READMAP_DEK_MAX
 
-    # End captions only — numeric ±pts live on the y tick labels.
-    y_top_lines = ["Most sure"]
-    y_bottom_lines = ["Least sure"]
-    y_axis_title = "How sure Ridge is about each rating (± pts)"
+    # Numeric ±pts live on the y tick labels; no Most/Least sure end captions.
+    y_top_lines: list[str] = []
+    y_bottom_lines: list[str] = []
+    y_axis_title = "How sure Ridge is about each rating (± pts) · surer ↑"
 
     caption = trim_caption(
         readmap_caption(

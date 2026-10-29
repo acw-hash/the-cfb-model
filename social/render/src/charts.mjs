@@ -198,7 +198,7 @@ export function renderReadmap(spec) {
       yTickSvg += `<text data-role="axis-tick" data-axis="y" x="${endX}" y="${py}" text-anchor="end" dominant-baseline="middle" font-size="13" fill="${t.text_tertiary}" style="${NOWRAP}">${esc(lab)}</text>`;
     }
   });
-  // "Most sure" / "Least sure" sit just outside the end tick labels (muted).
+  // Optional end captions (Most/Least sure removed — keep hook for non-empty lines).
   if (topLines[0]) {
     yTickSvg += `<text data-role="axis-end-label" data-axis="y" data-end="top" x="${endX}" y="${yTop - 12}" text-anchor="end" dominant-baseline="auto" font-size="12" fill="${t.text_tertiary}" style="${NOWRAP}">${esc(topLines[0])}</text>`;
   }
@@ -209,12 +209,16 @@ export function renderReadmap(spec) {
   // Outside-plot labels (no text inside the plot frame).
   // Top row: Known struggles | average | Proven good (aligned to frame edges / x=0).
   // Bottom row (below x-tick labels, never sharing that row): Hard to read | x-title | Good, still proving it.
+  // ≥10 CSS px gap between quadrant-label rows and the plot frame.
   const byId = Object.fromEntries((spec.quadrants || []).map((q) => [q.id, q]));
   const midLabel = axes.zero_midline_label || "average";
-  const topRowY = Math.max(12, plot.y - 8);
+  const quadGap = 10;
+  // dominant-baseline=auto → y is the baseline; keep ≥10px from baseline to plot.y.
+  const topRowY = Math.max(14, plot.y - quadGap);
   const tickBelow = 5;
   const labelBelow = 20;
-  const outsideBottomY = plot.y + plot.h + Math.min(44, xGutter - 8);
+  // Bottom quadrant row: clear the x-tick labels, then +10px from the frame.
+  const outsideBottomY = plot.y + plot.h + Math.max(quadGap + labelBelow, Math.min(44, xGutter - 8));
   const xTickBlock = xTicksOutside(
     axes,
     plot,
@@ -278,8 +282,8 @@ export function renderMovers(spec) {
   const nRows = groups.reduce((n, g) => n + (g.rows || []).length, 0) || (spec.rows || []).length;
   const nGroupTitles = groups.filter((g) => g.title).length;
   const groupTitleH = 22;
-  // Two-line header allowed; value rows never wrap.
-  const colHeaderH = 36;
+  // Plot header is a single nowrap line ("Before ○ → after ●").
+  const colHeaderH = 22;
   const axisH = isWide ? 52 : 68;
   const chromeH = isWide ? 155 : 195;
   const slots = nRows + nGroupTitles;
@@ -295,8 +299,8 @@ export function renderMovers(spec) {
   const rowGap = gapSlots > 0 ? leftover / gapSlots : 0;
 
   const teamCol = Math.round(cw * 0.18);
-  const plotCol = Math.round(cw * 0.32);
-  const deltaCol = Math.round(cw * 0.14);
+  const plotCol = Math.round(cw * 0.34);
+  const deltaCol = Math.round(cw * 0.12);
   const resultCol = Math.round(cw * 0.20);
   const expectedCol = Math.max(64, cw - teamCol - plotCol - deltaCol - resultCol);
   const plotX = teamCol;
@@ -311,20 +315,19 @@ export function renderMovers(spec) {
 
   const cols = spec.columns || [];
   const plotHeader =
-    (cols.find((c) => c.id === "plot") || {}).header ||
-    "Ridge rating: before ○ → after ●";
-  const deltaHeader = (cols.find((c) => c.id === "delta") || {}).header || "Rating change";
+    (cols.find((c) => c.id === "plot") || {}).header || "Before ○ → after ●";
+  const deltaHeader = (cols.find((c) => c.id === "delta") || {}).header || "Change";
   const resultHeader = (cols.find((c) => c.id === "result") || {}).header || "Result";
   const expectedHeader =
-    (cols.find((c) => c.id === "expected") || {}).header || "Ridge expected";
-  const hdrStyle = `${TYPE.dek}color:${t.text_tertiary};line-height:16px;white-space:normal;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;`;
+    (cols.find((c) => c.id === "expected") || {}).header || "Expected";
+  const hdrStyle = `${TYPE.dek}color:${t.text_tertiary};line-height:18px;box-sizing:border-box;padding:0 8px;${NOWRAP}`;
 
   let colHeaders = `
 <div data-role="col-headers" style="position:relative;width:${cw}px;height:${colHeaderH}px;flex:0 0 auto;">
-  <div data-allow-wrap="1" data-role="col-header" style="position:absolute;left:${plotX}px;top:0;width:${plotW}px;${hdrStyle}">${esc(plotHeader)}</div>
-  <div data-allow-wrap="1" data-role="col-header" style="position:absolute;left:${deltaX}px;top:0;width:${deltaCol}px;font-weight:600;${hdrStyle}">${esc(deltaHeader)}</div>
-  <div data-allow-wrap="1" data-role="col-header" style="position:absolute;left:${resultX}px;top:0;width:${resultCol}px;${hdrStyle}">${esc(resultHeader)}</div>
-  <div data-allow-wrap="1" data-role="col-header" style="position:absolute;left:${expectedX}px;top:0;width:${expectedW}px;${hdrStyle}">${esc(expectedHeader)}</div>
+  <div data-role="col-header" data-col="plot" style="position:absolute;left:${plotX}px;top:0;width:${plotW}px;${hdrStyle}">${esc(plotHeader)}</div>
+  <div data-role="col-header" data-col="delta" style="position:absolute;left:${deltaX}px;top:0;width:${deltaCol}px;font-weight:600;${hdrStyle}">${esc(deltaHeader)}</div>
+  <div data-role="col-header" data-col="result" style="position:absolute;left:${resultX}px;top:0;width:${resultCol}px;${hdrStyle}">${esc(resultHeader)}</div>
+  <div data-role="col-header" data-col="expected" style="position:absolute;left:${expectedX}px;top:0;width:${expectedW}px;${hdrStyle}">${esc(expectedHeader)}</div>
 </div>`;
 
   const avgLabel = axes.zero_midline_label || "avg";
@@ -376,16 +379,18 @@ export function renderMovers(spec) {
   }
 
   const ticks = axes.x_ticks && axes.x_ticks.length ? axes.x_ticks : niceTicks(axes.x_min, axes.x_max, 4);
-  let tickRow = `<div data-role="axis-block" style="position:relative;height:22px;margin-top:2px;width:${cw}px;flex:0 0 auto;">`;
+  // "avg" sits directly above the 0 position; numeric ticks on the row below.
+  // Axis title is a separate block so it cannot overlap tick labels.
+  let tickRow = `<div data-role="axis-block" style="position:relative;height:32px;margin-top:8px;width:${cw}px;flex:0 0 auto;">`;
+  tickRow += `<span data-role="zero-midline-label" style="position:absolute;left:${zeroX}px;top:0;transform:translateX(-50%);font-size:12px;line-height:14px;color:${t.text_tertiary};${NOWRAP}">${esc(avgLabel)}</span>`;
   ticks.forEach((v, idx) => {
+    if (Math.abs(Number(v)) < 1e-9) return;
     const x = xOf(v);
-    const label = tickLabelFor({ ...axes, zero_label: "0" }, v, idx);
-    tickRow += `<span data-role="axis-tick" style="position:absolute;left:${x}px;transform:translateX(-50%);${TYPE.label}color:${t.text_tertiary};${NOWRAP}">${esc(label)}</span>`;
+    const label = tickLabelFor({ ...axes, zero_label: null }, v, idx);
+    tickRow += `<span data-role="axis-tick" style="position:absolute;left:${x}px;top:16px;transform:translateX(-50%);${TYPE.label}color:${t.text_tertiary};${NOWRAP}">${esc(label)}</span>`;
   });
-  // "avg" sits on the 0 rule once (not as a tick duplicate).
-  tickRow += `<span data-role="zero-midline-label" style="position:absolute;left:${zeroX}px;top:-14px;transform:translateX(-50%);font-size:12px;line-height:14px;color:${t.text_tertiary};${NOWRAP}">${esc(avgLabel)}</span>`;
   tickRow += `</div>`;
-  tickRow += `<div style="margin-top:2px;flex:0 0 auto;${TYPE.label}color:${t.text_secondary};${NOWRAP}">${esc(axes.x_label)}</div>`;
+  tickRow += `<div data-role="axis-title-x" style="margin-top:4px;flex:0 0 auto;${TYPE.label}color:${t.text_secondary};${NOWRAP}">${esc(axes.x_label)}</div>`;
 
   const inner = `
 <div style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column;justify-content:flex-start;">
@@ -482,9 +487,9 @@ export function renderSlateRanges(spec) {
     <polygon data-role="market-diamond" points="${mktX},${mid - 5} ${mktX + 5},${mid} ${mktX},${mid + 5} ${mktX - 5},${mid}" fill="${t.bg_primary}" stroke="${t.text_primary}" stroke-width="1.5" />
     <circle class="mu-dot" data-role="ridge-dot" cx="${ridgeX}" cy="${mid}" r="4.5" fill="${t.text_primary}" />
   </svg>
-  <div style="position:absolute;left:${colMatch + colBars}px;top:50%;transform:translateY(-50%);width:${colRidge}px;text-align:center;${labelFont}font-variant-numeric:tabular-nums;${NOWRAP}">${esc(r.ridge_col || "")}</div>
-  <div style="position:absolute;left:${colMatch + colBars + colRidge}px;top:50%;transform:translateY(-50%);width:${colMarket}px;text-align:center;${labelFont}font-variant-numeric:tabular-nums;${NOWRAP}">${esc(r.market_col || "")}</div>
-  <div style="position:absolute;left:${colMatch + colBars + colRidge + colMarket}px;top:50%;transform:translateY(-50%);width:${colGap}px;text-align:center;${labelFont}font-variant-numeric:tabular-nums;${NOWRAP}">${esc(r.gap_col || "")}</div>
+  <div data-role="slate-col" data-col="ridge" style="position:absolute;left:${colMatch + colBars}px;top:50%;transform:translateY(-50%);width:${colRidge}px;box-sizing:border-box;padding:0 8px;text-align:center;overflow:hidden;${labelFont}font-variant-numeric:tabular-nums;${NOWRAP}">${esc(r.ridge_col || "")}</div>
+  <div data-role="slate-col" data-col="market" style="position:absolute;left:${colMatch + colBars + colRidge}px;top:50%;transform:translateY(-50%);width:${colMarket}px;box-sizing:border-box;padding:0 8px;text-align:center;overflow:hidden;${labelFont}font-variant-numeric:tabular-nums;${NOWRAP}">${esc(r.market_col || "")}</div>
+  <div data-role="slate-col" data-col="gap" style="position:absolute;left:${colMatch + colBars + colRidge + colMarket}px;top:50%;transform:translateY(-50%);width:${colGap}px;box-sizing:border-box;padding:0 8px;text-align:center;overflow:hidden;${labelFont}font-variant-numeric:tabular-nums;${NOWRAP}">${esc(r.gap_col || "")}</div>
 </div>`;
   });
 
@@ -650,7 +655,8 @@ export function renderGamecard(spec) {
   // Bar SVG: room above for μ label, track, market label, end labels under ends.
   const plotY = isWide ? 24 : 30;
   const barH = isWide ? 78 : 96;
-  const dbRowH = isWide ? 36 : 44;
+  // Fixed rank-row height; leftover canvas goes between sections, never inside rows.
+  const dbRowH = isWide ? 48 : 64;
   const dbMid = Math.round(dbRowH / 2);
   const rankFs = isWide ? 14 : 17;
 
@@ -749,13 +755,14 @@ export function renderGamecard(spec) {
       const leftFill = better === "left" ? t.accent : t.text_tertiary;
       const rightFill = better === "right" ? t.accent : t.text_tertiary;
       const segStroke = better === "tie" ? t.border : t.accent;
+      // One horizontal unit: label block left, track vertically centered on it.
       return `
-<div data-role="dumbbell-row" style="position:relative;height:${dbRowH}px;width:${cw}px;flex:1 1 0;min-height:${dbRowH}px;margin-bottom:4px;">
-  <div style="position:absolute;left:0;top:50%;transform:translateY(-50%);width:${labelW}px;font-size:${rankFs}px;line-height:20px;${NOWRAP}">
+<div data-role="dumbbell-row" style="position:relative;height:${dbRowH}px;width:${cw}px;flex:0 0 ${dbRowH}px;margin:0;">
+  <div data-role="dumbbell-label" style="position:absolute;left:0;top:50%;transform:translateY(-50%);width:${labelW}px;font-size:${rankFs}px;line-height:20px;${NOWRAP}">
     <div style="font-weight:600;">${esc(row.top)}</div>
     <div style="color:${t.text_secondary};">${esc(row.bottom)}</div>
   </div>
-  <svg width="${cw}" height="${dbRowH}" viewBox="0 0 ${cw} ${dbRowH}" style="position:absolute;left:0;top:0;display:block;">
+  <svg data-role="dumbbell-track" width="${cw}" height="${dbRowH}" viewBox="0 0 ${cw} ${dbRowH}" style="position:absolute;left:0;top:0;display:block;">
     <line x1="${trackX}" y1="${dbMid}" x2="${trackX + trackW}" y2="${dbMid}" stroke="${t.border}" stroke-width="1" />
     <line x1="${lx}" y1="${dbMid}" x2="${rx}" y2="${dbMid}" stroke="${segStroke}" stroke-width="3" />
     <circle cx="${lx}" cy="${dbMid}" r="5" fill="${leftFill}" />
@@ -766,11 +773,12 @@ export function renderGamecard(spec) {
     .join("");
 
   const dumbbellBlock = `
-<div data-role="dumbbells" style="padding:${isWide ? 6 : 10}px 0 0;${hairline};flex:1 1 auto;min-height:0;display:flex;flex-direction:column;">
+<div data-role="dumbbells" style="padding:${isWide ? 6 : 10}px 0 0;${hairline};flex:0 0 auto;display:flex;flex-direction:column;gap:0;">
   <div style="font-size:${rankFs}px;line-height:20px;color:${t.text_secondary};margin-bottom:8px;${NOWRAP}">${esc(db.title || "Where it's decided · FBS rank, better →")}</div>
-  <div style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column;justify-content:space-evenly;">${dbRows}</div>
+  <div data-role="dumbbell-rows" style="display:flex;flex-direction:column;justify-content:flex-start;gap:0;">${dbRows}</div>
 </div>`;
 
+  // Leftover vertical space sits between sections (space-between), not inside rows.
   const inner = `
 <div style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column;justify-content:space-between;">
   ${teamsRow}

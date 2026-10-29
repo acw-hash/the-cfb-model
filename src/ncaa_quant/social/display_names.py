@@ -12,8 +12,6 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Callable
 
-from ncaa_quant.social.specs.format_text import HEADLINE_MAX, clip_chars
-
 REPO_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_CSV = REPO_ROOT / "social" / "display_names.csv"
 
@@ -89,41 +87,40 @@ def fit_headline(
     team: TeamDisplay,
     opp: TeamDisplay,
     *,
-    limit: int = HEADLINE_MAX,
+    limit: int | None = None,
 ) -> str:
-    """Pick the longest name pair that keeps ``build(t, opp)`` ≤ ``limit``.
+    """Pick the longest same-level name pair that keeps ``build`` ≤ ``limit``.
 
-    Cascade (team, then opp independently): full → short → abbreviation.
+    Cascade is locked across both sides: full+full → short+short → abbr+abbr.
+    Never mixes a full name on one side with a short/abbr on the other.
     """
+    from ncaa_quant.social.specs.format_text import HEADLINE_MAX, clip_chars
+
+    cap = HEADLINE_MAX if limit is None else limit
     t_cands = team.candidates()
     o_cands = opp.candidates()
-    # Prefer fullest names; try all pairs by total length descending.
-    pairs = [(t, o) for t in t_cands for o in o_cands]
-    pairs.sort(key=lambda p: -(len(p[0]) + len(p[1])))
-    seen: set[tuple[str, str]] = set()
-    for t, o in pairs:
-        key = (t, o)
-        if key in seen:
-            continue
-        seen.add(key)
+    for t, o in zip(t_cands, o_cands, strict=True):
         text = build(t, o)
-        if len(text) <= limit:
+        if len(text) <= cap:
             return text
-    return clip_chars(build(t_cands[-1], o_cands[-1]), limit)
+    return clip_chars(build(t_cands[-1], o_cands[-1]), cap)
 
 
 def fit_single_name_headline(
     build: Callable[[str], str],
     team: TeamDisplay,
     *,
-    limit: int = HEADLINE_MAX,
+    limit: int | None = None,
 ) -> str:
     """Cascade full → short → abbr for a one-team headline template."""
+    from ncaa_quant.social.specs.format_text import HEADLINE_MAX, clip_chars
+
+    cap = HEADLINE_MAX if limit is None else limit
     for name in team.candidates():
         text = build(name)
-        if len(text) <= limit:
+        if len(text) <= cap:
             return text
-    return clip_chars(build(team.candidates()[-1]), limit)
+    return clip_chars(build(team.candidates()[-1]), cap)
 
 
 def label_name(

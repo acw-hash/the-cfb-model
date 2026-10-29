@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=800, height=1000" />
+<style>
+@font-face {
+  font-family: "Inter";
+  src: url("file://C:/Users/alecw/Projects/the-cfb-model/assets/fonts/Inter-Regular.ttf");
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("file://C:/Users/alecw/Projects/the-cfb-model/assets/fonts/Inter-Medium.ttf");
+  font-weight: 500;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("file://C:/Users/alecw/Projects/the-cfb-model/assets/fonts/Inter-SemiBold.ttf");
+  font-weight: 600;
+  font-style: normal;
+  font-display: block;
+}
+/**
+ * Ridge design tokens — §4.1 palette, spacing, and type scale.
+ * This file is the ONLY place raw color/size literals may appear.
+ */
+
+:root {
+  /* §4.1 palette — light */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f7;
+  --text-primary: #1d1d1f;
+  --text-secondary: #6e6e73;
+  /* W8-A: was #aeaeb2 (2.21:1 on white — fails AA). #75757a ≈ 4.58:1. */
+  --text-tertiary: #75757a;
+  --accent: #0071e3;
+  --semantic-stale: #bf4800;
+  --semantic-revised: #6e6e73;
+  --semantic-positive: #1d1d1f;
+  --border-subtle: #d2d2d7;
+
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* §4.2 type scale */
+  --font-stack:
+    "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
+    sans-serif;
+
+  --type-t1-size: 28px;
+  --type-t1-line: 32px;
+  --type-t1-weight: 600;
+
+  --type-t2-size: 20px;
+  --type-t2-line: 24px;
+  --type-t2-weight: 600;
+
+  --type-t3-size: 17px;
+  --type-t3-line: 22px;
+  --type-t3-weight: 600;
+
+  --type-b1-size: 17px;
+  --type-b1-line: 22px;
+  --type-b1-weight: 400;
+
+  --type-b2-size: 15px;
+  --type-b2-line: 20px;
+  --type-b2-weight: 400;
+
+  --type-n1-size: 17px;
+  --type-n1-line: 22px;
+  --type-n1-weight: 500;
+
+  --type-n2-size: 15px;
+  --type-n2-line: 20px;
+  --type-n2-weight: 400;
+
+  --type-c1-size: 13px;
+  --type-c1-line: 16px;
+  --type-c1-weight: 500;
+
+  --type-c2-size: 11px;
+  --type-c2-line: 14px;
+  --type-c2-weight: 400;
+
+  --focus-ring: 0 0 0 2px var(--accent);
+}
+
+[data-theme="dark"] {
+  --bg-primary: #000000;
+  --bg-secondary: #1c1c1e;
+  --text-primary: #f5f5f7;
+  --text-secondary: #98989d;
+  /* W8-A: was #636366 (3.51:1 on black — fails AA normal). #8e8e93 ≈ 6.44:1. */
+  --text-tertiary: #8e8e93;
+  --accent: #0a84ff;
+  --semantic-stale: #ff9f0a;
+  --semantic-revised: #98989d;
+  --semantic-positive: #f5f5f7;
+  --border-subtle: #38383a;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg-primary: #000000;
+    --bg-secondary: #1c1c1e;
+    --text-primary: #f5f5f7;
+    --text-secondary: #98989d;
+    --text-tertiary: #8e8e93;
+    --accent: #0a84ff;
+    --semantic-stale: #ff9f0a;
+    --semantic-revised: #98989d;
+    --semantic-positive: #f5f5f7;
+    --border-subtle: #38383a;
+  }
+}
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0;
+  width: 800px; height: 1000px;
+  background: var(--bg-primary);
+  font-family: "Inter", var(--font-stack);
+  -webkit-font-smoothing: antialiased;
+}
+.chart-root, .chart-root * {
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+</style>
+</head>
+<body>
+
+<div id="root" class="chart-root" data-theme="light" style="
+  width:800px;height:1000px;
+  background:#FFFFFF;color:#1D1D1F;
+  font-family: var(--font-stack);
+  position:relative;overflow:hidden;
+  font-variant-numeric: tabular-nums lining-nums;
+  display:flex;flex-direction:column;
+  padding:24px 40px 20px;
+  box-sizing:border-box;
+">
+  <header class="hdr" data-role="header" style="display:flex;align-items:baseline;gap:12px;flex:0 0 auto;margin-bottom:4px;white-space:nowrap;">
+    <div style="font-weight:600;letter-spacing:0.14em;font-size:15px;line-height:20px;">RIDGE</div>
+    <div style="margin-left:auto;color:#6E6E73;font-size:15px;line-height:20px;">Week 8 · 2026</div>
+  </header>
+  <div data-role="titles" style="flex:0 0 auto;padding:4px 0 6px;">
+    <h1 style="margin:0;font-size:34px;line-height:40px;font-weight:600;white-space:nowrap;">Biggest movers after week 8</h1>
+    <p data-role="dek" style="margin:4px 0 0;color:#6E6E73;font-size:17px;line-height:22px;font-weight:400;white-space:normal;">Teams whose Ridge rating changed most after week 8 games</p>
+  </div>
+  <main data-role="body" style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column;justify-content:stretch;margin:0;overflow:hidden;">
+    
+<div style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column;justify-content:flex-start;">
+  
+<div data-role="col-headers" style="position:relative;width:720px;height:36px;flex:0 0 auto;">
+  <div data-role="col-header" data-col="plot" style="position:absolute;left:130px;top:0;width:230px;font-size:17px;line-height:22px;font-weight:400;color:#75757A;line-height:16px;white-space:normal;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">Ridge rating: before ○ → after ●</div>
+  <div data-role="col-header" data-col="delta" style="position:absolute;left:360px;top:0;width:101px;font-weight:600;font-size:17px;line-height:22px;font-weight:400;color:#75757A;line-height:16px;white-space:normal;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">Rating change</div>
+  <div data-role="col-header" data-col="result" style="position:absolute;left:461px;top:0;width:144px;font-size:17px;line-height:22px;font-weight:400;color:#75757A;line-height:16px;white-space:normal;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">Result</div>
+  <div data-role="col-header" data-col="expected" style="position:absolute;left:605px;top:0;width:115px;font-size:17px;line-height:22px;font-weight:400;color:#75757A;line-height:16px;white-space:normal;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">Ridge expected</div>
+</div>
+  <div style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column;justify-content:flex-start;"><div style="height:22px;display:flex;align-items:flex-end;font-size:15px;line-height:20px;font-weight:600;color:#6E6E73;white-space:nowrap;">Up</div>
+<div class="movers-row learned-row" data-role="logo-label-group" data-team="277" style="position:relative;height:58px;width:720px;margin-bottom:7px;flex:0 0 auto;">
+  <div style="position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:6px;width:126px;white-space:nowrap;">
+    <img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/277.png" width="34.1" height="32" style="width:34.1px;height:32px;object-fit:contain;" /><span style="font-weight:600;font-size:15px;line-height:20px;">WVU</span>
+  </div>
+  <svg data-marks="1" width="720" height="58" viewBox="0 0 720 58" style="position:absolute;left:0;top:0;display:block;">
+    <line x1="206.66666666666666" y1="2" x2="206.66666666666666" y2="56" stroke="#D2D2D7" stroke-width="1" />
+    <line x1="182.456347956109" y1="29" x2="233.37423415407122" y2="29" stroke="#6E6E73" stroke-width="2" />
+    <polygon points="233.37423415407122,29 222.37423415407122,25.5 222.37423415407122,32.5" fill="#6E6E73" />
+    <circle class="mu-dot" data-role="before-dot" cx="182.456347956109" cy="29" r="9" fill="#FFFFFF" stroke="#1D1D1F" stroke-width="1.75" />
+    <circle class="mu-dot" data-role="after-dot" cx="233.37423415407122" cy="29" r="9" fill="#0071E3" />
+  </svg>
+  <div style="position:absolute;left:360px;top:50%;transform:translateY(-50%);width:101px;overflow:hidden;white-space:nowrap;">
+    <span style="font-weight:700;font-size:16px;line-height:20px;font-variant-numeric:tabular-nums;">+13.3</span>
+  </div>
+  <div style="position:absolute;left:461px;top:50%;transform:translateY(-50%);width:144px;overflow:hidden;font-size:15px;line-height:20px;color:#6E6E73;white-space:nowrap;">W 24–20 at TCU</div>
+  <div style="position:absolute;left:605px;top:50%;transform:translateY(-50%);width:115px;overflow:hidden;font-size:15px;line-height:20px;color:#6E6E73;white-space:nowrap;">Lose by 12.9</div>
+</div>
+<div class="movers-row learned-row" data-role="logo-label-group" data-team="249" style="position:relative;height:58px;width:720px;margin-bottom:7px;flex:0 0 auto;">
+  <div style="position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:6px;width:126px;white-space:nowrap;">
+    <img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/249.png" width="29" height="32" style="width:29px;height:32px;object-fit:contain;" /><span style="font-weight:600;font-size:15px;line-height:20px;">UNT</span>
+  </div>
+  <svg data-marks="1" width="720" height="58" viewBox="0 0 720 58" style="position:absolute;left:0;top:0;display:block;">
+    <line x1="206.66666666666666" y1="2" x2="206.66666666666666" y2="56" stroke="#D2D2D7" stroke-width="1" />
+    <line x1="228.6871990998179" y1="29" x2="280.37655131546853" y2="29" stroke="#6E6E73" stroke-width="2" />
+    <polygon points="280.37655131546853,29 269.37655131546853,25.5 269.37655131546853,32.5" fill="#6E6E73" />
+    <circle class="mu-dot" data-role="before-dot" cx="228.6871990998179" cy="29" r="9" fill="#FFFFFF" stroke="#1D1D1F" stroke-width="1.75" />
+    <circle class="mu-dot" data-role="after-dot" cx="280.37655131546853" cy="29" r="9" fill="#0071E3" />
+  </svg>
+  <div style="position:absolute;left:360px;top:50%;transform:translateY(-50%);width:101px;overflow:hidden;white-space:nowrap;">
+    <span style="font-weight:700;font-size:16px;line-height:20px;font-variant-numeric:tabular-nums;">+13.5</span>
+  </div>
+  <div style="position:absolute;left:461px;top:50%;transform:translateY(-50%);width:144px;overflow:hidden;font-size:15px;line-height:20px;color:#6E6E73;white-space:nowrap;">W 49–39 at NAVY</div>
+  <div style="position:absolute;left:605px;top:50%;transform:translateY(-50%);width:115px;overflow:hidden;font-size:15px;line-height:20px;color:#6E6E73;white-space:nowrap;">Lose by 2.8</div>
+</div>
+<div class="movers-row learned-row" data-role="logo-label-group" data-team="328" style="position:relative;height:58px;width:720px;margin-bottom:7px;flex:0 0 auto;">
+  <div style="position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:6px;width:126px;white-space:nowrap;">
+    <img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/328.png" width="41.6" height="32" style="width:41.6px;height:32px;object-fit:contain;" /><span style="font-weight:600;font-size:15px;line-height:20px;">USU</span>
+  </div>
+  <svg data-marks="1" width="720" height="58" viewBox="0 0 720 58" style="position:absolute;left:0;top:0;display:block;">
+    <line x1="206.66666666666666" y1="2" x2="206.66666666666666" y2="56" stroke="#D2D2D7" stroke-width="1" />
+    <line x1="182.14630006379383" y1="29" x2="224.1463937597016" y2="29" stroke="#6E6E73" stroke-width="2" />
+    <polygon points="224.1463937597016,29 213.1463937597016,25.5 213.1463937597016,32.5" fill="#6E6E73" />
+    <circle class="mu-dot" data-role="before-dot" cx="182.14630006379383" cy="29" r="9" fill="#FFFFFF" stroke="#1D1D1F" stroke-width="1.75" />
+    <circle class="mu-dot" data-role="after-dot" cx="224.1463937597016" cy="29" r="9" fill="#0071E3" />
+  </svg>
+  <div style="position:absolute;left:360px;top:50%;transform:translateY(-50%);width:101px;overflow:hidden;white-space:nowrap;">
+    <span style="font-weight:700;font-size:16px;line-height:20px;font-variant-numeric:tabular-nums;">+11.0</span>
+  </div>
+  <div style="position:absolute;left:461px;top:50%;transform:translateY(-50%);width:144px;overflow:hidden;font-size:15px;line-height:20px;color:#6E6E73;white-space:nowrap;">L 17–20 at TXST</div>
+  <div style="position:absolute;left:605px;top:50%;transform:translateY(-50%);width:115px;overflow:hidden;font-size:15px;line-height:20px;color:#6E6E73;white-space:nowrap;">Lose by 13.0</div>
+</div>
+<div class="movers-row learned-row" data-role="logo-label-group" data-team="251" style="position:relative;height:58px;width:720px;margin-bottom:7px;flex:0 0 auto;">
+  <div style="position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:6px;width:126px;white-space:nowrap;">
+    <img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/251.png" width="44.8" height="28" style="width:44.8px;height:28px;object-fit:contain;" /><span style="font-weight:600;font-size:15px;line-height:20px;">TEX</span>
+  </div>
+  <svg data-marks="1" width="720" height="58" viewBox="0 0 720 58" style="position:absolute;left:0;top:0;display:block;">
+    <line x1="206.66666666666666" y1="2" x2="206.66666666666666" y2="56" stroke="#D2D2D7" stroke-width="1" />
+    <line x1="229.8255225870181" y1="29" x2="270.2031184326254" y2="29" stroke="#6E6E73" stroke-width="2" />
+    <polygon points="270.2031184326254,29 259.2031184326254,25.5 259.2031184326254,32.5" fill="#6E6E73" />
+    <circle class="mu-dot" data-role="before-dot" cx="229.8255225870181" cy="29" r="9" fill="#FFFFFF" stroke="#1D1D1F" stroke-width="1.75" />
+    <circle class="mu-dot" data-role="after-dot" cx="270.2031184326254" cy="29" r="9" fill="#0071E3" />
+  </svg>
+  <div style="position:absolute;left:360px;top:50%;transform:translateY(-50%);width:101px;overflow:hidden;white-space:nowrap;">
+    <span style="font-weight:700;font-size:16px;line-height:20px;font-variant-numeric:tabular-nums;">+10.5</span>
+  </div>
+  <div style="position:absolute;left:461px;top:50%;transform:translateY(-50%);width:144px;overflow:hidden;font-size:15px;line-height:20px;color:#6E6E73;white-space:nowrap;">W 34–27 vs Ole Miss</div>
+  <div style="position:absolute;left:605px;top:50%;transform:translateY(-50%);width:115px;overflow:hidden;font-size:15px;line-height:20px;color:#6E6E73;white-space:nowrap;">Lose by 12.3</div>
+</div>
+<div class="movers-row learned-row" data-role="logo-label-group" data-team="12" style="position:relative;height:58px;width:720px;margin-bottom:7px;flex:0 0 auto;">
+  <div style="position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:6px;width:126px;white-space:nowrap;">
+    <img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/12.png" width="34.6" height="32" style="width:34.6px;height:32px;object-fit:contain;" /><span style="font-weight:600;font-size:15px;line-height:20px;">ARIZ</span>
+  </div>
+  <svg data-marks="1" width="720" height="58" viewBox="0 0 720 58" style="position:absolute;left:0;top:0;display:block;">
+    <line x1="206.66666666666666" y1="2" x2="206.66666666666666" y2="56" stroke="#D2D2D7" stroke-width="1" />
+    <line x1="282.0510855278202" y1="29" x2="321.2066529036741" y2="29" stroke="#6E6E73" stroke-width="2" />
+    <polygon points="321.2066529036741,29 310.2066529036741,25.5 310.2066529036741,32.5" fill="#6E6E73" />
+    <circle class="mu-dot" data-role="before-dot" cx="282.0510855278202" cy="29" r="9" fill="#FFFFFF" stroke="#1D1D1F" stroke-width="1.75" />
+    <circle class="mu-dot" data-role="after-dot" cx="321.2066529036741" cy="29" r="9" fill="#0071E3" />
+  </svg>
+  <div style="position:absolute;left:360px;top:50%;transform:translateY(-50%);width:101px;overflow:hidden;white-space:nowrap;">
+    <span style="font-weight:700;font-size:16px;line-height:20px;font-variant-numeric:tabular-nums;">+10.2</span>
+  </div>
+  <div style="position:absolute;left:461px;top:50%;transform:translateY(-50%);width:144px;overflow:hidden;font-size:15px;line-height:20px;color:#6E6E73;white-space:nowrap;">W 39–3 vs ISU</div>
+  <div style="position:absolute;left:605px;top:50%;transform:translateY(-50%);width:115px;overflow:hidden;font-size:15px;line-height:20px;color:#6E6E73;white-space:nowrap;">Win by 13.6</div>
+</div>
+<div class="movers-row learned-row" data-role="logo-label-group" data-team="2026" style="position:relative;height:58px;width:720px;margin-bottom:7px;flex:0 0 auto;">
+  <div style="position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:6px;width:126px;white-space:nowrap;">
+    <img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/2026.png" width="28.3" height="32" style="width:28.3px;height:32px;object-fit:contain;" /><span style="font-weight:600;font-size:15px;line-height:20px;">App State</span>
+  </div>
+  <svg data-marks="1" width="720" height="58" viewBox="0 0 720 58" style="position:absolute;left:0;top:0;display:block;">
+    <line x1="206.66666666666666" y1="2" x2="206.66666666666666" y2="56" stroke="#D2D2D7" stroke-width="1" />
+    <line x1="151.00258273315237" y1="29" x2="189.1497336059046" y2="29" stroke="#6E6E73" stroke-width="2" />
+    <polygon points="189.1497336059046,29 178.1497336059046,25.5 178.1497336059046,32.5" fill="#6E6E73" />
+    <circle class="mu-dot" data-role="before-dot" cx="151.00258273315237" cy="29" r="9" fill="#FFFFFF" stroke="#1D1D1F" stroke-width="1.75" />
+    <circle class="mu-dot" data-role="after-dot" cx="189.1497336059046" cy="29" r="9" fill="#0071E3" />
+  </svg>
+  <div style="position:absolute;left:360px;top:50%;transform:translateY(-50%);width:101px;overflow:hidden;white-space:nowrap;">
+    <span style="font-weight:700;font-size:16px;line-height:20px;font-variant-numeric:tabular-nums;">+10.0</span>
+  </div>
+  <div style="position:absolute;left:461px;top:50%;transform:translateY(-50%);width:144px;overflow:hidden;font-size:15px;line-height:20px;color:#6E6E73;white-space:nowrap;">W 34–31 vs JMU</div>
+  <div style="position:absolute;left:605px;top:50%;transform:translateY(-50%);width:115px;overflow:hidden;font-size:15px;line-height:20px;color:#6E6E73;white-space:nowrap;">Lose by 12.7</div>
+</div><div style="height:22px;display:flex;align-items:flex-end;font-size:15px;line-height:20px;font-weight:600;color:#6E6E73;white-space:nowrap;">Down</div>
+<div class="movers-row learned-row" data-role="logo-label-group" data-team="309" style="position:relative;height:58px;width:720px;margin-bottom:7px;flex:0 0 auto;">
+  <div style="position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:6px;width:126px;white-space:nowrap;">
+    <img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/309.png" width="39.7" height="24.8" style="width:39.7px;height:24.8px;object-fit:contain;" /><span style="font-weight:600;font-size:15px;line-height:20px;">UL</span>
+  </div>
+  <svg data-marks="1" width="720" height="58" viewBox="0 0 720 58" style="position:absolute;left:0;top:0;display:block;">
+    <line x1="206.66666666666666" y1="2" x2="206.66666666666666" y2="56" stroke="#D2D2D7" stroke-width="1" />
+    <line x1="215.80578908807595" y1="29" x2="170.0342537257767" y2="29" stroke="#6E6E73" stroke-width="2" />
+    <polygon points="170.0342537257767,29 181.0342537257767,25.5 181.0342537257767,32.5" fill="#6E6E73" />
+    <circle class="mu-dot" data-role="before-dot" cx="215.80578908807595" cy="29" r="9" fill="#FFFFFF" stroke="#1D1D1F" stroke-width="1.75" />
+    <circle class="mu-dot" data-role="after-dot" cx="170.0342537257767" cy="29" r="9" fill="#0071E3" />
+  </svg>
+  <div style="position:absolute;left:360px;top:50%;transform:translateY(-50%);width:101px;overflow:hidden;white-space:nowrap;">
+    <span style="font-weight:700;font-size:16px;line-height:20px;font-variant-numeric:tabular-nums;">−11.9</span>
+  </div>
+  <div style="position:absolute;left:461px;top:50%;transform:translateY(-50%);width:144px;overflow:hidden;font-size:15px;line-height:20px;color:#6E6E73;white-space:nowrap;">L 31–35 at USM</div>
+  <div style="position:absolute;left:605px;top:50%;transform:translateY(-50%);width:115px;overflow:hidden;font-size:15px;line-height:20px;color:#6E6E73;white-space:nowrap;">Win by 14.5</div>
+</div>
+<div class="movers-row learned-row" data-role="logo-label-group" data-team="2005" style="position:relative;height:58px;width:720px;margin-bottom:7px;flex:0 0 auto;">
+  <div style="position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:6px;width:126px;white-space:nowrap;">
+    <img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/2005.png" width="32" height="32" style="width:32px;height:32px;object-fit:contain;" /><span style="font-weight:600;font-size:15px;line-height:20px;">AF</span>
+  </div>
+  <svg data-marks="1" width="720" height="58" viewBox="0 0 720 58" style="position:absolute;left:0;top:0;display:block;">
+    <line x1="206.66666666666666" y1="2" x2="206.66666666666666" y2="56" stroke="#D2D2D7" stroke-width="1" />
+    <line x1="221.36247076851578" y1="29" x2="178.19307507380069" y2="29" stroke="#6E6E73" stroke-width="2" />
+    <polygon points="178.19307507380069,29 189.19307507380069,25.5 189.19307507380069,32.5" fill="#6E6E73" />
+    <circle class="mu-dot" data-role="before-dot" cx="221.36247076851578" cy="29" r="9" fill="#FFFFFF" stroke="#1D1D1F" stroke-width="1.75" />
+    <circle class="mu-dot" data-role="after-dot" cx="178.19307507380069" cy="29" r="9" fill="#0071E3" />
+  </svg>
+  <div style="position:absolute;left:360px;top:50%;transform:translateY(-50%);width:101px;overflow:hidden;white-space:nowrap;">
+    <span style="font-weight:700;font-size:16px;line-height:20px;font-variant-numeric:tabular-nums;">−11.3</span>
+  </div>
+  <div style="position:absolute;left:461px;top:50%;transform:translateY(-50%);width:144px;overflow:hidden;font-size:15px;line-height:20px;color:#6E6E73;white-space:nowrap;">L 14–28 at WYO</div>
+  <div style="position:absolute;left:605px;top:50%;transform:translateY(-50%);width:115px;overflow:hidden;font-size:15px;line-height:20px;color:#6E6E73;white-space:nowrap;">Win by 11.7</div>
+</div>
+<div class="movers-row learned-row" data-role="logo-label-group" data-team="145" style="position:relative;height:58px;width:720px;margin-bottom:7px;flex:0 0 auto;">
+  <div style="position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:6px;width:126px;white-space:nowrap;">
+    <img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/145.png" width="35.2" height="32" style="width:35.2px;height:32px;object-fit:contain;" /><span style="font-weight:600;font-size:15px;line-height:20px;">Ole Miss</span>
+  </div>
+  <svg data-marks="1" width="720" height="58" viewBox="0 0 720 58" style="position:absolute;left:0;top:0;display:block;">
+    <line x1="206.66666666666666" y1="2" x2="206.66666666666666" y2="56" stroke="#D2D2D7" stroke-width="1" />
+    <line x1="329.2210851667817" y1="29" x2="286.9141900532444" y2="29" stroke="#6E6E73" stroke-width="2" />
+    <polygon points="286.9141900532444,29 297.9141900532444,25.5 297.9141900532444,32.5" fill="#6E6E73" />
+    <circle class="mu-dot" data-role="before-dot" cx="329.2210851667817" cy="29" r="9" fill="#FFFFFF" stroke="#1D1D1F" stroke-width="1.75" />
+    <circle class="mu-dot" data-role="after-dot" cx="286.9141900532444" cy="29" r="9" fill="#0071E3" />
+  </svg>
+  <div style="position:absolute;left:360px;top:50%;transform:translateY(-50%);width:101px;overflow:hidden;white-space:nowrap;">
+    <span style="font-weight:700;font-size:16px;line-height:20px;font-variant-numeric:tabular-nums;">−11.0</span>
+  </div>
+  <div style="position:absolute;left:461px;top:50%;transform:translateY(-50%);width:144px;overflow:hidden;font-size:15px;line-height:20px;color:#6E6E73;white-space:nowrap;">L 27–34 at TEX</div>
+  <div style="position:absolute;left:605px;top:50%;transform:translateY(-50%);width:115px;overflow:hidden;font-size:15px;line-height:20px;color:#6E6E73;white-space:nowrap;">Win by 12.3</div>
+</div>
+<div class="movers-row learned-row" data-role="logo-label-group" data-team="2229" style="position:relative;height:58px;width:720px;margin-bottom:7px;flex:0 0 auto;">
+  <div style="position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:6px;width:126px;white-space:nowrap;">
+    <img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/2229.png" width="28.4" height="32" style="width:28.4px;height:32px;object-fit:contain;" /><span style="font-weight:600;font-size:15px;line-height:20px;">FIU</span>
+  </div>
+  <svg data-marks="1" width="720" height="58" viewBox="0 0 720 58" style="position:absolute;left:0;top:0;display:block;">
+    <line x1="206.66666666666666" y1="2" x2="206.66666666666666" y2="56" stroke="#D2D2D7" stroke-width="1" />
+    <line x1="202.245071602786" y1="29" x2="160.81553229555863" y2="29" stroke="#6E6E73" stroke-width="2" />
+    <polygon points="160.81553229555863,29 171.81553229555863,25.5 171.81553229555863,32.5" fill="#6E6E73" />
+    <circle class="mu-dot" data-role="before-dot" cx="202.245071602786" cy="29" r="9" fill="#FFFFFF" stroke="#1D1D1F" stroke-width="1.75" />
+    <circle class="mu-dot" data-role="after-dot" cx="160.81553229555863" cy="29" r="9" fill="#0071E3" />
+  </svg>
+  <div style="position:absolute;left:360px;top:50%;transform:translateY(-50%);width:101px;overflow:hidden;white-space:nowrap;">
+    <span style="font-weight:700;font-size:16px;line-height:20px;font-variant-numeric:tabular-nums;">−10.8</span>
+  </div>
+  <div style="position:absolute;left:461px;top:50%;transform:translateY(-50%);width:144px;overflow:hidden;font-size:15px;line-height:20px;color:#6E6E73;white-space:nowrap;">L 23–26 vs MTSU</div>
+  <div style="position:absolute;left:605px;top:50%;transform:translateY(-50%);width:115px;overflow:hidden;font-size:15px;line-height:20px;color:#6E6E73;white-space:nowrap;">Win by 15.5</div>
+</div></div>
+  <div style="flex:0 0 auto;padding-top:4px;"><div data-role="axis-block" style="position:relative;height:22px;margin-top:2px;width:720px;flex:0 0 auto;"><span data-role="axis-tick" style="position:absolute;left:130px;transform:translateX(-50%);font-size:15px;line-height:20px;color:#75757A;white-space:nowrap;">−20</span><span data-role="axis-tick" style="position:absolute;left:206.66666666666666px;transform:translateX(-50%);font-size:15px;line-height:20px;color:#75757A;white-space:nowrap;">0</span><span data-role="axis-tick" style="position:absolute;left:283.3333333333333px;transform:translateX(-50%);font-size:15px;line-height:20px;color:#75757A;white-space:nowrap;">+20</span><span data-role="axis-tick" style="position:absolute;left:360px;transform:translateX(-50%);font-size:15px;line-height:20px;color:#75757A;white-space:nowrap;">+40</span><span data-role="zero-midline-label" style="position:absolute;left:206.66666666666666px;top:-14px;transform:translateX(-50%);font-size:12px;line-height:14px;color:#75757A;white-space:nowrap;">avg</span></div><div style="margin-top:2px;flex:0 0 auto;font-size:15px;line-height:20px;color:#6E6E73;white-space:nowrap;">Ridge rating (pts vs. average FBS team)</div></div>
+</div>
+  </main>
+  <footer data-role="footer" style="flex:0 0 auto;padding-top:6px;font-size:12px;line-height:16px;color:#75757A;white-space:nowrap;">
+    Ridge · Forecasts, not betting advice · the-cfb-model.vercel.app · published Wed Oct 28 ET
+  </footer>
+</div>
+</body>
+</html>

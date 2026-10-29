@@ -9,7 +9,7 @@ from zoneinfo import ZoneInfo
 _ET = ZoneInfo("America/New_York")
 MINUS = "\u2212"  # U+2212 minus sign
 
-HEADLINE_MAX = 42
+HEADLINE_MAX = 48
 DEK_MAX = 60
 
 
@@ -157,10 +157,10 @@ def gamecard_headline(
     away_id: int | None = None,
     abbrev_by_id: dict[int, str] | None = None,
 ) -> str:
-    """≤42-char headline; never mix margin team with probability team.
+    """≤48-char headline; never mix margin team with probability team.
 
     When ``home_id`` / ``away_id`` are provided, names cascade
-    full school → display short → abbreviation until the line fits.
+    full+full → short+short → abbr+abbr until the line fits (never mixed).
     """
     from ncaa_quant.social.display_names import (
         TeamDisplay,

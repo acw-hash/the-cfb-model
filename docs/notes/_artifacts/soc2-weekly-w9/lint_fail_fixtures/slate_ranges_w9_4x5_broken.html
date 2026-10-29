@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=800, height=1000" />
+<style>
+@font-face {
+  font-family: "Inter";
+  src: url("file://C:/Users/alecw/Projects/the-cfb-model/assets/fonts/Inter-Regular.ttf");
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("file://C:/Users/alecw/Projects/the-cfb-model/assets/fonts/Inter-Medium.ttf");
+  font-weight: 500;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("file://C:/Users/alecw/Projects/the-cfb-model/assets/fonts/Inter-SemiBold.ttf");
+  font-weight: 600;
+  font-style: normal;
+  font-display: block;
+}
+/**
+ * Ridge design tokens — §4.1 palette, spacing, and type scale.
+ * This file is the ONLY place raw color/size literals may appear.
+ */
+
+:root {
+  /* §4.1 palette — light */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f7;
+  --text-primary: #1d1d1f;
+  --text-secondary: #6e6e73;
+  /* W8-A: was #aeaeb2 (2.21:1 on white — fails AA). #75757a ≈ 4.58:1. */
+  --text-tertiary: #75757a;
+  --accent: #0071e3;
+  --semantic-stale: #bf4800;
+  --semantic-revised: #6e6e73;
+  --semantic-positive: #1d1d1f;
+  --border-subtle: #d2d2d7;
+
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* §4.2 type scale */
+  --font-stack:
+    "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
+    sans-serif;
+
+  --type-t1-size: 28px;
+  --type-t1-line: 32px;
+  --type-t1-weight: 600;
+
+  --type-t2-size: 20px;
+  --type-t2-line: 24px;
+  --type-t2-weight: 600;
+
+  --type-t3-size: 17px;
+  --type-t3-line: 22px;
+  --type-t3-weight: 600;
+
+  --type-b1-size: 17px;
+  --type-b1-line: 22px;
+  --type-b1-weight: 400;
+
+  --type-b2-size: 15px;
+  --type-b2-line: 20px;
+  --type-b2-weight: 400;
+
+  --type-n1-size: 17px;
+  --type-n1-line: 22px;
+  --type-n1-weight: 500;
+
+  --type-n2-size: 15px;
+  --type-n2-line: 20px;
+  --type-n2-weight: 400;
+
+  --type-c1-size: 13px;
+  --type-c1-line: 16px;
+  --type-c1-weight: 500;
+
+  --type-c2-size: 11px;
+  --type-c2-line: 14px;
+  --type-c2-weight: 400;
+
+  --focus-ring: 0 0 0 2px var(--accent);
+}
+
+[data-theme="dark"] {
+  --bg-primary: #000000;
+  --bg-secondary: #1c1c1e;
+  --text-primary: #f5f5f7;
+  --text-secondary: #98989d;
+  /* W8-A: was #636366 (3.51:1 on black — fails AA normal). #8e8e93 ≈ 6.44:1. */
+  --text-tertiary: #8e8e93;
+  --accent: #0a84ff;
+  --semantic-stale: #ff9f0a;
+  --semantic-revised: #98989d;
+  --semantic-positive: #f5f5f7;
+  --border-subtle: #38383a;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg-primary: #000000;
+    --bg-secondary: #1c1c1e;
+    --text-primary: #f5f5f7;
+    --text-secondary: #98989d;
+    --text-tertiary: #8e8e93;
+    --accent: #0a84ff;
+    --semantic-stale: #ff9f0a;
+    --semantic-revised: #98989d;
+    --semantic-positive: #f5f5f7;
+    --border-subtle: #38383a;
+  }
+}
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0;
+  width: 800px; height: 1000px;
+  background: var(--bg-primary);
+  font-family: "Inter", var(--font-stack);
+  -webkit-font-smoothing: antialiased;
+}
+.chart-root, .chart-root * {
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+</style>
+</head>
+<body>
+
+<div id="root" class="chart-root" data-theme="light" style="
+  width:800px;height:1000px;
+  background:#FFFFFF;color:#1D1D1F;
+  font-family: var(--font-stack);
+  position:relative;overflow:hidden;
+  font-variant-numeric: tabular-nums lining-nums;
+  display:flex;flex-direction:column;
+  padding:24px 40px 20px;
+  box-sizing:border-box;
+">
+  <header class="hdr" data-role="header" style="display:flex;align-items:baseline;gap:12px;flex:0 0 auto;margin-bottom:4px;white-space:nowrap;">
+    <div style="font-weight:600;letter-spacing:0.14em;font-size:15px;line-height:20px;">RIDGE</div>
+    <div style="margin-left:auto;color:#6E6E73;font-size:15px;line-height:20px;">Week 9 · 2026</div>
+  </header>
+  <div data-role="titles" style="flex:0 0 auto;padding:4px 0 6px;">
+    <h1 style="margin:0;font-size:34px;line-height:40px;font-weight:600;white-space:nowrap;">Ridge vs. the market · week 9</h1>
+    <p data-role="dek" data-allow-wrap="0" style="margin:4px 0 0;color:#6E6E73;font-size:17px;line-height:22px;font-weight:400;white-space:nowrap;">Dot = Ridge · ◇ = market · sorted by gap (pts)</p>
+  </div>
+  <main data-role="body" style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column;justify-content:stretch;margin:0;overflow:hidden;">
+    
+<div style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column;justify-content:flex-start;">
+  
+<div style="display:flex;width:720px;height:18px;flex:0 0 auto;font-size:15px;line-height:20px;color:#75757A;white-space:nowrap;">
+  <div style="width:202px;"></div>
+  <div style="width:216px;"></div>
+  <div style="width:108px;text-align:center;">Ridge</div>
+  <div style="width:108px;text-align:center;">Market</div>
+  <div style="width:86px;text-align:center;">Gap</div>
+</div>
+  <div style="flex:0 0 auto;display:flex;flex-direction:column;">
+<div class="slate-row" data-game="401856842" style="position:relative;height:47px;width:720px;flex:0 0 auto;">
+  <div style="position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:4px;width:202px;font-size:15px;line-height:20px;white-space:nowrap;">
+    <img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/2641.png" width="17.9" height="20" style="width:17.9px;height:20px;object-fit:contain;" /><img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/12.png" width="21.6" height="20" style="width:21.6px;height:20px;object-fit:contain;" /><span>TTU vs ARIZ</span>
+  </div>
+  <svg data-marks="1" width="720" height="47" viewBox="0 0 720 47" style="position:absolute;left:0;top:0;display:block;">
+    <line x1="288.4" y1="2" x2="288.4" y2="45" stroke="#D2D2D7" />
+    <rect class="bar" x="223.1464461814483" y="17.5" width="93.05263825524855" height="12" fill="#AEAEB2" fill-opacity="0.28" />
+    <line x1="295.96" y1="23.5" x2="268.63895747851575" y2="23.5" stroke="#1D1D1F" stroke-width="1.75" />
+    <polygon data-role="market-diamond" points="295.96,18.5 300.96,23.5 295.96,28.5 290.96,23.5" fill="#FFFFFF" stroke="#1D1D1F" stroke-width="1.5" />
+    <circle class="mu-dot" data-role="ridge-dot" cx="268.63895747851575" cy="23.5" r="4.5" fill="#1D1D1F" />
+  </svg>
+  <div data-role="slate-col" data-col="ridge" style="position:absolute;left:418px;top:50%;transform:translateY(-50%);width:108px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">ARIZ by 9.1</div>
+  <div data-role="slate-col" data-col="market" style="position:absolute;left:526px;top:50%;transform:translateY(-50%);width:108px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">TTU by 3.5</div>
+  <div data-role="slate-col" data-col="gap" style="position:absolute;left:634px;top:50%;transform:translateY(-50%);width:86px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">12.6</div>
+</div>
+<div class="slate-row" data-game="401858284" style="position:relative;height:47px;width:720px;flex:0 0 auto;">
+  <div style="position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:4px;width:202px;font-size:15px;line-height:20px;white-space:nowrap;">
+    <img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/154.png" width="28" height="19.6" style="width:28px;height:19.6px;object-fit:contain;" /><img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/258.png" width="25.4" height="20" style="width:25.4px;height:20px;object-fit:contain;" /><span>WAKE vs UVA</span>
+  </div>
+  <svg data-marks="1" width="720" height="47" viewBox="0 0 720 47" style="position:absolute;left:0;top:0;display:block;">
+    <line x1="288.4" y1="2" x2="288.4" y2="45" stroke="#D2D2D7" />
+    <rect class="bar" x="269.7177448461539" y="17.5" width="126.16157254596123" height="12" fill="#AEAEB2" fill-opacity="0.28" />
+    <line x1="315.4" y1="23.5" x2="342.3126212384029" y2="23.5" stroke="#1D1D1F" stroke-width="1.75" />
+    <polygon data-role="market-diamond" points="315.4,18.5 320.4,23.5 315.4,28.5 310.4,23.5" fill="#FFFFFF" stroke="#1D1D1F" stroke-width="1.5" />
+    <circle class="mu-dot" data-role="ridge-dot" cx="342.3126212384029" cy="23.5" r="4.5" fill="#1D1D1F" />
+  </svg>
+  <div data-role="slate-col" data-col="ridge" style="position:absolute;left:418px;top:50%;transform:translateY(-50%);width:108px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">WAKE by 25.0</div>
+  <div data-role="slate-col" data-col="market" style="position:absolute;left:526px;top:50%;transform:translateY(-50%);width:108px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">WAKE by 12.5</div>
+  <div data-role="slate-col" data-col="gap" style="position:absolute;left:634px;top:50%;transform:translateY(-50%);width:86px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">12.5</div>
+</div>
+<div class="slate-row" data-game="401858502" style="position:relative;height:47px;width:720px;flex:0 0 auto;">
+  <div style="position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:4px;width:202px;font-size:15px;line-height:20px;white-space:nowrap;">
+    <img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/2294.png" width="28" height="17.7" style="width:28px;height:17.7px;object-fit:contain;" /><img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/275.png" width="20" height="20" style="width:20px;height:20px;object-fit:contain;" /><span>IOWA vs WIS</span>
+  </div>
+  <svg data-marks="1" width="720" height="47" viewBox="0 0 720 47" style="position:absolute;left:0;top:0;display:block;">
+    <line x1="288.4" y1="2" x2="288.4" y2="45" stroke="#D2D2D7" />
+    <rect class="bar" x="222.03287324712838" y="17.5" width="108.16560567167087" height="12" fill="#AEAEB2" fill-opacity="0.28" />
+    <line x1="295.96" y1="23.5" x2="272.84853611195547" y2="23.5" stroke="#1D1D1F" stroke-width="1.75" />
+    <polygon data-role="market-diamond" points="295.96,18.5 300.96,23.5 295.96,28.5 290.96,23.5" fill="#FFFFFF" stroke="#1D1D1F" stroke-width="1.5" />
+    <circle class="mu-dot" data-role="ridge-dot" cx="272.84853611195547" cy="23.5" r="4.5" fill="#1D1D1F" />
+  </svg>
+  <div data-role="slate-col" data-col="ridge" style="position:absolute;left:418px;top:50%;transform:translateY(-50%);width:108px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">WIS by 7.2</div>
+  <div data-role="slate-col" data-col="market" style="position:absolute;left:526px;top:50%;transform:translateY(-50%);width:108px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">IOWA by 3.5</div>
+  <div data-role="slate-col" data-col="gap" style="position:absolute;left:634px;top:50%;transform:translateY(-50%);width:86px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">10.7</div>
+</div>
+<div class="slate-row" data-game="401858501" style="position:relative;height:47px;width:720px;flex:0 0 auto;">
+  <div style="position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:4px;width:202px;font-size:15px;line-height:20px;white-space:nowrap;">
+    <img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/84.png" width="15.9" height="20" style="width:15.9px;height:20px;object-fit:contain;" /><img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/135.png" width="28" height="17.5" style="width:28px;height:17.5px;object-fit:contain;" /><span>IU vs MINN</span>
+  </div>
+  <svg data-marks="1" width="720" height="47" viewBox="0 0 720 47" style="position:absolute;left:0;top:0;display:block;">
+    <line x1="288.4" y1="2" x2="288.4" y2="45" stroke="#D2D2D7" />
+    <rect class="bar" x="253.34913970328796" y="17.5" width="118.68450278447398" height="12" fill="#AEAEB2" fill-opacity="0.28" />
+    <line x1="332.68" y1="23.5" x2="317.84402673435744" y2="23.5" stroke="#1D1D1F" stroke-width="1.75" />
+    <polygon data-role="market-diamond" points="332.68,18.5 337.68,23.5 332.68,28.5 327.68,23.5" fill="#FFFFFF" stroke="#1D1D1F" stroke-width="1.5" />
+    <circle class="mu-dot" data-role="ridge-dot" cx="317.84402673435744" cy="23.5" r="4.5" fill="#1D1D1F" />
+  </svg>
+  <div data-role="slate-col" data-col="ridge" style="position:absolute;left:418px;top:50%;transform:translateY(-50%);width:108px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">IU by 13.6</div>
+  <div data-role="slate-col" data-col="market" style="position:absolute;left:526px;top:50%;transform:translateY(-50%);width:108px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">IU by 20.5</div>
+  <div data-role="slate-col" data-col="gap" style="position:absolute;left:634px;top:50%;transform:translateY(-50%);width:86px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">6.9</div>
+</div>
+<div class="slate-row" data-game="401856736" style="position:relative;height:47px;width:720px;flex:0 0 auto;">
+  <div style="position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:4px;width:202px;font-size:15px;line-height:20px;white-space:nowrap;">
+    <img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/201.png" width="15.4" height="20" style="width:15.4px;height:20px;object-fit:contain;" /><img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/2579.png" width="18.1" height="20" style="width:18.1px;height:20px;object-fit:contain;" /><span>OU vs SC</span>
+  </div>
+  <svg data-marks="1" width="720" height="47" viewBox="0 0 720 47" style="position:absolute;left:0;top:0;display:block;">
+    <line x1="288.4" y1="2" x2="288.4" y2="45" stroke="#D2D2D7" />
+    <rect class="bar" x="224.55639947008777" y="17.5" width="126.9065539706742" height="12" fill="#AEAEB2" fill-opacity="0.28" />
+    <line x1="299.2" y1="23.5" x2="285.3254791401611" y2="23.5" stroke="#1D1D1F" stroke-width="1.75" />
+    <polygon data-role="market-diamond" points="299.2,18.5 304.2,23.5 299.2,28.5 294.2,23.5" fill="#FFFFFF" stroke="#1D1D1F" stroke-width="1.5" />
+    <circle class="mu-dot" data-role="ridge-dot" cx="285.3254791401611" cy="23.5" r="4.5" fill="#1D1D1F" />
+  </svg>
+  <div data-role="slate-col" data-col="ridge" style="position:absolute;left:418px;top:50%;transform:translateY(-50%);width:108px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">SC by 1.4</div>
+  <div data-role="slate-col" data-col="market" style="position:absolute;left:526px;top:50%;transform:translateY(-50%);width:108px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">OU by 5.0</div>
+  <div data-role="slate-col" data-col="gap" style="position:absolute;left:634px;top:50%;transform:translateY(-50%);width:86px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">6.4</div>
+</div>
+<div class="slate-row" data-game="401856735" style="position:relative;height:47px;width:720px;flex:0 0 auto;">
+  <div style="position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:4px;width:202px;font-size:15px;line-height:20px;white-space:nowrap;">
+    <img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/145.png" width="22" height="20" style="width:22px;height:20px;object-fit:contain;" /><img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/2.png" width="22.9" height="20" style="width:22.9px;height:20px;object-fit:contain;" /><span>Ole Miss vs AUB</span>
+  </div>
+  <svg data-marks="1" width="720" height="47" viewBox="0 0 720 47" style="position:absolute;left:0;top:0;display:block;">
+    <line x1="288.4" y1="2" x2="288.4" y2="45" stroke="#D2D2D7" />
+    <rect class="bar" x="238.8893863973642" y="17.5" width="121.76308877562934" height="12" fill="#AEAEB2" fill-opacity="0.28" />
+    <line x1="316.48" y1="23.5" x2="302.63597255482784" y2="23.5" stroke="#1D1D1F" stroke-width="1.75" />
+    <polygon data-role="market-diamond" points="316.48,18.5 321.48,23.5 316.48,28.5 311.48,23.5" fill="#FFFFFF" stroke="#1D1D1F" stroke-width="1.5" />
+    <circle class="mu-dot" data-role="ridge-dot" cx="302.63597255482784" cy="23.5" r="4.5" fill="#1D1D1F" />
+  </svg>
+  <div data-role="slate-col" data-col="ridge" style="position:absolute;left:418px;top:50%;transform:translateY(-50%);width:108px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">Ole Miss by 6.6</div>
+  <div data-role="slate-col" data-col="market" style="position:absolute;left:526px;top:50%;transform:translateY(-50%);width:108px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">Ole Miss by 13.0</div>
+  <div data-role="slate-col" data-col="gap" style="position:absolute;left:634px;top:50%;transform:translateY(-50%);width:86px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">6.4</div>
+</div>
+<div class="slate-row" data-game="401859185" style="position:relative;height:47px;width:720px;flex:0 0 auto;">
+  <div style="position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:4px;width:202px;font-size:15px;line-height:20px;white-space:nowrap;">
+    <img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/87.png" width="22.2" height="20" style="width:22.2px;height:20px;object-fit:contain;" /><img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/2426.png" width="16.3" height="20" style="width:16.3px;height:20px;object-fit:contain;" /><span>ND vs NAVY</span>
+  </div>
+  <svg data-marks="1" width="720" height="47" viewBox="0 0 720 47" style="position:absolute;left:0;top:0;display:block;">
+    <line x1="288.4" y1="2" x2="288.4" y2="45" stroke="#D2D2D7" />
+    <rect class="bar" x="286.2491548585476" y="17.5" width="106.16035593640845" height="12" fill="#AEAEB2" fill-opacity="0.28" />
+    <line x1="354.28" y1="23.5" x2="341.05912773268955" y2="23.5" stroke="#1D1D1F" stroke-width="1.75" />
+    <polygon data-role="market-diamond" points="354.28,18.5 359.28,23.5 354.28,28.5 349.28,23.5" fill="#FFFFFF" stroke="#1D1D1F" stroke-width="1.5" />
+    <circle class="mu-dot" data-role="ridge-dot" cx="341.05912773268955" cy="23.5" r="4.5" fill="#1D1D1F" />
+  </svg>
+  <div data-role="slate-col" data-col="ridge" style="position:absolute;left:418px;top:50%;transform:translateY(-50%);width:108px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">ND by 24.4</div>
+  <div data-role="slate-col" data-col="market" style="position:absolute;left:526px;top:50%;transform:translateY(-50%);width:108px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">ND by 30.5</div>
+  <div data-role="slate-col" data-col="gap" style="position:absolute;left:634px;top:50%;transform:translateY(-50%);width:86px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">6.1</div>
+</div>
+<div class="slate-row" data-game="401856844" style="position:relative;height:47px;width:720px;flex:0 0 auto;">
+  <div style="position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:4px;width:202px;font-size:15px;line-height:20px;white-space:nowrap;">
+    <img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/2116.png" width="26.3" height="20" style="width:26.3px;height:20px;object-fit:contain;" /><img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/239.png" width="16.6" height="20" style="width:16.6px;height:20px;object-fit:contain;" /><span>UCF vs BAY</span>
+  </div>
+  <svg data-marks="1" width="720" height="47" viewBox="0 0 720 47" style="position:absolute;left:0;top:0;display:block;">
+    <line x1="288.4" y1="2" x2="288.4" y2="45" stroke="#D2D2D7" />
+    <rect class="bar" x="241.17781498589235" y="17.5" width="126.55397980951196" height="12" fill="#AEAEB2" fill-opacity="0.28" />
+    <line x1="290.56" y1="23.5" x2="303.0325109178845" y2="23.5" stroke="#1D1D1F" stroke-width="1.75" />
+    <polygon data-role="market-diamond" points="290.56,18.5 295.56,23.5 290.56,28.5 285.56,23.5" fill="#FFFFFF" stroke="#1D1D1F" stroke-width="1.5" />
+    <circle class="mu-dot" data-role="ridge-dot" cx="303.0325109178845" cy="23.5" r="4.5" fill="#1D1D1F" />
+  </svg>
+  <div data-role="slate-col" data-col="ridge" style="position:absolute;left:418px;top:50%;transform:translateY(-50%);width:108px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">UCF by 6.8</div>
+  <div data-role="slate-col" data-col="market" style="position:absolute;left:526px;top:50%;transform:translateY(-50%);width:108px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">UCF by 1.0</div>
+  <div data-role="slate-col" data-col="gap" style="position:absolute;left:634px;top:50%;transform:translateY(-50%);width:86px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">5.8</div>
+</div>
+<div class="slate-row" data-game="401858505" style="position:relative;height:47px;width:720px;flex:0 0 auto;">
+  <div style="position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:4px;width:202px;font-size:15px;line-height:20px;white-space:nowrap;">
+    <img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/2483.png" width="24.3" height="20" style="width:24.3px;height:20px;object-fit:contain;" /><img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/77.png" width="13" height="20" style="width:13px;height:20px;object-fit:contain;" /><span>ORE vs NU</span>
+  </div>
+  <svg data-marks="1" width="720" height="47" viewBox="0 0 720 47" style="position:absolute;left:0;top:0;display:block;">
+    <line x1="288.4" y1="2" x2="288.4" y2="45" stroke="#D2D2D7" />
+    <rect class="bar" x="221.9445644097116" y="17.5" width="129.0339686416149" height="12" fill="#AEAEB2" fill-opacity="0.28" />
+    <line x1="295.96" y1="23.5" x2="284.29121372486753" y2="23.5" stroke="#1D1D1F" stroke-width="1.75" />
+    <polygon data-role="market-diamond" points="295.96,18.5 300.96,23.5 295.96,28.5 290.96,23.5" fill="#FFFFFF" stroke="#1D1D1F" stroke-width="1.5" />
+    <circle class="mu-dot" data-role="ridge-dot" cx="284.29121372486753" cy="23.5" r="4.5" fill="#1D1D1F" />
+  </svg>
+  <div data-role="slate-col" data-col="ridge" style="position:absolute;left:418px;top:50%;transform:translateY(-50%);width:108px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">NU by 1.9</div>
+  <div data-role="slate-col" data-col="market" style="position:absolute;left:526px;top:50%;transform:translateY(-50%);width:108px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">ORE by 3.5</div>
+  <div data-role="slate-col" data-col="gap" style="position:absolute;left:634px;top:50%;transform:translateY(-50%);width:86px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">5.4</div>
+</div>
+<div class="slate-row" data-game="401858282" style="position:relative;height:47px;width:720px;flex:0 0 auto;">
+  <div style="position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:4px;width:202px;font-size:15px;line-height:20px;white-space:nowrap;">
+    <img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/2390.png" width="28" height="17.5" style="width:28px;height:17.5px;object-fit:contain;" /><img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/153.png" width="25.5" height="20" style="width:25.5px;height:20px;object-fit:contain;" /><span>Miami vs UNC</span>
+  </div>
+  <svg data-marks="1" width="720" height="47" viewBox="0 0 720 47" style="position:absolute;left:0;top:0;display:block;">
+    <line x1="288.4" y1="2" x2="288.4" y2="45" stroke="#D2D2D7" />
+    <rect class="bar" x="266.2886097913916" y="17.5" width="88.69281507046009" height="12" fill="#AEAEB2" fill-opacity="0.28" />
+    <line x1="318.64" y1="23.5" x2="309.06525147939146" y2="23.5" stroke="#75757A" stroke-width="1" />
+    <polygon data-role="market-diamond" points="318.64,18.5 323.64,23.5 318.64,28.5 313.64,23.5" fill="#FFFFFF" stroke="#1D1D1F" stroke-width="1.5" />
+    <circle class="mu-dot" data-role="ridge-dot" cx="309.06525147939146" cy="23.5" r="4.5" fill="#1D1D1F" />
+  </svg>
+  <div data-role="slate-col" data-col="ridge" style="position:absolute;left:418px;top:50%;transform:translateY(-50%);width:108px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">Miami by 9.6</div>
+  <div data-role="slate-col" data-col="market" style="position:absolute;left:526px;top:50%;transform:translateY(-50%);width:108px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">Miami by 14.0</div>
+  <div data-role="slate-col" data-col="gap" style="position:absolute;left:634px;top:50%;transform:translateY(-50%);width:86px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">4.4</div>
+</div>
+<div class="slate-row" data-game="401858509" style="position:relative;height:47px;width:720px;flex:0 0 auto;">
+  <div style="position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:4px;width:202px;font-size:15px;line-height:20px;white-space:nowrap;">
+    <img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/194.png" width="20.3" height="20" style="width:20.3px;height:20px;object-fit:contain;" /><img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/30.png" width="13.4" height="20" style="width:13.4px;height:20px;object-fit:contain;" /><span>OSU vs USC</span>
+  </div>
+  <svg data-marks="1" width="720" height="47" viewBox="0 0 720 47" style="position:absolute;left:0;top:0;display:block;">
+    <line x1="288.4" y1="2" x2="288.4" y2="45" stroke="#D2D2D7" />
+    <rect class="bar" x="251.9072273352156" y="17.5" width="112.25860369160884" height="12" fill="#AEAEB2" fill-opacity="0.28" />
+    <line x1="302.44" y1="23.5" x2="310.9329396981389" y2="23.5" stroke="#75757A" stroke-width="1" />
+    <polygon data-role="market-diamond" points="302.44,18.5 307.44,23.5 302.44,28.5 297.44,23.5" fill="#FFFFFF" stroke="#1D1D1F" stroke-width="1.5" />
+    <circle class="mu-dot" data-role="ridge-dot" cx="310.9329396981389" cy="23.5" r="4.5" fill="#1D1D1F" />
+  </svg>
+  <div data-role="slate-col" data-col="ridge" style="position:absolute;left:418px;top:50%;transform:translateY(-50%);width:108px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">OSU by 10.4</div>
+  <div data-role="slate-col" data-col="market" style="position:absolute;left:526px;top:50%;transform:translateY(-50%);width:108px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">OSU by 6.5</div>
+  <div data-role="slate-col" data-col="gap" style="position:absolute;left:634px;top:50%;transform:translateY(-50%);width:86px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">3.9</div>
+</div>
+<div class="slate-row" data-game="401856843" style="position:relative;height:47px;width:720px;flex:0 0 auto;">
+  <div style="position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:4px;width:202px;font-size:15px;line-height:20px;white-space:nowrap;">
+    <img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/252.png" width="28" height="17.5" style="width:28px;height:17.5px;object-fit:contain;" /><img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/9.png" width="10.2" height="20" style="width:10.2px;height:20px;object-fit:contain;" /><span>BYU vs ASU</span>
+  </div>
+  <svg data-marks="1" width="720" height="47" viewBox="0 0 720 47" style="position:absolute;left:0;top:0;display:block;">
+    <line x1="288.4" y1="2" x2="288.4" y2="45" stroke="#D2D2D7" />
+    <rect class="bar" x="245.06957109668522" y="17.5" width="150.83450313185008" height="12" fill="#AEAEB2" fill-opacity="0.28" />
+    <line x1="324.03999999999996" y1="23.5" x2="331.7146182789602" y2="23.5" stroke="#75757A" stroke-width="1" />
+    <polygon data-role="market-diamond" points="324.03999999999996,18.5 329.03999999999996,23.5 324.03999999999996,28.5 319.03999999999996,23.5" fill="#FFFFFF" stroke="#1D1D1F" stroke-width="1.5" />
+    <circle class="mu-dot" data-role="ridge-dot" cx="331.7146182789602" cy="23.5" r="4.5" fill="#1D1D1F" />
+  </svg>
+  <div data-role="slate-col" data-col="ridge" style="position:absolute;left:418px;top:50%;transform:translateY(-50%);width:108px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">BYU by 20.1</div>
+  <div data-role="slate-col" data-col="market" style="position:absolute;left:526px;top:50%;transform:translateY(-50%);width:108px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">BYU by 16.5</div>
+  <div data-role="slate-col" data-col="gap" style="position:absolute;left:634px;top:50%;transform:translateY(-50%);width:86px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">3.6</div>
+</div>
+<div class="slate-row" data-game="401856733" style="position:relative;height:47px;width:720px;flex:0 0 auto;">
+  <div style="position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:4px;width:202px;font-size:15px;line-height:20px;white-space:nowrap;">
+    <img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/142.png" width="27.1" height="17" style="width:27.1px;height:17px;object-fit:contain;" /><img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/8.png" width="28" height="17.5" style="width:28px;height:17.5px;object-fit:contain;" /><span>MIZ vs ARK</span>
+  </div>
+  <svg data-marks="1" width="720" height="47" viewBox="0 0 720 47" style="position:absolute;left:0;top:0;display:block;">
+    <line x1="288.4" y1="2" x2="288.4" y2="45" stroke="#D2D2D7" />
+    <rect class="bar" x="251.51804011873662" y="17.5" width="114.81683057457667" height="12" fill="#AEAEB2" fill-opacity="0.28" />
+    <line x1="310" y1="23.5" x2="304.7782760332582" y2="23.5" stroke="#75757A" stroke-width="1" />
+    <polygon data-role="market-diamond" points="310,18.5 315,23.5 310,28.5 305,23.5" fill="#FFFFFF" stroke="#1D1D1F" stroke-width="1.5" />
+    <circle class="mu-dot" data-role="ridge-dot" cx="304.7782760332582" cy="23.5" r="4.5" fill="#1D1D1F" />
+  </svg>
+  <div data-role="slate-col" data-col="ridge" style="position:absolute;left:418px;top:50%;transform:translateY(-50%);width:108px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">MIZ by 7.6</div>
+  <div data-role="slate-col" data-col="market" style="position:absolute;left:526px;top:50%;transform:translateY(-50%);width:108px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">MIZ by 10.0</div>
+  <div data-role="slate-col" data-col="gap" style="position:absolute;left:634px;top:50%;transform:translateY(-50%);width:86px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">2.4</div>
+</div>
+<div class="slate-row" data-game="401858504" style="position:relative;height:47px;width:720px;flex:0 0 auto;">
+  <div style="position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:4px;width:202px;font-size:15px;line-height:20px;white-space:nowrap;">
+    <img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/158.png" width="20" height="20" style="width:20px;height:20px;object-fit:contain;" /><img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/264.png" width="28" height="19.3" style="width:28px;height:19.3px;object-fit:contain;" /><span>NEB vs WASH</span>
+  </div>
+  <svg data-marks="1" width="720" height="47" viewBox="0 0 720 47" style="position:absolute;left:0;top:0;display:block;">
+    <line x1="288.4" y1="2" x2="288.4" y2="45" stroke="#D2D2D7" />
+    <rect class="bar" x="249.89575091159202" y="17.5" width="118.7383609485496" height="12" fill="#AEAEB2" fill-opacity="0.28" />
+    <line x1="304.6" y1="23.5" x2="308.30556792264315" y2="23.5" stroke="#75757A" stroke-width="1" />
+    <polygon data-role="market-diamond" points="304.6,18.5 309.6,23.5 304.6,28.5 299.6,23.5" fill="#FFFFFF" stroke="#1D1D1F" stroke-width="1.5" />
+    <circle class="mu-dot" data-role="ridge-dot" cx="308.30556792264315" cy="23.5" r="4.5" fill="#1D1D1F" />
+  </svg>
+  <div data-role="slate-col" data-col="ridge" style="position:absolute;left:418px;top:50%;transform:translateY(-50%);width:108px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">NEB by 9.2</div>
+  <div data-role="slate-col" data-col="market" style="position:absolute;left:526px;top:50%;transform:translateY(-50%);width:108px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">NEB by 7.5</div>
+  <div data-role="slate-col" data-col="gap" style="position:absolute;left:634px;top:50%;transform:translateY(-50%);width:86px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">1.7</div>
+</div>
+<div class="slate-row" data-game="401856734" style="position:relative;height:47px;width:720px;flex:0 0 auto;">
+  <div style="position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:4px;width:202px;font-size:15px;line-height:20px;white-space:nowrap;">
+    <img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/61.png" width="28" height="17.7" style="width:28px;height:17.7px;object-fit:contain;" /><img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/57.png" width="28" height="17.5" style="width:28px;height:17.5px;object-fit:contain;" /><span>UGA vs FLA</span>
+  </div>
+  <svg data-marks="1" width="720" height="47" viewBox="0 0 720 47" style="position:absolute;left:0;top:0;display:block;">
+    <line x1="288.4" y1="2" x2="288.4" y2="45" stroke="#D2D2D7" />
+    <rect class="bar" x="249.4531102778509" y="17.5" width="126.69512086412908" height="12" fill="#AEAEB2" fill-opacity="0.28" />
+    <line x1="315.4" y1="23.5" x2="312.28945513731975" y2="23.5" stroke="#75757A" stroke-width="1" />
+    <polygon data-role="market-diamond" points="315.4,18.5 320.4,23.5 315.4,28.5 310.4,23.5" fill="#FFFFFF" stroke="#1D1D1F" stroke-width="1.5" />
+    <circle class="mu-dot" data-role="ridge-dot" cx="312.28945513731975" cy="23.5" r="4.5" fill="#1D1D1F" />
+  </svg>
+  <div data-role="slate-col" data-col="ridge" style="position:absolute;left:418px;top:50%;transform:translateY(-50%);width:108px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">UGA by 11.1</div>
+  <div data-role="slate-col" data-col="market" style="position:absolute;left:526px;top:50%;transform:translateY(-50%);width:108px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">UGA by 12.5</div>
+  <div data-role="slate-col" data-col="gap" style="position:absolute;left:634px;top:50%;transform:translateY(-50%);width:86px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">1.4</div>
+</div>
+<div class="slate-row" data-game="401856848" style="position:relative;height:47px;width:720px;flex:0 0 auto;">
+  <div style="position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:4px;width:202px;font-size:15px;line-height:20px;white-space:nowrap;">
+    <img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/254.png" width="21.6" height="20" style="width:21.6px;height:20px;object-fit:contain;" /><img class="logo" src="file://C:/Users/alecw/Projects/the-cfb-model/data/social/logos/2132.png" width="12.7" height="20" style="width:12.7px;height:20px;object-fit:contain;" /><span>UTAH vs CIN</span>
+  </div>
+  <svg data-marks="1" width="720" height="47" viewBox="0 0 720 47" style="position:absolute;left:0;top:0;display:block;">
+    <line x1="288.4" y1="2" x2="288.4" y2="45" stroke="#D2D2D7" />
+    <rect class="bar" x="251.47129201749783" y="17.5" width="107.5793266096075" height="12" fill="#AEAEB2" fill-opacity="0.28" />
+    <line x1="302.44" y1="23.5" x2="303.606084430112" y2="23.5" stroke="#75757A" stroke-width="1" />
+    <polygon data-role="market-diamond" points="302.44,18.5 307.44,23.5 302.44,28.5 297.44,23.5" fill="#FFFFFF" stroke="#1D1D1F" stroke-width="1.5" />
+    <circle class="mu-dot" data-role="ridge-dot" cx="303.606084430112" cy="23.5" r="4.5" fill="#1D1D1F" />
+  </svg>
+  <div data-role="slate-col" data-col="ridge" style="position:absolute;left:418px;top:50%;transform:translateY(-50%);width:108px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">UTAH by 7.0</div>
+  <div data-role="slate-col" data-col="market" style="position:absolute;left:526px;top:50%;transform:translateY(-50%);width:108px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">UTAH by 6.5</div>
+  <div data-role="slate-col" data-col="gap" style="position:absolute;left:634px;top:50%;transform:translateY(-50%);width:86px;text-align:center;font-size:15px;line-height:20px;font-variant-numeric:tabular-nums;white-space:nowrap;">0.5</div>
+</div></div>
+  <div style="flex:1 1 auto;min-height:0;"></div>
+  <div data-role="axis-block" style="position:relative;height:20px;margin-top:4px;width:720px;flex:0 0 auto;"><span data-role="axis-tick" style="position:absolute;left:202px;transform:translateX(-50%);font-size:15px;line-height:20px;color:#75757A;white-space:nowrap;">−40</span><span data-role="axis-tick" style="position:absolute;left:288.4px;transform:translateX(-50%);font-size:15px;line-height:20px;color:#75757A;white-space:nowrap;">0</span><span data-role="axis-tick" style="position:absolute;left:418px;transform:translateX(-50%);font-size:15px;line-height:20px;color:#75757A;white-space:nowrap;">+60</span></div><div style="margin-top:2px;flex:0 0 auto;font-size:15px;line-height:20px;color:#6E6E73;white-space:nowrap;">Projected margin for market favorite (pts)</div>
+</div>
+  </main>
+  <footer data-role="footer" style="flex:0 0 auto;padding-top:6px;font-size:12px;line-height:16px;color:#75757A;white-space:nowrap;">
+    Ridge · Forecasts, not betting advice · the-cfb-model.vercel.app · published Wed Oct 28 ET · market as of Thu 9:01 AM ET
+  </footer>
+</div>
+</body>
+</html>

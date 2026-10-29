@@ -184,35 +184,35 @@ def apply_market_and_sort(
 
 
 def _nice_ticks(lo: float, hi: float, *, target: int = 5) -> list[float]:
+    """Ticks at multiples of 10 or 20 (prefer ~``target`` labels, intermediates kept)."""
     if hi <= lo:
-        return [lo, (lo + hi) / 2.0, hi]
-    raw = (hi - lo) / max(target - 1, 1)
-    exp = math.floor(math.log10(raw)) if raw > 0 else 0
-    base = raw / (10**exp) if raw > 0 else 1.0
-    if base <= 1:
-        nice = 1.0
-    elif base <= 2:
-        nice = 2.0
-    elif base <= 5:
-        nice = 5.0
-    else:
-        nice = 10.0
-    step = nice * (10**exp)
+        return [float(lo), float((lo + hi) / 2.0), float(hi)]
+    span = hi - lo
+    # Prefer step 10 when it yields a readable count; else 20 (never skip intermediates).
+    step = 10.0
+    n_est = span / step
+    if n_est > 8:
+        step = 20.0
+    elif n_est < 3:
+        step = 10.0
     start = math.floor(lo / step) * step
     end = math.ceil(hi / step) * step
     ticks: list[float] = []
-    n = int(round((end - start) / step))
-    for i in range(n + 1):
-        v = start + i * step
+    v = start
+    # Guard against float drift.
+    while v <= end + step * 1e-9:
         if v >= lo - 1e-9 and v <= hi + 1e-9:
             ticks.append(round(v, 6))
+        v += step
+    if 0.0 not in ticks and lo - 1e-9 <= 0.0 <= hi + 1e-9:
+        ticks = sorted({*ticks, 0.0})
     if len(ticks) < 3:
-        ticks = [lo, 0.0, hi]
+        ticks = sorted({float(lo), 0.0, float(hi)})
     return ticks
 
 
 def _axis_limits(values: list[float]) -> tuple[float, float, list[float]]:
-    """Fit domain to marks/ranges + padding; always include 0; 4–5 nice ticks."""
+    """Fit domain to marks/ranges + padding; always include 0; ticks at 10/20."""
     if not values:
         return -5.0, 40.0, [0.0, 10.0, 20.0, 30.0, 40.0]
     lo = min(values)
@@ -225,12 +225,12 @@ def _axis_limits(values: list[float]) -> tuple[float, float, list[float]]:
         x_min = 0.0
     if x_max < 0:
         x_max = 0.0
-    # Round outward to nice whole numbers.
-    step = 5.0
-    x_min = math.floor(x_min / step) * step
-    x_max = math.ceil(x_max / step) * step
+    # Round outward to multiples of 10 so intermediate 10/20 ticks land cleanly.
+    snap = 10.0
+    x_min = math.floor(x_min / snap) * snap
+    x_max = math.ceil(x_max / snap) * snap
     if x_min == x_max:
-        x_min, x_max = x_min - step, x_max + step
+        x_min, x_max = x_min - snap, x_max + snap
     ticks = _nice_ticks(x_min, x_max, target=5)
     ticks = [float(round(t)) for t in ticks if abs(t - round(t)) < 1e-9]
     if 0.0 not in ticks:
@@ -263,23 +263,42 @@ def _matchup_label(
     return f"{fav_s} vs {dog_s}"
 
 
+#: Soft cap for Ridge/Market cell text; longer short-names fall back to abbr.
+_SLATE_COL_LABEL_MAX = 12
+
+
 def slate_column_labels(
     *,
     x_ridge: float,
     x_mkt: float,
     fav_short: str,
     dog_short: str,
+    fav_abbr: str | None = None,
+    dog_abbr: str | None = None,
 ) -> tuple[str, str, str]:
-    """Ridge / Market / Gap cell text from the market-favorite perspective."""
+    """Ridge / Market / Gap cell text from the market-favorite perspective.
+
+    Uses short display names, falling back to abbreviations when
+    ``{name} by X.X`` would overflow the column (e.g. ``Ole Miss`` → ``OM``).
+    """
     from ncaa_quant.social.specs.format_text import rounds_to_zero
+
+    def _cell_name(short: str, abbr: str | None) -> str:
+        probe = format_team_by(short, 9.9)
+        if len(probe) <= _SLATE_COL_LABEL_MAX:
+            return short
+        return (abbr or short).strip() or short
+
+    fav = _cell_name(fav_short, fav_abbr)
+    dog = _cell_name(dog_short, dog_abbr)
 
     if rounds_to_zero(x_ridge):
         ridge_label = "Even"
     elif x_ridge > 0:
-        ridge_label = format_team_by(fav_short, x_ridge)
+        ridge_label = format_team_by(fav, x_ridge)
     else:
-        ridge_label = format_team_by(dog_short, abs(x_ridge))
-    market_label = format_team_by(fav_short, x_mkt)
+        ridge_label = format_team_by(dog, abs(x_ridge))
+    market_label = format_team_by(fav, x_mkt)
     gap_label = f"{abs(x_ridge - x_mkt):.1f}"
     return ridge_label, market_label, gap_label
 
@@ -447,11 +466,19 @@ def build_slate_ranges_specs(
                 dog_short = label_name(
                     m.dog_team_id, m.dog_team, abbrev_by_id, prefer="short"
                 )
+                fav_abbr = label_name(
+                    m.fav_team_id, m.fav_team, abbrev_by_id, prefer="abbr"
+                )
+                dog_abbr = label_name(
+                    m.dog_team_id, m.dog_team, abbrev_by_id, prefer="abbr"
+                )
                 ridge_col, market_col, gap_col = slate_column_labels(
                     x_ridge=m.x_ridge,
                     x_mkt=m.x_mkt,
                     fav_short=fav_short,
                     dog_short=dog_short,
+                    fav_abbr=fav_abbr,
+                    dog_abbr=dog_abbr,
                 )
                 out_rows.append(
                     {
@@ -526,10 +553,10 @@ def build_slate_ranges_specs(
                         "caption": "Projected margin for market favorite (pts)",
                     },
                     "layout": {
-                        "matchup_frac": 0.28,
-                        "bars_frac": 0.30,
-                        "ridge_frac": 0.15,
-                        "market_frac": 0.15,
+                        "matchup_frac": 0.26,
+                        "bars_frac": 0.28,
+                        "ridge_frac": 0.17,
+                        "market_frac": 0.17,
                         "gap_frac": 0.12,
                     },
                     "columns": [

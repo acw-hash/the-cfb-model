@@ -8,6 +8,8 @@ export const MARGIN_PX = 24;
 export const MAX_EMPTY_BAND_FRAC = 0.12;
 /** Read-map logo–logo max overlap of the smaller logo's area (SOC-2 round 5). */
 export const MAX_LOGO_OVERLAP_FRAC = 0.08;
+/** Cell text must stay inside its column with at least this gap to the edge. */
+export const MIN_COL_GAP_PX = 8;
 
 /**
  * @param {import('playwright').Page} page
@@ -16,7 +18,7 @@ export const MAX_LOGO_OVERLAP_FRAC = 0.08;
  */
 export async function runLayoutLint(page, spec) {
   return page.evaluate(
-    ({ minFont, margin, maxEmptyFrac, maxLogoOverlap, chart }) => {
+    ({ minFont, margin, maxEmptyFrac, maxLogoOverlap, minColGap, chart }) => {
       function boxesOverlap(a, b, minOx = 1, minOy = 1) {
         const ox = Math.min(a.right, b.right) - Math.max(a.left, b.left);
         const oy = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
@@ -429,6 +431,96 @@ export async function runLayoutLint(page, spec) {
             );
           }
         }
+        // Rank rows: track center y within ±4 px of its label center.
+        for (const row of root.querySelectorAll("[data-role='dumbbell-row']")) {
+          const label = row.querySelector("[data-role='dumbbell-label']");
+          const track = row.querySelector("[data-role='dumbbell-track']");
+          if (!label || !track) continue;
+          const lb = label.getBoundingClientRect();
+          const tb = track.getBoundingClientRect();
+          const labelMid = (lb.top + lb.bottom) / 2;
+          const trackMid = (tb.top + tb.bottom) / 2;
+          if (Math.abs(labelMid - trackMid) > 4.01) {
+            errors.push(
+              `Dumbbell track/label misaligned by ${Math.abs(labelMid - trackMid).toFixed(1)}px (max 4)`,
+            );
+          }
+        }
+      }
+
+      // Column overflow: text *ink* bbox must stay inside its column with ≥ minColGap.
+      function textInkBox(el) {
+        const range = document.createRange();
+        range.selectNodeContents(el);
+        const rects = [...range.getClientRects()].filter((r) => r.width > 0.5 && r.height > 0.5);
+        if (!rects.length) return null;
+        return {
+          left: Math.min(...rects.map((r) => r.left)),
+          right: Math.max(...rects.map((r) => r.right)),
+          top: Math.min(...rects.map((r) => r.top)),
+          bottom: Math.max(...rects.map((r) => r.bottom)),
+        };
+      }
+      for (const cell of root.querySelectorAll(
+        "[data-role='slate-col'], [data-role='col-header']",
+      )) {
+        const style = window.getComputedStyle(cell);
+        if (style.display === "none" || style.visibility === "hidden") continue;
+        const box = cell.getBoundingClientRect();
+        if (box.width < 2 || box.height < 2) continue;
+        const direct = (cell.textContent || "").trim();
+        if (!direct) continue;
+        const ink = textInkBox(cell);
+        if (!ink) continue;
+        const gapL = ink.left - box.left;
+        const gapR = box.right - ink.right;
+        // Centered cells can sit flush to one edge of the ink vs a wide column —
+        // fail only when ink spills past the column or leaves < minColGap on a
+        // side where the ink actually approaches that edge (spill / near-spill).
+        const spills =
+          ink.left < box.left - 0.5 ||
+          ink.right > box.right + 0.5 ||
+          gapL < minColGap - 0.5 ||
+          gapR < minColGap - 0.5;
+        // Ignore "gap too small" when the column is much wider than the ink and
+        // the text is centered (both gaps large-ish after accounting for center).
+        const inkW = ink.right - ink.left;
+        const centered =
+          Math.abs(gapL - gapR) < 4 && box.width - inkW > 2 * minColGap;
+        if (spills && !centered) {
+          errors.push(
+            `Column overflow: "${direct.slice(0, 40)}" (gaps L=${gapL.toFixed(1)} R=${gapR.toFixed(1)}, need ≥${minColGap})`,
+          );
+        }
+        if (cell.scrollWidth > cell.clientWidth + 1.5) {
+          errors.push(`Column overflow (truncated): "${direct.slice(0, 40)}"`);
+        }
+      }
+
+      // Movers plot header must stay on one line.
+      if (chart === "movers" || chart === "learned") {
+        for (const el of root.querySelectorAll("[data-role='col-header'][data-col='plot']")) {
+          const style = window.getComputedStyle(el);
+          const lh = parseFloat(style.lineHeight) || parseFloat(style.fontSize) * 1.2;
+          const r = el.getBoundingClientRect();
+          const text = (el.textContent || "").trim();
+          if (r.height > lh * 1.35 + 1) {
+            errors.push(`Movers header wrapped: "${text.slice(0, 48)}"`);
+          }
+          if (/Ridge rating:/i.test(text) && /before/i.test(text)) {
+            errors.push(`Movers header stale long form: "${text.slice(0, 48)}"`);
+          }
+        }
+      }
+
+      // Read-map corner end labels (Most/Least sure) must be gone.
+      if (chart === "readmap") {
+        for (const el of root.querySelectorAll("[data-role='axis-end-label']")) {
+          const text = (el.textContent || "").trim();
+          if (/Most sure|Least sure/i.test(text)) {
+            errors.push(`Read-map corner end label present: "${text}"`);
+          }
+        }
       }
 
       return { ok: errors.length === 0, errors: [...new Set(errors)].slice(0, 40) };
@@ -438,6 +530,7 @@ export async function runLayoutLint(page, spec) {
       margin: MARGIN_PX,
       maxEmptyFrac: MAX_EMPTY_BAND_FRAC,
       maxLogoOverlap: MAX_LOGO_OVERLAP_FRAC,
+      minColGap: MIN_COL_GAP_PX,
       chart: spec.chart,
     },
   );

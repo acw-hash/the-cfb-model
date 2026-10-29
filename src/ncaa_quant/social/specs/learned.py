@@ -592,13 +592,14 @@ def build_learned_specs(
     # 10 dense rows need the canvas for the chart body — no on-image footnotes.
     footnotes: list[str] = []
 
+    # Within Up/Down, order by |rating change| (pts), not move_sd.
     moved_up = sorted(
         [r for r in top10 if r["delta_net"] > 0],
-        key=lambda r: (-r["move_sd"], r["team_id"]),
+        key=lambda r: (-abs(r["delta_net"]), r["team_id"]),
     )
     moved_down = sorted(
         [r for r in top10 if r["delta_net"] < 0],
-        key=lambda r: (-r["move_sd"], r["team_id"]),
+        key=lambda r: (-abs(r["delta_net"]), r["team_id"]),
     )
     groups: list[dict[str, Any]] = []
     if moved_up:
@@ -687,15 +688,15 @@ def build_learned_specs(
                     {"id": "team", "header": "Team", "width_frac": 0.18},
                     {
                         "id": "plot",
-                        "header": "Ridge rating: before ○ → after ●",
+                        "header": "Before ○ → after ●",
                         "width_frac": 0.32,
                     },
-                    {"id": "delta", "header": "Rating change", "width_frac": 0.14},
+                    {"id": "delta", "header": "Change", "width_frac": 0.12},
                     {"id": "result", "header": "Result", "width_frac": 0.20},
                     {
                         "id": "expected",
-                        "header": "Ridge expected",
-                        "width_frac": 0.16,
+                        "header": "Expected",
+                        "width_frac": 0.18,
                     },
                 ],
                 "groups": groups_out,

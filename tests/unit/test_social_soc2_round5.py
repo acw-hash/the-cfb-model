@@ -158,7 +158,9 @@ def test_readmap_net_pts_axes_and_centering(tmp_path: Path) -> None:
     spec = specs[0]
     axes = spec["axes"]
     assert axes["x_label"] == "Ridge rating (pts vs. average FBS team)"
-    assert axes["y_label"] == "How sure Ridge is about each rating (± pts)"
+    assert axes["y_label"] == (
+        "How sure Ridge is about each rating (± pts) · surer ↑"
+    )
     assert axes["x_zero"] == 0.0
     assert axes["zero_midline_label"] == "average"
     assert 4 <= len(axes["x_ticks"]) <= 6
@@ -173,10 +175,11 @@ def test_readmap_net_pts_axes_and_centering(tmp_path: Path) -> None:
 
     _t, _raw, expected_labs = certainty_sd_tick_labels(sds)
     assert axes["y_tick_labels"] == expected_labs
-    assert axes["y_top_lines"] == ["Most sure"]
-    assert axes["y_bottom_lines"] == ["Least sure"]
+    assert axes["y_top_lines"] == []
+    assert axes["y_bottom_lines"] == []
     assert "could be off" not in json.dumps(axes)
-    assert "↑ more sure" not in json.dumps(axes)
+    assert "Most sure" not in json.dumps(axes)
+    assert "Least sure" not in json.dumps(axes)
     assert spec["frame"]["subtitle"] == (
         "Right = stronger team · higher = Ridge more confident in that rating"
     )
@@ -306,9 +309,9 @@ def test_movers_rename_and_headers(tmp_path: Path) -> None:
         f"Teams whose Ridge rating changed most after week {week} games"
     )
     headers = {c["id"]: c["header"] for c in spec["columns"]}
-    assert headers["plot"] == "Ridge rating: before ○ → after ●"
-    assert "Rating change" in headers["delta"]
-    assert headers["expected"] == "Ridge expected"
+    assert headers["plot"] == "Before ○ → after ●"
+    assert headers["delta"] in ("Change", "Rating change")
+    assert headers["expected"] in ("Expected", "Ridge expected")
 
 
 def test_gamecard_name_and_winpct_baselines(tmp_path: Path) -> None:
