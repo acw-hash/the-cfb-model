@@ -98,7 +98,7 @@ function frameChrome(spec, inner) {
   </header>
   <div data-role="titles" style="flex:0 0 auto;padding:4px 0 6px;">
     <h1 style="margin:0;${TYPE.title}${NOWRAP}">${esc(f.title)}</h1>
-    <p data-role="dek" data-allow-wrap="${spec.chart === "readmap" || spec.chart === "movers" ? "1" : "0"}" style="margin:4px 0 0;color:${t.text_secondary};${TYPE.dek}${spec.chart === "readmap" || spec.chart === "movers" ? "white-space:normal;" : NOWRAP}">${esc(f.subtitle)}</p>
+    <p data-role="dek" data-allow-wrap="${spec.chart === "readmap" || spec.chart === "market_map" || spec.chart === "movers" ? "1" : "0"}" style="margin:4px 0 0;color:${t.text_secondary};${TYPE.dek}${spec.chart === "readmap" || spec.chart === "market_map" || spec.chart === "movers" ? "white-space:normal;" : NOWRAP}">${esc(f.subtitle)}</p>
   </div>
   <main data-role="body" style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column;justify-content:stretch;margin:0;overflow:hidden;">
     ${inner}
@@ -259,6 +259,137 @@ export function renderReadmap(spec) {
   style="flex:0 0 auto;display:block;width:${cw}px;height:${svgH}px;max-width:${cw}px;max-height:${svgH}px;">
   <line x1="${zx}" y1="${plot.y}" x2="${zx}" y2="${plot.y + plot.h}" stroke="${t.border}" />
   ${yGridSvg}
+  <rect x="${plot.x}" y="${plot.y}" width="${plot.w}" height="${plot.h}" fill="none" stroke="${t.border}" />
+  ${outsideLabels}
+  <g data-role="axis-block">${yTickSvg}${xTickBlock}
+  <text data-role="axis-title-y" data-rotated="1" transform="translate(${yTitleX}, ${yTitleY}) rotate(-90)" text-anchor="middle" font-size="14" fill="${t.text_secondary}" style="${NOWRAP}">${esc(yTitle)}</text>
+  </g>
+  ${marks}
+</svg>
+</div>`;
+  return frameChrome(spec, inner);
+}
+
+export function renderMarketMap(spec) {
+  // Same packing/layout as the read map; linear y = Ridge−market with an
+  // agreement band and a labeled y=0 rule. Right pad keeps "roughly agree"
+  // outside the logos.
+  const f = spec.frame;
+  const t = f.tokens;
+  const plotRaw = spec.plot;
+  const axes = spec.axes;
+  const cw = contentWidth(f);
+  const band = Number(axes.agreement_band || 0);
+  const rightPad = band > 0 ? 88 : 0;
+  const plot = {
+    ...plotRaw,
+    w: Math.min(
+      Number(plotRaw.w),
+      Math.max(40, cw - Number(plotRaw.x) - 4 - rightPad),
+    ),
+    h: Number(plotRaw.h),
+    x: Number(plotRaw.x),
+    y: Number(plotRaw.y),
+  };
+  const midX = axes.x_zero != null ? axes.x_zero : 0;
+  const midY = axes.y_mid != null ? axes.y_mid : 0;
+  const [zx] = dataToPx(plot, axes, midX, axes.y_min);
+  const [, zy] = dataToPx(plot, axes, axes.x_min, midY);
+  const xGutter = Number(plotRaw.bottom_axis_gutter || 56);
+  const yGutter = Number(plotRaw.y_gutter || 118);
+  const svgH = plot.y + plot.h + xGutter;
+
+  let bandSvg = "";
+  if (band > 0) {
+    const [, yHi] = dataToPx(plot, axes, axes.x_min, band);
+    const [, yLo] = dataToPx(plot, axes, axes.x_min, -band);
+    const top = Math.min(yHi, yLo);
+    const bot = Math.max(yHi, yLo);
+    const label = axes.agreement_label || "roughly agree";
+    bandSvg = `<rect data-role="agreement-band" x="${plot.x}" y="${top}" width="${plot.w}" height="${Math.max(0, bot - top)}" fill="${t.bg_secondary}" fill-opacity="0.85" />`;
+    bandSvg += `<text data-role="agreement-label" x="${plot.x + plot.w + 6}" y="${(top + bot) / 2}" text-anchor="start" dominant-baseline="middle" font-size="12" fill="${t.text_tertiary}" style="${NOWRAP}">${esc(label)}</text>`;
+  }
+
+  let marks = "";
+  for (const p of spec.points || []) {
+    const [tx, ty] = dataToPx(plot, axes, p.true_x, p.true_y);
+    const [lx, ly] = dataToPx(plot, axes, p.logo_x, p.logo_y);
+    const { w: sizeW, h: sizeH } = logoBox(p, 28);
+    if (p.draw_leader) {
+      marks += `<line data-role="leader" x1="${tx}" y1="${ty}" x2="${lx}" y2="${ly}" stroke="${t.border}" stroke-width="1" />`;
+    }
+    const logoImg = p.logo_path
+      ? `<image class="logo" data-team="${p.team_id}" href="${fileUrl(p.logo_path)}" x="${lx - sizeW / 2}" y="${ly - sizeH / 2}" width="${sizeW}" height="${sizeH}" />`
+      : "";
+    if (logoImg) {
+      marks += `<g data-role="logo-label-group" data-draw-leader="${p.draw_leader ? "1" : "0"}" data-team="${p.team_id}">${logoImg}</g>`;
+    }
+  }
+
+  const endX = plot.x - 10;
+  const yTicks = Array.isArray(axes.y_ticks) ? axes.y_ticks : [];
+  const yTickLabels = Array.isArray(axes.y_tick_labels) ? axes.y_tick_labels : [];
+  let yTickSvg = "";
+  let yGridSvg = "";
+  yTicks.forEach((yv, idx) => {
+    const [, py] = dataToPx(plot, axes, axes.x_min, yv);
+    const isMid = Math.abs(Number(yv) - Number(midY)) < 1e-6;
+    const opacity = isMid ? 1 : 0.28;
+    yGridSvg += `<line data-role="gridline" data-axis="y" data-mid="${isMid ? "1" : "0"}" x1="${plot.x}" y1="${py}" x2="${plot.x + plot.w}" y2="${py}" stroke="${t.border}" stroke-opacity="${opacity}" />`;
+    yTickSvg += `<line data-role="axis-tick" data-axis="y" x1="${plot.x - 5}" y1="${py}" x2="${plot.x}" y2="${py}" stroke="${t.border}" />`;
+    const lab = yTickLabels[idx] != null ? String(yTickLabels[idx]) : "";
+    if (lab) {
+      yTickSvg += `<text data-role="axis-tick" data-axis="y" x="${endX}" y="${py}" text-anchor="end" dominant-baseline="middle" font-size="13" fill="${t.text_tertiary}" style="${NOWRAP}">${esc(lab)}</text>`;
+    }
+  });
+
+  const yZeroLabel = axes.y_zero_label || "Ridge = market";
+  const zeroRule = `
+  <line data-role="y-zero" x1="${plot.x}" y1="${zy}" x2="${plot.x + plot.w}" y2="${zy}" stroke="${t.border}" />
+  <text data-role="y-zero-label" x="${plot.x + 6}" y="${zy - 4}" text-anchor="start" dominant-baseline="auto" font-size="12" fill="${t.text_tertiary}" style="${NOWRAP}">${esc(yZeroLabel)}</text>`;
+
+  const byId = Object.fromEntries((spec.quadrants || []).map((q) => [q.id, q]));
+  const quadGap = 10;
+  const quadFontPx = 13;
+  const baselineToInkBottom = Math.ceil(quadFontPx * 0.3);
+  const topRowY = Math.max(quadFontPx + 2, plot.y - quadGap - baselineToInkBottom);
+  const labelBelow = 20;
+  const outsideBottomY = plot.y + plot.h + Math.max(quadGap + labelBelow, Math.min(44, xGutter - 8));
+  const tickBelow = 5;
+  const xTickBlock = xTicksOutside(
+    axes,
+    plot,
+    t,
+    (v) => dataToPx(plot, axes, v, axes.y_min)[0],
+    tickBelow,
+    labelBelow,
+  );
+  const yTitle = axes.y_label || "Ridge minus market (pts)";
+  const yTitleX = Math.max(16, plot.x - yGutter + 22);
+  const yTitleY = plot.y + plot.h / 2;
+  const qKnown = byId.known_struggles?.label || "Struggling, but Ridge is higher";
+  const qProven = byId.proven_good?.label || "Good, and Ridge likes them more";
+  const qHard = byId.hard_to_read?.label || "Struggling, and Ridge is even lower";
+  const qGood = byId.good_proving?.label || "Good, but the market likes them more";
+  const outsideLabels = `
+  <g data-role="outside-label-row" data-side="top">
+    <text data-role="quadrant-label" data-quad="known_struggles" data-placement="outside" x="${plot.x}" y="${topRowY}" text-anchor="start" dominant-baseline="auto" font-size="13" fill="${t.text_tertiary}" style="${NOWRAP}">${esc(qKnown)}</text>
+    <text data-role="quadrant-label" data-quad="proven_good" data-placement="outside" x="${plot.x + plot.w}" y="${topRowY}" text-anchor="end" dominant-baseline="auto" font-size="13" fill="${t.text_tertiary}" style="${NOWRAP}">${esc(qProven)}</text>
+  </g>
+  <g data-role="outside-label-row" data-side="bottom">
+    <text data-role="quadrant-label" data-quad="hard_to_read" data-placement="outside" x="${plot.x}" y="${outsideBottomY}" text-anchor="start" dominant-baseline="hanging" font-size="13" fill="${t.text_tertiary}" style="${NOWRAP}">${esc(qHard)}</text>
+    <text data-role="axis-title-x" x="${plot.x + plot.w / 2}" y="${outsideBottomY}" text-anchor="middle" dominant-baseline="hanging" font-size="14" fill="${t.text_secondary}" style="${NOWRAP}">${esc(axes.x_label)}</text>
+    <text data-role="quadrant-label" data-quad="good_proving" data-placement="outside" x="${plot.x + plot.w}" y="${outsideBottomY}" text-anchor="end" dominant-baseline="hanging" font-size="13" fill="${t.text_tertiary}" style="${NOWRAP}">${esc(qGood)}</text>
+  </g>`;
+
+  const inner = `
+<div data-role="chart-group" style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch;">
+<svg class="plot" data-chart="market_map" width="${cw}" height="${svgH}" viewBox="0 0 ${cw} ${svgH}"
+  style="flex:0 0 auto;display:block;width:${cw}px;height:${svgH}px;max-width:${cw}px;max-height:${svgH}px;">
+  <line x1="${zx}" y1="${plot.y}" x2="${zx}" y2="${plot.y + plot.h}" stroke="${t.border}" />
+  ${bandSvg}
+  ${yGridSvg}
+  ${zeroRule}
   <rect x="${plot.x}" y="${plot.y}" width="${plot.w}" height="${plot.h}" fill="none" stroke="${t.border}" />
   ${outsideLabels}
   <g data-role="axis-block">${yTickSvg}${xTickBlock}
@@ -798,6 +929,8 @@ export function renderChartHtml(spec) {
   switch (spec.chart) {
     case "readmap":
       return renderReadmap(spec);
+    case "market_map":
+      return renderMarketMap(spec);
     case "movers":
     case "learned":
       return renderMovers(spec);

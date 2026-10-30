@@ -260,13 +260,15 @@ export async function runLayoutLint(page, spec) {
           group: groupEl ? "logo-group" : "logo",
           el,
           drawLeader: groupEl?.getAttribute("data-draw-leader") === "1",
-          readmapMark: chart === "readmap" && groupEl?.hasAttribute("data-draw-leader"),
+          readmapMark:
+            (chart === "readmap" || chart === "market_map") &&
+            groupEl?.hasAttribute("data-draw-leader"),
         });
       }
 
-      // Logo–logo: any pair over the limit fails (read map packing).
-      // 16×9 read maps are too short for a full FBS field at ≤8% — enforce on 4×5.
-      if (chart === "readmap" && rootBox.height >= 800) {
+      // Logo–logo: any pair over the limit fails (read map / market map packing).
+      // 16×9 maps are too short for a full FBS field at ≤8% — enforce on 4×5.
+      if ((chart === "readmap" || chart === "market_map") && rootBox.height >= 800) {
         const overlapLogos = logoBoxes.filter((lb) => lb.readmapMark);
         for (let i = 0; i < overlapLogos.length; i += 1) {
           for (let j = i + 1; j < overlapLogos.length; j += 1) {
@@ -513,8 +515,8 @@ export async function runLayoutLint(page, spec) {
         }
       }
 
-      // Read-map: no Most/Least sure end labels; ≥10 px ink gap to plot frame.
-      if (chart === "readmap") {
+      // Read-map / market-map: no Most/Least sure end labels; ≥10 px ink gap.
+      if (chart === "readmap" || chart === "market_map") {
         for (const el of root.querySelectorAll("[data-role='axis-end-label']")) {
           const text = (el.textContent || "").trim();
           if (/Most sure|Least sure/i.test(text)) {
@@ -523,6 +525,7 @@ export async function runLayoutLint(page, spec) {
         }
         let plotBox = null;
         for (const el of root.querySelectorAll("svg rect")) {
+          if (el.getAttribute("data-role") === "agreement-band") continue;
           const r = el.getBoundingClientRect();
           if (r.width > 200 && r.height > 200) {
             plotBox = r;

@@ -14,6 +14,7 @@ from ncaa_quant.social.load import LoadedArtifacts
 from ncaa_quant.social.specs.contact_sheet import write_contact_sheet
 from ncaa_quant.social.specs.gamecard import build_gamecard_specs, select_default_gamecards
 from ncaa_quant.social.specs.learned import build_learned_specs
+from ncaa_quant.social.specs.market_map import build_market_map_specs
 from ncaa_quant.social.specs.net import resolve_margin_scale
 from ncaa_quant.social.specs.readmap import build_readmap_specs
 from ncaa_quant.social.specs.render_invoke import render_spec, write_spec
@@ -21,7 +22,13 @@ from ncaa_quant.social.specs.slate_ranges import build_slate_ranges_specs
 from ncaa_quant.social.theme import BRAND_MARK_PATH, ChartSize, site_url_from_config
 
 Soc2Chart = Literal[
-    "readmap", "learned", "movers", "slate-ranges", "gamecard", "soc2"
+    "readmap",
+    "market-map",
+    "learned",
+    "movers",
+    "slate-ranges",
+    "gamecard",
+    "soc2",
 ]
 
 
@@ -36,6 +43,8 @@ def _stem_for(spec: dict[str, Any]) -> str:
     size = spec["frame"]["size"]
     if chart == "readmap":
         return f"readmap_w{week}_{size}"
+    if chart == "market_map":
+        return f"market_map_w{week}_{size}"
     if chart in ("movers", "learned"):
         return f"movers_w{week}_{size}"
     if chart == "slate_ranges":
@@ -138,7 +147,9 @@ def run_soc2_charts(
         "layout_css_px": {"4x5": [800, 1000], "16x9": [960, 540]},
     }
 
-    want_read = chart in ("soc2", "readmap")
+    # SOC-3: default soc2 set uses market-map; --chart readmap still available.
+    want_market = chart in ("soc2", "market-map")
+    want_read = chart == "readmap"
     want_learned = chart in ("soc2", "learned", "movers")
     want_slate = chart in ("soc2", "slate-ranges")
     want_card = chart in ("soc2", "gamecard")
@@ -234,6 +245,105 @@ def run_soc2_charts(
             "consensus_method": odds_data.get("consensus_method"),
             "sha256": loaded.odds_snapshot.sha256 if loaded.odds_snapshot else None,
         }
+
+    if want_market and do_build:
+        specs_mm, fit_report = build_market_map_specs(
+            team_ratings=loaded.team_ratings.data,
+            week_predictions=loaded.week_predictions.data,
+            odds_snapshot=odds_data,
+            week=weeks.map_week,
+            slate_week=weeks.slate_week,
+            season=season,
+            fbs_team_ids=loaded.fbs_team_ids,
+            abbrev_by_id=abbrev_by_id,
+            logo_dir=logo_dir,
+            sizes=list(sizes),
+            theme=theme,
+            model_version=model_version,
+            vintage_label=vintage_label,
+            published_at=published_at,
+            site_url=site_url,
+            brand_mark=brand,
+        )
+        _process_specs(
+            specs_mm,
+            chart_key="market_map",
+            alt_name="market_map_alt.txt",
+            caption_name="market_map_caption.txt",
+            extra_report={
+                "week": weeks.slate_week,
+                "n_fbs": specs_mm[0]["meta"]["n_fbs"] if specs_mm else 0,
+                "logo_slot_px": (
+                    specs_mm[0]["meta"].get("logo_slot_px") if specs_mm else None
+                ),
+                "fit": {
+                    "ridge_method": fit_report.ridge_method,
+                    "ridge_lam": fit_report.ridge.lam if fit_report.ridge else None,
+                    "ridge_cv_error": (
+                        fit_report.ridge.cv_error if fit_report.ridge else None
+                    ),
+                    "ridge_h": (
+                        fit_report.ridge_rescale.h
+                        if fit_report.ridge_method == "net_pts_rescale"
+                        and fit_report.ridge_rescale
+                        else (fit_report.ridge.h if fit_report.ridge else None)
+                    ),
+                    "ridge_rmse": (
+                        fit_report.ridge.in_sample_rmse if fit_report.ridge else None
+                    ),
+                    "ridge_holdout_mae": (
+                        fit_report.ridge.holdout_mae if fit_report.ridge else None
+                    ),
+                    "ridge_holdout_failed": fit_report.ridge_holdout_failed,
+                    "ridge_rescale": (
+                        {
+                            "slope": fit_report.ridge_rescale.slope,
+                            "intercept": fit_report.ridge_rescale.intercept,
+                            "h": fit_report.ridge_rescale.h,
+                            "residual_mad": fit_report.ridge_rescale.residual_mad,
+                            "centering_offset": (
+                                fit_report.ridge_rescale.centering_offset
+                            ),
+                        }
+                        if fit_report.ridge_rescale
+                        else None
+                    ),
+                    "ridge_centering_offset": (
+                        fit_report.ridge_rescale.centering_offset
+                        if fit_report.ridge_method == "net_pts_rescale"
+                        and fit_report.ridge_rescale
+                        else (
+                            fit_report.ridge.centering_offset
+                            if fit_report.ridge
+                            else None
+                        )
+                    ),
+                    "market_lam": fit_report.market.lam,
+                    "market_cv_error": fit_report.market.cv_error,
+                    "market_h": fit_report.market.h,
+                    "market_rmse": fit_report.market.in_sample_rmse,
+                    "market_holdout_mae": fit_report.market.holdout_mae,
+                    "market_centering_offset": fit_report.market.centering_offset,
+                    "n_joint_games": fit_report.n_joint_games,
+                    "coverage_by_week": fit_report.coverage_by_week,
+                    "spot_check": fit_report.spot_check,
+                    "contamination_ok": fit_report.contamination_ok,
+                    "contamination_notes": fit_report.contamination_notes,
+                    "excluded_team_ids": fit_report.excluded_team_ids,
+                },
+            },
+        )
+    elif want_market and render_only:
+        specs_mm = [
+            json.loads(p.read_text(encoding="utf-8"))
+            for p in sorted(specs_dir.glob("market_map_*.json"))
+        ]
+        _process_specs(
+            specs_mm,
+            chart_key="market_map",
+            alt_name="market_map_alt.txt",
+            caption_name="market_map_caption.txt",
+        )
 
     if want_read and do_build:
         specs = build_readmap_specs(

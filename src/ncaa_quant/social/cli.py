@@ -39,6 +39,7 @@ ChartName = Literal[
     "slate",
     "surprise",
     "readmap",
+    "market-map",
     "learned",
     "movers",
     "slate-ranges",
@@ -46,7 +47,15 @@ ChartName = Literal[
     "soc2",
 ]
 SOC2_CHARTS = frozenset(
-    {"readmap", "learned", "movers", "slate-ranges", "gamecard", "soc2"}
+    {
+        "readmap",
+        "market-map",
+        "learned",
+        "movers",
+        "slate-ranges",
+        "gamecard",
+        "soc2",
+    }
 )
 
 
@@ -90,6 +99,7 @@ def build_parser() -> argparse.ArgumentParser:
             "slate",
             "surprise",
             "readmap",
+            "market-map",
             "learned",
             "movers",
             "slate-ranges",
@@ -99,7 +109,8 @@ def build_parser() -> argparse.ArgumentParser:
         default="all",
         help=(
             "Default 'all' renders SOC-1 charts. "
-            "'soc2' renders readmap + movers + slate-ranges + default game cards. "
+            "'soc2' renders market-map + movers + slate-ranges + default game cards "
+            "(readmap remains available via --chart readmap). "
             "'learned' is a one-run alias for 'movers'."
         ),
     )

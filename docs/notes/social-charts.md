@@ -1255,6 +1255,111 @@ uv run python scripts/_dry_publish_week9_thu.py
 uv run python scripts/make_social_charts.py --season 2026 --chart soc2 --source local --artifact-dir data/social/artifacts_cache/latest_postable --allow-stale --out out/social/2026/w09
 ```
 
+## SOC-3 market map
+
+**Date:** 2026-10-29  
+**Branch:** `soc-3-market-map`  
+**Owner decisions (2026-10-29):** market may appear on this chart (extends round-3 slate/cards rule); chart text says "market" only; code may use an L2 penalty but user-facing copy and notes call it **shrinkage** (never "ridge regression"); this chart **replaces the certainty read map in the default `soc2` set** — `--chart readmap` remains.
+
+### Method (plain words)
+
+For every game this season that has both a Ridge forecast and a market price, we treat the home margin as:
+
+> home strength − away strength + home-field (unless neutral)
+
+We fit that model twice: once to Ridge’s published forecasts, once to the market’s prices. Games are weighted toward recent weeks (half-life four weeks). Team strengths are pulled toward zero with **shrinkage**; home-field is not. FCS opponents share one pooled strength and never appear on the chart. Both rating sets are then centered so the average FBS team is 0. The chart’s **x** is Ridge’s fitted rating; **y** is Ridge minus market (points). Positive y means Ridge rates the team higher than the market does.
+
+**Important:** published projections are the **combined model’s** forecasts (`production-v0_reduced_v3`). They are not raw rating gaps. Raw `net_pts` gaps can differ from `mu_margin` by up to ~15 pts on lopsided games — that is why this chart uses fitted / rescaled ratings rather than raw Kalman gaps.
+
+### Contamination check
+
+Production stack is fundamental / market-free for μ:
+
+- `configs/ablations/task23_fundamental_full_reduced_v3.yaml`: `stack: fundamental`, `market_features_available: false`
+- `production_stack.py`: fundamental forces `market_features_available=False`
+- Margin feature signature: ratings + `expected_possessions` only (no `mkt_*` / spreads)
+- Closes used only for ATS/OU probability queries, not μ features
+
+### Discovery (§1)
+
+| Source | Role |
+|---|---|
+| `odds_snapshot.games[].market_home_margin` | Current-week market (same as slate/cards) |
+| Staged `odds_snapshots` → last pre-kick median home spread → `−spread` | Completed weeks |
+| `data/webapp/publish_history/2026_w*.jsonl` + `select_pre_kickoff_publish` | Last Ridge `mu_margin` before kickoff |
+| `week_predictions.neutral_site` / staged games | Neutral flag |
+
+**Sign:** Notre Dame @ Navy (neutral): `spread_home_points=+30.5` → `market_home_margin=−30.5` (ND favored).  
+**Joint coverage (FBS, both Ridge+market):** w1 99/99 · w2 62/86 · w3 64/75 · w4 71/71 · w5 56/59 · w6 58/58 · w7 61/62 · w8 56/56 · w9 52/56.
+
+### Fit report (entering week 9)
+
+Additive shrinkage on Ridge `mu_margin` **fails** the holdout gate (MAD **7.24** > 1.5). In-sample RMSE ~7: the ensemble is not an additive team model. Per §4 fallback:
+
+| Side | Method | Key numbers |
+|---|---|---|
+| **Ridge** | `net_pts` rescale this week | slope **0.651**, intercept **2.32**, h **1.42**, residual MAD **1.09** ≤ 1.5; centering offset **0.886** |
+| **Market** | shrinkage (L2) | λ **0.1**, CV RMSE **5.51**, h **2.89**, in-sample RMSE **4.95**, holdout MAD **3.87** ≤ 4; centering offset **0.239** |
+
+Attempted Ridge shrinkage (kept for diagnostics): λ 0.3, holdout MAD 7.24, h 6.82.
+
+**Spot check (y = Ridge−market; slate_gap = this week’s μ−market on that team’s games):**
+
+| Team | Ridge | Market | y | Slate gap | Note |
+|---|---:|---:|---:|---:|---|
+| Arizona | 18.6 | 8.4 | +10.2 | +12.6 | ok (Ridge higher) |
+| Wake Forest | 17.8 | 8.2 | +9.6 | +12.5 | ok |
+| Texas Tech | 6.8 | 14.2 | −7.3 | −12.6 | ok (Ridge lower) |
+| Notre Dame | 23.1 | 27.9 | −4.8 | −6.1 | ok |
+| Ohio State | 18.1 | 28.2 | −10.1 | +3.9 | Season-long market prices OSU ~10 pts above rescaled Ridge; this week’s single-game slate gap can still lean the other way |
+
+Data floor ≥3 market games: **108** plotted, **0** excluded.
+
+### Top / bottom 10 by y
+
+| Team | Ridge | Market | y | Games |
+|---|---:|---:|---:|---:|
+| Utah State | 2.1 | −10.0 | +12.1 | 8 |
+| Arizona | 18.6 | 8.4 | +10.2 | 8 |
+| Liberty | 8.8 | −1.1 | +9.9 | 7 |
+| North Texas | 11.6 | 1.9 | +9.8 | 7 |
+| Wake Forest | 17.8 | 8.2 | +9.6 | 8 |
+| Georgia Southern | 1.6 | −6.8 | +8.5 | 8 |
+| Boston College | 6.2 | −2.2 | +8.4 | 8 |
+| UL Monroe | −12.8 | −21.1 | +8.3 | 8 |
+| UCLA | 16.3 | 8.4 | +7.9 | 8 |
+| Middle Tennessee | −7.6 | −15.1 | +7.5 | 7 |
+| … | | | | |
+| USC | 6.1 | 16.2 | −10.0 | 9 |
+| Ohio State | 18.1 | 28.2 | −10.1 | 8 |
+| Indiana | 13.8 | 24.6 | −10.8 | 8 |
+| Oregon | 7.1 | 18.0 | −10.9 | 8 |
+| Kansas State | −4.4 | 6.5 | −10.9 | 8 |
+| SMU | −0.5 | 11.5 | −12.0 | 8 |
+| California | −14.4 | −2.4 | −12.0 | 8 |
+| Michigan | 2.1 | 14.3 | −12.2 | 8 |
+| Texas | 9.9 | 22.3 | −12.4 | 8 |
+| Penn State | 0.1 | 13.3 | −13.2 | 8 |
+
+### Deliverables
+
+- PNGs: `out/social/2026/w09/market_map_w9_{4x5,16x9}.png`
+- Contact sheet (read map replaced): `out/social/2026/w09/contact_sheet_w9.png`
+- **Title:** Where Ridge and the market disagree  
+- **Dek:** Right = Ridge rates them higher · up = Ridge higher than the market  
+- **Caption:** Ridge is higher than the market on Utah State (+12.1), Arizona (+10.2), Liberty (+9.9). Lower on Penn State (−13.2), Texas (−12.4), Michigan (−12.2).  
+- **Alt:** (see `market_map_alt.txt`) top/bottom 5 with game counts; excluded none; derivation sentence included.
+- Lint ok (all soc2 PNGs). Determinism pixel+byte identical on `market_map_w9_4x5.png`. Banned-words clean.
+- Tests: social unit **147 → 164** (+17); `pytest -m "not live"` collect **1198 → 1215** (+17). Coverage **80.12%** (gate 80%). Seven unrelated failures on this branch are pre-existing (betting-language ratchet pin, HFA-4, slot-close credits, display-name cascade, W9-R copy).
+
+### Modules
+
+- `src/ncaa_quant/social/specs/market_ratings.py` — load closes / pre-kick μ, shrinkage fit, net_pts fallback, gates
+- `src/ncaa_quant/social/specs/market_map.py` — chart specs + packing reuse
+- Default `soc2` set: market-map + movers + slate-ranges + gamecards (`--chart readmap` kept)
+
+---
+
 ## Follow-up: scheduled Thursday refresh
 
 Requirements only — **do not implement** until owner assigns. Carry from week-8 dry-run STOP (2026-10-22d) and owner direction (no Thursday publish this week).
