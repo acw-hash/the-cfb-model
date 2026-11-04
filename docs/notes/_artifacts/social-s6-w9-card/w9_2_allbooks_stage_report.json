@@ -1,0 +1,16 @@
+{
+  "raw_path": "C:\\Users\\alecw\\Projects\\the-cfb-model\\docs\\notes\\_artifacts\\social-s6-w9-card\\odds_allbooks_20261028T141219Z.json",
+  "credits": {
+    "x-requests-remaining": "276",
+    "x-requests-used": "224",
+    "x-requests-last": "2"
+  },
+  "n_open_games": 54,
+  "n_event_ids": 54,
+  "n_drop_records": 0,
+  "drop_reason_counts": {},
+  "rows_fetched": 1540,
+  "rows_written": 1540,
+  "quarantined": 0,
+  "drops_sample": []
+}

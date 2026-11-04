@@ -1,0 +1,819 @@
+{
+  "grade_status": {
+    "graded": 563,
+    "no_pre_kickoff_publish": 5,
+    "game_not_final": 320
+  },
+  "season_wlp": [
+    21,
+    17,
+    1
+  ],
+  "side_stats": {
+    "home": [
+      15,
+      12,
+      1
+    ],
+    "away": [
+      6,
+      5,
+      0
+    ],
+    "neutral": [
+      0,
+      0,
+      0
+    ]
+  },
+  "epa_counts": {
+    "HAS-WEEK8-RATING": 112
+  },
+  "gaps": [
+    {
+      "team_id": 2,
+      "school": "Auburn",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 6,
+      "school": "South Alabama",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 9,
+      "school": "Arizona State",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 12,
+      "school": "Arizona",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 16,
+      "school": "Sacramento State",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 21,
+      "school": "San Diego State",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 23,
+      "school": "San Jos\u00e9 State",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 24,
+      "school": "Stanford",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 25,
+      "school": "California",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 26,
+      "school": "UCLA",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 30,
+      "school": "USC",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 36,
+      "school": "Colorado State",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 38,
+      "school": "Colorado",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 41,
+      "school": "UConn",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 48,
+      "school": "Delaware",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 59,
+      "school": "Georgia Tech",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 62,
+      "school": "Hawai'i",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 66,
+      "school": "Iowa State",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 68,
+      "school": "Boise State",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 77,
+      "school": "Northwestern",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 84,
+      "school": "Indiana",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 96,
+      "school": "Kentucky",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 99,
+      "school": "LSU",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 103,
+      "school": "Boston College",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 113,
+      "school": "Massachusetts",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 127,
+      "school": "Michigan State",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 130,
+      "school": "Michigan",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 135,
+      "school": "Minnesota",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 145,
+      "school": "Ole Miss",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 150,
+      "school": "Duke",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 151,
+      "school": "East Carolina",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 152,
+      "school": "NC State",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 153,
+      "school": "North Carolina",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 164,
+      "school": "Rutgers",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 166,
+      "school": "New Mexico State",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 167,
+      "school": "New Mexico",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 183,
+      "school": "Syracuse",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 189,
+      "school": "Bowling Green",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 193,
+      "school": "Miami (OH)",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 195,
+      "school": "Ohio",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 197,
+      "school": "Oklahoma State",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 201,
+      "school": "Oklahoma",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 202,
+      "school": "Tulsa",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 221,
+      "school": "Pittsburgh",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 228,
+      "school": "Clemson",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 235,
+      "school": "Memphis",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 238,
+      "school": "Vanderbilt",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 239,
+      "school": "Baylor",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 242,
+      "school": "Rice",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 245,
+      "school": "Texas A&M",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 248,
+      "school": "Houston",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 249,
+      "school": "North Texas",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 251,
+      "school": "Texas",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 252,
+      "school": "BYU",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 254,
+      "school": "Utah",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 256,
+      "school": "James Madison",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 258,
+      "school": "Virginia",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 259,
+      "school": "Virginia Tech",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 265,
+      "school": "Washington State",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 275,
+      "school": "Wisconsin",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 276,
+      "school": "Marshall",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 277,
+      "school": "West Virginia",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 295,
+      "school": "Old Dominion",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 309,
+      "school": "Louisiana",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 326,
+      "school": "Texas State",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 328,
+      "school": "Utah State",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 333,
+      "school": "Alabama",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 338,
+      "school": "Kennesaw State",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 344,
+      "school": "Mississippi State",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 349,
+      "school": "Army",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 356,
+      "school": "Illinois",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2005,
+      "school": "Air Force",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2006,
+      "school": "Akron",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2026,
+      "school": "App State",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2032,
+      "school": "Arkansas State",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2050,
+      "school": "Ball State",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2084,
+      "school": "Buffalo",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2116,
+      "school": "UCF",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2117,
+      "school": "Central Michigan",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2132,
+      "school": "Cincinnati",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2199,
+      "school": "Eastern Michigan",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2226,
+      "school": "Florida Atlantic",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2229,
+      "school": "Florida International",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2247,
+      "school": "Georgia State",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2294,
+      "school": "Iowa",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2305,
+      "school": "Kansas",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2306,
+      "school": "Kansas State",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2309,
+      "school": "Kent State",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2335,
+      "school": "Liberty",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2348,
+      "school": "Louisiana Tech",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2390,
+      "school": "Miami",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2393,
+      "school": "Middle Tennessee",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2426,
+      "school": "Navy",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2433,
+      "school": "UL Monroe",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2440,
+      "school": "Nevada",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2449,
+      "school": "North Dakota State",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2459,
+      "school": "Northern Illinois",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2483,
+      "school": "Oregon",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2534,
+      "school": "Sam Houston",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2567,
+      "school": "SMU",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2572,
+      "school": "Southern Miss",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2579,
+      "school": "South Carolina",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2623,
+      "school": "Missouri State",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2628,
+      "school": "TCU",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2633,
+      "school": "Tennessee",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2636,
+      "school": "UTSA",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2641,
+      "school": "Texas Tech",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2649,
+      "school": "Toledo",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2653,
+      "school": "Troy",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2655,
+      "school": "Tulane",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2711,
+      "school": "Western Michigan",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    },
+    {
+      "team_id": 2751,
+      "school": "Wyoming",
+      "class": "HAS-WEEK8-RATING",
+      "game_id": null,
+      "opp": null
+    }
+  ],
+  "generated_at": "2026-10-28T13:53:42.288745+00:00"
+}

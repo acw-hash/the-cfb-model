@@ -1,0 +1,15 @@
+now_utc 2026-11-04T14:09:55.166040+00:00
+http_status 200
+host ridge-odds-refresh.ridge-cfb.workers.dev
+{
+  "ok": true,
+  "sandbox": false,
+  "keys": [
+    "odds/2026/w10/2026-11-04T14:09.json",
+    "latest/odds_snapshot.json"
+  ],
+  "matched": 61,
+  "unmatched": 0,
+  "credits_remaining": 431,
+  "revalidate_status": 200
+}
