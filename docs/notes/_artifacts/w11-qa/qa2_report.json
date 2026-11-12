@@ -1,0 +1,1765 @@
+{
+  "generated_at": "2026-11-12T16:05:01.316177+00:00",
+  "export_enabled": false,
+  "filter_history_sha256": "a66cf5f9c9eede4f0bc02d41ec6c32df80166e3f03f77f127392217b4400ac28",
+  "head": "4358b5f",
+  "C3": {
+    "verdict": "PASS",
+    "top_off": [
+      {
+        "school": "West Virginia",
+        "conference": "Big 12",
+        "off_epa": 0.2911723439205658,
+        "ppg_scored": 37.22222222222222
+      },
+      {
+        "school": "Georgia",
+        "conference": "SEC",
+        "off_epa": 0.28619521052433383,
+        "ppg_scored": 41.111111111111114
+      },
+      {
+        "school": "Miami",
+        "conference": "ACC",
+        "off_epa": 0.25239088005742044,
+        "ppg_scored": 45.0
+      },
+      {
+        "school": "Notre Dame",
+        "conference": "FBS Independents",
+        "off_epa": 0.23037451128122874,
+        "ppg_scored": 39.333333333333336
+      },
+      {
+        "school": "Wake Forest",
+        "conference": "ACC",
+        "off_epa": 0.2263436635865253,
+        "ppg_scored": 43.333333333333336
+      },
+      {
+        "school": "Boise State",
+        "conference": "Pac-12",
+        "off_epa": 0.22283831335632834,
+        "ppg_scored": 39.0
+      },
+      {
+        "school": "South Carolina",
+        "conference": "SEC",
+        "off_epa": 0.21983502331985358,
+        "ppg_scored": 34.666666666666664
+      },
+      {
+        "school": "Oklahoma State",
+        "conference": "Big 12",
+        "off_epa": 0.21937465436227127,
+        "ppg_scored": 43.888888888888886
+      },
+      {
+        "school": "Arizona",
+        "conference": "Big 12",
+        "off_epa": 0.2117187574580799,
+        "ppg_scored": 34.22222222222222
+      },
+      {
+        "school": "Houston",
+        "conference": "Big 12",
+        "off_epa": 0.19073797068256054,
+        "ppg_scored": 35.44444444444444
+      }
+    ],
+    "bot_off": [
+      {
+        "school": "Sam Houston",
+        "conference": "Conference USA",
+        "off_epa": -0.32063415818436314,
+        "ppg_scored": 17.555555555555557
+      },
+      {
+        "school": "Sacramento State",
+        "conference": "Mid-American",
+        "off_epa": -0.31961948700512904,
+        "ppg_scored": 17.0
+      },
+      {
+        "school": "Kent State",
+        "conference": "Mid-American",
+        "off_epa": -0.29404668513250076,
+        "ppg_scored": 14.333333333333334
+      },
+      {
+        "school": "Old Dominion",
+        "conference": "Sun Belt",
+        "off_epa": -0.27843859113271313,
+        "ppg_scored": 16.8
+      },
+      {
+        "school": "UAB",
+        "conference": "American Athletic",
+        "off_epa": -0.2627284428896567,
+        "ppg_scored": 21.77777777777778
+      },
+      {
+        "school": "New Mexico State",
+        "conference": "Conference USA",
+        "off_epa": -0.2173754037860873,
+        "ppg_scored": 20.666666666666668
+      },
+      {
+        "school": "Troy",
+        "conference": "Sun Belt",
+        "off_epa": -0.21527265446347094,
+        "ppg_scored": 22.333333333333332
+      },
+      {
+        "school": "San Jos\u00e9 State",
+        "conference": "Mountain West",
+        "off_epa": -0.20307151871245396,
+        "ppg_scored": 20.9
+      },
+      {
+        "school": "Nevada",
+        "conference": "Mountain West",
+        "off_epa": -0.18298387900589685,
+        "ppg_scored": 20.77777777777778
+      },
+      {
+        "school": "Florida International",
+        "conference": "Conference USA",
+        "off_epa": -0.1816658189507102,
+        "ppg_scored": 19.333333333333332
+      }
+    ],
+    "top_def": [
+      {
+        "school": "Tennessee",
+        "conference": "SEC",
+        "def_epa": 0.2687026114938438,
+        "ppg_allowed": 15.11111111111111
+      },
+      {
+        "school": "Alabama",
+        "conference": "SEC",
+        "def_epa": 0.24295698556163384,
+        "ppg_allowed": 20.333333333333332
+      },
+      {
+        "school": "Iowa",
+        "conference": "Big Ten",
+        "def_epa": 0.24285926293033266,
+        "ppg_allowed": 12.222222222222221
+      },
+      {
+        "school": "TCU",
+        "conference": "Big 12",
+        "def_epa": 0.21174162658830592,
+        "ppg_allowed": 15.777777777777779
+      },
+      {
+        "school": "Oklahoma",
+        "conference": "SEC",
+        "def_epa": 0.2088928055363922,
+        "ppg_allowed": 19.22222222222222
+      },
+      {
+        "school": "Texas",
+        "conference": "SEC",
+        "def_epa": 0.2063193029206943,
+        "ppg_allowed": 17.444444444444443
+      },
+      {
+        "school": "UCLA",
+        "conference": "Big Ten",
+        "def_epa": 0.18738800038119802,
+        "ppg_allowed": 14.11111111111111
+      },
+      {
+        "school": "Wake Forest",
+        "conference": "ACC",
+        "def_epa": 0.18199704949657491,
+        "ppg_allowed": 15.88888888888889
+      },
+      {
+        "school": "Old Dominion",
+        "conference": "Sun Belt",
+        "def_epa": 0.18125157913634093,
+        "ppg_allowed": 25.8
+      },
+      {
+        "school": "Utah",
+        "conference": "Big 12",
+        "def_epa": 0.16939743126647058,
+        "ppg_allowed": 16.333333333333332
+      }
+    ],
+    "bot_def": [
+      {
+        "school": "Colorado State",
+        "conference": "Pac-12",
+        "def_epa": -0.3135676992795145,
+        "ppg_allowed": 44.77777777777778
+      },
+      {
+        "school": "Northern Illinois",
+        "conference": "Mountain West",
+        "def_epa": -0.27875638148721316,
+        "ppg_allowed": 36.77777777777778
+      },
+      {
+        "school": "Eastern Michigan",
+        "conference": "Mid-American",
+        "def_epa": -0.25520879173070377,
+        "ppg_allowed": 26.6
+      },
+      {
+        "school": "Ball State",
+        "conference": "Mid-American",
+        "def_epa": -0.2511545885106185,
+        "ppg_allowed": 34.77777777777778
+      },
+      {
+        "school": "Middle Tennessee",
+        "conference": "Conference USA",
+        "def_epa": -0.2271156033242561,
+        "ppg_allowed": 31.0
+      },
+      {
+        "school": "Akron",
+        "conference": "Mid-American",
+        "def_epa": -0.22478826316888928,
+        "ppg_allowed": 32.22222222222222
+      },
+      {
+        "school": "Missouri State",
+        "conference": "Conference USA",
+        "def_epa": -0.19370893970496506,
+        "ppg_allowed": 30.0
+      },
+      {
+        "school": "Western Kentucky",
+        "conference": "Conference USA",
+        "def_epa": -0.18231451693738623,
+        "ppg_allowed": 33.333333333333336
+      },
+      {
+        "school": "UTEP",
+        "conference": "Mountain West",
+        "def_epa": -0.17142018468603054,
+        "ppg_allowed": 34.333333333333336
+      },
+      {
+        "school": "Purdue",
+        "conference": "Big Ten",
+        "def_epa": -0.16603997408563986,
+        "ppg_allowed": 32.333333333333336
+      }
+    ],
+    "sec_in_def_top10": 4,
+    "sec_in_def_bot10": 0,
+    "n_fbs": 138
+  },
+  "C5": {
+    "verdict": "PASS",
+    "nan_inf": {
+      "nan_off": 0,
+      "nan_def": 0,
+      "inf_off": 0,
+      "inf_def": 0
+    },
+    "unchanged_since_w1": [],
+    "n_unchanged": 0,
+    "largest_w9_to_w10": [
+      {
+        "school": "Western Kentucky",
+        "delta_off": 0.11792964583936556,
+        "delta_def": -0.11614926469768926,
+        "abs_sum": 0.23407891053705482
+      },
+      {
+        "school": "Middle Tennessee",
+        "delta_off": 0.08774298579158825,
+        "delta_def": -0.11855124523213652,
+        "abs_sum": 0.20629423102372477
+      },
+      {
+        "school": "LSU",
+        "delta_off": -0.10285639762410162,
+        "delta_def": -0.07590102966196953,
+        "abs_sum": 0.17875742728607114
+      },
+      {
+        "school": "Alabama",
+        "delta_off": 0.06436811726539204,
+        "delta_def": 0.10994442011967182,
+        "abs_sum": 0.17431253738506386
+      },
+      {
+        "school": "Tulsa",
+        "delta_off": 0.05872843390687184,
+        "delta_def": 0.1138563666987346,
+        "abs_sum": 0.17258480060560644
+      },
+      {
+        "school": "Eastern Michigan",
+        "delta_off": -0.06300490653196021,
+        "delta_def": -0.10546907300746747,
+        "abs_sum": 0.16847397953942767
+      },
+      {
+        "school": "Georgia",
+        "delta_off": 0.08440235521118905,
+        "delta_def": 0.08292326630564514,
+        "abs_sum": 0.1673256215168342
+      },
+      {
+        "school": "Central Michigan",
+        "delta_off": 0.0996827188509201,
+        "delta_def": 0.05707330851105591,
+        "abs_sum": 0.15675602736197602
+      },
+      {
+        "school": "UAB",
+        "delta_off": -0.10746760044940062,
+        "delta_def": 0.04566418268919231,
+        "abs_sum": 0.15313178313859294
+      },
+      {
+        "school": "Tulane",
+        "delta_off": -0.10504480095013347,
+        "delta_def": -0.04659841201728083,
+        "abs_sum": 0.1516432129674143
+      }
+    ],
+    "innovation_z": {
+      "by_week": {},
+      "flags": [],
+      "note": "innovations.parquet absent; UNVERIFIED for innovation z"
+    },
+    "innovation_verdict": "UNVERIFIED"
+  },
+  "A1": {
+    "verdict": "PASS",
+    "paths": {
+      "artifact_dir": "C:\\Users\\alecw\\Projects\\the-cfb-model\\data\\registry\\artifacts\\v2",
+      "production_ensemble": "C:\\Users\\alecw\\Projects\\the-cfb-model\\data\\registry\\artifacts\\v2\\production_ensemble.pkl",
+      "possessions": "C:\\Users\\alecw\\Projects\\the-cfb-model\\data\\registry\\artifacts\\v2\\possessions_artifacts.pkl",
+      "filter_history": "C:\\Users\\alecw\\Projects\\the-cfb-model\\data\\artifacts\\state_space\\filter_history.parquet",
+      "champion_run_id": "task23_fundamental_reduced_v3",
+      "champion_version": 2
+    },
+    "sha256": {
+      "production_ensemble": "21c513419a795a14a7b50a235a91636c2eb7c9ab950c331a51edae32b9a428d8",
+      "possessions": "26c729b1e7bf4c58aa3ced26ab1382f091a2b3a8df4955db1b4af6dcab7fcffa",
+      "filter_history": "a66cf5f9c9eede4f0bc02d41ec6c32df80166e3f03f77f127392217b4400ac28"
+    },
+    "mac_registry_for_w10_3": "UNVERIFIED \u2014 Mac W10-3 / sat-card commits absent on this machine; cannot determine whether data/registry existed there",
+    "note": "Live pricing reads champion ensemble (sigma heads inside production_ensemble.pkl) + live Kalman ratings; week-10 card pricing in A2b uses published Nov-4 mu/sigma from publish_history."
+  },
+  "A2b": {
+    "verdict": "PASS",
+    "plays": [
+      {
+        "matchup": "Texas @ Missouri",
+        "side": "Missouri",
+        "book": "fanduel",
+        "line": 2.5,
+        "price": -104.0,
+        "mu_margin": 4.327435737339203,
+        "sigma_margin": 16.4099400529278,
+        "edge": 0.186409379689845,
+        "edge_pct": 18.64,
+        "gap": 6.8274,
+        "p_cover": 0.66765
+      },
+      {
+        "matchup": "Georgia @ Ole Miss",
+        "side": "Ole Miss",
+        "book": "espnbet",
+        "line": 3.5,
+        "price": -105.0,
+        "mu_margin": 2.6901103503443773,
+        "sigma_margin": 17.09728385500973,
+        "edge": 0.14860538116591926,
+        "edge_pct": 14.86,
+        "gap": 6.1901,
+        "p_cover": 0.643
+      },
+      {
+        "matchup": "Alabama @ LSU",
+        "side": "LSU",
+        "book": "draftkings",
+        "line": -6.0,
+        "price": -108.0,
+        "mu_margin": 11.61821385597361,
+        "sigma_margin": 17.212208898737543,
+        "edge": 0.13824706838661532,
+        "edge_pct": 13.82,
+        "gap": 5.6182,
+        "p_cover": 0.6360521605727435
+      },
+      {
+        "matchup": "North Carolina @ UConn",
+        "side": "UConn",
+        "book": "fanduel",
+        "line": 7.5,
+        "price": -102.0,
+        "mu_margin": -2.7347416090196437,
+        "sigma_margin": 17.29485826971692,
+        "edge": 0.13311642725906125,
+        "edge_pct": 13.31,
+        "gap": 4.7653,
+        "p_cover": 0.61015
+      },
+      {
+        "matchup": "Arkansas @ Auburn",
+        "side": "Auburn",
+        "book": "betmgm",
+        "line": -10.0,
+        "price": -108.0,
+        "mu_margin": 14.251404616820832,
+        "sigma_margin": 18.740533896591923,
+        "edge": 0.09053550461993976,
+        "edge_pct": 9.05,
+        "gap": 4.2514,
+        "p_cover": 0.5905355046199398
+      },
+      {
+        "matchup": "Texas State @ Oregon State",
+        "side": "Texas State",
+        "book": "betmgm",
+        "line": 5.5,
+        "price": -108.0,
+        "mu_margin": 1.7914225299578481,
+        "sigma_margin": 18.016341172110046,
+        "edge": 0.0801297540699688,
+        "edge_pct": 8.01,
+        "gap": 3.7086,
+        "p_cover": 0.5758
+      },
+      {
+        "matchup": "Kentucky @ Tennessee",
+        "side": "Kentucky",
+        "book": "hardrockbet",
+        "line": 6.5,
+        "price": -105.0,
+        "mu_margin": 3.056650004940471,
+        "sigma_margin": 19.42450741654352,
+        "edge": 0.08263423618634885,
+        "edge_pct": 8.26,
+        "gap": 3.4433,
+        "p_cover": 0.5718,
+        "mac_edge_pct": 8.3,
+        "delta_pp_vs_mac": 0.037,
+        "ky_pass": true
+      }
+    ],
+    "kentucky_rule": "FAIL if |edge \u2212 8.3%| > 0.5 pp"
+  },
+  "B1": {
+    "verdict": "PASS",
+    "counts_per_week": {
+      "1": 99,
+      "2": 86,
+      "3": 75,
+      "4": 71,
+      "5": 59,
+      "6": 58,
+      "7": 62,
+      "8": 56,
+      "9": 56,
+      "10": 63,
+      "11": 67,
+      "12": 70,
+      "13": 65,
+      "15": 1
+    },
+    "duplicate_game_ids": 0,
+    "completed_without_points": 0,
+    "neutral_site_count": 11,
+    "card_games": [
+      {
+        "game_id": 401856743,
+        "home": "Missouri",
+        "away": "Texas",
+        "neutral": false,
+        "final": {
+          "home": "20",
+          "away": "34"
+        },
+        "plays_scoreboard": {
+          "note": "no home/away scoreboard columns"
+        }
+      },
+      {
+        "game_id": 401856741,
+        "home": "Ole Miss",
+        "away": "Georgia",
+        "neutral": false,
+        "final": {
+          "home": "7",
+          "away": "42"
+        },
+        "plays_scoreboard": {
+          "note": "no home/away scoreboard columns"
+        }
+      },
+      {
+        "game_id": 401856740,
+        "home": "LSU",
+        "away": "Alabama",
+        "neutral": false,
+        "final": {
+          "home": "13",
+          "away": "31"
+        },
+        "plays_scoreboard": {
+          "note": "no home/away scoreboard columns"
+        }
+      },
+      {
+        "game_id": 401858292,
+        "home": "UConn",
+        "away": "North Carolina",
+        "neutral": false,
+        "final": {
+          "home": "21",
+          "away": "38"
+        },
+        "plays_scoreboard": {
+          "note": "no home/away scoreboard columns"
+        }
+      },
+      {
+        "game_id": 401856738,
+        "home": "Auburn",
+        "away": "Arkansas",
+        "neutral": false,
+        "final": {
+          "home": "26",
+          "away": "23"
+        },
+        "plays_scoreboard": {
+          "note": "no home/away scoreboard columns"
+        }
+      },
+      {
+        "game_id": 401860912,
+        "home": "Oregon State",
+        "away": "Texas State",
+        "neutral": false,
+        "final": {
+          "home": "21",
+          "away": "42"
+        },
+        "plays_scoreboard": {
+          "note": "no home/away scoreboard columns"
+        }
+      },
+      {
+        "game_id": 401856745,
+        "home": "Tennessee",
+        "away": "Kentucky",
+        "neutral": false,
+        "final": {
+          "home": "34",
+          "away": "6"
+        },
+        "plays_scoreboard": {
+          "note": "no home/away scoreboard columns"
+        }
+      }
+    ]
+  },
+  "B2": {
+    "verdict": "PASS",
+    "mean_snaps_by_week": {
+      "8": 182.71428571428572,
+      "9": 179.89285714285714,
+      "10": 179.11111111111111
+    },
+    "no_pbp_completed": [],
+    "lt_100_snaps": [],
+    "null_epa_share": {
+      "8": 0.251563721657545,
+      "9": 0.2498511018463371,
+      "10": 0.25425381070542363
+    },
+    "garbage_time_drop": {
+      "8": {
+        "before": 10232,
+        "after": 9299,
+        "drop_share": 0.09118451915559031
+      },
+      "9": {
+        "before": 10074,
+        "after": 8746,
+        "drop_share": 0.13182449870954935
+      },
+      "10": {
+        "before": 11284,
+        "after": 9910,
+        "drop_share": 0.1217653314427508
+      }
+    },
+    "garbage_outliers": []
+  },
+  "B3": {
+    "verdict": "PASS",
+    "team_id_to_multiple_schools": {},
+    "school_to_multiple_ids": {},
+    "w10_fbs_missing_filter_history": []
+  },
+  "B4": {
+    "verdict": "FAIL",
+    "plays": [
+      {
+        "game_id": 401856743,
+        "cfbd_home": "Missouri",
+        "cfbd_away": "Texas",
+        "odds_home_raw": [
+          "Missouri"
+        ],
+        "odds_away_raw": [
+          "Texas"
+        ],
+        "odds_home_norm": [
+          "Missouri"
+        ],
+        "odds_away_norm": [
+          "Texas"
+        ],
+        "book": "fanduel",
+        "posted_side": "Missouri",
+        "posted_line": 2.5,
+        "home_side_line": 2.5,
+        "posted_side_line_at_book": 2.5,
+        "line_match": true
+      },
+      {
+        "game_id": 401856741,
+        "cfbd_home": "Ole Miss",
+        "cfbd_away": "Georgia",
+        "odds_home_raw": [
+          "Ole Miss"
+        ],
+        "odds_away_raw": [
+          "Georgia"
+        ],
+        "odds_home_norm": [
+          "Ole Miss"
+        ],
+        "odds_away_norm": [
+          "Georgia"
+        ],
+        "book": "espnbet",
+        "posted_side": "Ole Miss",
+        "posted_line": 3.5,
+        "home_side_line": 3.5,
+        "posted_side_line_at_book": 3.5,
+        "line_match": true
+      },
+      {
+        "game_id": 401856740,
+        "cfbd_home": "LSU",
+        "cfbd_away": "Alabama",
+        "odds_home_raw": [
+          "LSU"
+        ],
+        "odds_away_raw": [
+          "Alabama"
+        ],
+        "odds_home_norm": [
+          "LSU"
+        ],
+        "odds_away_norm": [
+          "Alabama"
+        ],
+        "book": "draftkings",
+        "posted_side": "LSU",
+        "posted_line": -6.0,
+        "home_side_line": -5.5,
+        "posted_side_line_at_book": -5.5,
+        "line_match": false
+      },
+      {
+        "game_id": 401858292,
+        "cfbd_home": "UConn",
+        "cfbd_away": "North Carolina",
+        "odds_home_raw": [
+          "UConn"
+        ],
+        "odds_away_raw": [
+          "North Carolina"
+        ],
+        "odds_home_norm": [
+          "UConn"
+        ],
+        "odds_away_norm": [
+          "North Carolina"
+        ],
+        "book": "fanduel",
+        "posted_side": "UConn",
+        "posted_line": 7.5,
+        "home_side_line": 6.5,
+        "posted_side_line_at_book": 6.5,
+        "line_match": false
+      },
+      {
+        "game_id": 401856738,
+        "cfbd_home": "Auburn",
+        "cfbd_away": "Arkansas",
+        "odds_home_raw": [
+          "Auburn"
+        ],
+        "odds_away_raw": [
+          "Arkansas"
+        ],
+        "odds_home_norm": [
+          "Auburn"
+        ],
+        "odds_away_norm": [
+          "Arkansas"
+        ],
+        "book": "betmgm",
+        "posted_side": "Auburn",
+        "posted_line": -10.0,
+        "home_side_line": -10.5,
+        "posted_side_line_at_book": -10.5,
+        "line_match": false
+      },
+      {
+        "game_id": 401860912,
+        "cfbd_home": "Oregon State",
+        "cfbd_away": "Texas State",
+        "odds_home_raw": [
+          "Oregon State"
+        ],
+        "odds_away_raw": [
+          "Texas State"
+        ],
+        "odds_home_norm": [
+          "Oregon State"
+        ],
+        "odds_away_norm": [
+          "Texas State"
+        ],
+        "book": "betmgm",
+        "posted_side": "Texas State",
+        "posted_line": 5.5,
+        "home_side_line": -6.5,
+        "posted_side_line_at_book": 6.5,
+        "line_match": false
+      },
+      {
+        "game_id": 401856745,
+        "cfbd_home": "Tennessee",
+        "cfbd_away": "Kentucky",
+        "odds_home_raw": [
+          "Tennessee"
+        ],
+        "odds_away_raw": [
+          "Kentucky"
+        ],
+        "odds_home_norm": [
+          "Tennessee"
+        ],
+        "odds_away_norm": [
+          "Kentucky"
+        ],
+        "book": "hardrockbet",
+        "posted_side": "Kentucky",
+        "posted_line": 6.5,
+        "home_side_line": -6.5,
+        "posted_side_line_at_book": 6.5,
+        "line_match": true
+      }
+    ],
+    "credits_used": 0
+  },
+  "D1": {
+    "verdict": "PASS",
+    "note": "Full additive decomposition unavailable for LightGBM ensemble. Recomputed with CURRENT (W11_FCSFIX) code at Nov4 as_of \u2014 not bitwise identical to Nov4 publish (old FCS pin). Feature parts listed; they do not sum to \u03bc.",
+    "rating_digest": "5ba9e7c47dc7435d5c64c1b8a0e66f7a77dc29cf9de61cea689732808fcf4ea4",
+    "enet_meta": {
+      "type": "ElasticNetMuHead",
+      "has_coef": false,
+      "signature_n": null
+    },
+    "games": [
+      {
+        "game_id": 401856743,
+        "matchup": "Texas @ Missouri",
+        "published_mu": 4.327435737339203,
+        "recomputed_pred_margin": 3.9562689289448603,
+        "abs_delta_vs_published": 0.37116680839434313,
+        "feature_parts": {
+          "home_off_epa": 0.03193364755255465,
+          "away_off_epa": 0.013408101930741594,
+          "off_epa_diff": 0.018525545621813057,
+          "rating_diff_off_epa": 0.018525545621813057,
+          "home_def_epa": 0.22666000916139648,
+          "away_def_epa": 0.21402899121418845,
+          "def_epa_diff": 0.012631017947208029,
+          "rating_diff_def_epa": 0.012631017947208029
+        },
+        "sum_feature_parts": 0.5483438769969233,
+        "additive_identity": "NO \u2014 ensemble (LightGBM + members); parts are inputs not additive terms",
+        "missouri_frame": {
+          "home_mu_margin": 4.327435737339203,
+          "american_style_home_line": -4.327435737339203,
+          "copy": "ridge has Missouri -4.3",
+          "note": "Published mu_margin is home\u2212away; negative American line = home favorite."
+        }
+      },
+      {
+        "game_id": 401856741,
+        "matchup": "Georgia @ Ole Miss",
+        "published_mu": 2.6901103503443773,
+        "recomputed_pred_margin": 2.5383971862642345,
+        "abs_delta_vs_published": 0.1517131640801428,
+        "feature_parts": {
+          "home_off_epa": 0.2139451436704292,
+          "away_off_epa": 0.20179285531314478,
+          "off_epa_diff": 0.012152288357284408,
+          "rating_diff_off_epa": 0.012152288357284408,
+          "home_def_epa": 0.07897007653264244,
+          "away_def_epa": 0.07957659386539417,
+          "def_epa_diff": -0.0006065173327517298,
+          "rating_diff_def_epa": -0.0006065173327517298
+        },
+        "sum_feature_parts": 0.597376211430676,
+        "additive_identity": "NO \u2014 ensemble (LightGBM + members); parts are inputs not additive terms",
+        "missouri_frame": null
+      },
+      {
+        "game_id": 401856740,
+        "matchup": "Alabama @ LSU",
+        "published_mu": 11.61821385597361,
+        "recomputed_pred_margin": 11.6639928114142,
+        "abs_delta_vs_published": 0.04577895544059096,
+        "feature_parts": {
+          "home_off_epa": 0.2763571504419156,
+          "away_off_epa": 0.11454817192551,
+          "off_epa_diff": 0.1618089785164056,
+          "rating_diff_off_epa": 0.1618089785164056,
+          "home_def_epa": 0.17629612796730537,
+          "away_def_epa": 0.13301256544196202,
+          "def_epa_diff": 0.04328356252534335,
+          "rating_diff_def_epa": 0.04328356252534335
+        },
+        "sum_feature_parts": 1.110399097860191,
+        "additive_identity": "NO \u2014 ensemble (LightGBM + members); parts are inputs not additive terms",
+        "missouri_frame": null
+      },
+      {
+        "game_id": 401858292,
+        "matchup": "North Carolina @ UConn",
+        "published_mu": -2.7347416090196437,
+        "recomputed_pred_margin": -2.704526253823957,
+        "abs_delta_vs_published": 0.030215355195686744,
+        "feature_parts": {
+          "home_off_epa": 0.03440677351993894,
+          "away_off_epa": 0.09240519921456793,
+          "off_epa_diff": -0.057998425694628986,
+          "rating_diff_off_epa": -0.057998425694628986,
+          "home_def_epa": -0.06098289636085379,
+          "away_def_epa": 0.03198696908026921,
+          "def_epa_diff": -0.09296986544112301,
+          "rating_diff_def_epa": -0.09296986544112301
+        },
+        "sum_feature_parts": -0.20412053681758172,
+        "additive_identity": "NO \u2014 ensemble (LightGBM + members); parts are inputs not additive terms",
+        "missouri_frame": null
+      },
+      {
+        "game_id": 401856738,
+        "matchup": "Arkansas @ Auburn",
+        "published_mu": 14.251404616820832,
+        "recomputed_pred_margin": 14.116381686854513,
+        "abs_delta_vs_published": 0.13502292996631837,
+        "feature_parts": {
+          "home_off_epa": 0.09789736806572011,
+          "away_off_epa": 0.017210798853787783,
+          "off_epa_diff": 0.08068656921193232,
+          "rating_diff_off_epa": 0.08068656921193232,
+          "home_def_epa": 0.09226993401059935,
+          "away_def_epa": -0.0244223918953374,
+          "def_epa_diff": 0.11669232590593676,
+          "rating_diff_def_epa": 0.11669232590593676
+        },
+        "sum_feature_parts": 0.577713499270508,
+        "additive_identity": "NO \u2014 ensemble (LightGBM + members); parts are inputs not additive terms",
+        "missouri_frame": null
+      },
+      {
+        "game_id": 401860912,
+        "matchup": "Texas State @ Oregon State",
+        "published_mu": 1.7914225299578481,
+        "recomputed_pred_margin": 1.7025281281140954,
+        "abs_delta_vs_published": 0.08889440184375275,
+        "feature_parts": {
+          "home_off_epa": 0.07875642028169355,
+          "away_off_epa": 0.04391086803709091,
+          "off_epa_diff": 0.03484555224460264,
+          "rating_diff_off_epa": 0.03484555224460264,
+          "home_def_epa": -0.04751286130053479,
+          "away_def_epa": 0.047767157521948427,
+          "def_epa_diff": -0.09528001882248321,
+          "rating_diff_def_epa": -0.09528001882248321
+        },
+        "sum_feature_parts": 0.002052651384436971,
+        "additive_identity": "NO \u2014 ensemble (LightGBM + members); parts are inputs not additive terms",
+        "missouri_frame": null
+      },
+      {
+        "game_id": 401856745,
+        "matchup": "Kentucky @ Tennessee",
+        "published_mu": 3.056650004940471,
+        "recomputed_pred_margin": 3.00198866730902,
+        "abs_delta_vs_published": 0.05466133763145109,
+        "feature_parts": {
+          "home_off_epa": 0.0231745201215383,
+          "away_off_epa": 0.11040247723125488,
+          "off_epa_diff": -0.08722795710971658,
+          "rating_diff_off_epa": -0.08722795710971658,
+          "home_def_epa": 0.2625778778494174,
+          "away_def_epa": 0.1323043191151115,
+          "def_epa_diff": 0.13027355873430588,
+          "rating_diff_def_epa": 0.13027355873430588
+        },
+        "sum_feature_parts": 0.6145503975665008,
+        "additive_identity": "NO \u2014 ensemble (LightGBM + members); parts are inputs not additive terms",
+        "missouri_frame": null
+      },
+      {
+        "game_id": 401870795,
+        "matchup": "Liberty @ New Mexico State",
+        "published_mu": -22.665425254666555,
+        "recomputed_pred_margin": -22.382001056064727,
+        "abs_delta_vs_published": 0.28342419860182844,
+        "feature_parts": {
+          "home_off_epa": -0.2954320331207662,
+          "away_off_epa": 0.14629100076116647,
+          "off_epa_diff": -0.4417230338819327,
+          "rating_diff_off_epa": -0.4417230338819327,
+          "home_def_epa": -0.037704047189822835,
+          "away_def_epa": 0.1020798650184509,
+          "def_epa_diff": -0.13978391220827374,
+          "rating_diff_def_epa": -0.13978391220827374
+        },
+        "sum_feature_parts": -1.2477791067113846,
+        "additive_identity": "NO \u2014 ensemble (LightGBM + members); parts are inputs not additive terms",
+        "missouri_frame": null
+      },
+      {
+        "game_id": 401856853,
+        "matchup": "Iowa State @ Baylor",
+        "published_mu": 17.62965406854603,
+        "recomputed_pred_margin": 17.96808942326578,
+        "abs_delta_vs_published": 0.33843535471974917,
+        "feature_parts": {
+          "home_off_epa": 0.11585660295486687,
+          "away_off_epa": 0.039494339249871786,
+          "off_epa_diff": 0.07636226370499508,
+          "rating_diff_off_epa": 0.07636226370499508,
+          "home_def_epa": 0.18019635291241687,
+          "away_def_epa": -0.03263041132333332,
+          "def_epa_diff": 0.2128267642357502,
+          "rating_diff_def_epa": 0.2128267642357502
+        },
+        "sum_feature_parts": 0.8812949396753127,
+        "additive_identity": "NO \u2014 ensemble (LightGBM + members); parts are inputs not additive terms",
+        "missouri_frame": null
+      },
+      {
+        "game_id": 401858512,
+        "matchup": "UCLA @ Minnesota",
+        "published_mu": -6.0397435139217555,
+        "recomputed_pred_margin": -6.035309635658614,
+        "abs_delta_vs_published": 0.004433878263141899,
+        "feature_parts": {
+          "home_off_epa": -0.02799686528793664,
+          "away_off_epa": 0.06678826634014243,
+          "off_epa_diff": -0.09478513162807907,
+          "rating_diff_off_epa": -0.09478513162807907,
+          "home_def_epa": 0.1791085679660136,
+          "away_def_epa": 0.2793043534633864,
+          "def_epa_diff": -0.10019578549737279,
+          "rating_diff_def_epa": -0.10019578549737279
+        },
+        "sum_feature_parts": 0.10724248823070204,
+        "additive_identity": "NO \u2014 ensemble (LightGBM + members); parts are inputs not additive terms",
+        "missouri_frame": null
+      },
+      {
+        "game_id": 401871075,
+        "matchup": "Sam Houston @ Jacksonville State",
+        "published_mu": 21.08422293608617,
+        "recomputed_pred_margin": 20.933994949581596,
+        "abs_delta_vs_published": 0.15022798650457503,
+        "feature_parts": {
+          "home_off_epa": 0.018996454458959516,
+          "away_off_epa": -0.28554240677017756,
+          "off_epa_diff": 0.3045388612291371,
+          "rating_diff_off_epa": 0.3045388612291371,
+          "home_def_epa": -0.12439420368547581,
+          "away_def_epa": -0.09994396447507282,
+          "def_epa_diff": -0.024450239210402985,
+          "rating_diff_def_epa": -0.024450239210402985
+        },
+        "sum_feature_parts": 0.06929312356570154,
+        "additive_identity": "NO \u2014 ensemble (LightGBM + members); parts are inputs not additive terms",
+        "missouri_frame": null
+      },
+      {
+        "game_id": 401856854,
+        "matchup": "Oklahoma State @ Kansas State",
+        "published_mu": -7.835640700058754,
+        "recomputed_pred_margin": -7.781407652273611,
+        "abs_delta_vs_published": 0.05423304778514293,
+        "feature_parts": {
+          "home_off_epa": 0.057566346313396265,
+          "away_off_epa": 0.23384853841160075,
+          "off_epa_diff": -0.17628219209820448,
+          "rating_diff_off_epa": -0.17628219209820448,
+          "home_def_epa": -0.06426044563838304,
+          "away_def_epa": -0.05933635914825015,
+          "def_epa_diff": -0.004924086490132887,
+          "rating_diff_def_epa": -0.004924086490132887
+        },
+        "sum_feature_parts": -0.19459447723831091,
+        "additive_identity": "NO \u2014 ensemble (LightGBM + members); parts are inputs not additive terms",
+        "missouri_frame": null
+      }
+    ],
+    "missouri_sign": {
+      "home_mu_margin": 4.327435737339203,
+      "american_style_home_line": -4.327435737339203,
+      "copy": "ridge has Missouri -4.3",
+      "note": "Published mu_margin is home\u2212away; negative American line = home favorite."
+    }
+  },
+  "D2": {
+    "verdict": "PASS",
+    "by_week": {
+      "8": {
+        "as_of": "2026-10-20T14:52:13.785767+00:00",
+        "vintage_label": "W9A_REVAL",
+        "model_identity": {
+          "champion_version": 2,
+          "model_version": "production-v0_reduced_v3",
+          "registry_name": "ncaa-quant",
+          "run_id": "task23_fundamental_reduced_v3"
+        },
+        "ensemble_scope_label": "REDUCED_PER_ADR_0013",
+        "feature_time_label": "FEATURE_TIME=TUESDAY_DECISION"
+      },
+      "9": {
+        "as_of": "2026-10-28T14:04:32.174965+00:00",
+        "vintage_label": "W9A_REVAL",
+        "model_identity": {
+          "champion_version": 2,
+          "model_version": "production-v0_reduced_v3",
+          "registry_name": "ncaa-quant",
+          "run_id": "task23_fundamental_reduced_v3"
+        },
+        "ensemble_scope_label": "REDUCED_PER_ADR_0013",
+        "feature_time_label": "FEATURE_TIME=TUESDAY_DECISION"
+      },
+      "10": {
+        "as_of": "2026-11-04T14:03:14.629521+00:00",
+        "vintage_label": "W9A_REVAL",
+        "model_identity": {
+          "champion_version": 2,
+          "model_version": "production-v0_reduced_v3",
+          "registry_name": "ncaa-quant",
+          "run_id": "task23_fundamental_reduced_v3"
+        },
+        "ensemble_scope_label": "REDUCED_PER_ADR_0013",
+        "feature_time_label": "FEATURE_TIME=TUESDAY_DECISION"
+      },
+      "11": {
+        "as_of": "2026-11-12T15:37:19.689466+00:00",
+        "vintage_label": "W11_FCSFIX",
+        "model_identity": {
+          "champion_version": 2,
+          "model_version": "production-v0_reduced_v3",
+          "registry_name": "ncaa-quant",
+          "run_id": "task23_fundamental_reduced_v3"
+        },
+        "ensemble_scope_label": "REDUCED_PER_ADR_0013",
+        "feature_time_label": "FEATURE_TIME=TUESDAY_DECISION"
+      }
+    },
+    "changes": [
+      {
+        "from": 8,
+        "to": 9,
+        "change": [
+          "no identity field changes"
+        ]
+      },
+      {
+        "from": 9,
+        "to": 10,
+        "change": [
+          "no identity field changes"
+        ]
+      },
+      {
+        "from": 10,
+        "to": 11,
+        "change": [
+          "vintage_label: W9A_REVAL \u2192 W11_FCSFIX"
+        ]
+      }
+    ]
+  },
+  "D3": {
+    "verdict": "PASS",
+    "rows": [
+      {
+        "game_id": 401856743,
+        "role": "home",
+        "team_id": 142,
+        "publish_as_of": "2026-11-04T14:03:14.629521+00:00",
+        "latest_rating_event_time": "2026-11-01T04:45:00+00:00",
+        "latest_rating_week": 9,
+        "kickoff": "2026-11-07T17:00:00+00:00",
+        "fail_after_kickoff": false,
+        "fail_older_than_week8": false
+      },
+      {
+        "game_id": 401856743,
+        "role": "away",
+        "team_id": 251,
+        "publish_as_of": "2026-11-04T14:03:14.629521+00:00",
+        "latest_rating_event_time": "2026-11-01T04:30:00+00:00",
+        "latest_rating_week": 9,
+        "kickoff": "2026-11-07T17:00:00+00:00",
+        "fail_after_kickoff": false,
+        "fail_older_than_week8": false
+      },
+      {
+        "game_id": 401856741,
+        "role": "home",
+        "team_id": 145,
+        "publish_as_of": "2026-11-04T14:03:14.629521+00:00",
+        "latest_rating_event_time": "2026-10-31T21:45:00+00:00",
+        "latest_rating_week": 9,
+        "kickoff": "2026-11-08T00:30:00+00:00",
+        "fail_after_kickoff": false,
+        "fail_older_than_week8": false
+      },
+      {
+        "game_id": 401856741,
+        "role": "away",
+        "team_id": 61,
+        "publish_as_of": "2026-11-04T14:03:14.629521+00:00",
+        "latest_rating_event_time": "2026-11-01T00:30:00+00:00",
+        "latest_rating_week": 9,
+        "kickoff": "2026-11-08T00:30:00+00:00",
+        "fail_after_kickoff": false,
+        "fail_older_than_week8": false
+      },
+      {
+        "game_id": 401856740,
+        "role": "home",
+        "team_id": 99,
+        "publish_as_of": "2026-11-04T14:03:14.629521+00:00",
+        "latest_rating_event_time": "2026-10-24T21:00:00+00:00",
+        "latest_rating_week": 8,
+        "kickoff": "2026-11-07T20:30:00+00:00",
+        "fail_after_kickoff": false,
+        "fail_older_than_week8": false
+      },
+      {
+        "game_id": 401856740,
+        "role": "away",
+        "team_id": 333,
+        "publish_as_of": "2026-11-04T14:03:14.629521+00:00",
+        "latest_rating_event_time": "2026-10-25T00:30:00+00:00",
+        "latest_rating_week": 8,
+        "kickoff": "2026-11-07T20:30:00+00:00",
+        "fail_after_kickoff": false,
+        "fail_older_than_week8": false
+      },
+      {
+        "game_id": 401858292,
+        "role": "home",
+        "team_id": 41,
+        "publish_as_of": "2026-11-04T14:03:14.629521+00:00",
+        "latest_rating_event_time": "2026-11-01T00:00:00+00:00",
+        "latest_rating_week": 9,
+        "kickoff": "2026-11-07T17:00:00+00:00",
+        "fail_after_kickoff": false,
+        "fail_older_than_week8": false
+      },
+      {
+        "game_id": 401858292,
+        "role": "away",
+        "team_id": 153,
+        "publish_as_of": "2026-11-04T14:03:14.629521+00:00",
+        "latest_rating_event_time": "2026-11-01T04:30:00+00:00",
+        "latest_rating_week": 9,
+        "kickoff": "2026-11-07T17:00:00+00:00",
+        "fail_after_kickoff": false,
+        "fail_older_than_week8": false
+      },
+      {
+        "game_id": 401856738,
+        "role": "home",
+        "team_id": 2,
+        "publish_as_of": "2026-11-04T14:03:14.629521+00:00",
+        "latest_rating_event_time": "2026-10-31T21:45:00+00:00",
+        "latest_rating_week": 9,
+        "kickoff": "2026-11-07T17:45:00+00:00",
+        "fail_after_kickoff": false,
+        "fail_older_than_week8": false
+      },
+      {
+        "game_id": 401856738,
+        "role": "away",
+        "team_id": 8,
+        "publish_as_of": "2026-11-04T14:03:14.629521+00:00",
+        "latest_rating_event_time": "2026-11-01T04:45:00+00:00",
+        "latest_rating_week": 9,
+        "kickoff": "2026-11-07T17:45:00+00:00",
+        "fail_after_kickoff": false,
+        "fail_older_than_week8": false
+      },
+      {
+        "game_id": 401860912,
+        "role": "home",
+        "team_id": 204,
+        "publish_as_of": "2026-11-04T14:03:14.629521+00:00",
+        "latest_rating_event_time": "2026-11-01T08:00:00+00:00",
+        "latest_rating_week": 9,
+        "kickoff": "2026-11-08T03:30:00+00:00",
+        "fail_after_kickoff": false,
+        "fail_older_than_week8": false
+      },
+      {
+        "game_id": 401860912,
+        "role": "away",
+        "team_id": 326,
+        "publish_as_of": "2026-11-04T14:03:14.629521+00:00",
+        "latest_rating_event_time": "2026-11-01T07:00:00+00:00",
+        "latest_rating_week": 9,
+        "kickoff": "2026-11-08T03:30:00+00:00",
+        "fail_after_kickoff": false,
+        "fail_older_than_week8": false
+      },
+      {
+        "game_id": 401856745,
+        "role": "home",
+        "team_id": 2633,
+        "publish_as_of": "2026-11-04T14:03:14.629521+00:00",
+        "latest_rating_event_time": "2026-10-25T00:30:00+00:00",
+        "latest_rating_week": 8,
+        "kickoff": "2026-11-07T23:15:00+00:00",
+        "fail_after_kickoff": false,
+        "fail_older_than_week8": false
+      },
+      {
+        "game_id": 401856745,
+        "role": "away",
+        "team_id": 96,
+        "publish_as_of": "2026-11-04T14:03:14.629521+00:00",
+        "latest_rating_event_time": "2026-10-25T04:30:00+00:00",
+        "latest_rating_week": 8,
+        "kickoff": "2026-11-07T23:15:00+00:00",
+        "fail_after_kickoff": false,
+        "fail_older_than_week8": false
+      }
+    ],
+    "rule": "FAIL if latest rating event_time >= kickoff OR latest week < 8"
+  },
+  "E1": {
+    "verdict": "PASS",
+    "weeks": [
+      {
+        "week": 5,
+        "n": 57,
+        "mae_model": 14.075151042959202,
+        "mae_close": null,
+        "mae_diff_model_minus_close": null,
+        "cov80": 0.8571428571428571
+      },
+      {
+        "week": 6,
+        "n": 58,
+        "mae_model": 11.597808020097924,
+        "mae_close": null,
+        "mae_diff_model_minus_close": null,
+        "cov80": 0.9482758620689655
+      },
+      {
+        "week": 7,
+        "n": 62,
+        "mae_model": 12.420541482263316,
+        "mae_close": null,
+        "mae_diff_model_minus_close": null,
+        "cov80": 0.9838709677419355
+      },
+      {
+        "week": 8,
+        "n": 56,
+        "mae_model": 12.076549155041759,
+        "mae_close": null,
+        "mae_diff_model_minus_close": null,
+        "cov80": 0.9642857142857143
+      },
+      {
+        "week": 9,
+        "n": 54,
+        "mae_model": 14.152269688624255,
+        "mae_close": null,
+        "mae_diff_model_minus_close": null,
+        "cov80": 0.9259259259259259
+      },
+      {
+        "week": 10,
+        "n": 61,
+        "mae_model": 13.914226083711632,
+        "mae_close": null,
+        "mae_diff_model_minus_close": null,
+        "cov80": 0.8360655737704918
+      }
+    ]
+  },
+  "E2": {
+    "verdict": "UNVERIFIED",
+    "n_slate_rows": 0,
+    "by_bucket": {
+      "0-2": {
+        "n": 0,
+        "ats_pct": null
+      },
+      "2-4": {
+        "n": 0,
+        "ats_pct": null
+      },
+      "4-7": {
+        "n": 0,
+        "ats_pct": null
+      },
+      "7+": {
+        "n": 0,
+        "ats_pct": null
+      }
+    },
+    "by_tier_bucket": {
+      "P4-P4": {
+        "0-2": {
+          "n": 0,
+          "ats_pct": null
+        },
+        "2-4": {
+          "n": 0,
+          "ats_pct": null
+        },
+        "4-7": {
+          "n": 0,
+          "ats_pct": null
+        },
+        "7+": {
+          "n": 0,
+          "ats_pct": null
+        }
+      },
+      "P4-G5": {
+        "0-2": {
+          "n": 0,
+          "ats_pct": null
+        },
+        "2-4": {
+          "n": 0,
+          "ats_pct": null
+        },
+        "4-7": {
+          "n": 0,
+          "ats_pct": null
+        },
+        "7+": {
+          "n": 0,
+          "ats_pct": null
+        }
+      },
+      "G5-G5": {
+        "0-2": {
+          "n": 0,
+          "ats_pct": null
+        },
+        "2-4": {
+          "n": 0,
+          "ats_pct": null
+        },
+        "4-7": {
+          "n": 0,
+          "ats_pct": null
+        },
+        "7+": {
+          "n": 0,
+          "ats_pct": null
+        }
+      }
+    }
+  },
+  "E3": {
+    "verdict": "UNVERIFIED",
+    "n_ledger_files": 7,
+    "n_card_play_rows": 7,
+    "note": "Ledger schemas vary; full W-L-P/CLV tabulation needs per-play grade fields. Week-10 closes: see W11-1 audit when present. Numbers-only summary deferred to partial counts.",
+    "ledger_files": [
+      "posted_calls_2026_w2.json",
+      "posted_calls_2026_w4.json",
+      "posted_calls_2026_w5.json",
+      "posted_calls_2026_w6.json",
+      "posted_calls_2026_w7.json",
+      "posted_calls_2026_w8.json",
+      "posted_calls_2026_w9.json"
+    ],
+    "w10_closes": {
+      "audit_present": true,
+      "raw_snip": "\ufffd\ufffd=\u0000=\u0000=\u0000 \u0000g\u0000r\u0000a\u0000d\u0000e\u0000_\u0000e\u0000x\u0000p\u0000o\u0000r\u0000t\u0000(\u0000s\u0000e\u0000a\u0000s\u0000o\u0000n\u0000=\u00002\u00000\u00002\u00006\u0000)\u0000 \u0000=\u0000=\u0000=\u0000\n\u0000\n\u0000G\u0000R\u0000A\u0000D\u0000E\u0000_\u0000S\u0000T\u0000A\u0000T\u0000U\u0000S\u0000 \u0000{\u0000'\u0000g\u0000r\u0000a\u0000d\u0000e\u0000d\u0000'\u0000:\u0000 \u00006\u00007\u00008\u0000,\u0000 \u0000'\u0000n\u0000o\u0000_\u0000p\u0000r\u0000e\u0000_\u0000k\u0000i\u0000c\u0000k\u0000o\u0000f\u0000f\u0000_\u0000p\u0000u\u0000b\u0000l\u0000i\u0000s\u0000h\u0000'\u0000:\u0000 \u00001\u00003\u0000,\u0000 \u0000'\u0000g\u0000a\u0000m\u0000e\u0000_\u0000n\u0000o\u0000t\u0000_\u0000f\u0000i\u0000n\u0000a\u0000l\u0000'\u0000:\u0000 \u00001\u00009\u00007\u0000}\u0000\n\u0000\n\u0000\n\u0000\n\u0000=\u0000=\u0000=\u0000 \u0000W\u0000E\u0000E\u0000K\u0000 \u00005\u0000-\u00001\u00000\u0000 \u0000F\u0000B\u0000S\u0000-\u0000F\u0000B\u0000S\u0000 \u0000M\u0000A\u0000E\u0000 \u0000/\u0000 \u0000c\u0000o\u0000v\u0000e\u0000r\u0000a\u0000g\u0000e\u0000 \u0000=\u0000=\u0000=\u0000\n\u0000\n\u0000w\u00005\u0000 \u0000n\u0000=\u00005\u00004\u0000 \u0000M\u0000A\u0000E\u0000=\u00001\u00004\u0000.\u00000\u00009\u00003\u00008\u0000 \u0000c\u0000o\u0000v\u00008\u00000\u0000=\u00000\u0000.\u00008\u00005\u00001\u00009\u0000 \u0000(\u00004\u00006\u0000/\u00005\u00004\u0000)\u0000\n\u0000\n\u0000w\u00006\u0000 \u0000n\u0000=\u00005\u00008\u0000 \u0000M\u0000A\u0000E\u0000=\u00001\u00001\u0000.\u00005\u00009\u00007\u00008\u0000 \u0000c\u0000o\u0000v\u00008\u00000\u0000=\u00000\u0000.\u00009\u00004\u00008\u00003\u0000 \u0000(\u00005\u00005\u0000/\u00005\u00008\u0000)\u0000\n\u0000\n\u0000w\u00007\u0000 \u0000n\u0000=\u00005\u00009\u0000 \u0000M\u0000A\u0000E\u0000=\u00001\u00002\u0000.\u00005\u00009\u00008\u00003\u0000 \u0000c\u0000o\u0000v\u00008\u00000\u0000=\u00000\u0000.\u00009\u00008\u00003\u00001\u0000 \u0000(\u00005\u00008\u0000/\u00005\u00009\u0000)\u0000\n\u0000\n\u0000w\u00008\u0000 \u0000n\u0000=\u00005\u00006\u0000 \u0000M\u0000A\u0000E\u0000=\u00001\u00002\u0000.\u00000\u00007\u00006\u00005\u0000 \u0000c\u0000o\u0000v\u00008\u00000\u0000=\u00000\u0000.\u00009\u00006\u00004\u00003\u0000 \u0000(\u00005\u00004\u0000/\u00005\u00006\u0000)\u0000\n\u0000\n\u0000w\u00009\u0000 \u0000n\u0000=\u00005\u00004\u0000 \u0000M\u0000A\u0000E\u0000=\u00001\u00004\u0000.\u00001\u00005\u00002\u00003\u0000 \u0000c\u0000o\u0000v\u00008\u00000\u0000=\u00000\u0000.\u00009\u00002\u00005\u00009\u0000 \u0000(\u00005\u00000\u0000/\u00005\u00004\u0000)\u0000\n\u0000\n\u0000w\u00001\u00000\u0000 \u0000n\u0000=\u00006\u00000\u0000 \u0000M\u0000A\u0000E\u0000=\u00001\u00003\u0000.\u00005\u00005\u00002\u00008\u0000 \u0000c\u0000o\u0000v\u00008\u00000\u0000=\u00000\u0000.\u00008\u00005\u00000\u00000\u0000 \u0000(\u00005\u00001\u0000/\u00006\u00000\u0000)\u0000\n\u0000\n\u0000\n\u0000\n\u0000=\u0000=\u0000=\u0000 \u0000W\u0000E\u0000E\u0000K\u0000-\u00001\u00000\u0000 \u0000P\u0000O\u0000S\u0000T\u0000E\u0000D\u0000 \u0000C\u0000A\u0000L\u0000L\u0000S\u0000 \u0000(\u0000f\u0000r\u0000o\u0000m\u0000 \u0000t\u0000a\u0000s\u0000k\u0000 \u0000c\u0000a\u0000r\u0000d\u0000;\u0000 \u0000l\u0000e\u0000d\u0000g\u0000e\u0000r\u0000 \u0000a\u0000b\u0000s\u0000e\u0000n\u0000t\u0000)\u0000 \u0000=\u0000=\u0000=\u0000\n\u0000\n\u0000T\u0000e\u0000x\u0000a\u0000s\u0000 \u0000@\u0000 \u0000M\u0000i\u0000s\u0000s\u0000o\u0000u\u0000r\u0000i\u0000:\u0000 \u0000M\u0000i\u0000s\u0000s\u0000o\u0000u\u0000r\u0000i\u0000 \u0000+\u00002\u0000.\u00005\u0000 \u0000@\u0000 \u0000f\u0000a\u0000n\u0000d\u0000u\u0000e\u0000l\u0000 \u0000|\u0000 \u0000f\u0000i\u0000n\u0000a\u0000l\u0000 \u0000T\u0000e\u0000x\u0000a\u0000s\u0000 \u00003\u00004\u0000-\u00002\u00000\u0000 \u0000M\u0000i\u0000s\u0000s\u0000o\u0000u\u0000r\u0000i\u0000 \u0000|\u0000 \u0000L\u0000\n\u0000\n\u0000 \u0000 \u0000c\u0000l\u0000o\u0000s\u0000e\u0000@\u0000f\u0000a\u0000n\u0000d\u0000u\u0000e\u0000l\u0000:\u0000 \u0000l\u0000i\u0000n\u0000e\u0000=\u00002\u0000.\u00005\u0000 \u0000p\u0000r\u0000i\u0000c\u0000e\u0000=\u00001\u00000\u00000\u0000.\u00000\u0000 \u0000(\u00002\u00000\u00002\u00006\u0000-\u00001\u00001\u0000-\u00000\u00004\u0000T\u00002\u00000\u0000:\u00000\u00000\u0000:\u00000\u00003\u0000.\u00002\u00004\u00004\u00003\u00008\u00007\u0000+\u00000\u00000\u0000:\u00000\u00000\u0000)\u0000 \u0000|\u0000 \u0000p\u0000o\u0000s\u0000t\u0000e\u0000d\u0000 \u00002\u0000.\u00005\u0000/\u0000-\u00001\u00000\u00004\u0000.\u00000\u0000\n\u0000\n\u0000G\u0000e\u0000o\u0000r\u0000g\u0000i\u0000a\u0000 \u0000@\u0000 \u0000O\u0000l\u0000e\u0000 \u0000M\u0000i\u0000s\u0000s\u0000:\u0000 \u0000O\u0000l\u0000e\u0000 \u0000M\u0000i\u0000s\u0000s\u0000 \u0000+\u00003\u0000.\u00005\u0000 \u0000@\u0000 \u0000e\u0000s\u0000p\u0000n\u0000b\u0000e\u0000t\u0000 \u0000|\u0000 \u0000f\u0000i\u0000n\u0000a\u0000l\u0000 \u0000G\u0000e\u0000o\u0000r\u0000g\u0000i\u0000a\u0000 \u00004\u00002\u0000-\u00007\u0000 \u0000O\u0000l\u0000e\u0000 \u0000M\u0000i\u0000s\u0000s\u0000 \u0000|\u0000 \u0000L\u0000\n\u0000\n\u0000 \u0000 \u0000c\u0000l\u0000o\u0000s\u0000e\u0000@\u0000e\u0000s\u0000p\u0000n\u0000b\u0000e\u0000t\u0000:\u0000 \u0000l\u0000i\u0000n\u0000e\u0000"
+    }
+  },
+  "E4": {
+    "verdict": "UNVERIFIED",
+    "w10": {
+      "n": 7,
+      "note": "edge/gap fields sparse in ledgers"
+    },
+    "w5_w9": {
+      "n": 0,
+      "note": "edge/gap fields sparse in ledgers"
+    },
+    "note": "P4 share / mean gap / edge / |Ridge\u2212close| require card analysis JSONs with those fields; social-s6-w10-card has some; earlier weeks partial.",
+    "w10_phase1_matrix": "present"
+  },
+  "F1": {
+    "verdict": "FAIL",
+    "plays": [
+      {
+        "game": "Texas @ Missouri",
+        "side": "Missouri",
+        "mu": 4.327435737339203,
+        "sigma": 16.4099400529278,
+        "sigma_source": "publish_history.sigma_margin (ensemble sigma head)",
+        "line": 2.5,
+        "price": -104.0,
+        "p_cover": 0.66765,
+        "vig_free_implied_approx": 0.5,
+        "edge_vs_neg110_other": 0.17442506775067745,
+        "interval_lo": -22.235214759935506,
+        "interval_hi": 30.8688092393327,
+        "interval_width": 53.10402399926821,
+        "normal80_width_from_sigma": 42.06036873065845,
+        "width_matches_sigma": false
+      },
+      {
+        "game": "Kentucky @ Tennessee",
+        "side": "Kentucky",
+        "mu": 3.056650004940471,
+        "sigma": 19.42450741654352,
+        "sigma_source": "publish_history.sigma_margin (ensemble sigma head)",
+        "line": 6.5,
+        "price": -105.0,
+        "p_cover": 0.5718,
+        "vig_free_implied_approx": 0.5,
+        "edge_vs_neg110_other": 0.07740538116591922,
+        "interval_lo": -32.331747004407134,
+        "interval_hi": 30.3324234903331,
+        "interval_width": 62.66417049474023,
+        "normal80_width_from_sigma": 49.78701577922362,
+        "width_matches_sigma": false
+      }
+    ]
+  },
+  "F2": {
+    "gates": {
+      "min_edge": 0.045,
+      "max_gap": 7.0,
+      "qb": "STARTER",
+      "max_plays": 7
+    },
+    "verdict": "PASS",
+    "note": "Week-10 card finalized off-machine; local probe shows qb_status_unknown rejects. Operator card assumed gates edge>=4.5 gap<=7 QB STARTER max7.",
+    "accepted_n": 0,
+    "gate_fails": [],
+    "phase1_present": true,
+    "posted7_gate_fails_edge_gap_only": [],
+    "qb_starter_check": "UNVERIFIED on this machine (Mac QB statuses); local probe was qb_status_unknown"
+  },
+  "G2b": {
+    "verdict": "FAIL",
+    "http": 200,
+    "meta_week": 11,
+    "meta_published_at": "2026-11-12T15:41:33Z",
+    "meta_vintage": "W11_FCSFIX",
+    "higher_is_better_mentions": 0,
+    "banners_flagged": [
+      "stale"
+    ],
+    "defense_label_verdict": "UNVERIFIED/FAIL \u2014 no 'Higher is better' on homepage HTML"
+  },
+  "G3": {
+    "verdict": "FAIL",
+    "tweet_source": "UNVERIFIED \u2014 week-10 tweet/blurb artifacts not present on this machine; evaluated claim text from task prompt against NEW production ratings",
+    "claims": [
+      {
+        "claim": "Tennessee's defense 137th of 138, allowing +0.26 EPA/play",
+        "def_epa": 0.2687026114938438,
+        "rank_1_best": 1,
+        "n": 138,
+        "correct_rank_1_best": 1,
+        "verdict": "FAIL",
+        "note": "Under higher=better, rank 1=best. Claim '137th of 138' \u2248 2nd-worst. Compare rank_1_best to 137."
+      },
+      {
+        "school": "Texas",
+        "label": "Texas's D slipped +0.13 \u2192 +0.21 EPA/play allowed",
+        "series": [
+          {
+            "week": 1,
+            "def_epa": 0.12064945663539048
+          },
+          {
+            "week": 2,
+            "def_epa": 0.12566580875118896
+          },
+          {
+            "week": 3,
+            "def_epa": 0.2119679198477596
+          },
+          {
+            "week": 4,
+            "def_epa": 0.2497552141883823
+          },
+          {
+            "week": 5,
+            "def_epa": 0.2497552141883823
+          },
+          {
+            "week": 6,
+            "def_epa": 0.15948990844699032
+          },
+          {
+            "week": 7,
+            "def_epa": 0.1338595658909306
+          },
+          {
+            "week": 8,
+            "def_epa": 0.21476552687823422
+          },
+          {
+            "week": 9,
+            "def_epa": 0.21402899121418845
+          },
+          {
+            "week": 10,
+            "def_epa": 0.2063193029206943
+          }
+        ],
+        "last_two_def_epa": [
+          {
+            "week": 9,
+            "def_epa": 0.21402899121418845
+          },
+          {
+            "week": 10,
+            "def_epa": 0.2063193029206943
+          }
+        ],
+        "verdict": "FAIL",
+        "correct": "Texas def_epa week9=0.214 \u2192 week10=0.206 (higher def_epa=better; claim's +0.13\u2192+0.21 'allowed' is not def_epa)"
+      },
+      {
+        "school": "Auburn",
+        "label": "Auburn's defense +0.20 \u2192 +0.09 allowed",
+        "series": [
+          {
+            "week": 1,
+            "def_epa": 0.10210917388830217
+          },
+          {
+            "week": 2,
+            "def_epa": 0.11369212368264113
+          },
+          {
+            "week": 3,
+            "def_epa": 0.09307151303711378
+          },
+          {
+            "week": 4,
+            "def_epa": 0.07462497188593291
+          },
+          {
+            "week": 5,
+            "def_epa": 0.09607381392353079
+          },
+          {
+            "week": 6,
+            "def_epa": 0.09607381392353079
+          },
+          {
+            "week": 7,
+            "def_epa": 0.19637493010496396
+          },
+          {
+            "week": 8,
+            "def_epa": 0.07967102834395903
+          },
+          {
+            "week": 9,
+            "def_epa": 0.09226993401059935
+          },
+          {
+            "week": 10,
+            "def_epa": 0.05473389161383727
+          }
+        ],
+        "last_two_def_epa": [
+          {
+            "week": 9,
+            "def_epa": 0.09226993401059935
+          },
+          {
+            "week": 10,
+            "def_epa": 0.05473389161383727
+          }
+        ],
+        "verdict": "FAIL",
+        "correct": "Auburn def_epa week9=0.092 \u2192 week10=0.055"
+      },
+      {
+        "school": "UConn",
+        "label": "UConn's defense negative EPA every week",
+        "series": [
+          {
+            "week": 1,
+            "def_epa": -0.14663471414857926
+          },
+          {
+            "week": 2,
+            "def_epa": -0.18109741352229486
+          },
+          {
+            "week": 3,
+            "def_epa": -0.004505538391174786
+          },
+          {
+            "week": 4,
+            "def_epa": -0.054622000149936206
+          },
+          {
+            "week": 5,
+            "def_epa": -0.07909221471611017
+          },
+          {
+            "week": 6,
+            "def_epa": -0.06892437280800658
+          },
+          {
+            "week": 7,
+            "def_epa": -0.06892437280800658
+          },
+          {
+            "week": 8,
+            "def_epa": -0.033021633531314515
+          },
+          {
+            "week": 9,
+            "def_epa": -0.06098289636085379
+          },
+          {
+            "week": 10,
+            "def_epa": -0.05605954135490542
+          }
+        ],
+        "n_weeks": 10,
+        "n_negative_def_epa": 10,
+        "verdict": "PASS",
+        "correct": "UConn def_epa negative in 10/10 weeks (under higher=better, negative = worse than average)"
+      }
+    ]
+  },
+  "summary_table": [
+    {
+      "check": "C3",
+      "verdict": "PASS"
+    },
+    {
+      "check": "C5",
+      "verdict": "PASS"
+    },
+    {
+      "check": "A1",
+      "verdict": "PASS"
+    },
+    {
+      "check": "A2b",
+      "verdict": "PASS"
+    },
+    {
+      "check": "B1",
+      "verdict": "PASS"
+    },
+    {
+      "check": "B2",
+      "verdict": "PASS"
+    },
+    {
+      "check": "B3",
+      "verdict": "PASS"
+    },
+    {
+      "check": "B4",
+      "verdict": "FAIL"
+    },
+    {
+      "check": "D1",
+      "verdict": "PASS"
+    },
+    {
+      "check": "D2",
+      "verdict": "PASS"
+    },
+    {
+      "check": "D3",
+      "verdict": "PASS"
+    },
+    {
+      "check": "E1",
+      "verdict": "PASS"
+    },
+    {
+      "check": "E2",
+      "verdict": "UNVERIFIED"
+    },
+    {
+      "check": "E3",
+      "verdict": "UNVERIFIED"
+    },
+    {
+      "check": "E4",
+      "verdict": "UNVERIFIED"
+    },
+    {
+      "check": "F1",
+      "verdict": "FAIL"
+    },
+    {
+      "check": "F2",
+      "verdict": "PASS"
+    },
+    {
+      "check": "G2b",
+      "verdict": "FAIL"
+    },
+    {
+      "check": "G3",
+      "verdict": "FAIL"
+    }
+  ]
+}
