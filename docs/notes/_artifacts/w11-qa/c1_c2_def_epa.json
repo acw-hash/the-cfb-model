@@ -1,0 +1,216 @@
+{
+  "generated_from": "C:\\Users\\alecw\\Projects\\the-cfb-model\\data\\artifacts\\state_space\\filter_history.parquet",
+  "ratings_path": "C:\\Users\\alecw\\Projects\\the-cfb-model\\docs\\notes\\_artifacts\\w11-qa\\team_ratings_w10_publish.json",
+  "measurement": {
+    "file": "src/ncaa_quant/ratings/league_state.py",
+    "lines": "384-399",
+    "home_epa_row": "h[home_off]=1.0; h[away_def]=-1.0  \u21d2  y_home_epa \u2248 off_home \u2212 def_away (+ HFA + env)",
+    "away_epa_row": "h[away_off]=1.0; h[home_def]=-1.0  \u21d2  y_away_epa \u2248 off_away \u2212 def_home (+ env)",
+    "implication": "Holding offense fixed, a higher def_epa lowers predicted opponent EPA/play (more suppression) \u21d2 higher def_epa = BETTER defense."
+  },
+  "filter_history_max_season": 2025,
+  "ratings_published_at": "2026-11-04T14:07:21Z",
+  "n_teams_latest": 138,
+  "ratings_source": "C:\\Users\\alecw\\Projects\\the-cfb-model\\docs\\notes\\_artifacts\\w11-qa\\team_ratings_w10_publish.json",
+  "df_columns": [
+    "team_id",
+    "school",
+    "conference",
+    "off_epa",
+    "def_epa",
+    "opp_raw_off_epa",
+    "own_raw_off_epa",
+    "pts_allowed_pg",
+    "pts_scored_pg"
+  ],
+  "df_n": 138,
+  "spearman": {
+    "def_epa_vs_opp_raw_off_epa": {
+      "n": 138,
+      "rho": -0.8070864793408052,
+      "pvalue": 6.382822269612783e-33
+    },
+    "def_epa_vs_pts_allowed": {
+      "n": 138,
+      "rho": -0.702821929118227,
+      "pvalue": 7.396177430771106e-22
+    },
+    "off_epa_vs_own_raw_off_epa": {
+      "n": 138,
+      "rho": 0.7867845996132322,
+      "pvalue": 2.7363574797293264e-30
+    },
+    "off_epa_vs_pts_scored": {
+      "n": 138,
+      "rho": 0.750153840127452,
+      "pvalue": 3.370815249589255e-26
+    }
+  },
+  "c1_verdict": "higher def_epa = BETTER defense",
+  "c1_verdict_short": "BETTER",
+  "c2_fcs_prior": {
+    "fcs_prior_mean_config": -0.05,
+    "fcs_off_epa": -0.05,
+    "fcs_def_epa": 0.05,
+    "fbs_mean_off_epa": -0.0033980853289152855,
+    "fbs_mean_def_epa": 0.003183988929173323,
+    "comment_in_fcs_pinned_state": "Higher def_epa means worse defense under off \u2212 def measurement.",
+    "code": "mean[def] = -config.fcs_prior_mean  # with prior=-0.05 \u2192 def=+0.05",
+    "file_line": "src/ncaa_quant/ratings/state_space.py:529-538",
+    "pinned_fcs_defense_vs_avg_fbs": "BETTER",
+    "fail": true
+  },
+  "c2_predictor": {
+    "file_line": "src/ncaa_quant/evaluation/production_stack.py:438-445",
+    "quote": "for dim in RATING_FEATURE_DIMS: row[f'home_{dim}']=h; row[f'away_{dim}']=a; row[f'{dim}_diff']=h-a; if dim in {off_epa,def_epa}: row[f'rating_diff_{dim}']=h-a",
+    "linear_margin_identity_if_higher_def_better": "home_margin \u221d (off_h \u2212 def_a) \u2212 (off_a \u2212 def_h) = (off_h \u2212 off_a) + (def_h \u2212 def_a) \u21d2 rating_diff_off and rating_diff_def as (home \u2212 away) are correct",
+    "fail": false,
+    "note": "No explicit sign flip on def_epa in feature builder; LightGBM consumes raw diffs. Under C1=BETTER, h\u2212a for def is the right linear direction."
+  },
+  "c2_site_labels": {
+    "RatingTrajectoryChart.tsx:186-188": "Higher is better on defense. The rating measures EPA suppressed...",
+    "fail_if_c1_better": false,
+    "fail_if_c1_worse": true,
+    "aligned_with_c1": true
+  },
+  "c2_acceptance_script": {
+    "file_line": "scripts/_state_space_acceptance_14.py:252-253",
+    "quote": "Higher def_epa = more EPA suppressed = better defense; top_def = eos.sort_values('def_epa', ascending=False)",
+    "aligned_with_c1": true
+  },
+  "c2_build_team_ratings": {
+    "file_line": "src/ncaa_quant/webapp/export.py:1295-1304",
+    "quote": "emits weeks[].def_epa as stored; no rank/sort/label of defense quality",
+    "fail": false
+  },
+  "c2_stop_gate": {
+    "stop": true,
+    "reason": "FCS prior pins defense BETTER than FBS average under C1=BETTER"
+  },
+  "def_epa_extremes": {
+    "highest_10": [
+      {
+        "school": "UCLA",
+        "def_epa": 0.2775861479564041,
+        "pts_allowed_pg": 14.11111111111111,
+        "opp_raw_off_epa": -0.18841797462438936
+      },
+      {
+        "school": "Tennessee",
+        "def_epa": 0.26243018397080836,
+        "pts_allowed_pg": 15.11111111111111,
+        "opp_raw_off_epa": -0.07509842803452375
+      },
+      {
+        "school": "TCU",
+        "def_epa": 0.23054500941457073,
+        "pts_allowed_pg": 15.777777777777779,
+        "opp_raw_off_epa": -0.05663602054299678
+      },
+      {
+        "school": "Missouri",
+        "def_epa": 0.2264854811560809,
+        "pts_allowed_pg": 20.11111111111111,
+        "opp_raw_off_epa": 0.02115261480976601
+      },
+      {
+        "school": "Texas",
+        "def_epa": 0.2126996315739821,
+        "pts_allowed_pg": 17.444444444444443,
+        "opp_raw_off_epa": -0.029967093796144435
+      },
+      {
+        "school": "Texas Tech",
+        "def_epa": 0.19411534968702104,
+        "pts_allowed_pg": 24.11111111111111,
+        "opp_raw_off_epa": 0.01090145047825048
+      },
+      {
+        "school": "Baylor",
+        "def_epa": 0.18036324426738817,
+        "pts_allowed_pg": 17.0,
+        "opp_raw_off_epa": -0.06251395555498544
+      },
+      {
+        "school": "Minnesota",
+        "def_epa": 0.1786734151557004,
+        "pts_allowed_pg": 22.0,
+        "opp_raw_off_epa": 0.02711602910818581
+      },
+      {
+        "school": "Wake Forest",
+        "def_epa": 0.1777915848327148,
+        "pts_allowed_pg": 15.88888888888889,
+        "opp_raw_off_epa": -0.0402582609452302
+      },
+      {
+        "school": "LSU",
+        "def_epa": 0.17541534513107263,
+        "pts_allowed_pg": 17.666666666666668,
+        "opp_raw_off_epa": -0.049048330791031575
+      }
+    ],
+    "lowest_10": [
+      {
+        "school": "Northern Illinois",
+        "def_epa": -0.3157688139456444,
+        "pts_allowed_pg": 36.77777777777778,
+        "opp_raw_off_epa": 0.24011037521803477
+      },
+      {
+        "school": "Colorado State",
+        "def_epa": -0.29808776410524995,
+        "pts_allowed_pg": 44.77777777777778,
+        "opp_raw_off_epa": 0.36473129093515255
+      },
+      {
+        "school": "Akron",
+        "def_epa": -0.2240145013836556,
+        "pts_allowed_pg": 32.22222222222222,
+        "opp_raw_off_epa": 0.23576759878135137
+      },
+      {
+        "school": "UTEP",
+        "def_epa": -0.2058491065230067,
+        "pts_allowed_pg": 34.333333333333336,
+        "opp_raw_off_epa": 0.22583209696938372
+      },
+      {
+        "school": "Rutgers",
+        "def_epa": -0.19650801518284497,
+        "pts_allowed_pg": 32.44444444444444,
+        "opp_raw_off_epa": 0.26325215963196985
+      },
+      {
+        "school": "Charlotte",
+        "def_epa": -0.18868759823045425,
+        "pts_allowed_pg": 38.333333333333336,
+        "opp_raw_off_epa": 0.21222658965015198
+      },
+      {
+        "school": "Missouri State",
+        "def_epa": -0.1836263065243837,
+        "pts_allowed_pg": 30.0,
+        "opp_raw_off_epa": 0.21651830487260737
+      },
+      {
+        "school": "Ball State",
+        "def_epa": -0.17761282456284969,
+        "pts_allowed_pg": 34.77777777777778,
+        "opp_raw_off_epa": 0.26036433469419396
+      },
+      {
+        "school": "West Virginia",
+        "def_epa": -0.17716830024667654,
+        "pts_allowed_pg": 34.55555555555556,
+        "opp_raw_off_epa": 0.25038710989900914
+      },
+      {
+        "school": "Florida Atlantic",
+        "def_epa": -0.16104476707834411,
+        "pts_allowed_pg": 35.0,
+        "opp_raw_off_epa": 0.2593141070304326
+      }
+    ]
+  }
+}
