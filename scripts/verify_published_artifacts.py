@@ -34,7 +34,7 @@ EARLY_IDS: dict[str, str] = {
 
 # Phase A operator baseline — tomorrow's comparison target.
 EXPECTED_IDENTITY: dict[str, Any] = {
-    "vintage_label": "W9A_REVAL",
+    "vintage_label": "W11_FCSFIX",
     "ensemble_scope_label": "REDUCED_PER_ADR_0013",
     "feature_time_label": "FEATURE_TIME=TUESDAY_DECISION",
     "champion_version": 2,

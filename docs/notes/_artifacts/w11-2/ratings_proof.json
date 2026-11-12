@@ -1,0 +1,163 @@
+{
+  "as_of_end": "2026-11-12T18:00:00+00:00",
+  "prod_sha256": "a66cf5f9c9eede4f0bc02d41ec6c32df80166e3f03f77f127392217b4400ac28",
+  "n_hist_rows": 24493,
+  "top15": [
+    "Wake Forest",
+    "Purdue",
+    "Florida",
+    "Ole Miss",
+    "Minnesota",
+    "Tennessee",
+    "Delaware",
+    "Kent State",
+    "Sam Houston",
+    "Stanford",
+    "Washington",
+    "Mississippi State",
+    "Georgia",
+    "Missouri",
+    "Ohio"
+  ],
+  "comparisons": [
+    {
+      "school": "Wake Forest",
+      "prod_off": 0.2263436635865253,
+      "sb_off": 0.2263436635865253,
+      "abs_d_off": 0.0,
+      "prod_def": 0.18199704949657491,
+      "sb_def": 0.18199704949657491,
+      "abs_d_def": 0.0
+    },
+    {
+      "school": "Purdue",
+      "prod_off": -0.001764158881679312,
+      "sb_off": -0.001764158881679312,
+      "abs_d_off": 0.0,
+      "prod_def": -0.16603997408563986,
+      "sb_def": -0.16603997408563986,
+      "abs_d_def": 0.0
+    },
+    {
+      "school": "Florida",
+      "prod_off": 0.09107329909507918,
+      "sb_off": 0.09107329909507918,
+      "abs_d_off": 0.0,
+      "prod_def": -0.011304032556215227,
+      "sb_def": -0.011304032556215227,
+      "abs_d_def": 0.0
+    },
+    {
+      "school": "Ole Miss",
+      "prod_off": 0.1432703693293479,
+      "sb_off": 0.1432703693293479,
+      "abs_d_off": 0.0,
+      "prod_def": 0.02245526488489286,
+      "sb_def": 0.02245526488489286,
+      "abs_d_def": 0.0
+    },
+    {
+      "school": "Minnesota",
+      "prod_off": 0.04540671656381786,
+      "sb_off": 0.04540671656381786,
+      "abs_d_off": 0.0,
+      "prod_def": 0.1206038623951038,
+      "sb_def": 0.1206038623951038,
+      "abs_d_def": 0.0
+    },
+    {
+      "school": "Tennessee",
+      "prod_off": 0.12008389929907345,
+      "sb_off": 0.12008389929907345,
+      "abs_d_off": 0.0,
+      "prod_def": 0.2687026114938438,
+      "sb_def": 0.2687026114938438,
+      "abs_d_def": 0.0
+    },
+    {
+      "school": "Delaware",
+      "prod_off": 0.04046565665173129,
+      "sb_off": 0.04046565665173129,
+      "abs_d_off": 0.0,
+      "prod_def": -0.14670969731028524,
+      "sb_def": -0.14670969731028524,
+      "abs_d_def": 0.0
+    },
+    {
+      "school": "Kent State",
+      "prod_off": -0.21912734734690745,
+      "sb_off": -0.21912734734690745,
+      "abs_d_off": 0.0,
+      "prod_def": -0.1806252699244254,
+      "sb_def": -0.1806252699244254,
+      "abs_d_def": 0.0
+    },
+    {
+      "school": "Sam Houston",
+      "prod_off": -0.32063415818436314,
+      "sb_off": -0.32063415818436314,
+      "abs_d_off": 0.0,
+      "prod_def": -0.05167816833828094,
+      "sb_def": -0.05167816833828094,
+      "abs_d_def": 0.0
+    },
+    {
+      "school": "Stanford",
+      "prod_off": -0.020597412643423556,
+      "sb_off": -0.020597412643423556,
+      "abs_d_off": 0.0,
+      "prod_def": -0.15104361867174113,
+      "sb_def": -0.15104361867174113,
+      "abs_d_def": 0.0
+    },
+    {
+      "school": "Washington",
+      "prod_off": 0.017614490705308294,
+      "sb_off": 0.017614490705308294,
+      "abs_d_off": 0.0,
+      "prod_def": 0.05767572448413669,
+      "sb_def": 0.05767572448413669,
+      "abs_d_def": 0.0
+    },
+    {
+      "school": "Mississippi State",
+      "prod_off": -0.05362630262303649,
+      "sb_off": -0.05362630262303649,
+      "abs_d_off": 0.0,
+      "prod_def": 0.0028076226940762458,
+      "sb_def": 0.0028076226940762458,
+      "abs_d_def": 0.0
+    },
+    {
+      "school": "Georgia",
+      "prod_off": 0.28619521052433383,
+      "sb_off": 0.28619521052433383,
+      "abs_d_off": 0.0,
+      "prod_def": 0.16249986017103932,
+      "sb_def": 0.16249986017103932,
+      "abs_d_def": 0.0
+    },
+    {
+      "school": "Missouri",
+      "prod_off": 0.04577411416357996,
+      "sb_off": 0.04577411416357996,
+      "abs_d_off": 0.0,
+      "prod_def": 0.1476761299013346,
+      "sb_def": 0.1476761299013346,
+      "abs_d_def": 0.0
+    },
+    {
+      "school": "Ohio",
+      "prod_off": -0.11763096382822315,
+      "sb_off": -0.11763096382822315,
+      "abs_d_off": 0.0,
+      "prod_def": -0.026063044737416812,
+      "sb_def": -0.026063044737416812,
+      "abs_d_def": 0.0
+    }
+  ],
+  "mismatches": [],
+  "pass": true,
+  "max_abs_d_off": 0.0,
+  "max_abs_d_def": 0.0
+}
