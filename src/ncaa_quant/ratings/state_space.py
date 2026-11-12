@@ -530,12 +530,13 @@ def fcs_pinned_state(config: StateSpaceConfig) -> GaussianState:
     """Pooled FCS prior with large variance (DESIGN §9.3)."""
     d = config.n_dims
     mean = np.full(d, config.fcs_prior_mean, dtype=float)
-    # Offense slightly worse, defense slightly worse (higher allowed EPA).
+    # Offense slightly worse, defense slightly worse under off − def:
+    # higher def_epa = better defense (more EPA suppressed), so a weak FCS
+    # defense is a negative def_epa (same sign as fcs_prior_mean).
     if "off_epa" in config.state_dims:
         mean[config.dim_index("off_epa")] = config.fcs_prior_mean
     if "def_epa" in config.state_dims:
-        # Higher def_epa means worse defense under off − def measurement.
-        mean[config.dim_index("def_epa")] = -config.fcs_prior_mean
+        mean[config.dim_index("def_epa")] = config.fcs_prior_mean
     cov = np.eye(d, dtype=float) * config.fcs_prior_var
     return GaussianState(mean=mean, cov=cov)
 
