@@ -46,7 +46,7 @@ No bet though — QB situation is unclear and we don't bet through that. Forecas
 
 Model: Iowa State by 6.0 (80% range: -22 to +36).
 
-No bet though — QB situation is unclear and we don't bet through that. Forecast ≠ edge.
+No bet though — the market has this priced about right. Forecast ≠ edge.
 
 ## Georgia Tech @ Clemson
 
@@ -166,7 +166,7 @@ No bet though — QB situation is unclear and we don't bet through that. Forecas
 
 Model: BYU by 1.3 (80% range: -23 to +31).
 
-No bet though — QB situation is unclear and we don't bet through that. Forecast ≠ edge.
+No bet though — the market has this priced about right. Forecast ≠ edge.
 
 ## Georgia Southern @ Georgia State
 
@@ -178,13 +178,13 @@ No bet though — QB situation is unclear and we don't bet through that. Forecas
 
 Model: Tulsa by 12.5 (80% range: -16 to +44).
 
-No bet though — QB situation is unclear and we don't bet through that. Forecast ≠ edge.
+No bet though — the market has this priced about right. Forecast ≠ edge.
 
 ## Middle Tennessee @ Liberty
 
 Model: Liberty by 26.4 (80% range: -1 to +53).
 
-No bet though — QB situation is unclear and we don't bet through that. Forecast ≠ edge.
+No bet though — the market has this priced about right. Forecast ≠ edge.
 
 ## Nevada @ Northern Illinois
 
@@ -202,7 +202,7 @@ No bet though — QB situation is unclear and we don't bet through that. Forecas
 
 Model: Oklahoma by 5.5 (80% range: -25 to +32).
 
-No bet though — QB situation is unclear and we don't bet through that. Forecast ≠ edge.
+No bet though — the market has this priced about right. Forecast ≠ edge.
 
 ## Washington @ Michigan State
 
@@ -220,7 +220,7 @@ No bet though — QB situation is unclear and we don't bet through that. Forecas
 
 Model: West Virginia by 8.1 (80% range: -20 to +38).
 
-No bet though — QB situation is unclear and we don't bet through that. Forecast ≠ edge.
+No bet though — the market has this priced about right. Forecast ≠ edge.
 
 ## Oregon State @ Boise State
 
@@ -238,7 +238,7 @@ No bet though — QB situation is unclear and we don't bet through that. Forecas
 
 Model: Kentucky by 7.7 (80% range: -22 to +38).
 
-No bet though — QB situation is unclear and we don't bet through that. Forecast ≠ edge.
+No bet though — the market has this priced about right. Forecast ≠ edge.
 
 ## San José State @ Air Force
 
@@ -262,7 +262,7 @@ No bet though — QB situation is unclear and we don't bet through that; model a
 
 Model: South Alabama by 8.7 (80% range: -15 to +36).
 
-No bet though — QB situation is unclear and we don't bet through that. Forecast ≠ edge.
+No bet though — the market has this priced about right. Forecast ≠ edge.
 
 ## Stanford @ Virginia Tech
 
@@ -280,7 +280,7 @@ No bet though — QB situation is unclear and we don't bet through that; the mar
 
 Model: Arizona by 1.5 (80% range: -24 to +29).
 
-No bet though — QB situation is unclear and we don't bet through that. Forecast ≠ edge.
+No bet though — the market has this priced about right. Forecast ≠ edge.
 
 ## UNLV @ New Mexico
 
@@ -304,19 +304,19 @@ No bet though — QB situation is unclear and we don't bet through that. Forecas
 
 Model: North Texas by 7.5 (80% range: -40 to +21).
 
-No bet though — QB situation is unclear and we don't bet through that. Forecast ≠ edge.
+No bet though — the market has this priced about right. Forecast ≠ edge.
 
 ## Utah State @ San Diego State
 
 Model: Utah State by 7.4 (80% range: -36 to +22).
 
-No bet though — QB situation is unclear and we don't bet through that. Forecast ≠ edge.
+No bet though — the market has this priced about right. Forecast ≠ edge.
 
 ## Texas Tech @ Oklahoma State
 
 Model: Oklahoma State by 9.2 (80% range: -16 to +35).
 
-No bet though — QB situation is unclear and we don't bet through that. Forecast ≠ edge.
+No bet though — the market has this priced about right. Forecast ≠ edge.
 
 ## Wyoming @ UTEP
 
@@ -334,7 +334,7 @@ No bet though — QB situation is unclear and we don't bet through that. Forecas
 
 Model: Hawai'i by 0.1 (80% range: -25 to +26).
 
-No bet though — QB situation is unclear and we don't bet through that. Forecast ≠ edge.
+No bet though — the market has this priced about right. Forecast ≠ edge.
 
 ## Game not in the slate
 

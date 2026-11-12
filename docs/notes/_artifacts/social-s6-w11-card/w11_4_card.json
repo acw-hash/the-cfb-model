@@ -1,0 +1,136 @@
+{
+  "accepted_count": 7,
+  "accepted_game_ids": [
+    401864537,
+    401856861,
+    401856887,
+    401862826,
+    401856858,
+    401871061,
+    401862827
+  ],
+  "card": [
+    {
+      "rank": 1,
+      "game_id": 401864537,
+      "matchup": "North Dakota State @ Hawai'i",
+      "kickoff_et": "Sat 11:00 PM ET",
+      "side": "Hawai'i",
+      "book": "espnbet",
+      "line": 6.5,
+      "price": 100.0,
+      "ridge": -0.10222530168957544,
+      "gap": 6.6,
+      "edge": 0.1726
+    },
+    {
+      "rank": 2,
+      "game_id": 401856861,
+      "matchup": "Kansas @ West Virginia",
+      "kickoff_et": "Sat 5:30 PM ET",
+      "side": "West Virginia",
+      "book": "betrivers",
+      "line": -3.0,
+      "price": 100.0,
+      "ridge": -8.149211425618583,
+      "gap": 5.15,
+      "edge": 0.1391
+    },
+    {
+      "rank": 3,
+      "game_id": 401856887,
+      "matchup": "Ole Miss @ Oklahoma",
+      "kickoff_et": "Sat 4:15 PM ET",
+      "side": "Oklahoma",
+      "book": "betmgm",
+      "line": 1.0,
+      "price": -112.0,
+      "ridge": -5.513005081386684,
+      "gap": 6.51,
+      "edge": 0.1357
+    },
+    {
+      "rank": 4,
+      "game_id": 401862826,
+      "matchup": "Florida Atlantic @ Tulsa",
+      "kickoff_et": "Sat 3:30 PM ET",
+      "side": "Tulsa",
+      "book": "betrivers",
+      "line": -5.5,
+      "price": -110.0,
+      "ridge": -12.465331616667635,
+      "gap": 6.97,
+      "edge": 0.1327
+    },
+    {
+      "rank": 5,
+      "game_id": 401856858,
+      "matchup": "Baylor @ BYU",
+      "kickoff_et": "Sat 3:30 PM ET",
+      "side": "Baylor",
+      "book": "hardrockbet",
+      "line": 7.5,
+      "price": -110.0,
+      "ridge": 1.3471195052605183,
+      "gap": 6.15,
+      "edge": 0.13
+    },
+    {
+      "rank": 6,
+      "game_id": 401871061,
+      "matchup": "Middle Tennessee @ Liberty",
+      "kickoff_et": "Sat 3:30 PM ET",
+      "side": "Liberty",
+      "book": "fanduel",
+      "line": -21.5,
+      "price": 100.0,
+      "ridge": -26.403387341284002,
+      "gap": 4.9,
+      "edge": 0.126
+    },
+    {
+      "rank": 7,
+      "game_id": 401862827,
+      "matchup": "North Texas @ UTSA",
+      "kickoff_et": "Sat 9:00 PM ET",
+      "side": "North Texas",
+      "book": "betrivers",
+      "line": -2.5,
+      "price": -109.0,
+      "ridge": -7.525935741303446,
+      "gap": 5.03,
+      "edge": 0.1217
+    }
+  ],
+  "next_two": [
+    {
+      "rank": 1,
+      "game_id": 401856864,
+      "matchup": "Utah @ Arizona",
+      "kickoff_et": "Sat 7:30 PM ET",
+      "side": "Arizona",
+      "book": "espnbet",
+      "line": 2.5,
+      "price": 100.0,
+      "ridge": -1.4868848516162851,
+      "gap": 3.99,
+      "edge": 0.1194
+    },
+    {
+      "rank": 2,
+      "game_id": 401856859,
+      "matchup": "Cincinnati @ Iowa State",
+      "kickoff_et": "Sat 12:00 PM ET",
+      "side": "Iowa State",
+      "book": "fanduel",
+      "line": -3.5,
+      "price": 110.0,
+      "ridge": -6.004590517511262,
+      "gap": 2.5,
+      "edge": 0.1127
+    }
+  ],
+  "match_expected_card": true,
+  "match_expected_next": true,
+  "note_marked_card_rows": "marked_card_rows is NOT the accept-loop card; use accepted_game_ids / qb_known_passing. marked_card_rows still ranks pre-QB top edges."
+}

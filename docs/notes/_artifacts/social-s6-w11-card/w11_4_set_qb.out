@@ -1,0 +1,359 @@
+$ uv run ncaa-quant roster set-qb --game 401858520 --team Wisconsin --status backup
+exit=0
+stdout:
+{"game_id": 401858520, "team_id": 275, "status": "backup", "event_time": "2026-11-12 17:47:48.422981+00:00", "event": "cli_roster_set_qb", "run_id": "eb716364405c48b9b8b1451a6a5430a8", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:47:49.543957Z"}
+qb_status game=401858520 team_id=275 status=backup event_time=2026-11-12 17:47:48.422981+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401858520 --team Maryland --status unknown
+exit=0
+stdout:
+{"game_id": 401858520, "team_id": 120, "status": "unknown", "event_time": "2026-11-12 17:47:54.597005+00:00", "event": "cli_roster_set_qb", "run_id": "4aab0df78a974d82a02acd8351393ba6", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:47:55.641114Z"}
+qb_status game=401858520 team_id=120 status=unknown event_time=2026-11-12 17:47:54.597005+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401856859 --team Cincinnati --status starter
+exit=0
+stdout:
+{"game_id": 401856859, "team_id": 2132, "status": "starter", "event_time": "2026-11-12 17:48:00.455761+00:00", "event": "cli_roster_set_qb", "run_id": "8f4c5cafb6e147ed9e7e66c7dece2111", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:48:01.570713Z"}
+qb_status game=401856859 team_id=2132 status=starter event_time=2026-11-12 17:48:00.455761+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401856859 --team Iowa State --status starter
+exit=0
+stdout:
+{"game_id": 401856859, "team_id": 66, "status": "starter", "event_time": "2026-11-12 17:48:06.646610+00:00", "event": "cli_roster_set_qb", "run_id": "d980249e5ddc428ab92b6126626d4e84", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:48:07.680263Z"}
+qb_status game=401856859 team_id=66 status=starter event_time=2026-11-12 17:48:06.646610+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401862829 --team UAB --status starter
+exit=0
+stdout:
+{"game_id": 401862829, "team_id": 5, "status": "starter", "event_time": "2026-11-12 17:48:12.499064+00:00", "event": "cli_roster_set_qb", "run_id": "b71f48d8c8ca47389d9b59168f8b7885", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:48:13.662728Z"}
+qb_status game=401862829 team_id=5 status=starter event_time=2026-11-12 17:48:12.499064+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401862829 --team Temple --status unknown
+exit=0
+stdout:
+{"game_id": 401862829, "team_id": 218, "status": "unknown", "event_time": "2026-11-12 17:48:18.697494+00:00", "event": "cli_roster_set_qb", "run_id": "57c09f0115154084b71a5a4c14d774f8", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:48:19.744794Z"}
+qb_status game=401862829 team_id=218 status=unknown event_time=2026-11-12 17:48:18.697494+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401856862 --team Kansas State --status unknown
+exit=0
+stdout:
+{"game_id": 401856862, "team_id": 2306, "status": "unknown", "event_time": "2026-11-12 17:48:24.605402+00:00", "event": "cli_roster_set_qb", "run_id": "aa1d8af5c8134dce9904d1aec2002464", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:48:25.751824Z"}
+qb_status game=401856862 team_id=2306 status=unknown event_time=2026-11-12 17:48:24.605402+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401856862 --team TCU --status starter
+exit=0
+stdout:
+{"game_id": 401856862, "team_id": 2628, "status": "starter", "event_time": "2026-11-12 17:48:30.885878+00:00", "event": "cli_roster_set_qb", "run_id": "e21dd1b6ca514aa6a20d65e66756f522", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:48:31.914777Z"}
+qb_status game=401856862 team_id=2628 status=starter event_time=2026-11-12 17:48:30.885878+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401862826 --team Florida Atlantic --status starter
+exit=0
+stdout:
+{"game_id": 401862826, "team_id": 2226, "status": "starter", "event_time": "2026-11-12 17:48:36.649860+00:00", "event": "cli_roster_set_qb", "run_id": "1a83d6a67b034ce78a25bea453f1dd35", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:48:37.813406Z"}
+qb_status game=401862826 team_id=2226 status=starter event_time=2026-11-12 17:48:36.649860+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401862826 --team Tulsa --status starter
+exit=0
+stdout:
+{"game_id": 401862826, "team_id": 202, "status": "starter", "event_time": "2026-11-12 17:48:42.837839+00:00", "event": "cli_roster_set_qb", "run_id": "07823a46dcc643949fde564161276907", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:48:43.856244Z"}
+qb_status game=401862826 team_id=202 status=starter event_time=2026-11-12 17:48:42.837839+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401856858 --team Baylor --status starter
+exit=0
+stdout:
+{"game_id": 401856858, "team_id": 239, "status": "starter", "event_time": "2026-11-12 17:48:48.621325+00:00", "event": "cli_roster_set_qb", "run_id": "be3c6b75d8894111a765508f138f0402", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:48:49.749126Z"}
+qb_status game=401856858 team_id=239 status=starter event_time=2026-11-12 17:48:48.621325+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401856858 --team BYU --status starter
+exit=0
+stdout:
+{"game_id": 401856858, "team_id": 252, "status": "starter", "event_time": "2026-11-12 17:48:54.885976+00:00", "event": "cli_roster_set_qb", "run_id": "bc75bda49fa64c37a850caba6f3f906d", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:48:55.909647Z"}
+qb_status game=401856858 team_id=252 status=starter event_time=2026-11-12 17:48:54.885976+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401871061 --team Middle Tennessee --status starter
+exit=0
+stdout:
+{"game_id": 401871061, "team_id": 2393, "status": "starter", "event_time": "2026-11-12 17:49:00.639594+00:00", "event": "cli_roster_set_qb", "run_id": "aa82ee1befdd4e7dbe2838387634c39e", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:49:01.756097Z"}
+qb_status game=401871061 team_id=2393 status=starter event_time=2026-11-12 17:49:00.639594+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401871061 --team Liberty --status starter
+exit=0
+stdout:
+{"game_id": 401871061, "team_id": 2335, "status": "starter", "event_time": "2026-11-12 17:49:06.881938+00:00", "event": "cli_roster_set_qb", "run_id": "e85ace5f74ed4a588e1122cc28e86847", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:49:07.922422Z"}
+qb_status game=401871061 team_id=2335 status=starter event_time=2026-11-12 17:49:06.881938+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401870752 --team Jacksonville State --status starter
+exit=0
+stdout:
+{"game_id": 401870752, "team_id": 55, "status": "starter", "event_time": "2026-11-12 17:49:12.576369+00:00", "event": "cli_roster_set_qb", "run_id": "d9fb97e09ed4420681ff992b66cf00a2", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:49:13.727836Z"}
+qb_status game=401870752 team_id=55 status=starter event_time=2026-11-12 17:49:12.576369+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401870752 --team Western Kentucky --status unknown
+exit=0
+stdout:
+{"game_id": 401870752, "team_id": 98, "status": "unknown", "event_time": "2026-11-12 17:49:18.831543+00:00", "event": "cli_roster_set_qb", "run_id": "b99c28b48ec94b5098e7d2cf8aeb86d3", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:49:19.948626Z"}
+qb_status game=401870752 team_id=98 status=unknown event_time=2026-11-12 17:49:18.831543+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401856887 --team Ole Miss --status starter
+exit=0
+stdout:
+{"game_id": 401856887, "team_id": 145, "status": "starter", "event_time": "2026-11-12 17:49:24.621178+00:00", "event": "cli_roster_set_qb", "run_id": "8784079cdc8c4d85972a9b2448d5d9e5", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:49:25.745302Z"}
+qb_status game=401856887 team_id=145 status=starter event_time=2026-11-12 17:49:24.621178+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401856887 --team Oklahoma --status starter
+exit=0
+stdout:
+{"game_id": 401856887, "team_id": 201, "status": "starter", "event_time": "2026-11-12 17:49:30.839211+00:00", "event": "cli_roster_set_qb", "run_id": "7cb687d7a4844cc08383eecbd95679c4", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:49:31.959903Z"}
+qb_status game=401856887 team_id=201 status=starter event_time=2026-11-12 17:49:30.839211+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401871099 --team Southern Miss --status backup
+exit=0
+stdout:
+{"game_id": 401871099, "team_id": 2572, "status": "backup", "event_time": "2026-11-12 17:49:36.617238+00:00", "event": "cli_roster_set_qb", "run_id": "fc3ddc2f8ebf4a8e99eca73626dcac9f", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:49:37.754774Z"}
+qb_status game=401871099 team_id=2572 status=backup event_time=2026-11-12 17:49:36.617238+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401871099 --team Louisiana Tech --status unknown
+exit=0
+stdout:
+{"game_id": 401871099, "team_id": 2348, "status": "unknown", "event_time": "2026-11-12 17:49:42.911760+00:00", "event": "cli_roster_set_qb", "run_id": "d1e27fa859d748f2aff1e4bd01e0734e", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:49:44.034103Z"}
+qb_status game=401871099 team_id=2348 status=unknown event_time=2026-11-12 17:49:42.911760+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401856861 --team Kansas --status starter
+exit=0
+stdout:
+{"game_id": 401856861, "team_id": 2305, "status": "starter", "event_time": "2026-11-12 17:49:48.683435+00:00", "event": "cli_roster_set_qb", "run_id": "5f638f1762274add986553c4fe49332a", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:49:49.755866Z"}
+qb_status game=401856861 team_id=2305 status=starter event_time=2026-11-12 17:49:48.683435+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401856861 --team West Virginia --status starter
+exit=0
+stdout:
+{"game_id": 401856861, "team_id": 277, "status": "starter", "event_time": "2026-11-12 17:49:54.794176+00:00", "event": "cli_roster_set_qb", "run_id": "5cff9645db0845c99166949de5772eb5", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:49:55.939079Z"}
+qb_status game=401856861 team_id=277 status=starter event_time=2026-11-12 17:49:54.794176+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401869928 --team App State --status starter
+exit=0
+stdout:
+{"game_id": 401869928, "team_id": 2026, "status": "starter", "event_time": "2026-11-12 17:50:00.540236+00:00", "event": "cli_roster_set_qb", "run_id": "c27b55095b7e49a5a6e7db87d5b5f2fc", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:50:01.633954Z"}
+qb_status game=401869928 team_id=2026 status=starter event_time=2026-11-12 17:50:00.540236+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401869928 --team Marshall --status unknown
+exit=0
+stdout:
+{"game_id": 401869928, "team_id": 276, "status": "unknown", "event_time": "2026-11-12 17:50:06.765691+00:00", "event": "cli_roster_set_qb", "run_id": "f399279c28214c6c8416f50a168662ee", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:50:07.871396Z"}
+qb_status game=401869928 team_id=276 status=unknown event_time=2026-11-12 17:50:06.765691+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401856884 --team Florida --status backup
+exit=0
+stdout:
+{"game_id": 401856884, "team_id": 57, "status": "backup", "event_time": "2026-11-12 17:50:12.651967+00:00", "event": "cli_roster_set_qb", "run_id": "306c431ccd8c48c8940fba993168a537", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:50:13.841002Z"}
+qb_status game=401856884 team_id=57 status=backup event_time=2026-11-12 17:50:12.651967+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401856884 --team Kentucky --status starter
+exit=0
+stdout:
+{"game_id": 401856884, "team_id": 96, "status": "starter", "event_time": "2026-11-12 17:50:18.993829+00:00", "event": "cli_roster_set_qb", "run_id": "9b48cbde1d874378bc67ae6e5a97aabd", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:50:20.167573Z"}
+qb_status game=401856884 team_id=96 status=starter event_time=2026-11-12 17:50:18.993829+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401871100 --team Troy --status starter
+exit=0
+stdout:
+{"game_id": 401871100, "team_id": 2653, "status": "starter", "event_time": "2026-11-12 17:50:24.987683+00:00", "event": "cli_roster_set_qb", "run_id": "2db940c45a2442bfa59b48016327318e", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:50:26.030978Z"}
+qb_status game=401871100 team_id=2653 status=starter event_time=2026-11-12 17:50:24.987683+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401871100 --team South Alabama --status backup
+exit=0
+stdout:
+{"game_id": 401871100, "team_id": 6, "status": "backup", "event_time": "2026-11-12 17:50:31.152288+00:00", "event": "cli_roster_set_qb", "run_id": "2df40e5791ed4bf9a022c2214dd315d2", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:50:32.305238Z"}
+qb_status game=401871100 team_id=6 status=backup event_time=2026-11-12 17:50:31.152288+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401856864 --team Utah --status starter
+exit=0
+stdout:
+{"game_id": 401856864, "team_id": 254, "status": "starter", "event_time": "2026-11-12 17:50:36.998089+00:00", "event": "cli_roster_set_qb", "run_id": "0c6e12452bad4bd8aaeae653b59083b4", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:50:38.077179Z"}
+qb_status game=401856864 team_id=254 status=starter event_time=2026-11-12 17:50:36.998089+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401856864 --team Arizona --status starter
+exit=0
+stdout:
+{"game_id": 401856864, "team_id": 12, "status": "starter", "event_time": "2026-11-12 17:50:43.205290+00:00", "event": "cli_roster_set_qb", "run_id": "ad6c69ebba6e447f86327d636d492bd4", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:50:44.344282Z"}
+qb_status game=401856864 team_id=12 status=starter event_time=2026-11-12 17:50:43.205290+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401864539 --team UNLV --status unknown
+exit=0
+stdout:
+{"game_id": 401864539, "team_id": 2439, "status": "unknown", "event_time": "2026-11-12 17:50:49.444463+00:00", "event": "cli_roster_set_qb", "run_id": "4cdf953f7943408abcd17824f50582aa", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:50:50.469802Z"}
+qb_status game=401864539 team_id=2439 status=unknown event_time=2026-11-12 17:50:49.444463+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401864539 --team New Mexico --status starter
+exit=0
+stdout:
+{"game_id": 401864539, "team_id": 167, "status": "starter", "event_time": "2026-11-12 17:50:55.622057+00:00", "event": "cli_roster_set_qb", "run_id": "98add9ca833c473f8ccbc8f1a4d5a564", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:50:56.738587Z"}
+qb_status game=401864539 team_id=167 status=starter event_time=2026-11-12 17:50:55.622057+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401862827 --team North Texas --status starter
+exit=0
+stdout:
+{"game_id": 401862827, "team_id": 249, "status": "starter", "event_time": "2026-11-12 17:51:01.462922+00:00", "event": "cli_roster_set_qb", "run_id": "133adeca86a84f50a69142eef786988c", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:51:02.537568Z"}
+qb_status game=401862827 team_id=249 status=starter event_time=2026-11-12 17:51:01.462922+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401862827 --team UTSA --status starter
+exit=0
+stdout:
+{"game_id": 401862827, "team_id": 2636, "status": "starter", "event_time": "2026-11-12 17:51:07.590555+00:00", "event": "cli_roster_set_qb", "run_id": "23869ea3f15546c38b8783ba30fb76b3", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:51:08.727037Z"}
+qb_status game=401862827 team_id=2636 status=starter event_time=2026-11-12 17:51:07.590555+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401856863 --team Texas Tech --status backup
+exit=0
+stdout:
+{"game_id": 401856863, "team_id": 2641, "status": "backup", "event_time": "2026-11-12 17:51:13.991405+00:00", "event": "cli_roster_set_qb", "run_id": "1826f7c635a9499cb18b4421fbb1015e", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:51:15.114159Z"}
+qb_status game=401856863 team_id=2641 status=backup event_time=2026-11-12 17:51:13.991405+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401856863 --team Oklahoma State --status starter
+exit=0
+stdout:
+{"game_id": 401856863, "team_id": 197, "status": "starter", "event_time": "2026-11-12 17:51:20.419208+00:00", "event": "cli_roster_set_qb", "run_id": "7fe73e789ae84b04abb07d5149ee4368", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:51:21.532983Z"}
+qb_status game=401856863 team_id=197 status=starter event_time=2026-11-12 17:51:20.419208+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401860915 --team Utah State --status backup
+exit=0
+stdout:
+{"game_id": 401860915, "team_id": 328, "status": "backup", "event_time": "2026-11-12 17:51:26.234848+00:00", "event": "cli_roster_set_qb", "run_id": "42a3c2b9de97459a8b3a1d952aafd10c", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:51:27.250753Z"}
+qb_status game=401860915 team_id=328 status=backup event_time=2026-11-12 17:51:26.234848+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401860915 --team San Diego State --status backup
+exit=0
+stdout:
+{"game_id": 401860915, "team_id": 21, "status": "backup", "event_time": "2026-11-12 17:51:32.274034+00:00", "event": "cli_roster_set_qb", "run_id": "fbbac3677e964ed99ae6e2b3305a2ef2", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:51:33.474059Z"}
+qb_status game=401860915 team_id=21 status=backup event_time=2026-11-12 17:51:32.274034+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401864537 --team North Dakota State --status starter
+exit=0
+stdout:
+{"game_id": 401864537, "team_id": 2449, "status": "starter", "event_time": "2026-11-12 17:51:38.295547+00:00", "event": "cli_roster_set_qb", "run_id": "17ffa4c098584fb79f0792b5643c02a8", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:51:39.383267Z"}
+qb_status game=401864537 team_id=2449 status=starter event_time=2026-11-12 17:51:38.295547+00:00
+
+stderr:
+
+
+$ uv run ncaa-quant roster set-qb --game 401864537 --team Hawai'i --status starter
+exit=0
+stdout:
+{"game_id": 401864537, "team_id": 62, "status": "starter", "event_time": "2026-11-12 17:51:44.494369+00:00", "event": "cli_roster_set_qb", "run_id": "9d0328b0a5564661846901871818208a", "level": "info", "logger": "ncaa_quant.cli", "timestamp": "2026-11-12T17:51:45.664130Z"}
+qb_status game=401864537 team_id=62 status=starter event_time=2026-11-12 17:51:44.494369+00:00
+
+stderr:
+
