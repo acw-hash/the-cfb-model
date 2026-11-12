@@ -1,0 +1,133 @@
+{
+  "generated_at": "2026-11-12T16:34:37.550499+00:00",
+  "export_enabled": false,
+  "A4_from_qa3": {
+    "50-55": {
+      "n": 115,
+      "mean_predicted": 0.528571001772089,
+      "realized_cover_rate": 0.5130434782608696
+    },
+    "55-60": {
+      "n": 94,
+      "mean_predicted": 0.5757425929603692,
+      "realized_cover_rate": 0.4574468085106383
+    },
+    "60-65": {
+      "n": 98,
+      "mean_predicted": 0.624337642147024,
+      "realized_cover_rate": 0.5
+    },
+    "65+": {
+      "n": 134,
+      "mean_predicted": 0.7387883340893475,
+      "realized_cover_rate": 0.4925373134328358
+    }
+  },
+  "A4_qa3_n_used": 441,
+  "slate_recompute": {
+    "n_all": 441,
+    "n_gated": 200,
+    "a4_all_model_side": {
+      "buckets": {
+        "50-55": {
+          "n": 115,
+          "mean_predicted": 0.528571001772089,
+          "realized_cover_rate": 0.5130434782608696
+        },
+        "55-60": {
+          "n": 94,
+          "mean_predicted": 0.5757425929603692,
+          "realized_cover_rate": 0.4574468085106383
+        },
+        "60-65": {
+          "n": 98,
+          "mean_predicted": 0.624337642147024,
+          "realized_cover_rate": 0.5
+        },
+        "65+": {
+          "n": 134,
+          "mean_predicted": 0.7387883340893475,
+          "realized_cover_rate": 0.4925373134328358
+        }
+      },
+      "pooled": {
+        "n": 441,
+        "mean_predicted": 0.6237827542867256,
+        "realized_cover_rate": 0.49206349206349204,
+        "n_covers": 217,
+        "ci90_wilson": [
+          0.4530731765646784,
+          0.5311505950260315
+        ]
+      }
+    },
+    "gated_edge_gap": {
+      "buckets": {
+        "50-55": {
+          "n": 20,
+          "mean_predicted": 0.5459368341431878,
+          "realized_cover_rate": 0.65
+        },
+        "55-60": {
+          "n": 94,
+          "mean_predicted": 0.5757425929603692,
+          "realized_cover_rate": 0.4574468085106383
+        },
+        "60-65": {
+          "n": 80,
+          "mean_predicted": 0.6204589314850336,
+          "realized_cover_rate": 0.4875
+        },
+        "65+": {
+          "n": 6,
+          "mean_predicted": 0.6610741425046461,
+          "realized_cover_rate": 0.5
+        }
+      },
+      "pooled": {
+        "n": 200,
+        "mean_predicted": 0.5932084989748451,
+        "realized_cover_rate": 0.49,
+        "n_covers": 98,
+        "ci90_wilson": [
+          0.4323799153325123,
+          0.5478870278805832
+        ]
+      }
+    },
+    "gates": {
+      "min_edge": 0.045,
+      "max_gap": 7.0
+    }
+  },
+  "ledgers": {
+    "n_calls_loaded": 53,
+    "n_used": 52,
+    "n_skipped": 1,
+    "skipped_sample": [
+      {
+        "game_id": 401856813,
+        "reason": "push"
+      }
+    ],
+    "pooled": {
+      "n": 52,
+      "mean_predicted": 0.6237075314444083,
+      "realized_cover_rate": 0.4807692307692308,
+      "n_covers": 25,
+      "ci90_wilson": [
+        0.3706044597221419,
+        0.5928361740103749
+      ]
+    }
+  },
+  "fcs": {
+    "non_fbs_in_top25": [],
+    "north_dakota_state_staged": {
+      "team_id": 2449,
+      "classification": "fbs",
+      "conference": "Mountain West"
+    },
+    "code_path": "src/ncaa_quant/ratings/league_state.py:350-363 \u2014 when home_is_fcs/away_is_fcs, key becomes FCS_TEAM_KEY; state loaded via fcs_pinned_state(cfg). Definition: src/ncaa_quant/ratings/state_space.py:529-541 (single shared GaussianState; mean=fcs_prior_mean on off/def). Keying: state_space.py:743-746 _team_key(..., is_fcs=True) -> FCS_TEAM_KEY; run_filter wiring state_space.py:1210-1241."
+  }
+}
