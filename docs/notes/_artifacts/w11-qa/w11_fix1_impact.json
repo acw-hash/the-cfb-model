@@ -1,0 +1,608 @@
+{
+  "export_enabled": false,
+  "resumed_from_sandbox": true,
+  "nov4": "2026-11-04T14:03:14.629521+00:00",
+  "now": "2026-11-12T14:47:34.181160+00:00",
+  "ratings_week10_end": {
+    "n": 138,
+    "median_abs_delta_off": 0.00032634677251675015,
+    "median_abs_delta_def": 0.0003136656279479101,
+    "max_abs_delta_off": 0.0031714366745506928,
+    "max_abs_delta_def": 0.001769891826635256,
+    "spearman_delta_off_vs_n_fcs": {
+      "rho": -0.3012256197580418,
+      "p": 0.0003304611420301796
+    },
+    "top15": [
+      {
+        "school": "Wake Forest",
+        "delta_off": -0.0031714366745506928,
+        "delta_def": 0.0003463447062150016,
+        "abs_delta": 0.0035177813807656944,
+        "n_fcs_games": 1
+      },
+      {
+        "school": "Purdue",
+        "delta_off": 0.0003049090308836215,
+        "delta_def": 0.001769891826635256,
+        "abs_delta": 0.0020748008575188774,
+        "n_fcs_games": 1
+      },
+      {
+        "school": "Florida",
+        "delta_off": 0.0009233668549789575,
+        "delta_def": 0.0010902230305369093,
+        "abs_delta": 0.002013589885515867,
+        "n_fcs_games": 1
+      },
+      {
+        "school": "Ole Miss",
+        "delta_off": 0.0008786031238297853,
+        "delta_def": 0.0008818778828372995,
+        "abs_delta": 0.0017604810066670848,
+        "n_fcs_games": 0
+      },
+      {
+        "school": "Minnesota",
+        "delta_off": 0.0013331596646610974,
+        "delta_def": 0.00041884575529455015,
+        "abs_delta": 0.0017520054199556476,
+        "n_fcs_games": 1
+      },
+      {
+        "school": "Tennessee",
+        "delta_off": 0.0008147229314959953,
+        "delta_def": 0.0009077637897867419,
+        "abs_delta": 0.0017224867212827372,
+        "n_fcs_games": 1
+      },
+      {
+        "school": "Delaware",
+        "delta_off": -0.0005482122304014472,
+        "delta_def": -0.0011271922032896065,
+        "abs_delta": 0.0016754044336910537,
+        "n_fcs_games": 1
+      },
+      {
+        "school": "Kent State",
+        "delta_off": -0.0006328040144479019,
+        "delta_def": -0.00098880219827846,
+        "abs_delta": 0.001621606212726362,
+        "n_fcs_games": 1
+      },
+      {
+        "school": "Sam Houston",
+        "delta_off": -0.000835055034249188,
+        "delta_def": -0.0007463109377634919,
+        "abs_delta": 0.00158136597201268,
+        "n_fcs_games": 1
+      },
+      {
+        "school": "Stanford",
+        "delta_off": -0.0013038691872794307,
+        "delta_def": 0.00025022059902241045,
+        "abs_delta": 0.0015540897863018412,
+        "n_fcs_games": 1
+      },
+      {
+        "school": "Washington",
+        "delta_off": 0.000346350484080573,
+        "delta_def": 0.0011970488508574115,
+        "abs_delta": 0.0015433993349379845,
+        "n_fcs_games": 1
+      },
+      {
+        "school": "Mississippi State",
+        "delta_off": 0.001015317175463916,
+        "delta_def": 0.0005124017471518157,
+        "abs_delta": 0.0015277189226157316,
+        "n_fcs_games": 0
+      },
+      {
+        "school": "Georgia",
+        "delta_off": 0.0004153155347931814,
+        "delta_def": 0.0010151548274157096,
+        "abs_delta": 0.001430470362208891,
+        "n_fcs_games": 1
+      },
+      {
+        "school": "Missouri",
+        "delta_off": 0.0009064519420391368,
+        "delta_def": 0.0005007120443399349,
+        "abs_delta": 0.0014071639863790716,
+        "n_fcs_games": 1
+      },
+      {
+        "school": "Ohio",
+        "delta_off": -0.000594754039547854,
+        "delta_def": -0.0007928661925739218,
+        "abs_delta": 0.0013876202321217758,
+        "n_fcs_games": 1
+      }
+    ],
+    "nan_off": 0,
+    "nan_def": 0,
+    "inf_any": false
+  },
+  "ratings_nov4_through_w9": {
+    "n": 138,
+    "median_abs_delta_off": 0.00034496628434634025,
+    "median_abs_delta_def": 0.0003653418475586378,
+    "max_abs_delta_off": 0.0017414859631919438,
+    "max_abs_delta_def": 0.0020275376524047095,
+    "spearman_delta_off_vs_n_fcs": {
+      "rho": -0.35129613395547227,
+      "p": 2.3924674429118804e-05
+    },
+    "top15": [
+      {
+        "school": "Purdue",
+        "delta_off": -0.000261884233976958,
+        "delta_def": 0.0020275376524047095,
+        "abs_delta": 0.0022894218863816675,
+        "n_fcs_games": 1
+      },
+      {
+        "school": "Texas",
+        "delta_off": 0.0009309559877637933,
+        "delta_def": 0.0013293596402063346,
+        "abs_delta": 0.002260315627970128,
+        "n_fcs_games": 0
+      },
+      {
+        "school": "Kentucky",
+        "delta_off": 0.0017414859631919438,
+        "delta_def": 0.00034911409683260897,
+        "abs_delta": 0.002090600060024553,
+        "n_fcs_games": 1
+      },
+      {
+        "school": "Eastern Michigan",
+        "delta_off": -0.0007064180962430278,
+        "delta_def": -0.0013835559139636078,
+        "abs_delta": 0.0020899740102066355,
+        "n_fcs_games": 1
+      },
+      {
+        "school": "Michigan State",
+        "delta_off": 0.0017295076621528307,
+        "delta_def": 0.0002731368954443508,
+        "abs_delta": 0.0020026445575971816,
+        "n_fcs_games": 0
+      },
+      {
+        "school": "Oklahoma",
+        "delta_off": 0.0008944152476356507,
+        "delta_def": 0.0010846792789932502,
+        "abs_delta": 0.001979094526628901,
+        "n_fcs_games": 0
+      },
+      {
+        "school": "South Carolina",
+        "delta_off": 0.0005803236634024933,
+        "delta_def": 0.0013163380613755299,
+        "abs_delta": 0.0018966617247780232,
+        "n_fcs_games": 1
+      },
+      {
+        "school": "Florida Atlantic",
+        "delta_off": -0.000593452856332638,
+        "delta_def": -0.001272269807606058,
+        "abs_delta": 0.001865722663938696,
+        "n_fcs_games": 1
+      },
+      {
+        "school": "Ohio",
+        "delta_off": -0.0007406189167886434,
+        "delta_def": -0.0011055119076985934,
+        "abs_delta": 0.0018461308244872368,
+        "n_fcs_games": 1
+      },
+      {
+        "school": "Florida",
+        "delta_off": 0.0007903893349381491,
+        "delta_def": 0.0010251858784261145,
+        "abs_delta": 0.0018155752133642636,
+        "n_fcs_games": 1
+      },
+      {
+        "school": "UCLA",
+        "delta_off": 8.02021624494581e-05,
+        "delta_def": 0.0017182055069823177,
+        "abs_delta": 0.0017984076694317758,
+        "n_fcs_games": 0
+      },
+      {
+        "school": "Georgia",
+        "delta_off": 0.0005790766947215142,
+        "delta_def": 0.0011800891336462421,
+        "abs_delta": 0.0017591658283677564,
+        "n_fcs_games": 1
+      },
+      {
+        "school": "Massachusetts",
+        "delta_off": -0.0004532373361174069,
+        "delta_def": -0.0012519670068009692,
+        "abs_delta": 0.001705204342918376,
+        "n_fcs_games": 2
+      },
+      {
+        "school": "Ole Miss",
+        "delta_off": 0.0009748726480034997,
+        "delta_def": 0.0007144900722648589,
+        "abs_delta": 0.0016893627202683587,
+        "n_fcs_games": 0
+      },
+      {
+        "school": "Iowa",
+        "delta_off": 0.0006583291271177322,
+        "delta_def": 0.001017642695083254,
+        "abs_delta": 0.0016759718222009862,
+        "n_fcs_games": 1
+      }
+    ],
+    "nan_off": 0,
+    "nan_def": 0,
+    "inf_any": false
+  },
+  "w10_nov4_margins": {
+    "n": 61,
+    "median_abs_delta": 0.02165628739451364,
+    "p90_abs_delta": 0.06266403830224343,
+    "max_abs_delta": 1.0800159725906529,
+    "nan": 0,
+    "inf": false
+  },
+  "w10_mae_current": {
+    "n": 61,
+    "mae": 13.890187595814686,
+    "cov80": 0.7049180327868853
+  },
+  "w10_mae_fixed": {
+    "n": 61,
+    "mae": 13.86353005983589,
+    "cov80": 0.7049180327868853
+  },
+  "card_plays": [
+    {
+      "game_id": 401856743,
+      "side": "Missouri",
+      "line": 2.5,
+      "price": -104.0,
+      "book": "fanduel",
+      "home": "Missouri",
+      "away": "Texas",
+      "mu_cur": 4.016710310934171,
+      "mu_fix": 3.9562689289448603,
+      "delta_mu": -0.06044138198931037,
+      "sigma_fixed": 16.346871877069535,
+      "ridge_side_fixed": 3.9562689289448603,
+      "gap_fixed": 6.45626892894486,
+      "edge_fixed": 0.15772506775067752,
+      "p_cover_fixed": 0.65095,
+      "gates_pass": true
+    },
+    {
+      "game_id": 401856741,
+      "side": "Ole Miss",
+      "line": 3.5,
+      "price": -105.0,
+      "book": "espnbet",
+      "home": "Ole Miss",
+      "away": "Georgia",
+      "mu_cur": 2.565069926915093,
+      "mu_fix": 2.5383971862642345,
+      "delta_mu": -0.02667274065085845,
+      "sigma_fixed": 17.10216055777602,
+      "ridge_side_fixed": 2.5383971862642345,
+      "gap_fixed": 6.038397186264234,
+      "edge_fixed": 0.1410553811659192,
+      "p_cover_fixed": 0.63545,
+      "gates_pass": true
+    },
+    {
+      "game_id": 401856740,
+      "side": "LSU",
+      "line": -6.0,
+      "price": -108.0,
+      "book": "draftkings",
+      "home": "LSU",
+      "away": "Alabama",
+      "mu_cur": 11.677791436145037,
+      "mu_fix": 11.6639928114142,
+      "delta_mu": -0.013798624730837261,
+      "sigma_fixed": 17.19868817485362,
+      "ridge_side_fixed": 11.6639928114142,
+      "gap_fixed": 5.6639928114142,
+      "edge_fixed": 0.13069490781387177,
+      "p_cover_fixed": 0.6285,
+      "gates_pass": true
+    },
+    {
+      "game_id": 401858292,
+      "side": "UConn",
+      "line": 7.5,
+      "price": -102.0,
+      "book": "fanduel",
+      "home": "UConn",
+      "away": "North Carolina",
+      "mu_cur": -2.6418622155217135,
+      "mu_fix": -2.704526253823957,
+      "delta_mu": -0.06266403830224343,
+      "sigma_fixed": 17.39791374648304,
+      "ridge_side_fixed": -2.704526253823957,
+      "gap_fixed": 4.795473746176043,
+      "edge_fixed": 0.11761590284142986,
+      "p_cover_fixed": 0.60845,
+      "gates_pass": true
+    },
+    {
+      "game_id": 401856738,
+      "side": "Auburn",
+      "line": -10.0,
+      "price": -108.0,
+      "book": "betmgm",
+      "home": "Auburn",
+      "away": "Arkansas",
+      "mu_cur": 14.121141192486759,
+      "mu_fix": 14.116381686854513,
+      "delta_mu": -0.004759505632245364,
+      "sigma_fixed": 18.94591558476387,
+      "ridge_side_fixed": 14.116381686854513,
+      "gap_fixed": 4.116381686854513,
+      "edge_fixed": 0.0861449078138718,
+      "p_cover_fixed": 0.58395,
+      "gates_pass": true
+    },
+    {
+      "game_id": 401860912,
+      "side": "Texas State",
+      "line": 5.5,
+      "price": -108.0,
+      "book": "betmgm",
+      "home": "Oregon State",
+      "away": "Texas State",
+      "mu_cur": 1.6985813427796597,
+      "mu_fix": 1.7025281281140954,
+      "delta_mu": 0.0039467853344357096,
+      "sigma_fixed": 18.0130892470385,
+      "ridge_side_fixed": -1.7025281281140954,
+      "gap_fixed": 3.7974718718859046,
+      "edge_fixed": 0.0820949078138718,
+      "p_cover_fixed": 0.5799,
+      "gates_pass": true
+    },
+    {
+      "game_id": 401856745,
+      "side": "Kentucky",
+      "line": 6.5,
+      "price": -105.0,
+      "book": "hardrockbet",
+      "home": "Tennessee",
+      "away": "Kentucky",
+      "mu_cur": 3.034299573367992,
+      "mu_fix": 3.00198866730902,
+      "delta_mu": -0.03231090605897213,
+      "sigma_fixed": 19.563970740198407,
+      "ridge_side_fixed": -3.00198866730902,
+      "gap_fixed": 3.49801133269098,
+      "edge_fixed": 0.07750538116591921,
+      "p_cover_fixed": 0.5719,
+      "gates_pass": true
+    }
+  ],
+  "w11_margins": {
+    "n": 61,
+    "median_abs_delta": 0.020794749260516276,
+    "p90_abs_delta": 0.039884309361152503,
+    "max_abs_delta": 0.11578707259049459,
+    "top15": [
+      {
+        "matchup": "Wake Forest @ SMU",
+        "delta_margin": 0.11578707259049459,
+        "pred_margin_cur": -12.839737335287252,
+        "pred_margin_fix": -12.723950262696757
+      },
+      {
+        "matchup": "Tennessee @ Texas A&M",
+        "delta_margin": -0.0723600347702158,
+        "pred_margin_cur": -3.647136928771636,
+        "pred_margin_fix": -3.719496963541852
+      },
+      {
+        "matchup": "Georgia Southern @ Georgia State",
+        "delta_margin": -0.06699751308986457,
+        "pred_margin_cur": -7.873440255201033,
+        "pred_margin_fix": -7.940437768290898
+      },
+      {
+        "matchup": "James Madison @ UConn",
+        "delta_margin": 0.055496478749705425,
+        "pred_margin_cur": -1.5738672790406876,
+        "pred_margin_fix": -1.5183708002909821
+      },
+      {
+        "matchup": "Purdue @ Iowa",
+        "delta_margin": -0.054728910016656585,
+        "pred_margin_cur": 26.294199032057378,
+        "pred_margin_fix": 26.23947012204072
+      },
+      {
+        "matchup": "Texas Tech @ Oklahoma State",
+        "delta_margin": -0.05318218983127565,
+        "pred_margin_cur": 9.297315739228958,
+        "pred_margin_fix": 9.244133549397683
+      },
+      {
+        "matchup": "Middle Tennessee @ Liberty",
+        "delta_margin": -0.039884309361152503,
+        "pred_margin_cur": 26.443271650645155,
+        "pred_margin_fix": 26.403387341284002
+      },
+      {
+        "matchup": "Troy @ South Alabama",
+        "delta_margin": -0.03987372214814755,
+        "pred_margin_cur": 8.773355451713535,
+        "pred_margin_fix": 8.733481729565387
+      },
+      {
+        "matchup": "Minnesota @ Penn State",
+        "delta_margin": -0.039341127268990306,
+        "pred_margin_cur": 1.5561461635190503,
+        "pred_margin_fix": 1.51680503625006
+      },
+      {
+        "matchup": "North Dakota State @ Hawai'i",
+        "delta_margin": -0.03838314139599358,
+        "pred_margin_cur": 0.14060844308556902,
+        "pred_margin_fix": 0.10222530168957544
+      },
+      {
+        "matchup": "New Mexico State @ Missouri State",
+        "delta_margin": -0.03679830694541497,
+        "pred_margin_cur": 4.655848149513146,
+        "pred_margin_fix": 4.619049842567731
+      },
+      {
+        "matchup": "San Jos\u00e9 State @ Air Force",
+        "delta_margin": -0.034104211124448724,
+        "pred_margin_cur": 8.144185517687498,
+        "pred_margin_fix": 8.11008130656305
+      },
+      {
+        "matchup": "Arkansas State @ Coastal Carolina",
+        "delta_margin": -0.032865954090675054,
+        "pred_margin_cur": 4.021222262275105,
+        "pred_margin_fix": 3.9883563081844295
+      },
+      {
+        "matchup": "Nevada @ Northern Illinois",
+        "delta_margin": -0.03259247593345449,
+        "pred_margin_cur": 0.9853988880610314,
+        "pred_margin_fix": 0.9528064121275769
+      },
+      {
+        "matchup": "Florida @ Kentucky",
+        "delta_margin": -0.032405574926351655,
+        "pred_margin_cur": 7.753502093491311,
+        "pred_margin_fix": 7.721096518564959
+      }
+    ]
+  },
+  "walkforward_w2_w10": [
+    {
+      "week": 2,
+      "as_of": "2026-09-08T10:00:00+00:00",
+      "mae_cur": 15.066925273782438,
+      "mae_fix": 15.052213176990715,
+      "n_cur": 86,
+      "n_fix": 86,
+      "cov80_cur": 0.7093023255813954,
+      "cov80_fix": 0.7209302325581395
+    },
+    {
+      "week": 3,
+      "as_of": "2026-09-15T10:00:00+00:00",
+      "mae_cur": 13.408178279738944,
+      "mae_fix": 13.280882929345776,
+      "n_cur": 75,
+      "n_fix": 75,
+      "cov80_cur": 0.8533333333333334,
+      "cov80_fix": 0.8666666666666667
+    },
+    {
+      "week": 4,
+      "as_of": "2026-09-22T10:00:00+00:00",
+      "mae_cur": 15.695124825579027,
+      "mae_fix": 15.678059547209012,
+      "n_cur": 71,
+      "n_fix": 71,
+      "cov80_cur": 0.647887323943662,
+      "cov80_fix": 0.6338028169014085
+    },
+    {
+      "week": 5,
+      "as_of": "2026-09-29T10:00:00+00:00",
+      "mae_cur": 13.995839929290083,
+      "mae_fix": 13.992154402729462,
+      "n_cur": 59,
+      "n_fix": 59,
+      "cov80_cur": 0.7457627118644068,
+      "cov80_fix": 0.7457627118644068
+    },
+    {
+      "week": 6,
+      "as_of": "2026-10-06T10:00:00+00:00",
+      "mae_cur": 11.618079311711735,
+      "mae_fix": 11.597257767481388,
+      "n_cur": 58,
+      "n_fix": 58,
+      "cov80_cur": 0.896551724137931,
+      "cov80_fix": 0.896551724137931
+    },
+    {
+      "week": 7,
+      "as_of": "2026-10-13T10:00:00+00:00",
+      "mae_cur": 12.314304711075588,
+      "mae_fix": 12.342853065217978,
+      "n_cur": 62,
+      "n_fix": 62,
+      "cov80_cur": 0.7903225806451613,
+      "cov80_fix": 0.7903225806451613
+    },
+    {
+      "week": 8,
+      "as_of": "2026-10-20T10:00:00+00:00",
+      "mae_cur": 12.074620821992218,
+      "mae_fix": 12.092403508624718,
+      "n_cur": 56,
+      "n_fix": 56,
+      "cov80_cur": 0.8392857142857143,
+      "cov80_fix": 0.8214285714285714
+    },
+    {
+      "week": 9,
+      "as_of": "2026-10-27T10:00:00+00:00",
+      "mae_cur": 14.255793284401749,
+      "mae_fix": 14.26153957307316,
+      "n_cur": 56,
+      "n_fix": 56,
+      "cov80_cur": 0.7142857142857143,
+      "cov80_fix": 0.7142857142857143
+    },
+    {
+      "week": 10,
+      "as_of": "2026-11-04T14:03:14.629521+00:00",
+      "mae_cur": 13.890187595814686,
+      "mae_fix": 13.86353005983589,
+      "n_cur": 61,
+      "n_fix": 61,
+      "cov80_cur": 0.7049180327868853,
+      "cov80_fix": 0.7049180327868853
+    }
+  ],
+  "walkforward_summary": {
+    "mae_current_mean": 13.591006003709607,
+    "mae_fixed_mean": 13.573432670056455,
+    "cov80_current_mean": 0.7668499400960227,
+    "cov80_fixed_mean": 0.7660743390305428
+  },
+  "promotion": {
+    "present": true,
+    "verdict": "NOT_RUN_NO_CHALLENGER",
+    "note": "no challenger bundle; same champion weights used for both pins"
+  },
+  "seasons_2023_2025": "skipped (time; 2026-only walk-forward completed)",
+  "criteria": {
+    "tests_1b_1c": "PASS",
+    "mae_fixed_le_current_plus_0_10": true,
+    "cov80_band": true,
+    "promotion_not_worse": true,
+    "no_nan_inf": true,
+    "mae_current_mean": 13.591006003709607,
+    "mae_fixed_mean": 13.573432670056455,
+    "cov80_current_mean": 0.7668499400960227,
+    "cov80_fixed_mean": 0.7660743390305428
+  },
+  "overall": "PASS"
+}
