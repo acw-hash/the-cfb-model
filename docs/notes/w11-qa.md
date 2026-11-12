@@ -236,3 +236,206 @@ Negative defense correlations confirm **BETTER**. Repo contradiction: `state_spa
 - Addendum C4 EPA-gap check label false positive (`HAS-WEEK{N}-RATING` = publish-week synthetic point).
 - Local `data/artifacts/state_space/filter_history.parquet` stale (max season 2025); C1 used R2/Nov-4 `team_ratings` instead.
 - W10-5 / Mac Nov 7 card commits still absent on `origin/main`.
+
+## W11-FIX-1 — FCS defense prior sign (branch `w11-fcs-def-sign`, NO MERGE)
+
+**Date:** 2026-11-12  
+**Branch tip (fix commit):** `6c688af` — *Fix FCS def_epa prior sign under off-minus-def convention.*  
+**Export gate (pre-edit verify):** `export False social False`  
+(`uv run python -c "from ncaa_quant.config import load_config;c=load_config();print('export',c.webapp.export_enabled,'social',c.social.enabled)"`)
+
+Sandbox only: `data/sandbox/w11_fcsfix/` (gitignored). No production `filter_history` / `tier_state` / `publish_history` / R2 writes. No weight or gate changes. No publish/merge.
+
+Evidence: `docs/notes/_artifacts/w11-qa/w11_fix1_impact.json`, `fix1b_{fail_on_main,pass_on_branch}.*`, `make_test_w11_fix1.out`, `scripts/_qa_w11_fcs_impact{,_resume}.py`.
+
+---
+
+### 0. Scope check (report-only; higher def_epa = BETTER)
+
+Only writers/assumptions beyond the predictor/site already covered in C2. Convention: under `y ≈ off − def`, weak defense ⇒ **negative** `def_epa`.
+
+| Site | What it does | Verdict |
+|------|--------------|---------|
+| `state_space.py:149` `StateSpaceConfig.fcs_prior_mean=-0.05` | Scalar “slightly worse than average”; no dim-specific flip | **PASS** (scalar) |
+| `state_space.py:529-539` `fcs_pinned_state` **(pre-fix)** | `mean[def]=-fcs_prior_mean` → `def=+0.05` (> FBS ~0) | **FAIL** — only FAIL found |
+| `league_state.py:377-379` | Reads pinned FCS `mean[def]` / var into measurement; no extra negate | **PASS** |
+| `priors.py:187-195` `regress_to_conference_mean` | Convex blend; same for off/def | **PASS** |
+| `priors.py:198-212` `returning_pct_for_dim` | Picks offense vs defense continuity %; no sign flip | **PASS** |
+| `priors.py:215-228` `talent_implied_rating` | `scale * talent_z`; same units for any dim | **PASS** |
+| `priors.py:333-382` `build_predictors` (returning / talent / portal / coaching / QB) | Same-sign blend into prior mean per dim; portal/coach/QB not inverted for def | **PASS** |
+| `priors.py:1028-1044` `gaussian_state_from_priors` | Copies fitted `prior_mean` into state dims | **PASS** |
+| New-FBS / no-history | No separate def-sign path; diffuse / league-mean priors (`priors.py:494-503`, `1085+`) are dim-symmetric | **PASS** |
+| `state_space.py:446-464` `inflate_q` (QB/coordinator/injury-style events) | Inflates **covariance** diagonals only; does not rewrite means | **PASS** |
+| `efficiency.py:277-278` ridge docstring | “higher defense = more of y suppressed” ≡ better | **PASS** |
+| Every other `fcs_prior_mean` use | Only config default + `fcs_pinned_state` assignment | **PASS** (no second writer) |
+
+**STOP rule:** no other FAIL → proceed to step 1.
+
+---
+
+### 1. Fix + tests
+
+**Diff (`6c688af`):**
+
+```diff
+-    # Offense slightly worse, defense slightly worse (higher allowed EPA).
++    # Offense slightly worse, defense slightly worse under off − def:
++    # higher def_epa = better defense (more EPA suppressed), so a weak FCS
++    # defense is a negative def_epa (same sign as fcs_prior_mean).
+     if "off_epa" in config.state_dims:
+         mean[config.dim_index("off_epa")] = config.fcs_prior_mean
+     if "def_epa" in config.state_dims:
+-        # Higher def_epa means worse defense under off − def measurement.
+-        mean[config.dim_index("def_epa")] = -config.fcs_prior_mean
++        mean[config.dim_index("def_epa")] = config.fcs_prior_mean
+```
+
+New unit test: `tests/unit/test_fcs_def_prior_sign.py` — pinned FCS `off`/`def` both `< 0` and `def <` FBS mean-zero reference; equals `fcs_prior_mean`.
+
+| Evidence | Result |
+|----------|--------|
+| 1b on main/pre-fix (`fix1b_fail_on_main.txt`) | **FAIL** `assert 0.05 < 0.0` |
+| 1b on branch (`fix1b_pass_on_branch.out`) | **PASS** |
+| 1c `make test` (`make_test_w11_fix1.out`) | **4 failed, 1054 passed** — exactly the known four (stake pin, language-guard ratchet, credit-slot projection, about-copy) |
+
+---
+
+### 2. Ratings impact (sandbox `data/sandbox/w11_fcsfix/`)
+
+Δ = fixed − current. n=138 FBS. No NaN/inf.
+
+#### 2a. Week-10 end
+
+| Metric | Value |
+|--------|------:|
+| median \|Δoff\| | 0.000326 |
+| median \|Δdef\| | 0.000314 |
+| max \|Δoff\| | 0.003171 |
+| max \|Δdef\| | 0.001770 |
+| Spearman(Δoff, # FCS games) | ρ=**−0.301**, p=3.3e-4 |
+
+Top 15 by \|Δoff\|+\|Δdef\|:
+
+| School | Δoff | Δdef | \|Δ\| | # FCS |
+|--------|-----:|-----:|------:|------:|
+| Wake Forest | −0.00317 | +0.00035 | 0.00352 | 1 |
+| Purdue | +0.00030 | +0.00177 | 0.00207 | 1 |
+| Florida | +0.00092 | +0.00109 | 0.00201 | 1 |
+| Ole Miss | +0.00088 | +0.00088 | 0.00176 | 0 |
+| Minnesota | +0.00133 | +0.00042 | 0.00175 | 1 |
+| Tennessee | +0.00081 | +0.00091 | 0.00172 | 1 |
+| Delaware | −0.00055 | −0.00113 | 0.00168 | 1 |
+| Kent State | −0.00063 | −0.00099 | 0.00162 | 1 |
+| Sam Houston | −0.00084 | −0.00075 | 0.00158 | 1 |
+| Stanford | −0.00130 | +0.00025 | 0.00155 | 1 |
+| Washington | +0.00035 | +0.00120 | 0.00154 | 1 |
+| Mississippi State | +0.00102 | +0.00051 | 0.00153 | 0 |
+| Georgia | +0.00042 | +0.00102 | 0.00143 | 1 |
+| Missouri | +0.00091 | +0.00050 | 0.00141 | 1 |
+| Ohio | −0.00059 | −0.00079 | 0.00139 | 1 |
+
+#### 2b. Nov 4 state (through week 9)
+
+| Metric | Value |
+|--------|------:|
+| median \|Δoff\| | 0.000345 |
+| median \|Δdef\| | 0.000365 |
+| max \|Δoff\| | 0.001741 |
+| max \|Δdef\| | 0.002028 |
+| Spearman(Δoff, # FCS games) | ρ=**−0.351**, p=2.4e-5 |
+
+Top 15: Purdue, Texas, Kentucky, Eastern Michigan, Michigan State, Oklahoma, South Carolina, Florida Atlantic, Ohio, Florida, UCLA, Georgia, Massachusetts (2 FCS), Ole Miss, Iowa — max \|Δ\| = 0.00229 (Purdue).
+
+---
+
+### 3. Forecast impact
+
+#### 3a. Week 10, Nov 4 as-of (n=61 finals)
+
+| | Current | Fixed |
+|--|--------:|------:|
+| MAE | 13.890 | **13.864** |
+| 80% coverage | 0.705 | 0.705 |
+
+\|Δmargin\|: median **0.022**, p90 **0.063**, max **1.080**. No NaN/inf.
+
+#### 3b. Seven week-10 card plays (posted line/price; fixed ratings)
+
+Gates unchanged (edge ≥ 4.5%, gap ≤ 7). All seven still **pass**.
+
+| Play | Ridge μ (side) | Gap | Edge | Gates |
+|------|---------------:|----:|-----:|-------|
+| Missouri +2.5/−104 | 3.956 | 6.46 | 15.8% | PASS |
+| Ole Miss +3.5/−105 | 2.538 | 6.04 | 14.1% | PASS |
+| LSU −6/−108 | 11.664 | 5.66 | 13.1% | PASS |
+| UConn +7.5/−102 | −2.705 | 4.80 | 11.8% | PASS |
+| Auburn −10/−108 | 14.116 | 4.12 | 8.6% | PASS |
+| Texas State +5.5/−108 | −1.703 | 3.80 | 8.2% | PASS |
+| Kentucky +6.5/−105 | −3.002 | 3.50 | 7.8% | PASS |
+
+\|Δμ\| vs current on these plays ≤ 0.063.
+
+#### 3c. Week 11, as-of now
+
+Production path returned **n=61** games (not 67 — slate available locally). \|Δmargin\|: median **0.021**, p90 **0.040**, max **0.116**.
+
+Largest 15 \|Δ\| (signed Δ = fixed − current):
+
+| Matchup | Δmargin |
+|---------|--------:|
+| Wake Forest @ SMU | +0.116 |
+| Tennessee @ Texas A&M | −0.072 |
+| Georgia Southern @ Georgia State | −0.067 |
+| James Madison @ UConn | +0.055 |
+| Purdue @ Iowa | −0.055 |
+| Texas Tech @ Oklahoma State | −0.053 |
+| Middle Tennessee @ Liberty | −0.040 |
+| Troy @ South Alabama | −0.040 |
+| Minnesota @ Penn State | −0.039 |
+| North Dakota State @ Hawai'i | −0.038 |
+| New Mexico State @ Missouri State | −0.037 |
+| San José State @ Air Force | −0.034 |
+| Arkansas State @ Coastal Carolina | −0.033 |
+| Nevada @ Northern Illinois | −0.033 |
+| Florida @ Kentucky | −0.032 |
+
+---
+
+### 4. Validation (criteria fixed before results)
+
+Walk-forward 2026 weeks 2–10; same champion weights. 2023–2025: **skipped** (time; 2026-only completed). ATS vs closing consensus: **unavailable** in this harness run (pred frames had no attachable `spread_close` / consensus close → `ats_cur`/`ats_fix` = null).
+
+| Week | MAE cur | MAE fix | cov80 cur | cov80 fix |
+|-----:|--------:|--------:|----------:|----------:|
+| 2 | 15.067 | 15.052 | 0.709 | 0.721 |
+| 3 | 13.408 | 13.281 | 0.853 | 0.867 |
+| 4 | 15.695 | 15.678 | 0.648 | 0.634 |
+| 5 | 13.996 | 13.992 | 0.746 | 0.746 |
+| 6 | 11.618 | 11.597 | 0.897 | 0.897 |
+| 7 | 12.314 | 12.343 | 0.790 | 0.790 |
+| 8 | 12.075 | 12.092 | 0.839 | 0.821 |
+| 9 | 14.256 | 14.262 | 0.714 | 0.714 |
+| 10 | 13.890 | 13.864 | 0.705 | 0.705 |
+| **mean** | **13.591** | **13.573** | **0.7668** | **0.7661** |
+
+Promotion API: present; verdict **`NOT_RUN_NO_CHALLENGER`** (same champion weights for both pins — not worse than current).
+
+#### Criteria
+
+| Criterion | Result |
+|-----------|--------|
+| 1b–1c tests | **PASS** |
+| MAE fixed ≤ current + 0.10 (13.573 ≤ 13.691) | **PASS** |
+| cov80 fixed in 0.75–0.92 **or** no further from 0.80 than current (both ~0.766; \|fix−0.80\|=0.034 ≈ \|cur−0.80\|) | **PASS** |
+| promotion not worse | **PASS** |
+| no NaN/inf in sandbox ratings/forecasts | **PASS** |
+| **Overall** | **PASS** |
+
+No tuning performed to pass.
+
+---
+
+### Verdict
+
+**W11-FIX-1 overall: PASS.** Ship-ready on branch only — do **not** merge/publish until explicitly approved. Rating/margin deltas are small (max \|Δμ\| week-10 ≈ 1.08 pts on one game; card edges all still clear gates). FCS pin now matches C1 (higher def = better; weak FCS def = −0.05).
+

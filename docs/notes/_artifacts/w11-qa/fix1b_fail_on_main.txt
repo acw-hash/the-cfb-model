@@ -1,0 +1,4 @@
+﻿# test_fcs_def_prior_sign.py on unfixed code (661aad5 / pre-fix)
+AssertionError: 0.05
+assert 0.05 < 0.0
+FAILED
