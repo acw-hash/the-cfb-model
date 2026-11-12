@@ -39,7 +39,7 @@ SANDBOX_META = (
 
 V3_RUN_ID = "task23_fundamental_reduced_v3"
 V2_RUN_ID = "task23_fundamental_reduced_v2"
-V3_VINTAGE = "W9A_REVAL"
+V3_VINTAGE = "W11_FCSFIX"
 V2_VINTAGE = "REGRADED_V2"
 
 

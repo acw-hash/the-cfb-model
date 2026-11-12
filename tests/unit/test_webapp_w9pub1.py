@@ -542,7 +542,7 @@ def test_history_line_carries_post_gate_null_bands(tmp_path: Path) -> None:
     wp = out["week_predictions"]
     assert wp["schema_version"] == "1.3.0"
     assert wp["as_of_source"] == "operator"
-    assert wp["vintage_label"] == "W9A_REVAL"
+    assert wp["vintage_label"] == "W11_FCSFIX"
     wp_game = wp["games"][0]
     assert wp_game["margin_interval_lo"] is None
     assert wp_game["margin_interval_hi"] is None

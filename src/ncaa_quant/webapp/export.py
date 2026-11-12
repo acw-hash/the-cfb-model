@@ -178,7 +178,7 @@ class UnknownRunProvenanceError(ValueError):
 #: export raises rather than stamping a stale vintage.
 PROVENANCE_BY_RUN_ID: dict[str, RunProvenance] = {
     "task23_fundamental_reduced_v3": RunProvenance(
-        vintage_label="W9A_REVAL",
+        vintage_label="W11_FCSFIX",
         ensemble_scope_label=DEFAULT_ENSEMBLE_SCOPE_LABEL,
         feature_time_label=DEFAULT_FEATURE_TIME_LABEL,
     ),

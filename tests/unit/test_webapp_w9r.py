@@ -217,7 +217,9 @@ def test_week_predictions_as_of_precedes_every_kickoff() -> None:
     games = week["games"]
     assert isinstance(games, list)
     assert week["schema_version"] == "1.2.0"
-    assert week["vintage_label"] == TRACK_RECORD_VINTAGE_LABEL
+    # Live/fixture week vintage follows producing-run provenance (W11_FCSFIX),
+    # not TRACK_RECORD_VINTAGE_LABEL (historical ATS memo stamp stays W9A_REVAL).
+    assert week["vintage_label"] == "W11_FCSFIX"
     published = datetime.fromisoformat(str(week["published_at"]).replace("Z", "+00:00"))
     assert published == datetime(2024, 9, 24, 10, 0, tzinfo=UTC)
     assert len(games) == 56
