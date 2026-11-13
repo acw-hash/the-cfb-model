@@ -1,0 +1,26 @@
+{
+  "raw_path": "C:\\Users\\alecw\\Projects\\the-cfb-model\\docs\\notes\\_artifacts\\social-s6-w11-card\\odds_w11_5_20261113T154414Z.json",
+  "credits": {
+    "x-requests-remaining": "322",
+    "x-requests-used": "178",
+    "x-requests-last": "2"
+  },
+  "n_games": 9,
+  "n_event_ids": 9,
+  "n_drop_records": 0,
+  "drop_reason_counts": {},
+  "rows_fetched": 284,
+  "rows_written": 284,
+  "quarantined": 0,
+  "gids": [
+    401864537,
+    401856861,
+    401856887,
+    401862826,
+    401856858,
+    401871061,
+    401862827,
+    401856864,
+    401856859
+  ]
+}

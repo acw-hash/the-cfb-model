@@ -1,0 +1,3388 @@
+{
+  "meta": {
+    "pulled_at_utc": "2026-11-13T15:44:14.234984+00:00",
+    "event_ids": [
+      "018349e41d033e3b1fdbc14ce9b09325",
+      "0431ccbcda08ef99781fee8c341c8932",
+      "4ff5dc819e70afa47904e5b901e4f8bc",
+      "5b6989e8ecca343c4de3e7d285b70aa3",
+      "7b3c2958dadc616a19ce7b9b1dd2a7e4",
+      "873a763cc258ad94bac35324c66e361c",
+      "8ad669f4c9b70f38fdb057c114588776",
+      "ce88da9d6fd67bac81c1e4a70545de29",
+      "ee91eb14cc4d725be5df58f3285bdaa6"
+    ],
+    "params": {
+      "regions": "us,us2",
+      "markets": "spreads",
+      "oddsFormat": "american",
+      "eventIds": "018349e41d033e3b1fdbc14ce9b09325,0431ccbcda08ef99781fee8c341c8932,4ff5dc819e70afa47904e5b901e4f8bc,5b6989e8ecca343c4de3e7d285b70aa3,7b3c2958dadc616a19ce7b9b1dd2a7e4,873a763cc258ad94bac35324c66e361c,8ad669f4c9b70f38fdb057c114588776,ce88da9d6fd67bac81c1e4a70545de29,ee91eb14cc4d725be5df58f3285bdaa6"
+    },
+    "headers": {
+      "x-requests-remaining": "322",
+      "x-requests-used": "178",
+      "x-requests-last": "2"
+    },
+    "est_credits": 2,
+    "n_events": 9,
+    "task": "W11-5"
+  },
+  "events": [
+    {
+      "id": "0431ccbcda08ef99781fee8c341c8932",
+      "sport_key": "americanfootball_ncaaf",
+      "sport_title": "NCAAF",
+      "commence_time": "2026-11-14T17:00:00Z",
+      "home_team": "Iowa State Cyclones",
+      "away_team": "Cincinnati Bearcats",
+      "bookmakers": [
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2026-11-13T15:44:05Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "Cincinnati Bearcats",
+                  "price": 105,
+                  "point": 2.5
+                },
+                {
+                  "name": "Iowa State Cyclones",
+                  "price": -125,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betwhale",
+          "title": "Betwhale",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "Cincinnati Bearcats",
+                  "price": -120,
+                  "point": 3.0
+                },
+                {
+                  "name": "Iowa State Cyclones",
+                  "price": -115,
+                  "point": -3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betparx",
+          "title": "betPARX",
+          "last_update": "2026-11-13T15:43:12Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:11Z",
+              "outcomes": [
+                {
+                  "name": "Cincinnati Bearcats",
+                  "price": -118,
+                  "point": 3.0
+                },
+                {
+                  "name": "Iowa State Cyclones",
+                  "price": -103,
+                  "point": -3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betrivers",
+          "title": "BetRivers",
+          "last_update": "2026-11-13T15:43:17Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:17Z",
+              "outcomes": [
+                {
+                  "name": "Cincinnati Bearcats",
+                  "price": -120,
+                  "point": 3.0
+                },
+                {
+                  "name": "Iowa State Cyclones",
+                  "price": -105,
+                  "point": -3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "ballybet",
+          "title": "Bally Bet",
+          "last_update": "2026-11-13T15:44:04Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:04Z",
+              "outcomes": [
+                {
+                  "name": "Cincinnati Bearcats",
+                  "price": -118,
+                  "point": 3.0
+                },
+                {
+                  "name": "Iowa State Cyclones",
+                  "price": -103,
+                  "point": -3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2026-11-13T15:44:07Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:07Z",
+              "outcomes": [
+                {
+                  "name": "Cincinnati Bearcats",
+                  "price": -112,
+                  "point": 3.0
+                },
+                {
+                  "name": "Iowa State Cyclones",
+                  "price": -108,
+                  "point": -3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betonlineag",
+          "title": "BetOnline.ag",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "Cincinnati Bearcats",
+                  "price": -115,
+                  "point": 3.0
+                },
+                {
+                  "name": "Iowa State Cyclones",
+                  "price": -105,
+                  "point": -3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "lowvig",
+          "title": "LowVig.ag",
+          "last_update": "2026-11-13T15:44:05Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "Cincinnati Bearcats",
+                  "price": -111,
+                  "point": 3.0
+                },
+                {
+                  "name": "Iowa State Cyclones",
+                  "price": -101,
+                  "point": -3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "hardrockbet",
+          "title": "Hard Rock Bet",
+          "last_update": "2026-11-13T15:43:13Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:12Z",
+              "outcomes": [
+                {
+                  "name": "Cincinnati Bearcats",
+                  "price": 100,
+                  "point": 2.5
+                },
+                {
+                  "name": "Iowa State Cyclones",
+                  "price": -120,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "espnbet",
+          "title": "theScore Bet",
+          "last_update": "2026-11-13T15:43:48Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:48Z",
+              "outcomes": [
+                {
+                  "name": "Cincinnati Bearcats",
+                  "price": 100,
+                  "point": 2.5
+                },
+                {
+                  "name": "Iowa State Cyclones",
+                  "price": -120,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betmgm",
+          "title": "BetMGM",
+          "last_update": "2026-11-13T15:43:32Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:31Z",
+              "outcomes": [
+                {
+                  "name": "Cincinnati Bearcats",
+                  "price": -110,
+                  "point": 3.0
+                },
+                {
+                  "name": "Iowa State Cyclones",
+                  "price": -108,
+                  "point": -3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betus",
+          "title": "BetUS",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "Cincinnati Bearcats",
+                  "price": -105,
+                  "point": 3.0
+                },
+                {
+                  "name": "Iowa State Cyclones",
+                  "price": -115,
+                  "point": -3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "bovada",
+          "title": "Bovada",
+          "last_update": "2026-11-13T15:42:01Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:42:01Z",
+              "outcomes": [
+                {
+                  "name": "Cincinnati Bearcats",
+                  "price": -112,
+                  "point": 3.0
+                },
+                {
+                  "name": "Iowa State Cyclones",
+                  "price": -108,
+                  "point": -3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betanysports",
+          "title": "BetAnything",
+          "last_update": "2026-11-13T15:44:07Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:06Z",
+              "outcomes": [
+                {
+                  "name": "Cincinnati Bearcats",
+                  "price": -110,
+                  "point": 3.0
+                },
+                {
+                  "name": "Iowa State Cyclones",
+                  "price": -110,
+                  "point": -3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "mybookieag",
+          "title": "MyBookie.ag",
+          "last_update": "2026-11-13T15:43:45Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:45Z",
+              "outcomes": [
+                {
+                  "name": "Cincinnati Bearcats",
+                  "price": -110,
+                  "point": 3.0
+                },
+                {
+                  "name": "Iowa State Cyclones",
+                  "price": -110,
+                  "point": -3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fliff",
+          "title": "Fliff",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "Cincinnati Bearcats",
+                  "price": -105,
+                  "point": 2.5
+                },
+                {
+                  "name": "Iowa State Cyclones",
+                  "price": -130,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "5b6989e8ecca343c4de3e7d285b70aa3",
+      "sport_key": "americanfootball_ncaaf",
+      "sport_title": "NCAAF",
+      "commence_time": "2026-11-14T20:30:00Z",
+      "home_team": "BYU Cougars",
+      "away_team": "Baylor Bears",
+      "bookmakers": [
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2026-11-13T15:44:07Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:07Z",
+              "outcomes": [
+                {
+                  "name": "Baylor Bears",
+                  "price": -112,
+                  "point": 7.5
+                },
+                {
+                  "name": "BYU Cougars",
+                  "price": -108,
+                  "point": -7.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betwhale",
+          "title": "Betwhale",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "Baylor Bears",
+                  "price": -120,
+                  "point": 7.5
+                },
+                {
+                  "name": "BYU Cougars",
+                  "price": -115,
+                  "point": -7.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2026-11-13T15:44:05Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "Baylor Bears",
+                  "price": -115,
+                  "point": 7.5
+                },
+                {
+                  "name": "BYU Cougars",
+                  "price": -105,
+                  "point": -7.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betrivers",
+          "title": "BetRivers",
+          "last_update": "2026-11-13T15:43:17Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:17Z",
+              "outcomes": [
+                {
+                  "name": "Baylor Bears",
+                  "price": -113,
+                  "point": 7.5
+                },
+                {
+                  "name": "BYU Cougars",
+                  "price": -110,
+                  "point": -7.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "ballybet",
+          "title": "Bally Bet",
+          "last_update": "2026-11-13T15:44:04Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:04Z",
+              "outcomes": [
+                {
+                  "name": "Baylor Bears",
+                  "price": -112,
+                  "point": 7.5
+                },
+                {
+                  "name": "BYU Cougars",
+                  "price": -108,
+                  "point": -7.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betparx",
+          "title": "betPARX",
+          "last_update": "2026-11-13T15:43:12Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:11Z",
+              "outcomes": [
+                {
+                  "name": "Baylor Bears",
+                  "price": -112,
+                  "point": 7.5
+                },
+                {
+                  "name": "BYU Cougars",
+                  "price": -108,
+                  "point": -7.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "espnbet",
+          "title": "theScore Bet",
+          "last_update": "2026-11-13T15:43:48Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:48Z",
+              "outcomes": [
+                {
+                  "name": "Baylor Bears",
+                  "price": -120,
+                  "point": 7.5
+                },
+                {
+                  "name": "BYU Cougars",
+                  "price": 100,
+                  "point": -7.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betonlineag",
+          "title": "BetOnline.ag",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:06Z",
+              "outcomes": [
+                {
+                  "name": "Baylor Bears",
+                  "price": -116,
+                  "point": 7.5
+                },
+                {
+                  "name": "BYU Cougars",
+                  "price": -104,
+                  "point": -7.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "lowvig",
+          "title": "LowVig.ag",
+          "last_update": "2026-11-13T15:44:05Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "Baylor Bears",
+                  "price": -115,
+                  "point": 7.5
+                },
+                {
+                  "name": "BYU Cougars",
+                  "price": 103,
+                  "point": -7.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "hardrockbet",
+          "title": "Hard Rock Bet",
+          "last_update": "2026-11-13T15:43:13Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:13Z",
+              "outcomes": [
+                {
+                  "name": "Baylor Bears",
+                  "price": -110,
+                  "point": 7.5
+                },
+                {
+                  "name": "BYU Cougars",
+                  "price": -110,
+                  "point": -7.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betmgm",
+          "title": "BetMGM",
+          "last_update": "2026-11-13T15:43:32Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:31Z",
+              "outcomes": [
+                {
+                  "name": "Baylor Bears",
+                  "price": -115,
+                  "point": 7.5
+                },
+                {
+                  "name": "BYU Cougars",
+                  "price": -105,
+                  "point": -7.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betus",
+          "title": "BetUS",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:06Z",
+              "outcomes": [
+                {
+                  "name": "Baylor Bears",
+                  "price": -115,
+                  "point": 7.5
+                },
+                {
+                  "name": "BYU Cougars",
+                  "price": -105,
+                  "point": -7.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "bovada",
+          "title": "Bovada",
+          "last_update": "2026-11-13T15:42:01Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:42:01Z",
+              "outcomes": [
+                {
+                  "name": "Baylor Bears",
+                  "price": -112,
+                  "point": 7.5
+                },
+                {
+                  "name": "BYU Cougars",
+                  "price": -108,
+                  "point": -7.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betanysports",
+          "title": "BetAnything",
+          "last_update": "2026-11-13T15:44:07Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:07Z",
+              "outcomes": [
+                {
+                  "name": "Baylor Bears",
+                  "price": -115,
+                  "point": 7.5
+                },
+                {
+                  "name": "BYU Cougars",
+                  "price": -105,
+                  "point": -7.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "mybookieag",
+          "title": "MyBookie.ag",
+          "last_update": "2026-11-13T15:43:45Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:45Z",
+              "outcomes": [
+                {
+                  "name": "Baylor Bears",
+                  "price": -110,
+                  "point": 7.5
+                },
+                {
+                  "name": "BYU Cougars",
+                  "price": -110,
+                  "point": -7.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fliff",
+          "title": "Fliff",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "Baylor Bears",
+                  "price": -120,
+                  "point": 7.5
+                },
+                {
+                  "name": "BYU Cougars",
+                  "price": -115,
+                  "point": -7.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "018349e41d033e3b1fdbc14ce9b09325",
+      "sport_key": "americanfootball_ncaaf",
+      "sport_title": "NCAAF",
+      "commence_time": "2026-11-14T20:30:00Z",
+      "home_team": "Tulsa Golden Hurricane",
+      "away_team": "Florida Atlantic Owls",
+      "bookmakers": [
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2026-11-13T15:44:05Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "Florida Atlantic Owls",
+                  "price": 100,
+                  "point": 5.5
+                },
+                {
+                  "name": "Tulsa Golden Hurricane",
+                  "price": -120,
+                  "point": -5.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2026-11-13T15:44:07Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:07Z",
+              "outcomes": [
+                {
+                  "name": "Florida Atlantic Owls",
+                  "price": -108,
+                  "point": 5.5
+                },
+                {
+                  "name": "Tulsa Golden Hurricane",
+                  "price": -112,
+                  "point": -5.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betonlineag",
+          "title": "BetOnline.ag",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "Florida Atlantic Owls",
+                  "price": -105,
+                  "point": 5.5
+                },
+                {
+                  "name": "Tulsa Golden Hurricane",
+                  "price": -115,
+                  "point": -5.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "lowvig",
+          "title": "LowVig.ag",
+          "last_update": "2026-11-13T15:44:05Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "Florida Atlantic Owls",
+                  "price": -101,
+                  "point": 5.5
+                },
+                {
+                  "name": "Tulsa Golden Hurricane",
+                  "price": -111,
+                  "point": -5.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betwhale",
+          "title": "Betwhale",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "Florida Atlantic Owls",
+                  "price": -115,
+                  "point": 5.5
+                },
+                {
+                  "name": "Tulsa Golden Hurricane",
+                  "price": -120,
+                  "point": -5.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betmgm",
+          "title": "BetMGM",
+          "last_update": "2026-11-13T15:43:32Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:31Z",
+              "outcomes": [
+                {
+                  "name": "Florida Atlantic Owls",
+                  "price": -108,
+                  "point": 6.0
+                },
+                {
+                  "name": "Tulsa Golden Hurricane",
+                  "price": -110,
+                  "point": -6.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "espnbet",
+          "title": "theScore Bet",
+          "last_update": "2026-11-13T15:43:48Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:48Z",
+              "outcomes": [
+                {
+                  "name": "Florida Atlantic Owls",
+                  "price": -115,
+                  "point": 6.5
+                },
+                {
+                  "name": "Tulsa Golden Hurricane",
+                  "price": -105,
+                  "point": -6.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betus",
+          "title": "BetUS",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:06Z",
+              "outcomes": [
+                {
+                  "name": "Florida Atlantic Owls",
+                  "price": -110,
+                  "point": 5.5
+                },
+                {
+                  "name": "Tulsa Golden Hurricane",
+                  "price": -110,
+                  "point": -5.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "bovada",
+          "title": "Bovada",
+          "last_update": "2026-11-13T15:42:01Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:42:01Z",
+              "outcomes": [
+                {
+                  "name": "Florida Atlantic Owls",
+                  "price": -112,
+                  "point": 6.0
+                },
+                {
+                  "name": "Tulsa Golden Hurricane",
+                  "price": -108,
+                  "point": -6.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betparx",
+          "title": "betPARX",
+          "last_update": "2026-11-13T15:43:12Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:11Z",
+              "outcomes": [
+                {
+                  "name": "Florida Atlantic Owls",
+                  "price": -112,
+                  "point": 6.0
+                },
+                {
+                  "name": "Tulsa Golden Hurricane",
+                  "price": -109,
+                  "point": -6.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betrivers",
+          "title": "BetRivers",
+          "last_update": "2026-11-13T15:43:17Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:17Z",
+              "outcomes": [
+                {
+                  "name": "Florida Atlantic Owls",
+                  "price": -113,
+                  "point": 6.0
+                },
+                {
+                  "name": "Tulsa Golden Hurricane",
+                  "price": -112,
+                  "point": -6.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "ballybet",
+          "title": "Bally Bet",
+          "last_update": "2026-11-13T15:44:04Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:04Z",
+              "outcomes": [
+                {
+                  "name": "Florida Atlantic Owls",
+                  "price": -112,
+                  "point": 6.0
+                },
+                {
+                  "name": "Tulsa Golden Hurricane",
+                  "price": -109,
+                  "point": -6.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "hardrockbet",
+          "title": "Hard Rock Bet",
+          "last_update": "2026-11-13T15:43:13Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:13Z",
+              "outcomes": [
+                {
+                  "name": "Florida Atlantic Owls",
+                  "price": -105,
+                  "point": 5.5
+                },
+                {
+                  "name": "Tulsa Golden Hurricane",
+                  "price": -115,
+                  "point": -5.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betanysports",
+          "title": "BetAnything",
+          "last_update": "2026-11-13T15:44:07Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:06Z",
+              "outcomes": [
+                {
+                  "name": "Florida Atlantic Owls",
+                  "price": -110,
+                  "point": 5.5
+                },
+                {
+                  "name": "Tulsa Golden Hurricane",
+                  "price": -110,
+                  "point": -5.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "mybookieag",
+          "title": "MyBookie.ag",
+          "last_update": "2026-11-13T15:43:45Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:45Z",
+              "outcomes": [
+                {
+                  "name": "Florida Atlantic Owls",
+                  "price": -110,
+                  "point": 5.5
+                },
+                {
+                  "name": "Tulsa Golden Hurricane",
+                  "price": -110,
+                  "point": -5.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fliff",
+          "title": "Fliff",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "Florida Atlantic Owls",
+                  "price": -110,
+                  "point": 5.5
+                },
+                {
+                  "name": "Tulsa Golden Hurricane",
+                  "price": -120,
+                  "point": -5.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "873a763cc258ad94bac35324c66e361c",
+      "sport_key": "americanfootball_ncaaf",
+      "sport_title": "NCAAF",
+      "commence_time": "2026-11-14T20:30:00Z",
+      "home_team": "Liberty Flames",
+      "away_team": "Middle Tennessee Blue Raiders",
+      "bookmakers": [
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2026-11-13T15:44:07Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:07Z",
+              "outcomes": [
+                {
+                  "name": "Liberty Flames",
+                  "price": -110,
+                  "point": -21.0
+                },
+                {
+                  "name": "Middle Tennessee Blue Raiders",
+                  "price": -110,
+                  "point": 21.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betonlineag",
+          "title": "BetOnline.ag",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:06Z",
+              "outcomes": [
+                {
+                  "name": "Liberty Flames",
+                  "price": -110,
+                  "point": -21.0
+                },
+                {
+                  "name": "Middle Tennessee Blue Raiders",
+                  "price": -110,
+                  "point": 21.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "lowvig",
+          "title": "LowVig.ag",
+          "last_update": "2026-11-13T15:44:05Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "Liberty Flames",
+                  "price": -106,
+                  "point": -21.0
+                },
+                {
+                  "name": "Middle Tennessee Blue Raiders",
+                  "price": -106,
+                  "point": 21.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2026-11-13T15:44:05Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "Liberty Flames",
+                  "price": 100,
+                  "point": -21.5
+                },
+                {
+                  "name": "Middle Tennessee Blue Raiders",
+                  "price": -120,
+                  "point": 21.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "espnbet",
+          "title": "theScore Bet",
+          "last_update": "2026-11-13T15:43:48Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:48Z",
+              "outcomes": [
+                {
+                  "name": "Liberty Flames",
+                  "price": -120,
+                  "point": -20.5
+                },
+                {
+                  "name": "Middle Tennessee Blue Raiders",
+                  "price": 100,
+                  "point": 20.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betmgm",
+          "title": "BetMGM",
+          "last_update": "2026-11-13T15:43:32Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:31Z",
+              "outcomes": [
+                {
+                  "name": "Liberty Flames",
+                  "price": -110,
+                  "point": -21.0
+                },
+                {
+                  "name": "Middle Tennessee Blue Raiders",
+                  "price": -108,
+                  "point": 21.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betwhale",
+          "title": "Betwhale",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "Liberty Flames",
+                  "price": -118,
+                  "point": -21.0
+                },
+                {
+                  "name": "Middle Tennessee Blue Raiders",
+                  "price": -118,
+                  "point": 21.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betus",
+          "title": "BetUS",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:06Z",
+              "outcomes": [
+                {
+                  "name": "Liberty Flames",
+                  "price": -105,
+                  "point": -21.5
+                },
+                {
+                  "name": "Middle Tennessee Blue Raiders",
+                  "price": -115,
+                  "point": 21.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "bovada",
+          "title": "Bovada",
+          "last_update": "2026-11-13T15:42:01Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:42:01Z",
+              "outcomes": [
+                {
+                  "name": "Liberty Flames",
+                  "price": -112,
+                  "point": -21.0
+                },
+                {
+                  "name": "Middle Tennessee Blue Raiders",
+                  "price": -108,
+                  "point": 21.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betparx",
+          "title": "betPARX",
+          "last_update": "2026-11-13T15:43:12Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:11Z",
+              "outcomes": [
+                {
+                  "name": "Liberty Flames",
+                  "price": -108,
+                  "point": -22.0
+                },
+                {
+                  "name": "Middle Tennessee Blue Raiders",
+                  "price": -112,
+                  "point": 22.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betrivers",
+          "title": "BetRivers",
+          "last_update": "2026-11-13T15:43:17Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:17Z",
+              "outcomes": [
+                {
+                  "name": "Liberty Flames",
+                  "price": -110,
+                  "point": -22.0
+                },
+                {
+                  "name": "Middle Tennessee Blue Raiders",
+                  "price": -113,
+                  "point": 22.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "ballybet",
+          "title": "Bally Bet",
+          "last_update": "2026-11-13T15:44:04Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:04Z",
+              "outcomes": [
+                {
+                  "name": "Liberty Flames",
+                  "price": -108,
+                  "point": -22.0
+                },
+                {
+                  "name": "Middle Tennessee Blue Raiders",
+                  "price": -112,
+                  "point": 22.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "hardrockbet",
+          "title": "Hard Rock Bet",
+          "last_update": "2026-11-13T15:43:13Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:13Z",
+              "outcomes": [
+                {
+                  "name": "Liberty Flames",
+                  "price": -110,
+                  "point": -21.5
+                },
+                {
+                  "name": "Middle Tennessee Blue Raiders",
+                  "price": -110,
+                  "point": 21.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betanysports",
+          "title": "BetAnything",
+          "last_update": "2026-11-13T15:44:07Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:07Z",
+              "outcomes": [
+                {
+                  "name": "Liberty Flames",
+                  "price": -110,
+                  "point": -21.0
+                },
+                {
+                  "name": "Middle Tennessee Blue Raiders",
+                  "price": -110,
+                  "point": 21.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "mybookieag",
+          "title": "MyBookie.ag",
+          "last_update": "2026-11-13T15:43:45Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:45Z",
+              "outcomes": [
+                {
+                  "name": "Liberty Flames",
+                  "price": -110,
+                  "point": -21.0
+                },
+                {
+                  "name": "Middle Tennessee Blue Raiders",
+                  "price": -110,
+                  "point": 21.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fliff",
+          "title": "Fliff",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "Liberty Flames",
+                  "price": -110,
+                  "point": -21.5
+                },
+                {
+                  "name": "Middle Tennessee Blue Raiders",
+                  "price": -125,
+                  "point": 21.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "8ad669f4c9b70f38fdb057c114588776",
+      "sport_key": "americanfootball_ncaaf",
+      "sport_title": "NCAAF",
+      "commence_time": "2026-11-14T21:15:00Z",
+      "home_team": "Oklahoma Sooners",
+      "away_team": "Ole Miss Rebels",
+      "bookmakers": [
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2026-11-13T15:44:07Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:07Z",
+              "outcomes": [
+                {
+                  "name": "Oklahoma Sooners",
+                  "price": -102,
+                  "point": -1.5
+                },
+                {
+                  "name": "Ole Miss Rebels",
+                  "price": -118,
+                  "point": 1.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2026-11-13T15:44:05Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "Oklahoma Sooners",
+                  "price": -130,
+                  "point": 1.5
+                },
+                {
+                  "name": "Ole Miss Rebels",
+                  "price": 110,
+                  "point": -1.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betwhale",
+          "title": "Betwhale",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "Oklahoma Sooners",
+                  "price": -110,
+                  "point": -1.5
+                },
+                {
+                  "name": "Ole Miss Rebels",
+                  "price": -127,
+                  "point": 1.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fliff",
+          "title": "Fliff",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "Oklahoma Sooners",
+                  "price": -110,
+                  "point": -1.5
+                },
+                {
+                  "name": "Ole Miss Rebels",
+                  "price": -125,
+                  "point": 1.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "espnbet",
+          "title": "theScore Bet",
+          "last_update": "2026-11-13T15:43:48Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:48Z",
+              "outcomes": [
+                {
+                  "name": "Oklahoma Sooners",
+                  "price": -110,
+                  "point": -1.5
+                },
+                {
+                  "name": "Ole Miss Rebels",
+                  "price": -110,
+                  "point": 1.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betparx",
+          "title": "betPARX",
+          "last_update": "2026-11-13T15:43:12Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:12Z",
+              "outcomes": [
+                {
+                  "name": "Oklahoma Sooners",
+                  "price": -108,
+                  "point": 0.5
+                },
+                {
+                  "name": "Ole Miss Rebels",
+                  "price": -112,
+                  "point": -0.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betrivers",
+          "title": "BetRivers",
+          "last_update": "2026-11-13T15:43:17Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:17Z",
+              "outcomes": [
+                {
+                  "name": "Oklahoma Sooners",
+                  "price": -114,
+                  "point": 1.0
+                },
+                {
+                  "name": "Ole Miss Rebels",
+                  "price": -109,
+                  "point": -1.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "ballybet",
+          "title": "Bally Bet",
+          "last_update": "2026-11-13T15:44:04Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:04Z",
+              "outcomes": [
+                {
+                  "name": "Oklahoma Sooners",
+                  "price": -108,
+                  "point": 0.5
+                },
+                {
+                  "name": "Ole Miss Rebels",
+                  "price": -112,
+                  "point": -0.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "hardrockbet",
+          "title": "Hard Rock Bet",
+          "last_update": "2026-11-13T15:43:13Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:13Z",
+              "outcomes": [
+                {
+                  "name": "Oklahoma Sooners",
+                  "price": -120,
+                  "point": 1.5
+                },
+                {
+                  "name": "Ole Miss Rebels",
+                  "price": 100,
+                  "point": -1.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betonlineag",
+          "title": "BetOnline.ag",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:06Z",
+              "outcomes": [
+                {
+                  "name": "Oklahoma Sooners",
+                  "price": -113,
+                  "point": 1.0
+                },
+                {
+                  "name": "Ole Miss Rebels",
+                  "price": -107,
+                  "point": -1.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betmgm",
+          "title": "BetMGM",
+          "last_update": "2026-11-13T15:43:32Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:31Z",
+              "outcomes": [
+                {
+                  "name": "Oklahoma Sooners",
+                  "price": -108,
+                  "point": -1.0
+                },
+                {
+                  "name": "Ole Miss Rebels",
+                  "price": -110,
+                  "point": 1.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betus",
+          "title": "BetUS",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:06Z",
+              "outcomes": [
+                {
+                  "name": "Oklahoma Sooners",
+                  "price": -115,
+                  "point": 1.0
+                },
+                {
+                  "name": "Ole Miss Rebels",
+                  "price": -105,
+                  "point": -1.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "bovada",
+          "title": "Bovada",
+          "last_update": "2026-11-13T15:42:01Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:42:01Z",
+              "outcomes": [
+                {
+                  "name": "Oklahoma Sooners",
+                  "price": -112,
+                  "point": -1.0
+                },
+                {
+                  "name": "Ole Miss Rebels",
+                  "price": -108,
+                  "point": 1.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betanysports",
+          "title": "BetAnything",
+          "last_update": "2026-11-13T15:44:07Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:07Z",
+              "outcomes": [
+                {
+                  "name": "Oklahoma Sooners",
+                  "price": -110,
+                  "point": -1.0
+                },
+                {
+                  "name": "Ole Miss Rebels",
+                  "price": -110,
+                  "point": 1.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "mybookieag",
+          "title": "MyBookie.ag",
+          "last_update": "2026-11-13T15:43:45Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:45Z",
+              "outcomes": [
+                {
+                  "name": "Oklahoma Sooners",
+                  "price": -110,
+                  "point": -1.0
+                },
+                {
+                  "name": "Ole Miss Rebels",
+                  "price": -110,
+                  "point": 1.0
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "4ff5dc819e70afa47904e5b901e4f8bc",
+      "sport_key": "americanfootball_ncaaf",
+      "sport_title": "NCAAF",
+      "commence_time": "2026-11-14T22:30:00Z",
+      "home_team": "West Virginia Mountaineers",
+      "away_team": "Kansas Jayhawks",
+      "bookmakers": [
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2026-11-13T15:44:05Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "Kansas Jayhawks",
+                  "price": 105,
+                  "point": 2.5
+                },
+                {
+                  "name": "West Virginia Mountaineers",
+                  "price": -125,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betwhale",
+          "title": "Betwhale",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "Kansas Jayhawks",
+                  "price": -123,
+                  "point": 3.0
+                },
+                {
+                  "name": "West Virginia Mountaineers",
+                  "price": -112,
+                  "point": -3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2026-11-13T15:44:07Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:07Z",
+              "outcomes": [
+                {
+                  "name": "Kansas Jayhawks",
+                  "price": -115,
+                  "point": 3.0
+                },
+                {
+                  "name": "West Virginia Mountaineers",
+                  "price": -105,
+                  "point": -3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "lowvig",
+          "title": "LowVig.ag",
+          "last_update": "2026-11-13T15:44:05Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "Kansas Jayhawks",
+                  "price": -109,
+                  "point": 3.0
+                },
+                {
+                  "name": "West Virginia Mountaineers",
+                  "price": -103,
+                  "point": -3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betonlineag",
+          "title": "BetOnline.ag",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:06Z",
+              "outcomes": [
+                {
+                  "name": "Kansas Jayhawks",
+                  "price": -113,
+                  "point": 3.0
+                },
+                {
+                  "name": "West Virginia Mountaineers",
+                  "price": -107,
+                  "point": -3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "espnbet",
+          "title": "theScore Bet",
+          "last_update": "2026-11-13T15:43:48Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:48Z",
+              "outcomes": [
+                {
+                  "name": "Kansas Jayhawks",
+                  "price": -115,
+                  "point": 3.5
+                },
+                {
+                  "name": "West Virginia Mountaineers",
+                  "price": -105,
+                  "point": -3.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betrivers",
+          "title": "BetRivers",
+          "last_update": "2026-11-13T15:43:17Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:17Z",
+              "outcomes": [
+                {
+                  "name": "Kansas Jayhawks",
+                  "price": -113,
+                  "point": 3.0
+                },
+                {
+                  "name": "West Virginia Mountaineers",
+                  "price": -109,
+                  "point": -3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betparx",
+          "title": "betPARX",
+          "last_update": "2026-11-13T15:43:12Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:12Z",
+              "outcomes": [
+                {
+                  "name": "Kansas Jayhawks",
+                  "price": -112,
+                  "point": 3.0
+                },
+                {
+                  "name": "West Virginia Mountaineers",
+                  "price": -108,
+                  "point": -3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "ballybet",
+          "title": "Bally Bet",
+          "last_update": "2026-11-13T15:44:04Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:04Z",
+              "outcomes": [
+                {
+                  "name": "Kansas Jayhawks",
+                  "price": -112,
+                  "point": 3.0
+                },
+                {
+                  "name": "West Virginia Mountaineers",
+                  "price": -108,
+                  "point": -3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betmgm",
+          "title": "BetMGM",
+          "last_update": "2026-11-13T15:43:32Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:32Z",
+              "outcomes": [
+                {
+                  "name": "Kansas Jayhawks",
+                  "price": -115,
+                  "point": 3.0
+                },
+                {
+                  "name": "West Virginia Mountaineers",
+                  "price": -105,
+                  "point": -3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betus",
+          "title": "BetUS",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "Kansas Jayhawks",
+                  "price": -110,
+                  "point": 3.0
+                },
+                {
+                  "name": "West Virginia Mountaineers",
+                  "price": -110,
+                  "point": -3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "hardrockbet",
+          "title": "Hard Rock Bet",
+          "last_update": "2026-11-13T15:43:13Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:13Z",
+              "outcomes": [
+                {
+                  "name": "Kansas Jayhawks",
+                  "price": 110,
+                  "point": 2.5
+                },
+                {
+                  "name": "West Virginia Mountaineers",
+                  "price": -130,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "bovada",
+          "title": "Bovada",
+          "last_update": "2026-11-13T15:42:01Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:42:01Z",
+              "outcomes": [
+                {
+                  "name": "Kansas Jayhawks",
+                  "price": -117,
+                  "point": 3.0
+                },
+                {
+                  "name": "West Virginia Mountaineers",
+                  "price": -103,
+                  "point": -3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betanysports",
+          "title": "BetAnything",
+          "last_update": "2026-11-13T15:44:07Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:06Z",
+              "outcomes": [
+                {
+                  "name": "Kansas Jayhawks",
+                  "price": -110,
+                  "point": 3.0
+                },
+                {
+                  "name": "West Virginia Mountaineers",
+                  "price": -110,
+                  "point": -3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "mybookieag",
+          "title": "MyBookie.ag",
+          "last_update": "2026-11-13T15:43:45Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:45Z",
+              "outcomes": [
+                {
+                  "name": "Kansas Jayhawks",
+                  "price": -110,
+                  "point": 3.0
+                },
+                {
+                  "name": "West Virginia Mountaineers",
+                  "price": -110,
+                  "point": -3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fliff",
+          "title": "Fliff",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "Kansas Jayhawks",
+                  "price": -105,
+                  "point": 2.5
+                },
+                {
+                  "name": "West Virginia Mountaineers",
+                  "price": -130,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "7b3c2958dadc616a19ce7b9b1dd2a7e4",
+      "sport_key": "americanfootball_ncaaf",
+      "sport_title": "NCAAF",
+      "commence_time": "2026-11-15T00:30:00Z",
+      "home_team": "Arizona Wildcats",
+      "away_team": "Utah Utes",
+      "bookmakers": [
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2026-11-13T15:44:07Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:07Z",
+              "outcomes": [
+                {
+                  "name": "Arizona Wildcats",
+                  "price": -105,
+                  "point": 2.5
+                },
+                {
+                  "name": "Utah Utes",
+                  "price": -115,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betwhale",
+          "title": "Betwhale",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "Arizona Wildcats",
+                  "price": -112,
+                  "point": 2.5
+                },
+                {
+                  "name": "Utah Utes",
+                  "price": -123,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2026-11-13T15:44:05Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "Arizona Wildcats",
+                  "price": -110,
+                  "point": 2.5
+                },
+                {
+                  "name": "Utah Utes",
+                  "price": -110,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fliff",
+          "title": "Fliff",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:04Z",
+              "outcomes": [
+                {
+                  "name": "Arizona Wildcats",
+                  "price": -110,
+                  "point": 2.5
+                },
+                {
+                  "name": "Utah Utes",
+                  "price": -120,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betparx",
+          "title": "betPARX",
+          "last_update": "2026-11-13T15:43:12Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:12Z",
+              "outcomes": [
+                {
+                  "name": "Arizona Wildcats",
+                  "price": -105,
+                  "point": 2.5
+                },
+                {
+                  "name": "Utah Utes",
+                  "price": -115,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betrivers",
+          "title": "BetRivers",
+          "last_update": "2026-11-13T15:43:17Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:17Z",
+              "outcomes": [
+                {
+                  "name": "Arizona Wildcats",
+                  "price": -107,
+                  "point": 2.5
+                },
+                {
+                  "name": "Utah Utes",
+                  "price": -117,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "ballybet",
+          "title": "Bally Bet",
+          "last_update": "2026-11-13T15:44:04Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:04Z",
+              "outcomes": [
+                {
+                  "name": "Arizona Wildcats",
+                  "price": -105,
+                  "point": 2.5
+                },
+                {
+                  "name": "Utah Utes",
+                  "price": -115,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betonlineag",
+          "title": "BetOnline.ag",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:06Z",
+              "outcomes": [
+                {
+                  "name": "Arizona Wildcats",
+                  "price": -108,
+                  "point": 2.5
+                },
+                {
+                  "name": "Utah Utes",
+                  "price": -112,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "espnbet",
+          "title": "theScore Bet",
+          "last_update": "2026-11-13T15:43:48Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:48Z",
+              "outcomes": [
+                {
+                  "name": "Arizona Wildcats",
+                  "price": -105,
+                  "point": 2.5
+                },
+                {
+                  "name": "Utah Utes",
+                  "price": -115,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "hardrockbet",
+          "title": "Hard Rock Bet",
+          "last_update": "2026-11-13T15:43:13Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:13Z",
+              "outcomes": [
+                {
+                  "name": "Arizona Wildcats",
+                  "price": -105,
+                  "point": 2.5
+                },
+                {
+                  "name": "Utah Utes",
+                  "price": -115,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betmgm",
+          "title": "BetMGM",
+          "last_update": "2026-11-13T15:43:32Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:32Z",
+              "outcomes": [
+                {
+                  "name": "Arizona Wildcats",
+                  "price": -105,
+                  "point": 2.5
+                },
+                {
+                  "name": "Utah Utes",
+                  "price": -115,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betus",
+          "title": "BetUS",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:06Z",
+              "outcomes": [
+                {
+                  "name": "Arizona Wildcats",
+                  "price": -110,
+                  "point": 2.5
+                },
+                {
+                  "name": "Utah Utes",
+                  "price": -110,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "bovada",
+          "title": "Bovada",
+          "last_update": "2026-11-13T15:42:01Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:42:01Z",
+              "outcomes": [
+                {
+                  "name": "Arizona Wildcats",
+                  "price": -108,
+                  "point": 2.5
+                },
+                {
+                  "name": "Utah Utes",
+                  "price": -112,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betanysports",
+          "title": "BetAnything",
+          "last_update": "2026-11-13T15:44:07Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:07Z",
+              "outcomes": [
+                {
+                  "name": "Arizona Wildcats",
+                  "price": 100,
+                  "point": 2.5
+                },
+                {
+                  "name": "Utah Utes",
+                  "price": -120,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "mybookieag",
+          "title": "MyBookie.ag",
+          "last_update": "2026-11-13T15:43:45Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:45Z",
+              "outcomes": [
+                {
+                  "name": "Arizona Wildcats",
+                  "price": -110,
+                  "point": 2.5
+                },
+                {
+                  "name": "Utah Utes",
+                  "price": -110,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ee91eb14cc4d725be5df58f3285bdaa6",
+      "sport_key": "americanfootball_ncaaf",
+      "sport_title": "NCAAF",
+      "commence_time": "2026-11-15T02:00:00Z",
+      "home_team": "UTSA Roadrunners",
+      "away_team": "North Texas Mean Green",
+      "bookmakers": [
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2026-11-13T15:44:05Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "North Texas Mean Green",
+                  "price": -110,
+                  "point": -2.5
+                },
+                {
+                  "name": "UTSA Roadrunners",
+                  "price": -110,
+                  "point": 2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betrivers",
+          "title": "BetRivers",
+          "last_update": "2026-11-13T15:43:17Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:17Z",
+              "outcomes": [
+                {
+                  "name": "North Texas Mean Green",
+                  "price": -113,
+                  "point": -2.5
+                },
+                {
+                  "name": "UTSA Roadrunners",
+                  "price": -110,
+                  "point": 2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "ballybet",
+          "title": "Bally Bet",
+          "last_update": "2026-11-13T15:44:04Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:04Z",
+              "outcomes": [
+                {
+                  "name": "North Texas Mean Green",
+                  "price": -112,
+                  "point": -2.5
+                },
+                {
+                  "name": "UTSA Roadrunners",
+                  "price": -108,
+                  "point": 2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betparx",
+          "title": "betPARX",
+          "last_update": "2026-11-13T15:43:12Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:12Z",
+              "outcomes": [
+                {
+                  "name": "North Texas Mean Green",
+                  "price": -112,
+                  "point": -2.5
+                },
+                {
+                  "name": "UTSA Roadrunners",
+                  "price": -108,
+                  "point": 2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2026-11-13T15:44:07Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:07Z",
+              "outcomes": [
+                {
+                  "name": "North Texas Mean Green",
+                  "price": -112,
+                  "point": -2.5
+                },
+                {
+                  "name": "UTSA Roadrunners",
+                  "price": -108,
+                  "point": 2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betonlineag",
+          "title": "BetOnline.ag",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:06Z",
+              "outcomes": [
+                {
+                  "name": "North Texas Mean Green",
+                  "price": -120,
+                  "point": -2.5
+                },
+                {
+                  "name": "UTSA Roadrunners",
+                  "price": 100,
+                  "point": 2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "lowvig",
+          "title": "LowVig.ag",
+          "last_update": "2026-11-13T15:44:05Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "North Texas Mean Green",
+                  "price": -111,
+                  "point": -2.5
+                },
+                {
+                  "name": "UTSA Roadrunners",
+                  "price": -101,
+                  "point": 2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betwhale",
+          "title": "Betwhale",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "North Texas Mean Green",
+                  "price": -120,
+                  "point": -2.5
+                },
+                {
+                  "name": "UTSA Roadrunners",
+                  "price": -115,
+                  "point": 2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "hardrockbet",
+          "title": "Hard Rock Bet",
+          "last_update": "2026-11-13T15:43:13Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:13Z",
+              "outcomes": [
+                {
+                  "name": "North Texas Mean Green",
+                  "price": -110,
+                  "point": -2.5
+                },
+                {
+                  "name": "UTSA Roadrunners",
+                  "price": -110,
+                  "point": 2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "espnbet",
+          "title": "theScore Bet",
+          "last_update": "2026-11-13T15:43:48Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:48Z",
+              "outcomes": [
+                {
+                  "name": "North Texas Mean Green",
+                  "price": -115,
+                  "point": -2.5
+                },
+                {
+                  "name": "UTSA Roadrunners",
+                  "price": -105,
+                  "point": 2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betmgm",
+          "title": "BetMGM",
+          "last_update": "2026-11-13T15:43:32Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:32Z",
+              "outcomes": [
+                {
+                  "name": "North Texas Mean Green",
+                  "price": -110,
+                  "point": -2.5
+                },
+                {
+                  "name": "UTSA Roadrunners",
+                  "price": -108,
+                  "point": 2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betus",
+          "title": "BetUS",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:06Z",
+              "outcomes": [
+                {
+                  "name": "North Texas Mean Green",
+                  "price": -120,
+                  "point": -2.5
+                },
+                {
+                  "name": "UTSA Roadrunners",
+                  "price": 100,
+                  "point": 2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "bovada",
+          "title": "Bovada",
+          "last_update": "2026-11-13T15:42:01Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:42:01Z",
+              "outcomes": [
+                {
+                  "name": "North Texas Mean Green",
+                  "price": -108,
+                  "point": -2.5
+                },
+                {
+                  "name": "UTSA Roadrunners",
+                  "price": -112,
+                  "point": 2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betanysports",
+          "title": "BetAnything",
+          "last_update": "2026-11-13T15:44:07Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:06Z",
+              "outcomes": [
+                {
+                  "name": "North Texas Mean Green",
+                  "price": -120,
+                  "point": -2.5
+                },
+                {
+                  "name": "UTSA Roadrunners",
+                  "price": 100,
+                  "point": 2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "mybookieag",
+          "title": "MyBookie.ag",
+          "last_update": "2026-11-13T15:43:45Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:45Z",
+              "outcomes": [
+                {
+                  "name": "North Texas Mean Green",
+                  "price": -110,
+                  "point": -2.5
+                },
+                {
+                  "name": "UTSA Roadrunners",
+                  "price": -110,
+                  "point": 2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fliff",
+          "title": "Fliff",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "North Texas Mean Green",
+                  "price": -115,
+                  "point": -2.5
+                },
+                {
+                  "name": "UTSA Roadrunners",
+                  "price": -115,
+                  "point": 2.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ce88da9d6fd67bac81c1e4a70545de29",
+      "sport_key": "americanfootball_ncaaf",
+      "sport_title": "NCAAF",
+      "commence_time": "2026-11-15T04:00:00Z",
+      "home_team": "Hawaii Rainbow Warriors",
+      "away_team": "North Dakota State Bison",
+      "bookmakers": [
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2026-11-13T15:44:05Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "Hawaii Rainbow Warriors",
+                  "price": -105,
+                  "point": 6.5
+                },
+                {
+                  "name": "North Dakota State Bison",
+                  "price": -115,
+                  "point": -6.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2026-11-13T15:44:07Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:07Z",
+              "outcomes": [
+                {
+                  "name": "Hawaii Rainbow Warriors",
+                  "price": -102,
+                  "point": 6.5
+                },
+                {
+                  "name": "North Dakota State Bison",
+                  "price": -118,
+                  "point": -6.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betonlineag",
+          "title": "BetOnline.ag",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:06Z",
+              "outcomes": [
+                {
+                  "name": "Hawaii Rainbow Warriors",
+                  "price": 105,
+                  "point": 6.5
+                },
+                {
+                  "name": "North Dakota State Bison",
+                  "price": -125,
+                  "point": -6.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "lowvig",
+          "title": "LowVig.ag",
+          "last_update": "2026-11-13T15:44:05Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "Hawaii Rainbow Warriors",
+                  "price": 109,
+                  "point": 6.5
+                },
+                {
+                  "name": "North Dakota State Bison",
+                  "price": -122,
+                  "point": -6.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betwhale",
+          "title": "Betwhale",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "Hawaii Rainbow Warriors",
+                  "price": -110,
+                  "point": 6.5
+                },
+                {
+                  "name": "North Dakota State Bison",
+                  "price": -127,
+                  "point": -6.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "espnbet",
+          "title": "theScore Bet",
+          "last_update": "2026-11-13T15:43:48Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:48Z",
+              "outcomes": [
+                {
+                  "name": "Hawaii Rainbow Warriors",
+                  "price": 100,
+                  "point": 6.5
+                },
+                {
+                  "name": "North Dakota State Bison",
+                  "price": -120,
+                  "point": -6.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betmgm",
+          "title": "BetMGM",
+          "last_update": "2026-11-13T15:43:32Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:32Z",
+              "outcomes": [
+                {
+                  "name": "Hawaii Rainbow Warriors",
+                  "price": -102,
+                  "point": 6.5
+                },
+                {
+                  "name": "North Dakota State Bison",
+                  "price": -118,
+                  "point": -6.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betus",
+          "title": "BetUS",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:06Z",
+              "outcomes": [
+                {
+                  "name": "Hawaii Rainbow Warriors",
+                  "price": 105,
+                  "point": 6.5
+                },
+                {
+                  "name": "North Dakota State Bison",
+                  "price": -125,
+                  "point": -6.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "bovada",
+          "title": "Bovada",
+          "last_update": "2026-11-13T15:42:01Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:42:01Z",
+              "outcomes": [
+                {
+                  "name": "Hawaii Rainbow Warriors",
+                  "price": -117,
+                  "point": 7.0
+                },
+                {
+                  "name": "North Dakota State Bison",
+                  "price": -103,
+                  "point": -7.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betanysports",
+          "title": "BetAnything",
+          "last_update": "2026-11-13T15:44:07Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:07Z",
+              "outcomes": [
+                {
+                  "name": "Hawaii Rainbow Warriors",
+                  "price": -110,
+                  "point": 6.5
+                },
+                {
+                  "name": "North Dakota State Bison",
+                  "price": -110,
+                  "point": -6.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "mybookieag",
+          "title": "MyBookie.ag",
+          "last_update": "2026-11-13T15:43:45Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:45Z",
+              "outcomes": [
+                {
+                  "name": "Hawaii Rainbow Warriors",
+                  "price": -110,
+                  "point": 6.5
+                },
+                {
+                  "name": "North Dakota State Bison",
+                  "price": -110,
+                  "point": -6.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "ballybet",
+          "title": "Bally Bet",
+          "last_update": "2026-11-13T15:44:04Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:04Z",
+              "outcomes": [
+                {
+                  "name": "Hawaii Rainbow Warriors",
+                  "price": -108,
+                  "point": 6.5
+                },
+                {
+                  "name": "North Dakota State Bison",
+                  "price": -112,
+                  "point": -6.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betparx",
+          "title": "betPARX",
+          "last_update": "2026-11-13T15:43:12Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:12Z",
+              "outcomes": [
+                {
+                  "name": "Hawaii Rainbow Warriors",
+                  "price": -108,
+                  "point": 6.5
+                },
+                {
+                  "name": "North Dakota State Bison",
+                  "price": -112,
+                  "point": -6.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betrivers",
+          "title": "BetRivers",
+          "last_update": "2026-11-13T15:43:17Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:17Z",
+              "outcomes": [
+                {
+                  "name": "Hawaii Rainbow Warriors",
+                  "price": -109,
+                  "point": 6.5
+                },
+                {
+                  "name": "North Dakota State Bison",
+                  "price": -114,
+                  "point": -6.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "hardrockbet",
+          "title": "Hard Rock Bet",
+          "last_update": "2026-11-13T15:43:13Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:43:13Z",
+              "outcomes": [
+                {
+                  "name": "Hawaii Rainbow Warriors",
+                  "price": -110,
+                  "point": 6.5
+                },
+                {
+                  "name": "North Dakota State Bison",
+                  "price": -110,
+                  "point": -6.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fliff",
+          "title": "Fliff",
+          "last_update": "2026-11-13T15:44:06Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-13T15:44:05Z",
+              "outcomes": [
+                {
+                  "name": "Hawaii Rainbow Warriors",
+                  "price": -110,
+                  "point": 6.5
+                },
+                {
+                  "name": "North Dakota State Bison",
+                  "price": -125,
+                  "point": -6.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
