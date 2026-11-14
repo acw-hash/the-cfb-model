@@ -1,0 +1,347 @@
+{
+  "task": "W11-6",
+  "export_enabled": false,
+  "stage": {
+    "raw_path": "C:\\Users\\alecw\\Projects\\the-cfb-model\\docs\\notes\\_artifacts\\social-s6-w11-card\\odds_w11_6_20261114T135625Z.json",
+    "credits": {
+      "x-requests-remaining": "297",
+      "x-requests-used": "203",
+      "x-requests-last": "2"
+    },
+    "n_games": 9,
+    "n_event_ids": 9,
+    "n_drop_records": 0,
+    "drop_reason_counts": {},
+    "rows_fetched": 0,
+    "rows_written": 0,
+    "quarantined": 0,
+    "gids": [
+      401864537,
+      401856887,
+      401856858,
+      401856861,
+      401871061,
+      401862826,
+      401862827,
+      401856864,
+      401856859
+    ],
+    "reuse": true
+  },
+  "week_predictions_source": "data/webapp/publish_history/2026_w11.jsonl (record 1)",
+  "publish_as_of": "2026-11-12T15:37:19.689466+00:00",
+  "pulled_at_utc": "2026-11-14T13:56:25.078423+00:00",
+  "oklahoma_action": {
+    "action": "KEEP",
+    "best": {
+      "book": "hardrockbet",
+      "book_display": "Hard Rock Bet",
+      "side": "Oklahoma",
+      "side_is": "home",
+      "line": -2.5,
+      "price": -105.0,
+      "last_update": "2026-11-14T13:56:12+00:00",
+      "edge": 0.0756,
+      "gap": 3.01,
+      "model_line": -5.513005081386684,
+      "age_hours": 0.004,
+      "p_model": 0.5648,
+      "gate_pass": true,
+      "gate_fail": "",
+      "snapshot_event_time": "2026-11-14T13:56:12+00:00"
+    },
+    "ridge": -5.513005081386684,
+    "gap": 3.01,
+    "edge": 0.0756
+  },
+  "other6": [
+    {
+      "game_id": 401864537,
+      "matchup": "North Dakota State @ Hawai'i",
+      "side": "Hawai'i",
+      "status": "PASS",
+      "gate_fail_flag": false,
+      "best": {
+        "book": "fanduel",
+        "book_display": "FanDuel",
+        "side": "Hawai'i",
+        "side_is": "home",
+        "line": 6.5,
+        "price": 100.0,
+        "last_update": "2026-11-14T13:55:55+00:00",
+        "edge": 0.1726,
+        "gap": 6.6,
+        "model_line": -0.10222530168957544,
+        "age_hours": 0.008,
+        "p_model": 0.6509,
+        "gate_pass": true,
+        "gate_fail": "",
+        "snapshot_event_time": "2026-11-14T13:55:55+00:00"
+      },
+      "ledger_prior": {
+        "book": "espnbet",
+        "line": 6.5,
+        "price": 100.0,
+        "edge": 0.1726
+      }
+    },
+    {
+      "game_id": 401856858,
+      "matchup": "Baylor @ BYU",
+      "side": "Baylor",
+      "status": "PASS",
+      "gate_fail_flag": false,
+      "best": {
+        "book": "fanduel",
+        "book_display": "FanDuel",
+        "side": "Baylor",
+        "side_is": "away",
+        "line": 7.5,
+        "price": 100.0,
+        "last_update": "2026-11-14T13:55:55+00:00",
+        "edge": 0.1517,
+        "gap": 6.15,
+        "model_line": 1.3471195052605183,
+        "age_hours": 0.008,
+        "p_model": 0.63,
+        "gate_pass": true,
+        "gate_fail": "",
+        "snapshot_event_time": "2026-11-14T13:55:55+00:00"
+      },
+      "ledger_prior": {
+        "book": "hardrockbet",
+        "line": 7.5,
+        "price": -110.0,
+        "edge": 0.13
+      }
+    },
+    {
+      "game_id": 401856861,
+      "matchup": "Kansas @ West Virginia",
+      "side": "West Virginia",
+      "status": "PASS",
+      "gate_fail_flag": false,
+      "best": {
+        "book": "betmgm",
+        "book_display": "BetMGM",
+        "side": "West Virginia",
+        "side_is": "home",
+        "line": -3.0,
+        "price": -102.0,
+        "last_update": "2026-11-14T13:55:23+00:00",
+        "edge": 0.1328,
+        "gap": 5.15,
+        "model_line": -8.149211425618583,
+        "age_hours": 0.017,
+        "p_model": 0.615451,
+        "gate_pass": true,
+        "gate_fail": "",
+        "snapshot_event_time": "2026-11-14T13:55:23+00:00"
+      },
+      "ledger_prior": {
+        "book": "draftkings",
+        "line": -3.0,
+        "price": -105.0,
+        "edge": 0.1263
+      }
+    },
+    {
+      "game_id": 401871061,
+      "matchup": "Middle Tennessee @ Liberty",
+      "side": "Liberty",
+      "status": "PASS",
+      "gate_fail_flag": false,
+      "best": {
+        "book": "fanduel",
+        "book_display": "FanDuel",
+        "side": "Liberty",
+        "side_is": "home",
+        "line": -21.5,
+        "price": 100.0,
+        "last_update": "2026-11-14T13:55:55+00:00",
+        "edge": 0.126,
+        "gap": 4.9,
+        "model_line": -26.403387341284002,
+        "age_hours": 0.008,
+        "p_model": 0.6043,
+        "gate_pass": true,
+        "gate_fail": "",
+        "snapshot_event_time": "2026-11-14T13:55:55+00:00"
+      },
+      "ledger_prior": {
+        "book": "fanduel",
+        "line": -21.5,
+        "price": 100.0,
+        "edge": 0.126
+      }
+    },
+    {
+      "game_id": 401862826,
+      "matchup": "Florida Atlantic @ Tulsa",
+      "side": "Tulsa",
+      "status": "PASS",
+      "gate_fail_flag": false,
+      "best": {
+        "book": "espnbet",
+        "book_display": "theScore Bet",
+        "side": "Tulsa",
+        "side_is": "home",
+        "line": -6.5,
+        "price": -110.0,
+        "last_update": "2026-11-14T13:56:11+00:00",
+        "edge": 0.1113,
+        "gap": 5.97,
+        "model_line": -12.465331616667635,
+        "age_hours": 0.004,
+        "p_model": 0.6113,
+        "gate_pass": true,
+        "gate_fail": "",
+        "snapshot_event_time": "2026-11-14T13:56:11+00:00"
+      },
+      "ledger_prior": {
+        "book": "ballybet",
+        "line": -6.0,
+        "price": -109.0,
+        "edge": 0.1259
+      }
+    },
+    {
+      "game_id": 401862827,
+      "matchup": "North Texas @ UTSA",
+      "side": "North Texas",
+      "status": "PASS",
+      "gate_fail_flag": false,
+      "best": {
+        "book": "betmgm",
+        "book_display": "BetMGM",
+        "side": "North Texas",
+        "side_is": "away",
+        "line": -2.5,
+        "price": -108.0,
+        "last_update": "2026-11-14T13:55:23+00:00",
+        "edge": 0.1185,
+        "gap": 5.03,
+        "model_line": -7.525935741303446,
+        "age_hours": 0.017,
+        "p_model": 0.61635,
+        "gate_pass": true,
+        "gate_fail": "",
+        "snapshot_event_time": "2026-11-14T13:55:23+00:00"
+      },
+      "ledger_prior": {
+        "book": "fanduel",
+        "line": -2.5,
+        "price": -110.0,
+        "edge": 0.1163
+      }
+    }
+  ],
+  "other6_flagged_fail": [],
+  "final_card": [
+    {
+      "rank": 1,
+      "game_id": "401864537",
+      "matchup": "North Dakota State @ Hawai'i",
+      "kickoff_et": "Sat 11:00 PM ET",
+      "side": "Hawai'i",
+      "book": "fanduel",
+      "book_display": "FanDuel",
+      "line": 6.5,
+      "price": 100.0,
+      "ridge": -0.10222530168957544,
+      "gap": 6.6,
+      "edge": 0.1726
+    },
+    {
+      "rank": 2,
+      "game_id": "401856858",
+      "matchup": "Baylor @ BYU",
+      "kickoff_et": "Sat 3:30 PM ET",
+      "side": "Baylor",
+      "book": "fanduel",
+      "book_display": "FanDuel",
+      "line": 7.5,
+      "price": 100.0,
+      "ridge": 1.3471195052605183,
+      "gap": 6.15,
+      "edge": 0.1517
+    },
+    {
+      "rank": 3,
+      "game_id": "401856861",
+      "matchup": "Kansas @ West Virginia",
+      "kickoff_et": "Sat 5:30 PM ET",
+      "side": "West Virginia",
+      "book": "betmgm",
+      "book_display": "BetMGM",
+      "line": -3.0,
+      "price": -102.0,
+      "ridge": -8.149211425618583,
+      "gap": 5.15,
+      "edge": 0.1328
+    },
+    {
+      "rank": 4,
+      "game_id": "401871061",
+      "matchup": "Middle Tennessee @ Liberty",
+      "kickoff_et": "Sat 3:30 PM ET",
+      "side": "Liberty",
+      "book": "fanduel",
+      "book_display": "FanDuel",
+      "line": -21.5,
+      "price": 100.0,
+      "ridge": -26.403387341284002,
+      "gap": 4.9,
+      "edge": 0.126
+    },
+    {
+      "rank": 5,
+      "game_id": "401862827",
+      "matchup": "North Texas @ UTSA",
+      "kickoff_et": "Sat 9:00 PM ET",
+      "side": "North Texas",
+      "book": "betmgm",
+      "book_display": "BetMGM",
+      "line": -2.5,
+      "price": -108.0,
+      "ridge": -7.525935741303446,
+      "gap": 5.03,
+      "edge": 0.1185
+    },
+    {
+      "rank": 6,
+      "game_id": "401862826",
+      "matchup": "Florida Atlantic @ Tulsa",
+      "kickoff_et": "Sat 3:30 PM ET",
+      "side": "Tulsa",
+      "book": "espnbet",
+      "book_display": "theScore Bet",
+      "line": -6.5,
+      "price": -110.0,
+      "ridge": -12.465331616667635,
+      "gap": 5.97,
+      "edge": 0.1113
+    },
+    {
+      "rank": 7,
+      "game_id": "401856887",
+      "matchup": "Ole Miss @ Oklahoma",
+      "kickoff_et": "Sat 4:15 PM ET",
+      "side": "Oklahoma",
+      "book": "hardrockbet",
+      "book_display": "Hard Rock Bet",
+      "line": -2.5,
+      "price": -105.0,
+      "ridge": -5.513005081386684,
+      "gap": 3.01,
+      "edge": 0.0756
+    }
+  ],
+  "ledger_sha256": "1c3137858da54d83296130a70032eeb9b56d6e45c4bae066378b5817e6d98735",
+  "ledger_paths": [
+    "data/social/posted_calls_2026_w11.json",
+    "docs/notes/_artifacts/w11-posted-calls/posted_calls_2026_w11.json"
+  ],
+  "n_posted": 7,
+  "n_superseded": 0
+}
