@@ -1,0 +1,32 @@
+[
+  {
+    "game_id": "401856865",
+    "card_ridge": -13.14,
+    "site_mu_1dec": -13.14,
+    "ok": true
+  },
+  {
+    "game_id": "401856868",
+    "card_ridge": -2.01,
+    "site_mu_1dec": -2.01,
+    "ok": true
+  },
+  {
+    "game_id": "401858535",
+    "card_ridge": -2.27,
+    "site_mu_1dec": -2.27,
+    "ok": true
+  },
+  {
+    "game_id": "401858527",
+    "card_ridge": -3.94,
+    "site_mu_1dec": -3.94,
+    "ok": true
+  },
+  {
+    "game_id": "401864544",
+    "card_ridge": -1.36,
+    "site_mu_1dec": -1.36,
+    "ok": true
+  }
+]
