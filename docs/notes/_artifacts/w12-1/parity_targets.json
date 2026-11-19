@@ -1,0 +1,98 @@
+[
+  {
+    "game_id": "401862830",
+    "away": "Rice",
+    "home": "Temple",
+    "mu": 2.152479145880663,
+    "mu_1dec": 2.2,
+    "null_reason": null
+  },
+  {
+    "game_id": "401856869",
+    "away": "Iowa State",
+    "home": "UCF",
+    "mu": -2.4980297762700925,
+    "mu_1dec": -2.5,
+    "null_reason": null
+  },
+  {
+    "game_id": "401866468",
+    "away": "Bowling Green",
+    "home": "Toledo",
+    "mu": 15.678094407304433,
+    "mu_1dec": 15.7,
+    "null_reason": null
+  },
+  {
+    "game_id": "401858303",
+    "away": "Clemson",
+    "home": "Duke",
+    "mu": 21.078138606914223,
+    "mu_1dec": 21.1,
+    "null_reason": null
+  },
+  {
+    "game_id": "401858529",
+    "away": "Oregon",
+    "home": "Michigan State",
+    "mu": -9.829514615709963,
+    "mu_1dec": -9.8,
+    "null_reason": null
+  },
+  {
+    "game_id": "401864545",
+    "away": "UTEP",
+    "home": "Air Force",
+    "mu": 18.01063447074039,
+    "mu_1dec": 18.0,
+    "null_reason": null
+  },
+  {
+    "game_id": "401864542",
+    "away": "New Mexico",
+    "home": "Wyoming",
+    "mu": 0.3930528848888949,
+    "mu_1dec": 0.4,
+    "null_reason": null
+  },
+  {
+    "game_id": "401858310",
+    "away": "Wake Forest",
+    "home": "Georgia Tech",
+    "mu": -24.443842588214487,
+    "mu_1dec": -24.4,
+    "null_reason": null
+  },
+  {
+    "game_id": "401858309",
+    "away": "Syracuse",
+    "home": "Boston College",
+    "mu": -2.290958604004562,
+    "mu_1dec": -2.3,
+    "null_reason": null
+  },
+  {
+    "game_id": "401858531",
+    "away": "Ohio State",
+    "home": "Nebraska",
+    "mu": -0.538000371945818,
+    "mu_1dec": -0.5,
+    "null_reason": null
+  },
+  {
+    "game_id": "401858530",
+    "away": "Northwestern",
+    "home": "Minnesota",
+    "mu": -1.077752766930612,
+    "mu_1dec": -1.1,
+    "null_reason": null
+  },
+  {
+    "game_id": "401862834",
+    "away": "Memphis",
+    "home": "Navy",
+    "mu": -2.963528719820721,
+    "mu_1dec": -3.0,
+    "null_reason": null
+  }
+]

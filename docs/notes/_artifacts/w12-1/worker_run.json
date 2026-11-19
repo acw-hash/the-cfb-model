@@ -1,0 +1,12 @@
+{
+  "ok": true,
+  "sandbox": false,
+  "keys": [
+    "odds/2026/w12/2026-11-19T13:40.json",
+    "latest/odds_snapshot.json"
+  ],
+  "matched": 63,
+  "unmatched": 4,
+  "credits_remaining": 199,
+  "revalidate_status": 200
+}

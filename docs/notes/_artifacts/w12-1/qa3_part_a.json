@@ -1,0 +1,480 @@
+{
+  "generated_at": "2026-11-12T16:20:55.357489+00:00",
+  "export_enabled": false,
+  "head": "b277a8b",
+  "A1": {
+    "verdict": "PASS",
+    "source": "Per-game sigma_margin on the prediction/publish row (LightGBMSigmaHead via production_ensemble). Card path: build_candidates_from_odds reads row['sigma_margin'] (src/ncaa_quant/betting/provider.py:575-576, 665-677) and samples joint draws; P(cover)=two_way_side_prob(spread_cover_probs(...)) (provider.py:692-698). Card script uses n_draws=20_000 (scripts/_s6_w10_card.py:778). Default key kernel is empty (provider._DEFAULT_KERNEL).",
+    "file_line": "src/ncaa_quant/betting/provider.py:575-576,665-677,692-698",
+    "fixed_or_per_game": "per-game",
+    "n_w11_fbs_fbs": 61,
+    "median": 17.700031630273823,
+    "iqr": 1.6664239375430903,
+    "p25": 16.90700463230059,
+    "p75": 18.57342856984368,
+    "min": 14.604815183953521,
+    "max": 23.093948523795056,
+    "mean": 17.735380235851387
+  },
+  "A2": {
+    "verdict": "PASS",
+    "n": 504,
+    "sd": 16.487575461055563,
+    "robust_sd": 16.289381099375063,
+    "mean_error": -3.3161443100124584,
+    "by_week": [
+      {
+        "week": 2,
+        "n": 49,
+        "sd": 16.195108201303317,
+        "robust_sd": 18.669368833413152
+      },
+      {
+        "week": 3,
+        "n": 56,
+        "sd": 15.431504198201598,
+        "robust_sd": 15.017030165729237
+      },
+      {
+        "week": 4,
+        "n": 58,
+        "sd": 17.176882798612418,
+        "robust_sd": 19.69170887451301
+      },
+      {
+        "week": 5,
+        "n": 54,
+        "sd": 18.487816933908448,
+        "robust_sd": 14.465158160555529
+      },
+      {
+        "week": 6,
+        "n": 58,
+        "sd": 14.54995567631447,
+        "robust_sd": 15.996408216348287
+      },
+      {
+        "week": 7,
+        "n": 59,
+        "sd": 15.437006356838824,
+        "robust_sd": 15.844273821795866
+      },
+      {
+        "week": 8,
+        "n": 56,
+        "sd": 14.624855856421831,
+        "robust_sd": 16.723027721365245
+      },
+      {
+        "week": 9,
+        "n": 54,
+        "sd": 17.492233825467142,
+        "robust_sd": 20.491573954978833
+      },
+      {
+        "week": 10,
+        "n": 60,
+        "sd": 15.409372869708136,
+        "robust_sd": 10.949045394619342
+      }
+    ],
+    "by_abs_mu": [
+      {
+        "bucket": "0-7",
+        "n": 174,
+        "sd": 16.541210012917745,
+        "robust_sd": 13.83457590708767
+      },
+      {
+        "bucket": "7-14",
+        "n": 175,
+        "sd": 15.512655210795025,
+        "robust_sd": 15.83737587839674
+      },
+      {
+        "bucket": "14+",
+        "n": 155,
+        "sd": 17.50714728159845,
+        "robust_sd": 18.320753033088167
+      }
+    ]
+  },
+  "A3": {
+    "verdict": "PASS",
+    "sigma_price_median_graded_w2_w10": 19.23079314671176,
+    "sigma_price_median_w11": 17.700031630273823,
+    "realized_sd": 16.487575461055563,
+    "realized_robust_sd": 16.289381099375063,
+    "R_plain": 1.1663809025248018,
+    "R_robust": 1.180572363639374,
+    "R_plain_using_w11_median": 1.0735375660346265,
+    "decision_rule": "FAIL if R_plain = median(sigma_graded)/SD(error) < 0.90",
+    "decision": "PASS",
+    "n_sigma": 504
+  },
+  "A4": {
+    "verdict": "PASS",
+    "n_used": 441,
+    "n_skip_no_line": 49,
+    "n_skip_push": 14,
+    "n_draws": 20000,
+    "buckets": {
+      "50-55": {
+        "n": 115,
+        "mean_predicted": 0.528571001772089,
+        "realized_cover_rate": 0.5130434782608696
+      },
+      "55-60": {
+        "n": 94,
+        "mean_predicted": 0.5757425929603692,
+        "realized_cover_rate": 0.4574468085106383
+      },
+      "60-65": {
+        "n": 98,
+        "mean_predicted": 0.624337642147024,
+        "realized_cover_rate": 0.5
+      },
+      "65+": {
+        "n": 134,
+        "mean_predicted": 0.7387883340893475,
+        "realized_cover_rate": 0.4925373134328358
+      }
+    },
+    "sample_details": [
+      {
+        "game_id": 401856812,
+        "week": 3,
+        "book": "betmgm",
+        "home_line": 5.0,
+        "model_side": "home",
+        "p_model": 0.8351,
+        "cover": 0.0,
+        "snap_et": "2026-09-19T15:56:00.411397+00:00"
+      },
+      {
+        "game_id": 401858231,
+        "week": 3,
+        "book": "betmgm",
+        "home_line": -10.0,
+        "model_side": "home",
+        "p_model": 0.558,
+        "cover": 1.0,
+        "snap_et": "2026-09-19T19:56:00.503433+00:00"
+      },
+      {
+        "game_id": 401858457,
+        "week": 3,
+        "book": "betmgm",
+        "home_line": 21.5,
+        "model_side": "home",
+        "p_model": 0.6966,
+        "cover": 1.0,
+        "snap_et": "2026-09-19T19:26:04.681613+00:00"
+      },
+      {
+        "game_id": 401856796,
+        "week": 3,
+        "book": "betmgm",
+        "home_line": -3.5,
+        "model_side": "home",
+        "p_model": 0.7978,
+        "cover": 1.0,
+        "snap_et": "2026-09-19T23:26:03.896279+00:00"
+      },
+      {
+        "game_id": 401861963,
+        "week": 3,
+        "book": "betmgm",
+        "home_line": 3.5,
+        "model_side": "home",
+        "p_model": 0.8413,
+        "cover": 0.0,
+        "snap_et": "2026-09-19T22:55:59.607897+00:00"
+      },
+      {
+        "game_id": 401856685,
+        "week": 3,
+        "book": "betmgm",
+        "home_line": -18.5,
+        "model_side": "home",
+        "p_model": 0.6881,
+        "cover": 0.0,
+        "snap_et": "2026-09-19T19:26:04.681613+00:00"
+      },
+      {
+        "game_id": 401856687,
+        "week": 3,
+        "book": "betmgm",
+        "home_line": 2.0,
+        "model_side": "home",
+        "p_model": 0.7068,
+        "cover": 0.0,
+        "snap_et": "2026-09-19T20:00:05.810908+00:00"
+      },
+      {
+        "game_id": 401856686,
+        "week": 3,
+        "book": "betmgm",
+        "home_line": 24.5,
+        "model_side": "home",
+        "p_model": 0.9305,
+        "cover": 0.0,
+        "snap_et": "2026-09-19T12:00:00.189713+00:00"
+      },
+      {
+        "game_id": 401856694,
+        "week": 3,
+        "book": "betmgm",
+        "home_line": -17.0,
+        "model_side": "home",
+        "p_model": 0.7218,
+        "cover": 0.0,
+        "snap_et": "2026-09-19T19:26:04.681613+00:00"
+      },
+      {
+        "game_id": 401858449,
+        "week": 3,
+        "book": "betmgm",
+        "home_line": -44.5,
+        "model_side": "away",
+        "p_model": 0.5158,
+        "cover": 1.0,
+        "snap_et": "2026-09-19T16:00:02.061141+00:00"
+      },
+      {
+        "game_id": 401856688,
+        "week": 3,
+        "book": "betmgm",
+        "home_line": 3.0,
+        "model_side": "home",
+        "p_model": 0.735,
+        "cover": 1.0,
+        "snap_et": "2026-09-19T20:00:05.810908+00:00"
+      },
+      {
+        "game_id": 401858453,
+        "week": 3,
+        "book": "betmgm",
+        "home_line": -28.5,
+        "model_side": "home",
+        "p_model": 0.5907,
+        "cover": 0.0,
+        "snap_et": "2026-09-19T23:26:03.896279+00:00"
+      },
+      {
+        "game_id": 401862710,
+        "week": 3,
+        "book": "betmgm",
+        "home_line": -3.0,
+        "model_side": "home",
+        "p_model": 0.9164,
+        "cover": 0.0,
+        "snap_et": "2026-09-19T20:00:05.810908+00:00"
+      },
+      {
+        "game_id": 401856695,
+        "week": 3,
+        "book": "betmgm",
+        "home_line": -3.0,
+        "model_side": "home",
+        "p_model": 0.8985,
+        "cover": 1.0,
+        "snap_et": "2026-09-19T16:40:09.995217+00:00"
+      },
+      {
+        "game_id": 401858229,
+        "week": 3,
+        "book": "betmgm",
+        "home_line": -3.0,
+        "model_side": "away",
+        "p_model": 0.5533,
+        "cover": 0.0,
+        "snap_et": "2026-09-19T15:56:00.411397+00:00"
+      },
+      {
+        "game_id": 401856690,
+        "week": 3,
+        "book": "betmgm",
+        "home_line": -21.5,
+        "model_side": "away",
+        "p_model": 0.6532,
+        "cover": 1.0,
+        "snap_et": "2026-09-19T23:26:03.896279+00:00"
+      },
+      {
+        "game_id": 401856798,
+        "week": 3,
+        "book": "betmgm",
+        "home_line": -23.0,
+        "model_side": "home",
+        "p_model": 0.6623,
+        "cover": 1.0,
+        "snap_et": "2026-09-19T15:56:00.411397+00:00"
+      },
+      {
+        "game_id": 401856797,
+        "week": 3,
+        "book": "betmgm",
+        "home_line": -14.5,
+        "model_side": "home",
+        "p_model": 0.6299,
+        "cover": 0.0,
+        "snap_et": "2026-09-19T19:26:04.681613+00:00"
+      },
+      {
+        "game_id": 401866423,
+        "week": 3,
+        "book": "betmgm",
+        "home_line": -7.0,
+        "model_side": "home",
+        "p_model": 0.5255,
+        "cover": 0.0,
+        "snap_et": "2026-09-19T22:55:59.607897+00:00"
+      },
+      {
+        "game_id": 401862774,
+        "week": 3,
+        "book": "betmgm",
+        "home_line": -5.0,
+        "model_side": "home",
+        "p_model": 0.8771,
+        "cover": 0.0,
+        "snap_et": "2026-09-19T18:56:09.631347+00:00"
+      },
+      {
+        "game_id": 401856811,
+        "week": 3,
+        "book": "betmgm",
+        "home_line": -7.5,
+        "model_side": "home",
+        "p_model": 0.7699,
+        "cover": 0.0,
+        "snap_et": "2026-09-18T23:56:07.071494+00:00"
+      },
+      {
+        "game_id": 401860889,
+        "week": 3,
+        "book": "betmgm",
+        "home_line": -3.0,
+        "model_side": "home",
+        "p_model": 0.6455,
+        "cover": 1.0,
+        "snap_et": "2026-09-19T15:56:00.411397+00:00"
+      },
+      {
+        "game_id": 401856795,
+        "week": 3,
+        "book": "betmgm",
+        "home_line": 17.5,
+        "model_side": "home",
+        "p_model": 0.7869,
+        "cover": 0.0,
+        "snap_et": "2026-09-19T23:26:03.896279+00:00"
+      },
+      {
+        "game_id": 401860887,
+        "week": 3,
+        "book": "betmgm",
+        "home_line": -2.5,
+        "model_side": "home",
+        "p_model": 0.6837,
+        "cover": 0.0,
+        "snap_et": "2026-09-20T01:56:01.109388+00:00"
+      },
+      {
+        "game_id": 401858232,
+        "week": 3,
+        "book": "betmgm",
+        "home_line": 2.5,
+        "model_side": "home",
+        "p_model": 0.7126,
+        "cover": 0.0,
+        "snap_et": "2026-09-19T23:26:03.896279+00:00"
+      },
+      {
+        "game_id": 401871047,
+        "week": 3,
+        "book": "betmgm",
+        "home_line": 4.0,
+        "model_side": "home",
+        "p_model": 0.7718,
+        "cover": 0.0,
+        "snap_et": "2026-09-19T20:00:05.810908+00:00"
+      },
+      {
+        "game_id": 401856802,
+        "week": 3,
+        "book": "betmgm",
+        "home_line": -11.0,
+        "model_side": "home",
+        "p_model": 0.8928,
+        "cover": 0.0,
+        "snap_et": "2026-09-19T23:26:03.896279+00:00"
+      },
+      {
+        "game_id": 401860888,
+        "week": 3,
+        "book": "betmgm",
+        "home_line": 4.0,
+        "model_side": "home",
+        "p_model": 0.8827,
+        "cover": 0.0,
+        "snap_et": "2026-09-20T02:56:07.012434+00:00"
+      },
+      {
+        "game_id": 401869948,
+        "week": 3,
+        "book": "betmgm",
+        "home_line": -3.5,
+        "model_side": "home",
+        "p_model": 0.638,
+        "cover": 1.0,
+        "snap_et": "2026-09-19T22:55:59.607897+00:00"
+      },
+      {
+        "game_id": 401869940,
+        "week": 3,
+        "book": "betmgm",
+        "home_line": -4.5,
+        "model_side": "home",
+        "p_model": 0.6166,
+        "cover": 1.0,
+        "snap_et": "2026-09-19T15:26:04.986548+00:00"
+      }
+    ],
+    "note": "Model side = argmax two_way cover prob at latest pre-kickoff regulated-book home line (staged odds_snapshots)."
+  },
+  "A5": {
+    "verdict": "UNVERIFIED",
+    "skipped": true,
+    "reason": "CFBD /lines is season_week grain; weeks 5\u201310 need 6 calls (>5 credit cap). lines_historical has no 2026 rows on this machine. Skip A5."
+  },
+  "card_decision": "PASS",
+  "card_decision_rule": "PASS card iff R_plain >= 0.90",
+  "summary_table": [
+    {
+      "check": "A1",
+      "verdict": "PASS"
+    },
+    {
+      "check": "A2",
+      "verdict": "PASS"
+    },
+    {
+      "check": "A3",
+      "verdict": "PASS"
+    },
+    {
+      "check": "A4",
+      "verdict": "PASS"
+    },
+    {
+      "check": "A5",
+      "verdict": "UNVERIFIED"
+    },
+    {
+      "check": "CARD_GATE",
+      "verdict": "PASS"
+    }
+  ]
+}
