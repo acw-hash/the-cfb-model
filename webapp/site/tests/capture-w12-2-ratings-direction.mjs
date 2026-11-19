@@ -11,8 +11,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PHASE = process.env.RIDGE_SHOT_PHASE ?? "after";
 const OUT = path.resolve(
   __dirname,
-  process.env.RIDGE_SHOT_OUT ??
-    `../../../docs/notes/_artifacts/w12-2/screenshots/${PHASE}`,
+  process.env.RIDGE_SHOT_OUT ?? `../../../docs/notes/_artifacts/w12-2/screenshots/${PHASE}`,
 );
 const BASE = process.env.RIDGE_SHOT_BASE ?? "http://127.0.0.1:3000";
 const GAME_PATH = process.env.RIDGE_SHOT_GAME_PATH ?? "/game/401628373";

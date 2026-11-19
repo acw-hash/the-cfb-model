@@ -13,8 +13,7 @@ const COPY: Record<Dimension, { testId: string; text: string }> = {
   },
   defense: {
     testId: "defense-direction",
-    text:
-      "Higher is better on defense. The rating measures EPA suppressed, so a larger number means a tougher defense.",
+    text: "Higher is better on defense. The rating measures EPA suppressed, so a larger number means a tougher defense.",
   },
 };
 
@@ -22,9 +21,7 @@ const COPY: Record<Dimension, { testId: string; text: string }> = {
  * Direction label for every surface that plots offense/defense ratings.
  * Kept identical across game detail, Visual team walkthrough, and homepage note.
  */
-export function RatingsDirectionNote({
-  dimension,
-}: RatingsDirectionNoteProps): React.ReactElement {
+export function RatingsDirectionNote({ dimension }: RatingsDirectionNoteProps): React.ReactElement {
   const { testId, text } = COPY[dimension];
   return (
     <p className={styles.note} data-testid={testId}>
