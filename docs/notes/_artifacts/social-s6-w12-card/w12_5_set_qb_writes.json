@@ -1,0 +1,22 @@
+{
+  "n_calls": 2,
+  "fails": 0,
+  "writes": [
+    {
+      "game_id": "401858304",
+      "team": "NC State",
+      "status": "starter",
+      "exit": 0,
+      "stdout": "{\"game_id\": 401858304, \"team_id\": 152, \"status\": \"starter\", \"event_time\": \"2026-11-19 17:05:18.283615+00:00\", \"event\": \"cli_roster_set_qb\", \"run_id\": \"f194aa8f1f954a84b071f0e6c6e4340c\", \"level\": \"info\", \"logger\": \"ncaa_quant.cli\", \"timestamp\": \"2026-11-19T17:05:19.356970Z\"}\nqb_status game=401858304 team_id=152 status=starter event_time=2026-11-19 17:05:18.283615+00:00",
+      "stderr": ""
+    },
+    {
+      "game_id": "401858304",
+      "team": "Florida State",
+      "status": "starter",
+      "exit": 0,
+      "stdout": "{\"game_id\": 401858304, \"team_id\": 52, \"status\": \"starter\", \"event_time\": \"2026-11-19 17:05:23.807904+00:00\", \"event\": \"cli_roster_set_qb\", \"run_id\": \"bed6830a87db4629abeabe4848acf994\", \"level\": \"info\", \"logger\": \"ncaa_quant.cli\", \"timestamp\": \"2026-11-19T17:05:24.764100Z\"}\nqb_status game=401858304 team_id=52 status=starter event_time=2026-11-19 17:05:23.807904+00:00",
+      "stderr": ""
+    }
+  ]
+}

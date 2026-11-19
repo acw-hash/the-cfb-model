@@ -1,0 +1,2607 @@
+{
+  "meta": {
+    "pulled_at_utc": "2026-11-19T17:05:36.537478+00:00",
+    "event_ids": [
+      "01aaf98c4f62bba0a964a9b400666516",
+      "03a07ec7a62fbc2d6bf4748aafd30303",
+      "4e40d05a5d98ac108cd15278646a545d",
+      "606426f36cb32d1843f6abbe6f683b76",
+      "7f9809c817e27ec2d9f8a24e8e19a8ff",
+      "a05c0d32b35dfd5cca63a61af28b9739",
+      "fa98066b4b400fb6af0672e170cc584a"
+    ],
+    "params": {
+      "regions": "us,us2",
+      "markets": "spreads",
+      "oddsFormat": "american",
+      "eventIds": "01aaf98c4f62bba0a964a9b400666516,03a07ec7a62fbc2d6bf4748aafd30303,4e40d05a5d98ac108cd15278646a545d,606426f36cb32d1843f6abbe6f683b76,7f9809c817e27ec2d9f8a24e8e19a8ff,a05c0d32b35dfd5cca63a61af28b9739,fa98066b4b400fb6af0672e170cc584a"
+    },
+    "headers": {
+      "x-requests-remaining": "187",
+      "x-requests-used": "313",
+      "x-requests-last": "2"
+    },
+    "est_credits": 2,
+    "n_events": 7,
+    "task": "W12-5"
+  },
+  "events": [
+    {
+      "id": "606426f36cb32d1843f6abbe6f683b76",
+      "sport_key": "americanfootball_ncaaf",
+      "sport_title": "NCAAF",
+      "commence_time": "2026-11-21T17:00:00Z",
+      "home_team": "Kansas Jayhawks",
+      "away_team": "BYU Cougars",
+      "bookmakers": [
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2026-11-19T17:04:50Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:50Z",
+              "outcomes": [
+                {
+                  "name": "BYU Cougars",
+                  "price": -112,
+                  "point": -5.5
+                },
+                {
+                  "name": "Kansas Jayhawks",
+                  "price": -108,
+                  "point": 5.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betwhale",
+          "title": "Betwhale",
+          "last_update": "2026-11-19T17:05:13Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:13Z",
+              "outcomes": [
+                {
+                  "name": "BYU Cougars",
+                  "price": -122,
+                  "point": -5.5
+                },
+                {
+                  "name": "Kansas Jayhawks",
+                  "price": -114,
+                  "point": 5.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2026-11-19T17:05:23Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:23Z",
+              "outcomes": [
+                {
+                  "name": "BYU Cougars",
+                  "price": -115,
+                  "point": -5.5
+                },
+                {
+                  "name": "Kansas Jayhawks",
+                  "price": -105,
+                  "point": 5.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fliff",
+          "title": "Fliff",
+          "last_update": "2026-11-19T17:05:22Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:22Z",
+              "outcomes": [
+                {
+                  "name": "BYU Cougars",
+                  "price": -120,
+                  "point": -5.5
+                },
+                {
+                  "name": "Kansas Jayhawks",
+                  "price": -115,
+                  "point": 5.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betrivers",
+          "title": "BetRivers",
+          "last_update": "2026-11-19T17:05:10Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:09Z",
+              "outcomes": [
+                {
+                  "name": "BYU Cougars",
+                  "price": -110,
+                  "point": -6.5
+                },
+                {
+                  "name": "Kansas Jayhawks",
+                  "price": -113,
+                  "point": 6.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "ballybet",
+          "title": "Bally Bet",
+          "last_update": "2026-11-19T17:02:27Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:02:26Z",
+              "outcomes": [
+                {
+                  "name": "BYU Cougars",
+                  "price": -108,
+                  "point": -6.5
+                },
+                {
+                  "name": "Kansas Jayhawks",
+                  "price": -112,
+                  "point": 6.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betparx",
+          "title": "betPARX",
+          "last_update": "2026-11-19T17:04:32Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:32Z",
+              "outcomes": [
+                {
+                  "name": "BYU Cougars",
+                  "price": -108,
+                  "point": -6.5
+                },
+                {
+                  "name": "Kansas Jayhawks",
+                  "price": -112,
+                  "point": 6.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "espnbet",
+          "title": "theScore Bet",
+          "last_update": "2026-11-19T17:04:34Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:33Z",
+              "outcomes": [
+                {
+                  "name": "BYU Cougars",
+                  "price": -115,
+                  "point": -5.5
+                },
+                {
+                  "name": "Kansas Jayhawks",
+                  "price": -105,
+                  "point": 5.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "lowvig",
+          "title": "LowVig.ag",
+          "last_update": "2026-11-19T17:04:33Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:33Z",
+              "outcomes": [
+                {
+                  "name": "BYU Cougars",
+                  "price": -108,
+                  "point": -5.5
+                },
+                {
+                  "name": "Kansas Jayhawks",
+                  "price": -104,
+                  "point": 5.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betonlineag",
+          "title": "BetOnline.ag",
+          "last_update": "2026-11-19T17:04:33Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:33Z",
+              "outcomes": [
+                {
+                  "name": "BYU Cougars",
+                  "price": -112,
+                  "point": -5.5
+                },
+                {
+                  "name": "Kansas Jayhawks",
+                  "price": -108,
+                  "point": 5.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "hardrockbet",
+          "title": "Hard Rock Bet",
+          "last_update": "2026-11-19T17:05:07Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:06Z",
+              "outcomes": [
+                {
+                  "name": "BYU Cougars",
+                  "price": -110,
+                  "point": -6.5
+                },
+                {
+                  "name": "Kansas Jayhawks",
+                  "price": -115,
+                  "point": 6.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betmgm",
+          "title": "BetMGM",
+          "last_update": "2026-11-19T17:04:33Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:32Z",
+              "outcomes": [
+                {
+                  "name": "BYU Cougars",
+                  "price": -110,
+                  "point": -5.5
+                },
+                {
+                  "name": "Kansas Jayhawks",
+                  "price": -108,
+                  "point": 5.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betus",
+          "title": "BetUS",
+          "last_update": "2026-11-19T17:04:33Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:33Z",
+              "outcomes": [
+                {
+                  "name": "BYU Cougars",
+                  "price": -110,
+                  "point": -5.5
+                },
+                {
+                  "name": "Kansas Jayhawks",
+                  "price": -110,
+                  "point": 5.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betanysports",
+          "title": "BetAnything",
+          "last_update": "2026-11-19T17:04:34Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:34Z",
+              "outcomes": [
+                {
+                  "name": "BYU Cougars",
+                  "price": -110,
+                  "point": -5.5
+                },
+                {
+                  "name": "Kansas Jayhawks",
+                  "price": -110,
+                  "point": 5.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "bovada",
+          "title": "Bovada",
+          "last_update": "2026-11-19T17:04:23Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:23Z",
+              "outcomes": [
+                {
+                  "name": "BYU Cougars",
+                  "price": -110,
+                  "point": -6.0
+                },
+                {
+                  "name": "Kansas Jayhawks",
+                  "price": -110,
+                  "point": 6.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "mybookieag",
+          "title": "MyBookie.ag",
+          "last_update": "2026-11-19T17:05:05Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:05Z",
+              "outcomes": [
+                {
+                  "name": "BYU Cougars",
+                  "price": -110,
+                  "point": -5.5
+                },
+                {
+                  "name": "Kansas Jayhawks",
+                  "price": -110,
+                  "point": 5.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "01aaf98c4f62bba0a964a9b400666516",
+      "sport_key": "americanfootball_ncaaf",
+      "sport_title": "NCAAF",
+      "commence_time": "2026-11-21T17:00:00Z",
+      "home_team": "Cincinnati Bearcats",
+      "away_team": "Colorado Buffaloes",
+      "bookmakers": [
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2026-11-19T17:05:23Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:22Z",
+              "outcomes": [
+                {
+                  "name": "Cincinnati Bearcats",
+                  "price": -120,
+                  "point": -2.5
+                },
+                {
+                  "name": "Colorado Buffaloes",
+                  "price": 100,
+                  "point": 2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betwhale",
+          "title": "Betwhale",
+          "last_update": "2026-11-19T17:05:13Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:13Z",
+              "outcomes": [
+                {
+                  "name": "Cincinnati Bearcats",
+                  "price": -104,
+                  "point": -3.5
+                },
+                {
+                  "name": "Colorado Buffaloes",
+                  "price": -133,
+                  "point": 3.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "lowvig",
+          "title": "LowVig.ag",
+          "last_update": "2026-11-19T17:04:33Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:33Z",
+              "outcomes": [
+                {
+                  "name": "Cincinnati Bearcats",
+                  "price": -107,
+                  "point": -3.0
+                },
+                {
+                  "name": "Colorado Buffaloes",
+                  "price": -105,
+                  "point": 3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betonlineag",
+          "title": "BetOnline.ag",
+          "last_update": "2026-11-19T17:04:33Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:33Z",
+              "outcomes": [
+                {
+                  "name": "Cincinnati Bearcats",
+                  "price": -111,
+                  "point": -3.0
+                },
+                {
+                  "name": "Colorado Buffaloes",
+                  "price": -109,
+                  "point": 3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betparx",
+          "title": "betPARX",
+          "last_update": "2026-11-19T17:04:32Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:32Z",
+              "outcomes": [
+                {
+                  "name": "Cincinnati Bearcats",
+                  "price": -118,
+                  "point": -3.0
+                },
+                {
+                  "name": "Colorado Buffaloes",
+                  "price": -104,
+                  "point": 3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betrivers",
+          "title": "BetRivers",
+          "last_update": "2026-11-19T17:05:10Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:10Z",
+              "outcomes": [
+                {
+                  "name": "Cincinnati Bearcats",
+                  "price": -120,
+                  "point": -3.0
+                },
+                {
+                  "name": "Colorado Buffaloes",
+                  "price": -105,
+                  "point": 3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "ballybet",
+          "title": "Bally Bet",
+          "last_update": "2026-11-19T17:02:27Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:02:26Z",
+              "outcomes": [
+                {
+                  "name": "Cincinnati Bearcats",
+                  "price": -118,
+                  "point": -3.0
+                },
+                {
+                  "name": "Colorado Buffaloes",
+                  "price": -104,
+                  "point": 3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2026-11-19T17:04:50Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:50Z",
+              "outcomes": [
+                {
+                  "name": "Cincinnati Bearcats",
+                  "price": -115,
+                  "point": -3.0
+                },
+                {
+                  "name": "Colorado Buffaloes",
+                  "price": -105,
+                  "point": 3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "hardrockbet",
+          "title": "Hard Rock Bet",
+          "last_update": "2026-11-19T17:05:07Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:06Z",
+              "outcomes": [
+                {
+                  "name": "Cincinnati Bearcats",
+                  "price": 100,
+                  "point": -3.5
+                },
+                {
+                  "name": "Colorado Buffaloes",
+                  "price": -120,
+                  "point": 3.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "espnbet",
+          "title": "theScore Bet",
+          "last_update": "2026-11-19T17:04:34Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:33Z",
+              "outcomes": [
+                {
+                  "name": "Cincinnati Bearcats",
+                  "price": 100,
+                  "point": -3.5
+                },
+                {
+                  "name": "Colorado Buffaloes",
+                  "price": -120,
+                  "point": 3.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betmgm",
+          "title": "BetMGM",
+          "last_update": "2026-11-19T17:04:33Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:32Z",
+              "outcomes": [
+                {
+                  "name": "Cincinnati Bearcats",
+                  "price": -110,
+                  "point": -3.0
+                },
+                {
+                  "name": "Colorado Buffaloes",
+                  "price": -108,
+                  "point": 3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betus",
+          "title": "BetUS",
+          "last_update": "2026-11-19T17:04:33Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:33Z",
+              "outcomes": [
+                {
+                  "name": "Cincinnati Bearcats",
+                  "price": -110,
+                  "point": -3.0
+                },
+                {
+                  "name": "Colorado Buffaloes",
+                  "price": -110,
+                  "point": 3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betanysports",
+          "title": "BetAnything",
+          "last_update": "2026-11-19T17:04:34Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:34Z",
+              "outcomes": [
+                {
+                  "name": "Cincinnati Bearcats",
+                  "price": -110,
+                  "point": -3.0
+                },
+                {
+                  "name": "Colorado Buffaloes",
+                  "price": -110,
+                  "point": 3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "bovada",
+          "title": "Bovada",
+          "last_update": "2026-11-19T17:04:23Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:23Z",
+              "outcomes": [
+                {
+                  "name": "Cincinnati Bearcats",
+                  "price": -120,
+                  "point": -3.0
+                },
+                {
+                  "name": "Colorado Buffaloes",
+                  "price": 100,
+                  "point": 3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "mybookieag",
+          "title": "MyBookie.ag",
+          "last_update": "2026-11-19T17:05:05Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:05Z",
+              "outcomes": [
+                {
+                  "name": "Cincinnati Bearcats",
+                  "price": -110,
+                  "point": -3.0
+                },
+                {
+                  "name": "Colorado Buffaloes",
+                  "price": -110,
+                  "point": 3.0
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "03a07ec7a62fbc2d6bf4748aafd30303",
+      "sport_key": "americanfootball_ncaaf",
+      "sport_title": "NCAAF",
+      "commence_time": "2026-11-21T17:00:00Z",
+      "home_team": "Nebraska Cornhuskers",
+      "away_team": "Ohio State Buckeyes",
+      "bookmakers": [
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2026-11-19T17:04:50Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:50Z",
+              "outcomes": [
+                {
+                  "name": "Nebraska Cornhuskers",
+                  "price": -115,
+                  "point": 3.5
+                },
+                {
+                  "name": "Ohio State Buckeyes",
+                  "price": -105,
+                  "point": -3.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betwhale",
+          "title": "Betwhale",
+          "last_update": "2026-11-19T17:05:13Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:13Z",
+              "outcomes": [
+                {
+                  "name": "Nebraska Cornhuskers",
+                  "price": -123,
+                  "point": 3.5
+                },
+                {
+                  "name": "Ohio State Buckeyes",
+                  "price": -112,
+                  "point": -3.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2026-11-19T17:05:23Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:23Z",
+              "outcomes": [
+                {
+                  "name": "Nebraska Cornhuskers",
+                  "price": -115,
+                  "point": 3.5
+                },
+                {
+                  "name": "Ohio State Buckeyes",
+                  "price": -105,
+                  "point": -3.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fliff",
+          "title": "Fliff",
+          "last_update": "2026-11-19T17:05:22Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:22Z",
+              "outcomes": [
+                {
+                  "name": "Nebraska Cornhuskers",
+                  "price": -120,
+                  "point": 3.5
+                },
+                {
+                  "name": "Ohio State Buckeyes",
+                  "price": -110,
+                  "point": -3.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betmgm",
+          "title": "BetMGM",
+          "last_update": "2026-11-19T17:04:33Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:32Z",
+              "outcomes": [
+                {
+                  "name": "Nebraska Cornhuskers",
+                  "price": -112,
+                  "point": 3.5
+                },
+                {
+                  "name": "Ohio State Buckeyes",
+                  "price": -105,
+                  "point": -3.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "ballybet",
+          "title": "Bally Bet",
+          "last_update": "2026-11-19T17:02:27Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:02:26Z",
+              "outcomes": [
+                {
+                  "name": "Nebraska Cornhuskers",
+                  "price": -113,
+                  "point": 3.5
+                },
+                {
+                  "name": "Ohio State Buckeyes",
+                  "price": -109,
+                  "point": -3.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betrivers",
+          "title": "BetRivers",
+          "last_update": "2026-11-19T17:05:10Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:10Z",
+              "outcomes": [
+                {
+                  "name": "Nebraska Cornhuskers",
+                  "price": -113,
+                  "point": 3.5
+                },
+                {
+                  "name": "Ohio State Buckeyes",
+                  "price": -109,
+                  "point": -3.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betparx",
+          "title": "betPARX",
+          "last_update": "2026-11-19T17:04:32Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:32Z",
+              "outcomes": [
+                {
+                  "name": "Nebraska Cornhuskers",
+                  "price": -113,
+                  "point": 3.5
+                },
+                {
+                  "name": "Ohio State Buckeyes",
+                  "price": -109,
+                  "point": -3.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "lowvig",
+          "title": "LowVig.ag",
+          "last_update": "2026-11-19T17:04:33Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:33Z",
+              "outcomes": [
+                {
+                  "name": "Nebraska Cornhuskers",
+                  "price": 104,
+                  "point": 3.0
+                },
+                {
+                  "name": "Ohio State Buckeyes",
+                  "price": -116,
+                  "point": -3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betonlineag",
+          "title": "BetOnline.ag",
+          "last_update": "2026-11-19T17:04:33Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:33Z",
+              "outcomes": [
+                {
+                  "name": "Nebraska Cornhuskers",
+                  "price": 100,
+                  "point": 3.0
+                },
+                {
+                  "name": "Ohio State Buckeyes",
+                  "price": -120,
+                  "point": -3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "espnbet",
+          "title": "theScore Bet",
+          "last_update": "2026-11-19T17:04:34Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:33Z",
+              "outcomes": [
+                {
+                  "name": "Nebraska Cornhuskers",
+                  "price": -105,
+                  "point": 3.5
+                },
+                {
+                  "name": "Ohio State Buckeyes",
+                  "price": -115,
+                  "point": -3.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "hardrockbet",
+          "title": "Hard Rock Bet",
+          "last_update": "2026-11-19T17:05:07Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:06Z",
+              "outcomes": [
+                {
+                  "name": "Nebraska Cornhuskers",
+                  "price": -110,
+                  "point": 3.5
+                },
+                {
+                  "name": "Ohio State Buckeyes",
+                  "price": -110,
+                  "point": -3.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betus",
+          "title": "BetUS",
+          "last_update": "2026-11-19T17:04:33Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:33Z",
+              "outcomes": [
+                {
+                  "name": "Nebraska Cornhuskers",
+                  "price": 100,
+                  "point": 3.0
+                },
+                {
+                  "name": "Ohio State Buckeyes",
+                  "price": -120,
+                  "point": -3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betanysports",
+          "title": "BetAnything",
+          "last_update": "2026-11-19T17:04:34Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:34Z",
+              "outcomes": [
+                {
+                  "name": "Nebraska Cornhuskers",
+                  "price": 100,
+                  "point": 3.0
+                },
+                {
+                  "name": "Ohio State Buckeyes",
+                  "price": -120,
+                  "point": -3.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "bovada",
+          "title": "Bovada",
+          "last_update": "2026-11-19T17:04:23Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:23Z",
+              "outcomes": [
+                {
+                  "name": "Nebraska Cornhuskers",
+                  "price": -105,
+                  "point": 3.5
+                },
+                {
+                  "name": "Ohio State Buckeyes",
+                  "price": -115,
+                  "point": -3.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "mybookieag",
+          "title": "MyBookie.ag",
+          "last_update": "2026-11-19T17:05:05Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:05Z",
+              "outcomes": [
+                {
+                  "name": "Nebraska Cornhuskers",
+                  "price": -110,
+                  "point": 3.5
+                },
+                {
+                  "name": "Ohio State Buckeyes",
+                  "price": -110,
+                  "point": -3.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "7f9809c817e27ec2d9f8a24e8e19a8ff",
+      "sport_key": "americanfootball_ncaaf",
+      "sport_title": "NCAAF",
+      "commence_time": "2026-11-21T20:30:00Z",
+      "home_team": "Florida State Seminoles",
+      "away_team": "NC State Wolfpack",
+      "bookmakers": [
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2026-11-19T17:05:23Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:23Z",
+              "outcomes": [
+                {
+                  "name": "Florida State Seminoles",
+                  "price": -108,
+                  "point": -10.5
+                },
+                {
+                  "name": "NC State Wolfpack",
+                  "price": -112,
+                  "point": 10.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betwhale",
+          "title": "Betwhale",
+          "last_update": "2026-11-19T17:05:13Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:13Z",
+              "outcomes": [
+                {
+                  "name": "Florida State Seminoles",
+                  "price": -118,
+                  "point": -10.5
+                },
+                {
+                  "name": "NC State Wolfpack",
+                  "price": -119,
+                  "point": 10.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "ballybet",
+          "title": "Bally Bet",
+          "last_update": "2026-11-19T17:02:27Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:02:27Z",
+              "outcomes": [
+                {
+                  "name": "Florida State Seminoles",
+                  "price": -107,
+                  "point": -10.5
+                },
+                {
+                  "name": "NC State Wolfpack",
+                  "price": -113,
+                  "point": 10.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betrivers",
+          "title": "BetRivers",
+          "last_update": "2026-11-19T17:05:10Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:10Z",
+              "outcomes": [
+                {
+                  "name": "Florida State Seminoles",
+                  "price": -108,
+                  "point": -10.5
+                },
+                {
+                  "name": "NC State Wolfpack",
+                  "price": -115,
+                  "point": 10.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betparx",
+          "title": "betPARX",
+          "last_update": "2026-11-19T17:04:32Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:32Z",
+              "outcomes": [
+                {
+                  "name": "Florida State Seminoles",
+                  "price": -107,
+                  "point": -10.5
+                },
+                {
+                  "name": "NC State Wolfpack",
+                  "price": -113,
+                  "point": 10.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betonlineag",
+          "title": "BetOnline.ag",
+          "last_update": "2026-11-19T17:04:33Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:33Z",
+              "outcomes": [
+                {
+                  "name": "Florida State Seminoles",
+                  "price": -116,
+                  "point": -10.0
+                },
+                {
+                  "name": "NC State Wolfpack",
+                  "price": -104,
+                  "point": 10.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "lowvig",
+          "title": "LowVig.ag",
+          "last_update": "2026-11-19T17:04:33Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:33Z",
+              "outcomes": [
+                {
+                  "name": "Florida State Seminoles",
+                  "price": -112,
+                  "point": -10.0
+                },
+                {
+                  "name": "NC State Wolfpack",
+                  "price": 100,
+                  "point": 10.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2026-11-19T17:04:50Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:50Z",
+              "outcomes": [
+                {
+                  "name": "Florida State Seminoles",
+                  "price": -108,
+                  "point": -10.5
+                },
+                {
+                  "name": "NC State Wolfpack",
+                  "price": -112,
+                  "point": 10.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "hardrockbet",
+          "title": "Hard Rock Bet",
+          "last_update": "2026-11-19T17:05:07Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:06Z",
+              "outcomes": [
+                {
+                  "name": "Florida State Seminoles",
+                  "price": -105,
+                  "point": -10.5
+                },
+                {
+                  "name": "NC State Wolfpack",
+                  "price": -110,
+                  "point": 10.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "espnbet",
+          "title": "theScore Bet",
+          "last_update": "2026-11-19T17:04:34Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:33Z",
+              "outcomes": [
+                {
+                  "name": "Florida State Seminoles",
+                  "price": -105,
+                  "point": -10.5
+                },
+                {
+                  "name": "NC State Wolfpack",
+                  "price": -115,
+                  "point": 10.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betmgm",
+          "title": "BetMGM",
+          "last_update": "2026-11-19T17:04:33Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:32Z",
+              "outcomes": [
+                {
+                  "name": "Florida State Seminoles",
+                  "price": -108,
+                  "point": -10.5
+                },
+                {
+                  "name": "NC State Wolfpack",
+                  "price": -110,
+                  "point": 10.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betus",
+          "title": "BetUS",
+          "last_update": "2026-11-19T17:04:33Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:33Z",
+              "outcomes": [
+                {
+                  "name": "Florida State Seminoles",
+                  "price": -115,
+                  "point": -10.0
+                },
+                {
+                  "name": "NC State Wolfpack",
+                  "price": -105,
+                  "point": 10.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betanysports",
+          "title": "BetAnything",
+          "last_update": "2026-11-19T17:04:34Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:34Z",
+              "outcomes": [
+                {
+                  "name": "Florida State Seminoles",
+                  "price": -110,
+                  "point": -10.5
+                },
+                {
+                  "name": "NC State Wolfpack",
+                  "price": -110,
+                  "point": 10.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "bovada",
+          "title": "Bovada",
+          "last_update": "2026-11-19T17:04:23Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:23Z",
+              "outcomes": [
+                {
+                  "name": "Florida State Seminoles",
+                  "price": -112,
+                  "point": -10.5
+                },
+                {
+                  "name": "NC State Wolfpack",
+                  "price": -108,
+                  "point": 10.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "mybookieag",
+          "title": "MyBookie.ag",
+          "last_update": "2026-11-19T17:05:05Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:05Z",
+              "outcomes": [
+                {
+                  "name": "Florida State Seminoles",
+                  "price": -110,
+                  "point": -10.5
+                },
+                {
+                  "name": "NC State Wolfpack",
+                  "price": -110,
+                  "point": 10.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "4e40d05a5d98ac108cd15278646a545d",
+      "sport_key": "americanfootball_ncaaf",
+      "sport_title": "NCAAF",
+      "commence_time": "2026-11-22T00:30:00Z",
+      "home_team": "California Golden Bears",
+      "away_team": "Stanford Cardinal",
+      "bookmakers": [
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2026-11-19T17:05:23Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:23Z",
+              "outcomes": [
+                {
+                  "name": "California Golden Bears",
+                  "price": -110,
+                  "point": 2.5
+                },
+                {
+                  "name": "Stanford Cardinal",
+                  "price": -110,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betwhale",
+          "title": "Betwhale",
+          "last_update": "2026-11-19T17:05:13Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:13Z",
+              "outcomes": [
+                {
+                  "name": "California Golden Bears",
+                  "price": -116,
+                  "point": 2.5
+                },
+                {
+                  "name": "Stanford Cardinal",
+                  "price": -119,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "lowvig",
+          "title": "LowVig.ag",
+          "last_update": "2026-11-19T17:04:33Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:33Z",
+              "outcomes": [
+                {
+                  "name": "California Golden Bears",
+                  "price": -105,
+                  "point": 2.5
+                },
+                {
+                  "name": "Stanford Cardinal",
+                  "price": -107,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betonlineag",
+          "title": "BetOnline.ag",
+          "last_update": "2026-11-19T17:04:33Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:33Z",
+              "outcomes": [
+                {
+                  "name": "California Golden Bears",
+                  "price": -109,
+                  "point": 2.5
+                },
+                {
+                  "name": "Stanford Cardinal",
+                  "price": -111,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betparx",
+          "title": "betPARX",
+          "last_update": "2026-11-19T17:04:32Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:32Z",
+              "outcomes": [
+                {
+                  "name": "California Golden Bears",
+                  "price": -110,
+                  "point": 2.5
+                },
+                {
+                  "name": "Stanford Cardinal",
+                  "price": -109,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betrivers",
+          "title": "BetRivers",
+          "last_update": "2026-11-19T17:05:10Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:10Z",
+              "outcomes": [
+                {
+                  "name": "California Golden Bears",
+                  "price": -112,
+                  "point": 2.5
+                },
+                {
+                  "name": "Stanford Cardinal",
+                  "price": -112,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "ballybet",
+          "title": "Bally Bet",
+          "last_update": "2026-11-19T17:02:27Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:02:27Z",
+              "outcomes": [
+                {
+                  "name": "California Golden Bears",
+                  "price": -110,
+                  "point": 2.5
+                },
+                {
+                  "name": "Stanford Cardinal",
+                  "price": -109,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2026-11-19T17:04:50Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:50Z",
+              "outcomes": [
+                {
+                  "name": "California Golden Bears",
+                  "price": -110,
+                  "point": 2.5
+                },
+                {
+                  "name": "Stanford Cardinal",
+                  "price": -110,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "hardrockbet",
+          "title": "Hard Rock Bet",
+          "last_update": "2026-11-19T17:05:07Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:06Z",
+              "outcomes": [
+                {
+                  "name": "California Golden Bears",
+                  "price": -110,
+                  "point": 2.5
+                },
+                {
+                  "name": "Stanford Cardinal",
+                  "price": -110,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "espnbet",
+          "title": "theScore Bet",
+          "last_update": "2026-11-19T17:04:34Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:34Z",
+              "outcomes": [
+                {
+                  "name": "California Golden Bears",
+                  "price": -110,
+                  "point": 2.5
+                },
+                {
+                  "name": "Stanford Cardinal",
+                  "price": -110,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betmgm",
+          "title": "BetMGM",
+          "last_update": "2026-11-19T17:04:33Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:32Z",
+              "outcomes": [
+                {
+                  "name": "California Golden Bears",
+                  "price": -108,
+                  "point": 2.5
+                },
+                {
+                  "name": "Stanford Cardinal",
+                  "price": -110,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betus",
+          "title": "BetUS",
+          "last_update": "2026-11-19T17:04:33Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:33Z",
+              "outcomes": [
+                {
+                  "name": "California Golden Bears",
+                  "price": -110,
+                  "point": 2.5
+                },
+                {
+                  "name": "Stanford Cardinal",
+                  "price": -110,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betanysports",
+          "title": "BetAnything",
+          "last_update": "2026-11-19T17:04:34Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:34Z",
+              "outcomes": [
+                {
+                  "name": "California Golden Bears",
+                  "price": 100,
+                  "point": 2.5
+                },
+                {
+                  "name": "Stanford Cardinal",
+                  "price": -120,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "bovada",
+          "title": "Bovada",
+          "last_update": "2026-11-19T17:04:23Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:23Z",
+              "outcomes": [
+                {
+                  "name": "California Golden Bears",
+                  "price": -112,
+                  "point": 2.5
+                },
+                {
+                  "name": "Stanford Cardinal",
+                  "price": -108,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "mybookieag",
+          "title": "MyBookie.ag",
+          "last_update": "2026-11-19T17:05:05Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:05Z",
+              "outcomes": [
+                {
+                  "name": "California Golden Bears",
+                  "price": -110,
+                  "point": 2.5
+                },
+                {
+                  "name": "Stanford Cardinal",
+                  "price": -110,
+                  "point": -2.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "a05c0d32b35dfd5cca63a61af28b9739",
+      "sport_key": "americanfootball_ncaaf",
+      "sport_title": "NCAAF",
+      "commence_time": "2026-11-22T00:30:00Z",
+      "home_team": "South Carolina Gamecocks",
+      "away_team": "Georgia Bulldogs",
+      "bookmakers": [
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2026-11-19T17:05:23Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:22Z",
+              "outcomes": [
+                {
+                  "name": "Georgia Bulldogs",
+                  "price": -114,
+                  "point": -14.5
+                },
+                {
+                  "name": "South Carolina Gamecocks",
+                  "price": -106,
+                  "point": 14.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2026-11-19T17:04:50Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:50Z",
+              "outcomes": [
+                {
+                  "name": "Georgia Bulldogs",
+                  "price": -112,
+                  "point": -14.5
+                },
+                {
+                  "name": "South Carolina Gamecocks",
+                  "price": -108,
+                  "point": 14.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betwhale",
+          "title": "Betwhale",
+          "last_update": "2026-11-19T17:05:13Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:13Z",
+              "outcomes": [
+                {
+                  "name": "Georgia Bulldogs",
+                  "price": -114,
+                  "point": -15.5
+                },
+                {
+                  "name": "South Carolina Gamecocks",
+                  "price": -122,
+                  "point": 15.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fliff",
+          "title": "Fliff",
+          "last_update": "2026-11-19T17:05:22Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:22Z",
+              "outcomes": [
+                {
+                  "name": "Georgia Bulldogs",
+                  "price": -110,
+                  "point": -15.5
+                },
+                {
+                  "name": "South Carolina Gamecocks",
+                  "price": -120,
+                  "point": 15.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "ballybet",
+          "title": "Bally Bet",
+          "last_update": "2026-11-19T17:02:27Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:02:27Z",
+              "outcomes": [
+                {
+                  "name": "Georgia Bulldogs",
+                  "price": -109,
+                  "point": -16.0
+                },
+                {
+                  "name": "South Carolina Gamecocks",
+                  "price": -110,
+                  "point": 16.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betrivers",
+          "title": "BetRivers",
+          "last_update": "2026-11-19T17:05:10Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:10Z",
+              "outcomes": [
+                {
+                  "name": "Georgia Bulldogs",
+                  "price": -112,
+                  "point": -16.0
+                },
+                {
+                  "name": "South Carolina Gamecocks",
+                  "price": -112,
+                  "point": 16.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betparx",
+          "title": "betPARX",
+          "last_update": "2026-11-19T17:04:32Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:32Z",
+              "outcomes": [
+                {
+                  "name": "Georgia Bulldogs",
+                  "price": -109,
+                  "point": -16.0
+                },
+                {
+                  "name": "South Carolina Gamecocks",
+                  "price": -110,
+                  "point": 16.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "lowvig",
+          "title": "LowVig.ag",
+          "last_update": "2026-11-19T17:04:33Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:33Z",
+              "outcomes": [
+                {
+                  "name": "Georgia Bulldogs",
+                  "price": -106,
+                  "point": -15.0
+                },
+                {
+                  "name": "South Carolina Gamecocks",
+                  "price": -106,
+                  "point": 15.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betonlineag",
+          "title": "BetOnline.ag",
+          "last_update": "2026-11-19T17:04:33Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:33Z",
+              "outcomes": [
+                {
+                  "name": "Georgia Bulldogs",
+                  "price": -110,
+                  "point": -15.0
+                },
+                {
+                  "name": "South Carolina Gamecocks",
+                  "price": -110,
+                  "point": 15.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "espnbet",
+          "title": "theScore Bet",
+          "last_update": "2026-11-19T17:04:34Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:34Z",
+              "outcomes": [
+                {
+                  "name": "Georgia Bulldogs",
+                  "price": -115,
+                  "point": -14.5
+                },
+                {
+                  "name": "South Carolina Gamecocks",
+                  "price": -105,
+                  "point": 14.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "hardrockbet",
+          "title": "Hard Rock Bet",
+          "last_update": "2026-11-19T17:05:07Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:06Z",
+              "outcomes": [
+                {
+                  "name": "Georgia Bulldogs",
+                  "price": -115,
+                  "point": -15.5
+                },
+                {
+                  "name": "South Carolina Gamecocks",
+                  "price": -105,
+                  "point": 15.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betmgm",
+          "title": "BetMGM",
+          "last_update": "2026-11-19T17:04:33Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:33Z",
+              "outcomes": [
+                {
+                  "name": "Georgia Bulldogs",
+                  "price": -110,
+                  "point": -15.0
+                },
+                {
+                  "name": "South Carolina Gamecocks",
+                  "price": -110,
+                  "point": 15.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betus",
+          "title": "BetUS",
+          "last_update": "2026-11-19T17:04:33Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:33Z",
+              "outcomes": [
+                {
+                  "name": "Georgia Bulldogs",
+                  "price": -110,
+                  "point": -15.0
+                },
+                {
+                  "name": "South Carolina Gamecocks",
+                  "price": -110,
+                  "point": 15.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betanysports",
+          "title": "BetAnything",
+          "last_update": "2026-11-19T17:04:34Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:34Z",
+              "outcomes": [
+                {
+                  "name": "Georgia Bulldogs",
+                  "price": -110,
+                  "point": -15.0
+                },
+                {
+                  "name": "South Carolina Gamecocks",
+                  "price": -110,
+                  "point": 15.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "bovada",
+          "title": "Bovada",
+          "last_update": "2026-11-19T17:04:23Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:23Z",
+              "outcomes": [
+                {
+                  "name": "Georgia Bulldogs",
+                  "price": -112,
+                  "point": -14.5
+                },
+                {
+                  "name": "South Carolina Gamecocks",
+                  "price": -108,
+                  "point": 14.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "mybookieag",
+          "title": "MyBookie.ag",
+          "last_update": "2026-11-19T17:05:05Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:05Z",
+              "outcomes": [
+                {
+                  "name": "Georgia Bulldogs",
+                  "price": -110,
+                  "point": -15.5
+                },
+                {
+                  "name": "South Carolina Gamecocks",
+                  "price": -110,
+                  "point": 15.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fa98066b4b400fb6af0672e170cc584a",
+      "sport_key": "americanfootball_ncaaf",
+      "sport_title": "NCAAF",
+      "commence_time": "2026-11-22T00:30:00Z",
+      "home_team": "Notre Dame Fighting Irish",
+      "away_team": "SMU Mustangs",
+      "bookmakers": [
+        {
+          "key": "draftkings",
+          "title": "DraftKings",
+          "last_update": "2026-11-19T17:04:50Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:50Z",
+              "outcomes": [
+                {
+                  "name": "Notre Dame Fighting Irish",
+                  "price": -112,
+                  "point": -20.5
+                },
+                {
+                  "name": "SMU Mustangs",
+                  "price": -108,
+                  "point": 20.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fanduel",
+          "title": "FanDuel",
+          "last_update": "2026-11-19T17:05:23Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:22Z",
+              "outcomes": [
+                {
+                  "name": "Notre Dame Fighting Irish",
+                  "price": -110,
+                  "point": -20.5
+                },
+                {
+                  "name": "SMU Mustangs",
+                  "price": -110,
+                  "point": 20.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betwhale",
+          "title": "Betwhale",
+          "last_update": "2026-11-19T17:05:13Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:13Z",
+              "outcomes": [
+                {
+                  "name": "Notre Dame Fighting Irish",
+                  "price": -120,
+                  "point": -20.5
+                },
+                {
+                  "name": "SMU Mustangs",
+                  "price": -115,
+                  "point": 20.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "fliff",
+          "title": "Fliff",
+          "last_update": "2026-11-19T17:05:22Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:22Z",
+              "outcomes": [
+                {
+                  "name": "Notre Dame Fighting Irish",
+                  "price": -120,
+                  "point": -20.5
+                },
+                {
+                  "name": "SMU Mustangs",
+                  "price": -115,
+                  "point": 20.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "ballybet",
+          "title": "Bally Bet",
+          "last_update": "2026-11-19T17:02:27Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:02:27Z",
+              "outcomes": [
+                {
+                  "name": "Notre Dame Fighting Irish",
+                  "price": -108,
+                  "point": -21.0
+                },
+                {
+                  "name": "SMU Mustangs",
+                  "price": -113,
+                  "point": 21.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betrivers",
+          "title": "BetRivers",
+          "last_update": "2026-11-19T17:05:10Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:10Z",
+              "outcomes": [
+                {
+                  "name": "Notre Dame Fighting Irish",
+                  "price": -109,
+                  "point": -21.0
+                },
+                {
+                  "name": "SMU Mustangs",
+                  "price": -114,
+                  "point": 21.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betparx",
+          "title": "betPARX",
+          "last_update": "2026-11-19T17:04:32Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:32Z",
+              "outcomes": [
+                {
+                  "name": "Notre Dame Fighting Irish",
+                  "price": -108,
+                  "point": -21.0
+                },
+                {
+                  "name": "SMU Mustangs",
+                  "price": -113,
+                  "point": 21.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "hardrockbet",
+          "title": "Hard Rock Bet",
+          "last_update": "2026-11-19T17:05:07Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:06Z",
+              "outcomes": [
+                {
+                  "name": "Notre Dame Fighting Irish",
+                  "price": -115,
+                  "point": -20.5
+                },
+                {
+                  "name": "SMU Mustangs",
+                  "price": -105,
+                  "point": 20.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "espnbet",
+          "title": "theScore Bet",
+          "last_update": "2026-11-19T17:04:34Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:34Z",
+              "outcomes": [
+                {
+                  "name": "Notre Dame Fighting Irish",
+                  "price": -105,
+                  "point": -20.5
+                },
+                {
+                  "name": "SMU Mustangs",
+                  "price": -115,
+                  "point": 20.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betonlineag",
+          "title": "BetOnline.ag",
+          "last_update": "2026-11-19T17:04:33Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:33Z",
+              "outcomes": [
+                {
+                  "name": "Notre Dame Fighting Irish",
+                  "price": -105,
+                  "point": -21.0
+                },
+                {
+                  "name": "SMU Mustangs",
+                  "price": -115,
+                  "point": 21.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "lowvig",
+          "title": "LowVig.ag",
+          "last_update": "2026-11-19T17:04:33Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:33Z",
+              "outcomes": [
+                {
+                  "name": "Notre Dame Fighting Irish",
+                  "price": -101,
+                  "point": -21.0
+                },
+                {
+                  "name": "SMU Mustangs",
+                  "price": -111,
+                  "point": 21.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betmgm",
+          "title": "BetMGM",
+          "last_update": "2026-11-19T17:04:33Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:33Z",
+              "outcomes": [
+                {
+                  "name": "Notre Dame Fighting Irish",
+                  "price": -112,
+                  "point": -20.5
+                },
+                {
+                  "name": "SMU Mustangs",
+                  "price": -105,
+                  "point": 20.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betus",
+          "title": "BetUS",
+          "last_update": "2026-11-19T17:04:33Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:33Z",
+              "outcomes": [
+                {
+                  "name": "Notre Dame Fighting Irish",
+                  "price": -105,
+                  "point": -21.0
+                },
+                {
+                  "name": "SMU Mustangs",
+                  "price": -115,
+                  "point": 21.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "betanysports",
+          "title": "BetAnything",
+          "last_update": "2026-11-19T17:04:34Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:34Z",
+              "outcomes": [
+                {
+                  "name": "Notre Dame Fighting Irish",
+                  "price": -110,
+                  "point": -20.5
+                },
+                {
+                  "name": "SMU Mustangs",
+                  "price": -110,
+                  "point": 20.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "bovada",
+          "title": "Bovada",
+          "last_update": "2026-11-19T17:04:23Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:04:23Z",
+              "outcomes": [
+                {
+                  "name": "Notre Dame Fighting Irish",
+                  "price": -115,
+                  "point": -20.5
+                },
+                {
+                  "name": "SMU Mustangs",
+                  "price": -105,
+                  "point": 20.5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "mybookieag",
+          "title": "MyBookie.ag",
+          "last_update": "2026-11-19T17:05:05Z",
+          "markets": [
+            {
+              "key": "spreads",
+              "last_update": "2026-11-19T17:05:05Z",
+              "outcomes": [
+                {
+                  "name": "Notre Dame Fighting Irish",
+                  "price": -110,
+                  "point": -20.5
+                },
+                {
+                  "name": "SMU Mustangs",
+                  "price": -110,
+                  "point": 20.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
