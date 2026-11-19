@@ -1,0 +1,23 @@
+{
+  "endpoint": "GET /lines?year={season}",
+  "seasons": [
+    2019,
+    2021,
+    2022,
+    2023,
+    2024,
+    2026
+  ],
+  "n_calls": 6,
+  "credits_before": 4861,
+  "credits_after": 4855,
+  "remaining_after_each_call": [
+    4860,
+    4859,
+    4858,
+    4857,
+    4856,
+    4855
+  ],
+  "line_field": "CFBD provider `spread` (closing home spread); open available as `spreadOpen` but unused. Per-game line_margin := median_books(-spread) (market implied home margin)."
+}

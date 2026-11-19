@@ -1,0 +1,125 @@
+{
+  "method": {
+    "formula": "P(cover)=\u03a6(\u03b2\u00b7(\u03bc_ridge\u2212line_margin)/\u03c3)",
+    "line_field": "CFBD /lines provider `spread` (close); line_margin=-median(spread)",
+    "sigma_field": "walk-forward sigma_m (hist) / publish sigma_margin (2026)",
+    "mu_source_hist": "data\\backtests\\task23_fundamental_reduced_v3\\full\\predictions.parquet",
+    "mu_source_2026": "data/webapp/publish_history/2026_w{2..11}.jsonl tuesday_primary",
+    "train_seasons": [
+      2019,
+      2021,
+      2022,
+      2023
+    ],
+    "decide_season": 2024,
+    "report_only": "2026 w2\u2013w11"
+  },
+  "data_counts": {
+    "train_n": 3194,
+    "decide_n": 887,
+    "report_2026_n": 615,
+    "train_by_season": {
+      "2019": 553,
+      "2021": 872,
+      "2022": 878,
+      "2023": 891
+    }
+  },
+  "beta_train": {
+    "beta": -0.027551162702702532,
+    "ci90": [
+      -0.10000000000000009,
+      0.04499999999999993
+    ],
+    "n": 3194,
+    "n_covers": 1592,
+    "excludes_zero": false,
+    "beta_gt_0": false
+  },
+  "beta_per_season": {
+    "2019": {
+      "beta": 0.06757131732428809,
+      "ci90": [
+        -0.08499999999999996,
+        0.2200000000000002
+      ],
+      "n": 553,
+      "n_covers": 278,
+      "excludes_zero": false
+    },
+    "2021": {
+      "beta": -0.07667751726924663,
+      "ci90": [
+        -0.21999999999999975,
+        0.0674999999999999
+      ],
+      "n": 872,
+      "n_covers": 443,
+      "excludes_zero": false
+    },
+    "2022": {
+      "beta": -0.1276061970593216,
+      "ci90": [
+        -0.2749999999999999,
+        0.020000000000000018
+      ],
+      "n": 878,
+      "n_covers": 435,
+      "excludes_zero": false
+    },
+    "2023": {
+      "beta": 0.03684746901250725,
+      "ci90": [
+        -0.11249999999999982,
+        0.1875
+      ],
+      "n": 891,
+      "n_covers": 436,
+      "excludes_zero": false
+    },
+    "2024": {
+      "beta": 0.02741665733704061,
+      "ci90": [
+        -0.1200000000000001,
+        0.17500000000000027
+      ],
+      "n": 887,
+      "n_covers": 451,
+      "excludes_zero": false
+    }
+  },
+  "pass_2024": {
+    "beta_gate": false,
+    "table_p_ge_0_55": {
+      "n": 0,
+      "mean_predicted": null,
+      "n_covers": 0,
+      "realized": null,
+      "wilson90": [
+        null,
+        null
+      ],
+      "pass_n": false,
+      "pass_realized": false,
+      "verdict": "INCONCLUSIVE"
+    },
+    "all_pass": false,
+    "card": "OFF (\u03b2 gate failed \u2014 \u03b2\u22640 or 90% CI includes 0)"
+  },
+  "report_2026_w2_w11": {
+    "table_p_ge_0_55": {
+      "n": 0,
+      "mean_predicted": null,
+      "n_covers": 0,
+      "realized": null,
+      "wilson90": [
+        null,
+        null
+      ],
+      "pass_n": false,
+      "pass_realized": false,
+      "verdict": "INCONCLUSIVE"
+    },
+    "note": "Already inspected historically \u2014 cannot decide; report only."
+  }
+}
