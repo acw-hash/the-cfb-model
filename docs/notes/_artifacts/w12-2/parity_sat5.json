@@ -1,0 +1,42 @@
+[
+  {
+    "game_id": "401856867",
+    "away": "Colorado",
+    "home": "Cincinnati",
+    "mu_1dec": -0.7,
+    "site_1dec": -0.7,
+    "ok": true
+  },
+  {
+    "game_id": "401858530",
+    "away": "Northwestern",
+    "home": "Minnesota",
+    "mu_1dec": -1.1,
+    "site_1dec": -1.1,
+    "ok": true
+  },
+  {
+    "game_id": "401862831",
+    "away": "East Carolina",
+    "home": "Army",
+    "mu_1dec": 9.0,
+    "site_1dec": 9.0,
+    "ok": true
+  },
+  {
+    "game_id": "401858310",
+    "away": "Wake Forest",
+    "home": "Georgia Tech",
+    "mu_1dec": -24.4,
+    "site_1dec": -24.4,
+    "ok": true
+  },
+  {
+    "game_id": "401858309",
+    "away": "Syracuse",
+    "home": "Boston College",
+    "mu_1dec": -2.3,
+    "site_1dec": -2.3,
+    "ok": true
+  }
+]
