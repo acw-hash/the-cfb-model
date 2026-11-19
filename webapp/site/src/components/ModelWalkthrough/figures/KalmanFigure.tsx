@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { RatingsDirectionNote } from "@/components/RatingsDirectionNote/RatingsDirectionNote";
 import styles from "../ModelWalkthrough.module.css";
 import { fmtNum, fmtSigned, priorVariance, runKalman } from "../../../lib/visual/math";
 import { PRIOR_MEAN, SEASON } from "../../../lib/visual/example";
@@ -61,6 +62,7 @@ export default function KalmanFigure({ returning, missing }: Props) {
 
   return (
     <div>
+      <RatingsDirectionNote dimension="offense" />
       <div ref={ref} className={styles.chart} style={{ minHeight: h }}>
         {width > 0 && (
           <svg

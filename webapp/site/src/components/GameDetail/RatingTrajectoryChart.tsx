@@ -1,4 +1,5 @@
 import { Figure } from "@/components/Figure/Figure";
+import { RatingsDirectionNote } from "@/components/RatingsDirectionNote/RatingsDirectionNote";
 import { formatEpa } from "@/lib/formatting/numbers";
 import {
   CHART_VIEW_HEIGHT,
@@ -172,9 +173,7 @@ export function RatingTrajectoryChart({
         scales={scales}
         throughWeek={throughWeek}
       />
-      <p className={styles.seriesNote} data-testid="offense-direction">
-        Higher is better on offense. Values are relative to the league average.
-      </p>
+      <RatingsDirectionNote dimension="offense" />
       <Panel
         title="Defense"
         dimension="def"
@@ -183,10 +182,7 @@ export function RatingTrajectoryChart({
         scales={scales}
         throughWeek={throughWeek}
       />
-      <p className={styles.seriesNote} data-testid="defense-direction">
-        Higher is better on defense. The rating measures EPA suppressed, so a larger number means a
-        tougher defense.
-      </p>
+      <RatingsDirectionNote dimension="defense" />
       <div className={styles.xAxis} aria-hidden="true">
         {weeks.map((week) => (
           <span

@@ -17,6 +17,47 @@ describe("team map", () => {
     expect(normalizeTeamName("Texas A&M Aggies")).toBe("Texas A&M");
     expect(normalizeTeamName("alabama crimson tide")).toBe("Alabama");
   });
+
+  // W12-2 — Odds unmatched "Wofford Terriers" / "Chattanooga Mocs" vs CFBD
+  // 401856749 / 401856746. Exact map only (configs/team_names.yaml).
+  it("maps Wofford Terriers and Chattanooga Mocs", () => {
+    expect(normalizeTeamName("Wofford Terriers")).toBe("Wofford");
+    expect(normalizeTeamName("Chattanooga Mocs")).toBe("Chattanooga");
+  });
+});
+
+describe("W12-2 Wofford / Chattanooga crosswalk", () => {
+  it("matches both FCS sides to CFBD game ids 401856749 / 401856746", () => {
+    const games: RidgeGame[] = [
+      {
+        game_id: "401856749",
+        home_team: "Ole Miss",
+        away_team: "Wofford",
+        kickoff_utc: kick,
+      },
+      {
+        game_id: "401856746",
+        home_team: "Alabama",
+        away_team: "Chattanooga",
+        kickoff_utc: kick,
+      },
+    ];
+    const events = [
+      event({
+        id: "ev-wofford",
+        home_team: "Ole Miss",
+        away_team: "Wofford Terriers",
+      }),
+      event({
+        id: "ev-chatt",
+        home_team: "Alabama",
+        away_team: "Chattanooga Mocs",
+      }),
+    ];
+    const { matches, unmatched } = matchEventsToGames(events, games, { nowMs: 0 });
+    expect(matches.map((m) => m.game_id).sort()).toEqual(["401856746", "401856749"]);
+    expect(unmatched).toHaveLength(0);
+  });
 });
 
 describe("neutral-site reversed match", () => {

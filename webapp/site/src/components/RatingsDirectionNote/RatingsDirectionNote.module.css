@@ -1,0 +1,14 @@
+.note {
+  margin: 0 0 var(--space-3);
+  font-size: var(--type-c2-size);
+  line-height: var(--type-c2-line);
+  color: var(--text-secondary);
+}
+
+.homeNote {
+  flex: 1 0 100%;
+  margin: 0;
+  font-size: var(--type-c2-size);
+  line-height: var(--type-c2-line);
+  color: var(--text-tertiary);
+}

@@ -1,5 +1,6 @@
 "use client";
 
+import { RatingsDirectionNote } from "@/components/RatingsDirectionNote/RatingsDirectionNote";
 import styles from "../ModelWalkthrough.module.css";
 import {
   KALMAN,
@@ -60,6 +61,7 @@ export default function PriorFigure({ returning, missing, onReturning, onMissing
 
   return (
     <div>
+      <RatingsDirectionNote dimension="offense" />
       <div ref={ref} className={styles.chart} style={{ minHeight: h }}>
         {width > 0 && (
           <svg

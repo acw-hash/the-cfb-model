@@ -1,5 +1,6 @@
 import { Figure } from "@/components/Figure/Figure";
 import { PublishedAtStamp } from "@/components/PublishedAtStamp/PublishedAtStamp";
+import { RatingsDirectionHomeNote } from "@/components/RatingsDirectionNote/RatingsDirectionNote";
 import type { RefreshKind } from "@/lib/artifacts/types";
 import { formatRefreshKind } from "@/lib/this-week/refresh-kind";
 
@@ -33,6 +34,7 @@ export function ThisWeekHeader({
         <PublishedAtStamp publishedAt={publishedAt} />
         <p className={styles.refresh}>{formatRefreshKind(refreshKind)}</p>
       </div>
+      <RatingsDirectionHomeNote />
     </header>
   );
 }

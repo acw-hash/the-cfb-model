@@ -201,3 +201,6 @@ odds_api:
   "Gardner-Webb Runnin' Bulldogs": "Gardner-Webb"
   "Gardner-Webb Running Bulldogs": "Gardner-Webb"
   "Stonehill Skyhawks": "Stonehill"
+  # W12-2 — Odds API unmatched vs CFBD 401856749 / 401856746 (exact map; no fuzzy).
+  "Wofford Terriers": "Wofford"
+  "Chattanooga Mocs": "Chattanooga"
