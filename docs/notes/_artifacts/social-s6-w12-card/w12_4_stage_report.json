@@ -1,0 +1,27 @@
+{
+  "raw_path": "docs/notes/_artifacts/social-s6-w12-card/odds_w12_4_20261119T160839Z.json",
+  "credits": {
+    "x-requests-remaining": "189",
+    "x-requests-used": "311",
+    "x-requests-last": "2"
+  },
+  "n_games": 10,
+  "n_event_ids": 10,
+  "gids": [
+    401856867,
+    401858531,
+    401856866,
+    401856753,
+    401858307,
+    401858308,
+    401856747,
+    401862831,
+    401858530,
+    401858304
+  ],
+  "n_drop_records": 0,
+  "drop_reason_counts": {},
+  "rows_fetched": 284,
+  "rows_written": 284,
+  "quarantined": 0
+}
