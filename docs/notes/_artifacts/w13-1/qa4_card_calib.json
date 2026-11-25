@@ -1,0 +1,236 @@
+{
+  "generated_at": "2026-11-25T22:41:51.627058+00:00",
+  "export_enabled": false,
+  "A4_from_qa3": {
+    "50-55": {
+      "n": 115,
+      "mean_predicted": 0.528571001772089,
+      "realized_cover_rate": 0.5130434782608696
+    },
+    "55-60": {
+      "n": 94,
+      "mean_predicted": 0.5757425929603692,
+      "realized_cover_rate": 0.4574468085106383
+    },
+    "60-65": {
+      "n": 98,
+      "mean_predicted": 0.624337642147024,
+      "realized_cover_rate": 0.5
+    },
+    "65+": {
+      "n": 134,
+      "mean_predicted": 0.7387883340893475,
+      "realized_cover_rate": 0.4925373134328358
+    }
+  },
+  "A4_qa3_n_used": 441,
+  "slate_recompute": {
+    "n_all": 560,
+    "n_gated": 260,
+    "a4_all_model_side": {
+      "buckets": {
+        "50-55": {
+          "n": 146,
+          "mean_predicted": 0.5273465369368958,
+          "realized_cover_rate": 0.5342465753424658
+        },
+        "55-60": {
+          "n": 130,
+          "mean_predicted": 0.5757532771458285,
+          "realized_cover_rate": 0.4846153846153846
+        },
+        "60-65": {
+          "n": 123,
+          "mean_predicted": 0.6243088951647873,
+          "realized_cover_rate": 0.5121951219512195
+        },
+        "65+": {
+          "n": 161,
+          "mean_predicted": 0.7344354805729186,
+          "realized_cover_rate": 0.4906832298136646
+        }
+      },
+      "pooled": {
+        "n": 560,
+        "mean_predicted": 0.6194189766058094,
+        "realized_cover_rate": 0.5053571428571428,
+        "n_covers": 283,
+        "ci90_wilson": [
+          0.4706631403407781,
+          0.5399996300367265
+        ]
+      }
+    },
+    "gated_edge_gap": {
+      "buckets": {
+        "50-55": {
+          "n": 22,
+          "mean_predicted": 0.545992003160722,
+          "realized_cover_rate": 0.6363636363636364
+        },
+        "55-60": {
+          "n": 130,
+          "mean_predicted": 0.5757532771458285,
+          "realized_cover_rate": 0.4846153846153846
+        },
+        "60-65": {
+          "n": 102,
+          "mean_predicted": 0.6206381811812784,
+          "realized_cover_rate": 0.5098039215686274
+        },
+        "65+": {
+          "n": 6,
+          "mean_predicted": 0.6610741425046461,
+          "realized_cover_rate": 0.5
+        }
+      },
+      "pooled": {
+        "n": 260,
+        "mean_predicted": 0.5928126516692762,
+        "realized_cover_rate": 0.5076923076923077,
+        "n_covers": 132,
+        "ci90_wilson": [
+          0.4568776067948945,
+          0.5583485660045346
+        ]
+      },
+      "by_week": {
+        "3": {
+          "n": 19,
+          "mean_predicted": 0.6029699822134451,
+          "realized_cover_rate": 0.6842105263157895,
+          "n_covers": 13,
+          "ci90_wilson": [
+            0.49554038041698273,
+            0.8269578797534732
+          ]
+        },
+        "4": {
+          "n": 18,
+          "mean_predicted": 0.5903563415519357,
+          "realized_cover_rate": 0.6111111111111112,
+          "n_covers": 11,
+          "ci90_wilson": [
+            0.41977476572467876,
+            0.7734102143686029
+          ]
+        },
+        "5": {
+          "n": 18,
+          "mean_predicted": 0.5938067240172189,
+          "realized_cover_rate": 0.5,
+          "n_covers": 9,
+          "ci90_wilson": [
+            0.3192601388872444,
+            0.6807398611127555
+          ]
+        },
+        "6": {
+          "n": 26,
+          "mean_predicted": 0.5926225162129625,
+          "realized_cover_rate": 0.5384615384615384,
+          "n_covers": 14,
+          "ci90_wilson": [
+            0.38174625475422996,
+            0.6879266989454033
+          ]
+        },
+        "7": {
+          "n": 24,
+          "mean_predicted": 0.5900472794495056,
+          "realized_cover_rate": 0.4583333333333333,
+          "n_covers": 11,
+          "ci90_wilson": [
+            0.30390567455526485,
+            0.6212035072354809
+          ]
+        },
+        "8": {
+          "n": 33,
+          "mean_predicted": 0.5948685167064537,
+          "realized_cover_rate": 0.36363636363636365,
+          "n_covers": 12,
+          "ci90_wilson": [
+            0.24114900295214328,
+            0.5067892965567049
+          ]
+        },
+        "9": {
+          "n": 33,
+          "mean_predicted": 0.586719676904623,
+          "realized_cover_rate": 0.48484848484848486,
+          "n_covers": 16,
+          "ci90_wilson": [
+            0.3484198152256923,
+            0.6235733291641797
+          ]
+        },
+        "10": {
+          "n": 29,
+          "mean_predicted": 0.5968484287992444,
+          "realized_cover_rate": 0.41379310344827586,
+          "n_covers": 12,
+          "ci90_wilson": [
+            0.2770893371183149,
+            0.5652095338271017
+          ]
+        },
+        "11": {
+          "n": 33,
+          "mean_predicted": 0.5924656240063579,
+          "realized_cover_rate": 0.5757575757575758,
+          "n_covers": 19,
+          "ci90_wilson": [
+            0.43384991734662126,
+            0.7061843607040187
+          ]
+        },
+        "12": {
+          "n": 27,
+          "mean_predicted": 0.5903045943271487,
+          "realized_cover_rate": 0.5555555555555556,
+          "n_covers": 15,
+          "ci90_wilson": [
+            0.4004483645392354,
+            0.7005428866269304
+          ]
+        }
+      }
+    },
+    "gates": {
+      "min_edge": 0.045,
+      "max_gap": 7.0
+    }
+  },
+  "w12_alone": {
+    "n": 27,
+    "mean_predicted": 0.5903045943271487,
+    "realized_cover_rate": 0.5555555555555556,
+    "n_covers": 15,
+    "ci90_wilson": [
+      0.4004483645392354,
+      0.7005428866269304
+    ]
+  },
+  "ledgers": {
+    "n_calls_loaded": 67,
+    "n_used": 66,
+    "n_skipped": 1,
+    "skipped_sample": [
+      {
+        "game_id": 401856813,
+        "reason": "push"
+      }
+    ],
+    "pooled": {
+      "n": 66,
+      "mean_predicted": 0.6175658283558209,
+      "realized_cover_rate": 0.4696969696969697,
+      "n_covers": 31,
+      "ci90_wilson": [
+        0.3718449785192736,
+        0.569935556225022
+      ]
+    }
+  }
+}

@@ -1,0 +1,192 @@
+[
+  {
+    "game_id": "401856879",
+    "away": "TCU",
+    "home": "Texas Tech",
+    "mu": 8.78905114028356,
+    "fav": "Texas Tech",
+    "mag": 8.8,
+    "null_reason": null,
+    "kickoff": "2026-11-27 01:00:00+00:00"
+  },
+  {
+    "game_id": "401858536",
+    "away": "Nebraska",
+    "home": "Iowa",
+    "mu": 6.052799792338045,
+    "fav": "Iowa",
+    "mag": 6.1,
+    "null_reason": null,
+    "kickoff": "2026-11-27 17:00:00+00:00"
+  },
+  {
+    "game_id": "401862840",
+    "away": "Tulsa",
+    "home": "UTSA",
+    "mu": -7.950020702726712,
+    "fav": "Tulsa",
+    "mag": 8.0,
+    "null_reason": null,
+    "kickoff": "2026-11-27 17:00:00+00:00"
+  },
+  {
+    "game_id": "401856762",
+    "away": "Mississippi State",
+    "home": "Ole Miss",
+    "mu": 17.220836663166434,
+    "fav": "Ole Miss",
+    "mag": 17.2,
+    "null_reason": null,
+    "kickoff": "2026-11-27 17:00:00+00:00"
+  },
+  {
+    "game_id": "401866472",
+    "away": "Buffalo",
+    "home": "Akron",
+    "mu": -16.323808263298126,
+    "fav": "Buffalo",
+    "mag": 16.3,
+    "null_reason": null,
+    "kickoff": "2026-11-27 17:00:00+00:00"
+  },
+  {
+    "game_id": "401866473",
+    "away": "Toledo",
+    "home": "Ohio",
+    "mu": -1.094255521230397,
+    "fav": "Toledo",
+    "mag": 1.1,
+    "null_reason": null,
+    "kickoff": "2026-11-27 17:00:00+00:00"
+  },
+  {
+    "game_id": "401869930",
+    "away": "App State",
+    "home": "South Alabama",
+    "mu": 7.408664975515632,
+    "fav": "South Alabama",
+    "mag": 7.4,
+    "null_reason": null,
+    "kickoff": "2026-11-27 20:00:00+00:00"
+  },
+  {
+    "game_id": "401856759",
+    "away": "Florida",
+    "home": "Florida State",
+    "mu": -9.685064391608885,
+    "fav": "Florida",
+    "mag": 9.7,
+    "null_reason": null,
+    "kickoff": "2026-11-27 20:30:00+00:00"
+  },
+  {
+    "game_id": "401862838",
+    "away": "Temple",
+    "home": "Memphis",
+    "mu": 18.417458233126567,
+    "fav": "Memphis",
+    "mag": 18.4,
+    "null_reason": null,
+    "kickoff": "2026-11-27 20:30:00+00:00"
+  },
+  {
+    "game_id": "401864549",
+    "away": "North Dakota State",
+    "home": "San Jos\u00e9 State",
+    "mu": 1.795626556277147,
+    "fav": "San Jos\u00e9 State",
+    "mag": 1.8,
+    "null_reason": null,
+    "kickoff": "2026-11-27 20:30:00+00:00"
+  },
+  {
+    "game_id": "401864546",
+    "away": "Air Force",
+    "home": "New Mexico",
+    "mu": 1.8031824358846393,
+    "fav": "New Mexico",
+    "mag": 1.8,
+    "null_reason": null,
+    "kickoff": "2026-11-27 21:30:00+00:00"
+  },
+  {
+    "game_id": "401858544",
+    "away": "Minnesota",
+    "home": "Wisconsin",
+    "mu": 5.696327528524188,
+    "fav": "Wisconsin",
+    "mag": 5.7,
+    "null_reason": null,
+    "kickoff": "2026-11-28 00:30:00+00:00"
+  },
+  {
+    "game_id": "401856756",
+    "away": "Texas",
+    "home": "Texas A&M",
+    "mu": -13.855846959993404,
+    "fav": "Texas",
+    "mag": 13.9,
+    "null_reason": null,
+    "kickoff": "2026-11-28 00:30:00+00:00"
+  },
+  {
+    "game_id": "401856880",
+    "away": "West Virginia",
+    "home": "Utah",
+    "mu": 16.316766653125853,
+    "fav": "Utah",
+    "mag": 16.3,
+    "null_reason": null,
+    "kickoff": "2026-11-28 02:00:00+00:00"
+  },
+  {
+    "game_id": "401858311",
+    "away": "Boston College",
+    "home": "Miami",
+    "mu": 14.828219941913275,
+    "fav": "Miami",
+    "mag": 14.8,
+    "null_reason": null,
+    "kickoff": "2026-11-28 17:00:00+00:00"
+  },
+  {
+    "game_id": "401858313",
+    "away": "NC State",
+    "home": "North Carolina",
+    "mu": 5.212483731287875,
+    "fav": "North Carolina",
+    "mag": 5.2,
+    "null_reason": null,
+    "kickoff": "2026-11-28 17:00:00+00:00"
+  },
+  {
+    "game_id": "401858540",
+    "away": "Michigan",
+    "home": "Ohio State",
+    "mu": 11.765260469172135,
+    "fav": "Ohio State",
+    "mag": 11.8,
+    "null_reason": null,
+    "kickoff": "2026-11-28 17:00:00+00:00"
+  },
+  {
+    "game_id": "401862842",
+    "away": "Navy",
+    "home": "Charlotte",
+    "mu": -1.402651006859914,
+    "fav": "Navy",
+    "mag": 1.4,
+    "null_reason": null,
+    "kickoff": "2026-11-28 17:00:00+00:00"
+  },
+  {
+    "game_id": "401858314",
+    "away": "Notre Dame",
+    "home": "Syracuse",
+    "mu": -21.42717266842788,
+    "fav": "Notre Dame",
+    "mag": 21.4,
+    "null_reason": null,
+    "kickoff": "2026-11-28 17:00:00+00:00"
+  }
+]

@@ -1,0 +1,413 @@
+{
+  "schema_version": "1.0.0",
+  "fixture": false,
+  "season": 2026,
+  "week": 12,
+  "snapshot_at": "2026-11-25T13:00:10Z",
+  "source": {
+    "provider": "The Odds API",
+    "regions": "us",
+    "markets": [
+      "h2h",
+      "spreads",
+      "totals"
+    ],
+    "requests_remaining": 76,
+    "requests_used": 424,
+    "requests_last": 0
+  },
+  "consensus_method": "median_across_books_devigged_h2h",
+  "unmatched": [
+    {
+      "side": "ridge_game",
+      "id": "401871101",
+      "home": "Southern Miss",
+      "away": "South Alabama"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401856755",
+      "home": "Texas",
+      "away": "Arkansas"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401856865",
+      "home": "Kansas State",
+      "away": "Arizona"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401860925",
+      "home": "Boise State",
+      "away": "San Diego State"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401858308",
+      "home": "California",
+      "away": "Stanford"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401858528",
+      "home": "Michigan",
+      "away": "UCLA"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401860918",
+      "home": "Fresno State",
+      "away": "Colorado State"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401856867",
+      "home": "Cincinnati",
+      "away": "Colorado"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401871077",
+      "home": "New Mexico State",
+      "away": "Delaware"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401862833",
+      "home": "Florida Atlantic",
+      "away": "South Florida"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401856753",
+      "home": "South Carolina",
+      "away": "Georgia"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401864541",
+      "home": "Nevada",
+      "away": "Hawai'i"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401856869",
+      "home": "UCF",
+      "away": "Iowa State"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401858530",
+      "home": "Minnesota",
+      "away": "Northwestern"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401858535",
+      "home": "Washington",
+      "away": "Indiana"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401856751",
+      "home": "Missouri",
+      "away": "Kentucky"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401871080",
+      "home": "Liberty",
+      "away": "Western Kentucky"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401856754",
+      "home": "Tennessee",
+      "away": "LSU"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401858534",
+      "home": "USC",
+      "away": "Maryland"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401862831",
+      "home": "Army",
+      "away": "East Carolina"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401858304",
+      "home": "Florida State",
+      "away": "NC State"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401858305",
+      "home": "Virginia",
+      "away": "North Carolina"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401858310",
+      "home": "Georgia Tech",
+      "away": "Wake Forest"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401858532",
+      "home": "Penn State",
+      "away": "Rutgers"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401864542",
+      "home": "Wyoming",
+      "away": "New Mexico"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401858309",
+      "home": "Boston College",
+      "away": "Syracuse"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401866468",
+      "home": "Toledo",
+      "away": "Bowling Green"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401858531",
+      "home": "Nebraska",
+      "away": "Ohio State"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401856870",
+      "home": "Arizona State",
+      "away": "Oklahoma State"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401858306",
+      "home": "Louisville",
+      "away": "Pittsburgh"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401858303",
+      "home": "Duke",
+      "away": "Clemson"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401862834",
+      "home": "Navy",
+      "away": "Memphis"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401856746",
+      "home": "Alabama",
+      "away": "Chattanooga"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401856748",
+      "home": "Florida",
+      "away": "Vanderbilt"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401862830",
+      "home": "Temple",
+      "away": "Rice"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401856752",
+      "home": "Oklahoma",
+      "away": "Texas A&M"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401856868",
+      "home": "West Virginia",
+      "away": "Houston"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401862835",
+      "home": "Tulane",
+      "away": "North Texas"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401856866",
+      "home": "Kansas",
+      "away": "BYU"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401856872",
+      "home": "TCU",
+      "away": "Utah"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401858302",
+      "home": "Miami",
+      "away": "Virginia Tech"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401860920",
+      "home": "Texas State",
+      "away": "Washington State"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401858533",
+      "home": "Purdue",
+      "away": "Wisconsin"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401869953",
+      "home": "Troy",
+      "away": "Georgia Southern"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401861968",
+      "home": "UConn",
+      "away": "Old Dominion"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401869946",
+      "home": "Louisiana",
+      "away": "Coastal Carolina"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401860919",
+      "home": "Oregon State",
+      "away": "Utah State"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401869938",
+      "home": "Louisiana Tech",
+      "away": "Arkansas State"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401871078",
+      "home": "Kennesaw State",
+      "away": "Florida International"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401869958",
+      "home": "Marshall",
+      "away": "Georgia State"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401858527",
+      "home": "Illinois",
+      "away": "Iowa"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401871081",
+      "home": "Sam Houston",
+      "away": "Middle Tennessee"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401862832",
+      "home": "Tulsa",
+      "away": "Charlotte"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401869929",
+      "home": "App State",
+      "away": "UL Monroe"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401864544",
+      "home": "San Jos\u00e9 State",
+      "away": "UNLV"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401864543",
+      "home": "North Dakota State",
+      "away": "Northern Illinois"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401858529",
+      "home": "Michigan State",
+      "away": "Oregon"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401856747",
+      "home": "Auburn",
+      "away": "Samford"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401858307",
+      "home": "Notre Dame",
+      "away": "SMU"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401871079",
+      "home": "Jacksonville State",
+      "away": "Missouri State"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401856750",
+      "home": "Mississippi State",
+      "away": "Tennessee Tech"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401862836",
+      "home": "UAB",
+      "away": "UTSA"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401864545",
+      "home": "Air Force",
+      "away": "UTEP"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401856871",
+      "home": "Baylor",
+      "away": "Texas Tech"
+    },
+    {
+      "side": "ridge_game",
+      "id": "401856749",
+      "home": "Ole Miss",
+      "away": "Wofford"
+    }
+  ],
+  "n_games": 0
+}
