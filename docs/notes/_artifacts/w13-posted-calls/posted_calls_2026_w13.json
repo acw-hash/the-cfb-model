@@ -4,7 +4,7 @@
   "label": "posted_calls",
   "n": 7,
   "probe_book": "regulated_mixed",
-  "pricing_note": "W13-3 Fri line check: HFA=NONE; stake 0.014; regulated books (draftkings/fanduel/betmgm/williamhill_us/espnbet/fanatics/hardrockbet/ballybet/betrivers); best regulated line for the W13-1 side; card = top 7 by edge among eligible Saturday QB-cleared games; alternates in w13-3.md only; Friday availability: no changes; production MC seed 42+game_id n_draws=20000; gates edge>=4.5% gap<=7.0; espnbet displayed as theScore Bet; qb_note weak_source on Kentucky/Ball State/Tulane/UTEP/Northern Illinois involvement; posted_at_utc null (not stamped). No publish. No post.",
+  "pricing_note": "W13-3 Wed Nov 25 snapshot; provisional until W13-4 Friday recheck. HFA=NONE; stake 0.014; regulated books (draftkings/fanduel/betmgm/williamhill_us/espnbet/fanatics/hardrockbet/ballybet/betrivers); best regulated line for the W13-1 side; card = top 7 by edge among eligible Saturday QB-cleared games; alternates in w13-3.md only; 0b PENDING (Friday recheck in W13-4); production MC seed 42+game_id n_draws=20000; gates edge>=4.5% gap<=7.0; espnbet displayed as theScore Bet; qb_note weak_source on Kentucky/Ball State/Tulane/UTEP/Northern Illinois involvement; posted_at_utc null (not stamped). No publish. No post.",
   "decisions": {
     "hfa": "NONE",
     "stake": 0.014,

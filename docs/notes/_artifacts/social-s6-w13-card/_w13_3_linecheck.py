@@ -84,8 +84,8 @@ WEAK_SOURCE_TEAMS = {
     "Northern Illinois",
 }
 
-# Operator Friday availability recheck blank → no changes.
-AVAILABILITY = "no changes"
+# 0b not run Wed Nov 25 — Friday reports do not exist yet. W13-4 recheck.
+AVAILABILITY = "PENDING — Friday recheck in W13-4"
 REMOVED_AVAILABILITY: list[dict[str, Any]] = []
 
 # Eligible after 0a (W13-1 QB-list order); W13-1 book/line/price/side.
@@ -998,11 +998,12 @@ def main() -> None:
         "n": len(calls),
         "probe_book": "regulated_mixed",
         "pricing_note": (
-            "W13-3 Fri line check: HFA=NONE; stake 0.014; regulated books "
+            "W13-3 Wed Nov 25 snapshot; provisional until W13-4 Friday recheck. "
+            "HFA=NONE; stake 0.014; regulated books "
             "(draftkings/fanduel/betmgm/williamhill_us/espnbet/fanatics/"
             "hardrockbet/ballybet/betrivers); best regulated line for the W13-1 "
             "side; card = top 7 by edge among eligible Saturday QB-cleared games; "
-            "alternates in w13-3.md only; Friday availability: no changes; "
+            "alternates in w13-3.md only; 0b PENDING (Friday recheck in W13-4); "
             "production MC seed 42+game_id n_draws=20000; gates edge>=4.5% gap<=7.0; "
             "espnbet displayed as theScore Bet; qb_note weak_source on Kentucky/"
             "Ball State/Tulane/UTEP/Northern Illinois involvement; "

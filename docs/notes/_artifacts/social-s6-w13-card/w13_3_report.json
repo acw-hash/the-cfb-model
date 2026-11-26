@@ -1,6 +1,6 @@
 {
   "task": "W13-3",
-  "friday_availability": "no changes",
+  "friday_availability": "PENDING \u2014 Friday recheck in W13-4",
   "export_enabled": false,
   "stage": {
     "raw_path": "docs/notes/_artifacts/social-s6-w13-card/odds_w13_3_20261126T005128Z.json",
@@ -715,9 +715,11 @@
     }
   ],
   "superseded": [],
-  "ledger_sha256": "bbbecfe87937eaa0462085f57f879b01d44cfb4f8f9adc9c9bb0f828ce7a23e6",
+  "ledger_sha256": "8cf153bc500a0e0516c86f1790f767b8594369a44dd4d62181d71ce8e040239a",
   "ledger_paths": [
     "data/social/posted_calls_2026_w13.json",
     "docs/notes/_artifacts/w13-posted-calls/posted_calls_2026_w13.json"
-  ]
+  ],
+  "provisional": true,
+  "pricing_note": "W13-3 Wed Nov 25 snapshot; provisional until W13-4 Friday recheck"
 }
