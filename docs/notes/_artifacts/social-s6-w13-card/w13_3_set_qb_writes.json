@@ -1,0 +1,166 @@
+{
+  "n_calls": 20,
+  "fails": 0,
+  "writes": [
+    {
+      "game_id": "401856873",
+      "team": "Arizona State",
+      "status": "starter",
+      "exit": 0,
+      "stdout": "{\"game_id\": 401856873, \"team_id\": 9, \"status\": \"starter\", \"event_time\": \"2026-11-26 00:54:49.852323+00:00\", \"event\": \"cli_roster_set_qb\", \"run_id\": \"4fdd8c9df2ce41f4b66f919db59f9a6a\", \"level\": \"info\", \"logger\": \"ncaa_quant.cli\", \"timestamp\": \"2026-11-26T00:54:50.864125Z\"}\nqb_status game=401856873 team_id=9 status=starter event_time=2026-11-26 00:54:49.852323+00:00",
+      "stderr": ""
+    },
+    {
+      "game_id": "401856873",
+      "team": "Arizona",
+      "status": "starter",
+      "exit": 0,
+      "stdout": "{\"game_id\": 401856873, \"team_id\": 12, \"status\": \"starter\", \"event_time\": \"2026-11-26 00:54:55.366874+00:00\", \"event\": \"cli_roster_set_qb\", \"run_id\": \"fb9eb9fd1f73453682cbc4e44d30d572\", \"level\": \"info\", \"logger\": \"ncaa_quant.cli\", \"timestamp\": \"2026-11-26T00:54:56.433821Z\"}\nqb_status game=401856873 team_id=12 status=starter event_time=2026-11-26 00:54:55.366874+00:00",
+      "stderr": ""
+    },
+    {
+      "game_id": "401856761",
+      "team": "Louisville",
+      "status": "starter",
+      "exit": 0,
+      "stdout": "{\"game_id\": 401856761, \"team_id\": 97, \"status\": \"starter\", \"event_time\": \"2026-11-26 00:55:01.155029+00:00\", \"event\": \"cli_roster_set_qb\", \"run_id\": \"63895a877de8490f8da5978dbdab1bd4\", \"level\": \"info\", \"logger\": \"ncaa_quant.cli\", \"timestamp\": \"2026-11-26T00:55:02.261980Z\"}\nqb_status game=401856761 team_id=97 status=starter event_time=2026-11-26 00:55:01.155029+00:00",
+      "stderr": ""
+    },
+    {
+      "game_id": "401856761",
+      "team": "Kentucky",
+      "status": "starter",
+      "exit": 0,
+      "stdout": "{\"game_id\": 401856761, \"team_id\": 96, \"status\": \"starter\", \"event_time\": \"2026-11-26 00:55:07.042045+00:00\", \"event\": \"cli_roster_set_qb\", \"run_id\": \"f083524f74084df6ab95cc6f01a6bbac\", \"level\": \"info\", \"logger\": \"ncaa_quant.cli\", \"timestamp\": \"2026-11-26T00:55:08.178642Z\"}\nqb_status game=401856761 team_id=96 status=starter event_time=2026-11-26 00:55:07.042045+00:00",
+      "stderr": ""
+    },
+    {
+      "game_id": "401862839",
+      "team": "Tulane",
+      "status": "starter",
+      "exit": 0,
+      "stdout": "{\"game_id\": 401862839, \"team_id\": 2655, \"status\": \"starter\", \"event_time\": \"2026-11-26 00:55:12.876853+00:00\", \"event\": \"cli_roster_set_qb\", \"run_id\": \"f8fe4d081e9f459684256c463adb238d\", \"level\": \"info\", \"logger\": \"ncaa_quant.cli\", \"timestamp\": \"2026-11-26T00:55:13.864395Z\"}\nqb_status game=401862839 team_id=2655 status=starter event_time=2026-11-26 00:55:12.876853+00:00",
+      "stderr": ""
+    },
+    {
+      "game_id": "401862839",
+      "team": "South Florida",
+      "status": "starter",
+      "exit": 0,
+      "stdout": "{\"game_id\": 401862839, \"team_id\": 58, \"status\": \"starter\", \"event_time\": \"2026-11-26 00:55:18.438262+00:00\", \"event\": \"cli_roster_set_qb\", \"run_id\": \"b89da95a054848afba5cec641b3eec2d\", \"level\": \"info\", \"logger\": \"ncaa_quant.cli\", \"timestamp\": \"2026-11-26T00:55:19.511225Z\"}\nqb_status game=401862839 team_id=58 status=starter event_time=2026-11-26 00:55:18.438262+00:00",
+      "stderr": ""
+    },
+    {
+      "game_id": "401856757",
+      "team": "Auburn",
+      "status": "starter",
+      "exit": 0,
+      "stdout": "{\"game_id\": 401856757, \"team_id\": 2, \"status\": \"starter\", \"event_time\": \"2026-11-26 00:55:24.173523+00:00\", \"event\": \"cli_roster_set_qb\", \"run_id\": \"1088d23692c047a58275c3d3c670aff8\", \"level\": \"info\", \"logger\": \"ncaa_quant.cli\", \"timestamp\": \"2026-11-26T00:55:25.148387Z\"}\nqb_status game=401856757 team_id=2 status=starter event_time=2026-11-26 00:55:24.173523+00:00",
+      "stderr": ""
+    },
+    {
+      "game_id": "401856757",
+      "team": "Alabama",
+      "status": "starter",
+      "exit": 0,
+      "stdout": "{\"game_id\": 401856757, \"team_id\": 333, \"status\": \"starter\", \"event_time\": \"2026-11-26 00:55:29.708956+00:00\", \"event\": \"cli_roster_set_qb\", \"run_id\": \"a0a139d048334658b2192bb7b768744b\", \"level\": \"info\", \"logger\": \"ncaa_quant.cli\", \"timestamp\": \"2026-11-26T00:55:30.786870Z\"}\nqb_status game=401856757 team_id=333 status=starter event_time=2026-11-26 00:55:29.708956+00:00",
+      "stderr": ""
+    },
+    {
+      "game_id": "401858541",
+      "team": "Washington",
+      "status": "starter",
+      "exit": 0,
+      "stdout": "{\"game_id\": 401858541, \"team_id\": 264, \"status\": \"starter\", \"event_time\": \"2026-11-26 00:55:35.548886+00:00\", \"event\": \"cli_roster_set_qb\", \"run_id\": \"91948d686b30433295c26fcec5ec5f44\", \"level\": \"info\", \"logger\": \"ncaa_quant.cli\", \"timestamp\": \"2026-11-26T00:55:36.529710Z\"}\nqb_status game=401858541 team_id=264 status=starter event_time=2026-11-26 00:55:35.548886+00:00",
+      "stderr": ""
+    },
+    {
+      "game_id": "401858541",
+      "team": "Oregon",
+      "status": "starter",
+      "exit": 0,
+      "stdout": "{\"game_id\": 401858541, \"team_id\": 2483, \"status\": \"starter\", \"event_time\": \"2026-11-26 00:55:41.099861+00:00\", \"event\": \"cli_roster_set_qb\", \"run_id\": \"2202c88ab9b64e4c8fe4d9b7c2d4abe7\", \"level\": \"info\", \"logger\": \"ncaa_quant.cli\", \"timestamp\": \"2026-11-26T00:55:42.192486Z\"}\nqb_status game=401858541 team_id=2483 status=starter event_time=2026-11-26 00:55:41.099861+00:00",
+      "stderr": ""
+    },
+    {
+      "game_id": "401866474",
+      "team": "Central Michigan",
+      "status": "starter",
+      "exit": 0,
+      "stdout": "{\"game_id\": 401866474, \"team_id\": 2117, \"status\": \"starter\", \"event_time\": \"2026-11-26 00:55:47.062689+00:00\", \"event\": \"cli_roster_set_qb\", \"run_id\": \"ec9554960c304619b9fb429c7bd9886e\", \"level\": \"info\", \"logger\": \"ncaa_quant.cli\", \"timestamp\": \"2026-11-26T00:55:48.023376Z\"}\nqb_status game=401866474 team_id=2117 status=starter event_time=2026-11-26 00:55:47.062689+00:00",
+      "stderr": ""
+    },
+    {
+      "game_id": "401866474",
+      "team": "Ball State",
+      "status": "starter",
+      "exit": 0,
+      "stdout": "{\"game_id\": 401866474, \"team_id\": 2050, \"status\": \"starter\", \"event_time\": \"2026-11-26 00:55:52.266684+00:00\", \"event\": \"cli_roster_set_qb\", \"run_id\": \"5337bcd93e304b01b9bed1983fc66c4e\", \"level\": \"info\", \"logger\": \"ncaa_quant.cli\", \"timestamp\": \"2026-11-26T00:55:53.338915Z\"}\nqb_status game=401866474 team_id=2050 status=starter event_time=2026-11-26 00:55:52.266684+00:00",
+      "stderr": ""
+    },
+    {
+      "game_id": "401856877",
+      "team": "Kansas",
+      "status": "starter",
+      "exit": 0,
+      "stdout": "{\"game_id\": 401856877, \"team_id\": 2305, \"status\": \"starter\", \"event_time\": \"2026-11-26 00:55:57.884199+00:00\", \"event\": \"cli_roster_set_qb\", \"run_id\": \"a0c2c485eed343daa95954df9adab9bf\", \"level\": \"info\", \"logger\": \"ncaa_quant.cli\", \"timestamp\": \"2026-11-26T00:55:58.869378Z\"}\nqb_status game=401856877 team_id=2305 status=starter event_time=2026-11-26 00:55:57.884199+00:00",
+      "stderr": ""
+    },
+    {
+      "game_id": "401856877",
+      "team": "Oklahoma State",
+      "status": "starter",
+      "exit": 0,
+      "stdout": "{\"game_id\": 401856877, \"team_id\": 197, \"status\": \"starter\", \"event_time\": \"2026-11-26 00:56:03.086939+00:00\", \"event\": \"cli_roster_set_qb\", \"run_id\": \"1e43d302f37544bd8f9a4e0a1eb8c404\", \"level\": \"info\", \"logger\": \"ncaa_quant.cli\", \"timestamp\": \"2026-11-26T00:56:04.120675Z\"}\nqb_status game=401856877 team_id=197 status=starter event_time=2026-11-26 00:56:03.086939+00:00",
+      "stderr": ""
+    },
+    {
+      "game_id": "401864550",
+      "team": "UTEP",
+      "status": "starter",
+      "exit": 0,
+      "stdout": "{\"game_id\": 401864550, \"team_id\": 2638, \"status\": \"starter\", \"event_time\": \"2026-11-26 00:56:08.693842+00:00\", \"event\": \"cli_roster_set_qb\", \"run_id\": \"5491680ad60d4e758ec5e4247c81a161\", \"level\": \"info\", \"logger\": \"ncaa_quant.cli\", \"timestamp\": \"2026-11-26T00:56:09.715491Z\"}\nqb_status game=401864550 team_id=2638 status=starter event_time=2026-11-26 00:56:08.693842+00:00",
+      "stderr": ""
+    },
+    {
+      "game_id": "401864550",
+      "team": "Northern Illinois",
+      "status": "starter",
+      "exit": 0,
+      "stdout": "{\"game_id\": 401864550, \"team_id\": 2459, \"status\": \"starter\", \"event_time\": \"2026-11-26 00:56:14.211963+00:00\", \"event\": \"cli_roster_set_qb\", \"run_id\": \"328636a0159b4133b408cc47240b558b\", \"level\": \"info\", \"logger\": \"ncaa_quant.cli\", \"timestamp\": \"2026-11-26T00:56:15.496566Z\"}\nqb_status game=401864550 team_id=2459 status=starter event_time=2026-11-26 00:56:14.211963+00:00",
+      "stderr": ""
+    },
+    {
+      "game_id": "401869959",
+      "team": "Louisiana",
+      "status": "starter",
+      "exit": 0,
+      "stdout": "{\"game_id\": 401869959, \"team_id\": 309, \"status\": \"starter\", \"event_time\": \"2026-11-26 00:56:20.751854+00:00\", \"event\": \"cli_roster_set_qb\", \"run_id\": \"50b4343cdce9498abc1e9a014f59feee\", \"level\": \"info\", \"logger\": \"ncaa_quant.cli\", \"timestamp\": \"2026-11-26T00:56:21.962564Z\"}\nqb_status game=401869959 team_id=309 status=starter event_time=2026-11-26 00:56:20.751854+00:00",
+      "stderr": ""
+    },
+    {
+      "game_id": "401869959",
+      "team": "Georgia State",
+      "status": "starter",
+      "exit": 0,
+      "stdout": "{\"game_id\": 401869959, \"team_id\": 2247, \"status\": \"starter\", \"event_time\": \"2026-11-26 00:56:26.493551+00:00\", \"event\": \"cli_roster_set_qb\", \"run_id\": \"fd2824da61e34b40bc8e7e0eac342f68\", \"level\": \"info\", \"logger\": \"ncaa_quant.cli\", \"timestamp\": \"2026-11-26T00:56:27.588090Z\"}\nqb_status game=401869959 team_id=2247 status=starter event_time=2026-11-26 00:56:26.493551+00:00",
+      "stderr": ""
+    },
+    {
+      "game_id": "401856763",
+      "team": "Oklahoma",
+      "status": "starter",
+      "exit": 0,
+      "stdout": "{\"game_id\": 401856763, \"team_id\": 201, \"status\": \"starter\", \"event_time\": \"2026-11-26 00:56:32.774636+00:00\", \"event\": \"cli_roster_set_qb\", \"run_id\": \"ec29236a101f45748b62f829bb574673\", \"level\": \"info\", \"logger\": \"ncaa_quant.cli\", \"timestamp\": \"2026-11-26T00:56:34.005960Z\"}\nqb_status game=401856763 team_id=201 status=starter event_time=2026-11-26 00:56:32.774636+00:00",
+      "stderr": ""
+    },
+    {
+      "game_id": "401856763",
+      "team": "Missouri",
+      "status": "starter",
+      "exit": 0,
+      "stdout": "{\"game_id\": 401856763, \"team_id\": 142, \"status\": \"starter\", \"event_time\": \"2026-11-26 00:56:38.510045+00:00\", \"event\": \"cli_roster_set_qb\", \"run_id\": \"c312ce51d8104d4b8fc7bfea637e5ebd\", \"level\": \"info\", \"logger\": \"ncaa_quant.cli\", \"timestamp\": \"2026-11-26T00:56:39.543110Z\"}\nqb_status game=401856763 team_id=142 status=starter event_time=2026-11-26 00:56:38.510045+00:00",
+      "stderr": ""
+    }
+  ]
+}
